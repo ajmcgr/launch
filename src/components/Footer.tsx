@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 export const Footer = () => {
   return (
     <footer className="border-t bg-background">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">About</h3>
@@ -88,7 +88,17 @@ export const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} TryLaunch.ai. All rights reserved.</p>
+          <p>
+            Copyright © {new Date().getFullYear()} Works App, Inc. Built with ♥️ by{' '}
+            <a 
+              href="https://works.xyz/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
+              Works
+            </a>.
+          </p>
         </div>
       </div>
     </footer>

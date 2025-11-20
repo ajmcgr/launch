@@ -12,6 +12,7 @@ import { User, Settings, Package, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import logo from '@/assets/logo.png';
 
 export const Header = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -56,11 +57,11 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="TryLaunch" className="h-8" />
+          </Link>
+          
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2">
-              <span className="text-xl font-bold text-foreground">TryLaunch</span>
-            </Link>
-            
             <nav className="hidden md:flex items-center gap-6">
               <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Launches
@@ -68,16 +69,11 @@ export const Header = () => {
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
-              <Link to="/submit" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Submit
-              </Link>
               <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Pricing
               </Link>
             </nav>
-          </div>
 
-          <div className="flex items-center gap-4">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -122,7 +118,7 @@ export const Header = () => {
                   <Link to="/auth">Login</Link>
                 </Button>
                 <Button asChild>
-                  <Link to="/auth">Sign Up</Link>
+                  <Link to="/submit">Submit</Link>
                 </Button>
               </>
             )}

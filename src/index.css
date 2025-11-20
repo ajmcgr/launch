@@ -6,6 +6,14 @@
 All colors MUST be HSL.
 */
 
+@font-face {
+  font-family: 'Reckless';
+  src: url('/fonts/Reckless-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -17,7 +25,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 33%;
     
-    --primary: 213 60% 50%;
+    --primary: 213 73% 46%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 0 0% 33%;
@@ -63,7 +71,7 @@ All colors MUST be HSL.
     --popover: 0 0% 14%;
     --popover-foreground: 0 0% 95%;
     
-    --primary: 213 60% 50%;
+    --primary: 213 73% 46%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 0 0% 20%;
