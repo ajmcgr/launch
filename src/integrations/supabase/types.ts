@@ -288,30 +288,42 @@ export type Database = {
           bio: string | null
           created_at: string | null
           id: string
+          instagram: string | null
+          linkedin: string | null
+          telegram: string | null
           twitter: string | null
           updated_at: string | null
           username: string
           website: string | null
+          youtube: string | null
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
           id: string
+          instagram?: string | null
+          linkedin?: string | null
+          telegram?: string | null
           twitter?: string | null
           updated_at?: string | null
           username: string
           website?: string | null
+          youtube?: string | null
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
           id?: string
+          instagram?: string | null
+          linkedin?: string | null
+          telegram?: string | null
           twitter?: string | null
           updated_at?: string | null
           username?: string
           website?: string | null
+          youtube?: string | null
         }
         Relationships: []
       }
