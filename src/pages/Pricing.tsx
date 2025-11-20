@@ -11,32 +11,9 @@ const Pricing = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Launch Your Product</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Get your product in front of thousands of founders and tech enthusiasts
           </p>
-          <div className="bg-muted/50 border rounded-lg p-6 max-w-3xl mx-auto">
-            <h2 className="font-semibold text-lg mb-3">How Our Launch Queue Works</h2>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
-              <div className="flex flex-col items-center text-center">
-                <Calendar className="h-8 w-8 text-primary mb-2" />
-                <p className="font-medium">Join the Line</p>
-                <p className="text-muted-foreground">Auto-scheduled 7+ days out</p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <Zap className="h-8 w-8 text-primary mb-2" />
-                <p className="font-medium">Launch</p>
-                <p className="text-muted-foreground">Pick any date in next 7 days</p>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <RefreshCw className="h-8 w-8 text-primary mb-2" />
-                <p className="font-medium">Relaunch</p>
-                <p className="text-muted-foreground">Scheduled 30+ days out</p>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-4">
-              Maximum 100 launches per day across all plans
-            </p>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -125,7 +102,31 @@ const Pricing = () => {
           ))}
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="bg-muted/50 border rounded-lg p-6 max-w-3xl mx-auto mt-16">
+          <h2 className="font-semibold text-lg mb-3 text-center">How Our Launch Queue Works</h2>
+          <div className="grid md:grid-cols-3 gap-4 text-sm">
+            <div className="flex flex-col items-center text-center">
+              <Calendar className="h-8 w-8 text-primary mb-2" />
+              <p className="font-medium">Join the Line</p>
+              <p className="text-muted-foreground">Auto-scheduled 7+ days out</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <Zap className="h-8 w-8 text-primary mb-2" />
+              <p className="font-medium">Launch</p>
+              <p className="text-muted-foreground">Pick any date in next 7 days</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <RefreshCw className="h-8 w-8 text-primary mb-2" />
+              <p className="font-medium">Relaunch</p>
+              <p className="text-muted-foreground">Scheduled 30+ days out</p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4 text-center">
+            Maximum 100 launches per day across all plans
+          </p>
+        </div>
+
+        <div className="mt-8 text-center">
           <p className="text-muted-foreground">
             All plans include support from our team. Questions?{' '}
             <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
