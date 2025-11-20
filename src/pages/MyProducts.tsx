@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -71,6 +71,75 @@ const MyProducts = () => {
       toast.error('Failed to load products');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this draft? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      // Delete associated media
+      await supabase.from('product_media').delete().eq('product_id', productId);
+      
+      // Delete category mappings
+      await supabase.from('product_category_map').delete().eq('product_id', productId);
+      
+      // Delete the product
+      const { error } = await supabase.from('products').delete().eq('id', productId);
+      
+      if (error) throw error;
+      
+      toast.success('Draft deleted successfully');
+      if (user) fetchProducts(user.id);
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Failed to delete draft');
+    }
+  };
+
+  const handleSchedule = async (product: any) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error('Please log in again');
+        navigate('/auth?mode=signin');
+        return;
+      }
+      
+      toast.info('Redirecting to payment...');
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: {
+          plan: 'join',
+          selectedDate: null,
+          productData: {
+            name: product.name,
+            tagline: product.tagline,
+            url: product.domain_url,
+            description: product.description,
+            categories: product.categories,
+            slug: product.slug,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success('Checkout opened in new window. Complete payment to launch your product!');
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Failed to initiate payment. Please try again.');
     }
   };
 
@@ -202,11 +271,15 @@ const MyProducts = () => {
                       </Button>
                     )}
                     {product.status === 'draft' && (
-                      <Button asChild>
-                        <Link to={`/submit?draft=${product.id}`}>
-                          Continue Submission
-                        </Link>
-                      </Button>
+                      <>
+                        <Button onClick={() => handleSchedule(product)}>
+                          Schedule Launch
+                        </Button>
+                        <Button variant="destructive" onClick={() => handleDelete(product.id)}>
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </Button>
+                      </>
                     )}
                     {product.status === 'launched' && (
                       <Button variant="outline" asChild>
