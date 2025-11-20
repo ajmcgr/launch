@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LaunchCard } from '@/components/LaunchCard';
+import { LaunchListItem } from '@/components/LaunchListItem';
+import { ViewToggle } from '@/components/ViewToggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CATEGORIES } from '@/lib/constants';
 import { Search } from 'lucide-react';
@@ -15,6 +17,15 @@ const Products = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('votes');
   const [products, setProducts] = useState<any[]>([]);
+  const [view, setView] = useState<'list' | 'grid'>(() => {
+    const saved = localStorage.getItem('productView');
+    return (saved as 'list' | 'grid') || 'list';
+  });
+
+  const handleViewChange = (newView: 'list' | 'grid') => {
+    setView(newView);
+    localStorage.setItem('productView', newView);
+  };
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -85,17 +96,20 @@ const Products = () => {
           </aside>
 
           <div className="lg:col-span-3 space-y-6">
-            <div className="flex gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex gap-4 flex-1">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Button variant="outline">Search</Button>
               </div>
-              <Button variant="outline">Search</Button>
+              <ViewToggle view={view} onViewChange={handleViewChange} />
             </div>
 
             {selectedCategories.length > 0 && (
@@ -113,15 +127,27 @@ const Products = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {mockProducts.map((product) => (
-                <LaunchCard
-                  key={product.id}
-                  {...product}
-                  onVote={() => {}}
-                />
-              ))}
-            </div>
+            {view === 'list' ? (
+              <div className="space-y-4">
+                {mockProducts.map((product) => (
+                  <LaunchListItem
+                    key={product.id}
+                    {...product}
+                    onVote={() => {}}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {mockProducts.map((product) => (
+                  <LaunchCard
+                    key={product.id}
+                    {...product}
+                    onVote={() => {}}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

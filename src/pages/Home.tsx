@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LaunchCard } from '@/components/LaunchCard';
+import { LaunchListItem } from '@/components/LaunchListItem';
 import { Newsletter } from '@/components/Newsletter';
 import { CategoryCloud } from '@/components/CategoryCloud';
+import { ViewToggle } from '@/components/ViewToggle';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -22,6 +24,15 @@ const Home = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [view, setView] = useState<'list' | 'grid'>(() => {
+    const saved = localStorage.getItem('productView');
+    return (saved as 'list' | 'grid') || 'list';
+  });
+
+  const handleViewChange = (newView: 'list' | 'grid') => {
+    setView(newView);
+    localStorage.setItem('productView', newView);
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -135,15 +146,28 @@ const Home = () => {
         <h1 className="text-4xl font-bold mb-8">Today's Launches</h1>
         
         <Tabs defaultValue="today" onValueChange={(v) => fetchProducts(v as any)}>
-          <TabsList className="mb-8">
-            <TabsTrigger value="today">Today</TabsTrigger>
-            <TabsTrigger value="week">This Week</TabsTrigger>
-            <TabsTrigger value="month">This Month</TabsTrigger>
-          </TabsList>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+            <TabsList>
+              <TabsTrigger value="today">Today</TabsTrigger>
+              <TabsTrigger value="week">This Week</TabsTrigger>
+              <TabsTrigger value="month">This Month</TabsTrigger>
+            </TabsList>
+            <ViewToggle view={view} onViewChange={handleViewChange} />
+          </div>
 
           <TabsContent value="today" className="space-y-6">
             {loading ? (
               <div className="text-center py-12">Loading...</div>
+            ) : view === 'list' ? (
+              <div className="space-y-4">
+                {products.map((product) => (
+                  <LaunchListItem
+                    key={product.id}
+                    {...product}
+                    onVote={handleVote}
+                  />
+                ))}
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
@@ -160,6 +184,16 @@ const Home = () => {
           <TabsContent value="week" className="space-y-6">
             {loading ? (
               <div className="text-center py-12">Loading...</div>
+            ) : view === 'list' ? (
+              <div className="space-y-4">
+                {products.map((product) => (
+                  <LaunchListItem
+                    key={product.id}
+                    {...product}
+                    onVote={handleVote}
+                  />
+                ))}
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
@@ -176,6 +210,16 @@ const Home = () => {
           <TabsContent value="month" className="space-y-6">
             {loading ? (
               <div className="text-center py-12">Loading...</div>
+            ) : view === 'list' ? (
+              <div className="space-y-4">
+                {products.map((product) => (
+                  <LaunchListItem
+                    key={product.id}
+                    {...product}
+                    onVote={handleVote}
+                  />
+                ))}
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
