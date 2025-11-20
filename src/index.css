@@ -17,13 +17,13 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 33%;
+    --foreground: 0 0% 0%;
     
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 33%;
+    --card-foreground: 0 0% 0%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 33%;
+    --popover-foreground: 0 0% 0%;
     
     --primary: 213 73% 46%;
     --primary-foreground: 0 0% 100%;
@@ -47,16 +47,16 @@ All colors MUST be HSL.
     --radius: 0.75rem;
     
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 33%;
+    --sidebar-foreground: 0 0% 0%;
     --sidebar-primary: 213 60% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 33%;
+    --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 90%;
     --sidebar-ring: 213 60% 50%;
     
     /* Custom Launch colors */
-    --nav-text: 0 0% 33%;
+    --nav-text: 0 0% 0%;
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   }
