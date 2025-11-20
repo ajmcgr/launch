@@ -53,7 +53,7 @@ export const Newsletter = () => {
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Get the latest startups launched on Launch</h2>
           <p className="text-muted-foreground mb-8">
-            Get weekly insights and updates on the latest product launches
+            Subscribe for free. Weekly updates on launches, no filler.
           </p>
           
           <form onSubmit={handleSubscribe} className="flex gap-4 max-w-md mx-auto">
