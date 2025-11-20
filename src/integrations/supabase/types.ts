@@ -290,6 +290,7 @@ export type Database = {
           id: string
           instagram: string | null
           linkedin: string | null
+          stripe_customer_id: string | null
           telegram: string | null
           twitter: string | null
           updated_at: string | null
@@ -304,6 +305,7 @@ export type Database = {
           id: string
           instagram?: string | null
           linkedin?: string | null
+          stripe_customer_id?: string | null
           telegram?: string | null
           twitter?: string | null
           updated_at?: string | null
@@ -318,6 +320,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           linkedin?: string | null
+          stripe_customer_id?: string | null
           telegram?: string | null
           twitter?: string | null
           updated_at?: string | null
