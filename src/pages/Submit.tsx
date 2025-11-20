@@ -14,20 +14,42 @@ import { toast } from 'sonner';
 const Submit = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [step, setStep] = useState(1);
-  const [uploadedMedia, setUploadedMedia] = useState<{ icon?: string; thumbnail?: string; screenshots: string[] }>({
-    screenshots: []
+  const [step, setStep] = useState(() => {
+    const saved = localStorage.getItem('submitStep');
+    return saved ? parseInt(saved) : 1;
   });
-  const [formData, setFormData] = useState({
-    name: '',
-    tagline: '',
-    url: '',
-    description: '',
-    categories: [] as string[],
-    slug: '',
-    plan: 'join' as 'join' | 'skip' | 'relaunch',
-    selectedDate: null as string | null,
+  const [uploadedMedia, setUploadedMedia] = useState<{ icon?: string; thumbnail?: string; screenshots: string[] }>(() => {
+    const saved = localStorage.getItem('submitMedia');
+    return saved ? JSON.parse(saved) : { screenshots: [] };
   });
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('submitFormData');
+    return saved ? JSON.parse(saved) : {
+      name: '',
+      tagline: '',
+      url: '',
+      description: '',
+      categories: [] as string[],
+      slug: '',
+      plan: 'join' as 'join' | 'skip' | 'relaunch',
+      selectedDate: null as string | null,
+    };
+  });
+
+  // Save to localStorage whenever formData changes
+  useEffect(() => {
+    localStorage.setItem('submitFormData', JSON.stringify(formData));
+  }, [formData]);
+
+  // Save to localStorage whenever uploadedMedia changes
+  useEffect(() => {
+    localStorage.setItem('submitMedia', JSON.stringify(uploadedMedia));
+  }, [uploadedMedia]);
+
+  // Save to localStorage whenever step changes
+  useEffect(() => {
+    localStorage.setItem('submitStep', step.toString());
+  }, [step]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -187,6 +209,8 @@ const Submit = () => {
       if (error) throw error;
 
       if (data?.url) {
+        // Clear localStorage on successful payment redirect
+        localStorage.setItem('submitPendingPayment', 'true');
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');
@@ -196,6 +220,17 @@ const Submit = () => {
       toast.error('Failed to initiate payment. Please try again.');
     }
   };
+
+  // Clear form data if returning from successful payment
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      localStorage.removeItem('submitFormData');
+      localStorage.removeItem('submitMedia');
+      localStorage.removeItem('submitStep');
+      localStorage.removeItem('submitPendingPayment');
+    }
+  }, []);
 
   if (!user) return null;
 
