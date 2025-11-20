@@ -27,8 +27,8 @@ const Submit = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        toast.error('Please login to submit a product');
-        navigate('/auth');
+        toast.error('Please sign up to submit a product');
+        navigate('/auth?mode=signup');
       } else {
         setUser(session.user);
       }
