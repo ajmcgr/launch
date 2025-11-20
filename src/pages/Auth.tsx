@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,9 @@ import { toast } from 'sonner';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -30,21 +32,34 @@ const Auth = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+          },
+        });
 
-      if (error) throw error;
-      toast.success('Successfully logged in!');
+        if (error) throw error;
+        toast.success('Successfully signed up! Please check your email to confirm.');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+        toast.success('Successfully logged in!');
+      }
     } catch (error: any) {
-      console.error('Login error:', error);
-      toast.error(error.message || 'Failed to login');
+      console.error('Auth error:', error);
+      toast.error(error.message || `Failed to ${isSignUp ? 'sign up' : 'login'}`);
     } finally {
       setLoading(false);
     }
@@ -105,9 +120,12 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to Launch</CardTitle>
+          <CardTitle className="text-2xl">{isSignUp ? 'Join Launch' : 'Welcome to Launch'}</CardTitle>
           <CardDescription>
-            Sign in to discover and launch amazing products
+            {isSignUp 
+              ? 'Create an account to submit and launch your products'
+              : 'Sign in to discover and launch amazing products'
+            }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -149,7 +167,7 @@ const Auth = () => {
             </div>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -170,18 +188,39 @@ const Auth = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading 
+                ? (isSignUp ? 'Signing up...' : 'Signing in...') 
+                : (isSignUp ? 'Sign Up' : 'Sign In')
+              }
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
-              Contact us
-            </a>
+            {isSignUp ? (
+              <>
+                Already have an account?{' '}
+                <button 
+                  onClick={() => setIsSignUp(false)} 
+                  className="text-primary hover:underline"
+                >
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                Don't have an account?{' '}
+                <button 
+                  onClick={() => setIsSignUp(true)} 
+                  className="text-primary hover:underline"
+                >
+                  Sign up
+                </button>
+              </>
+            )}
           </p>
         </CardContent>
       </Card>
