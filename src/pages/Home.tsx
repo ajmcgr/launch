@@ -67,32 +67,59 @@ const Home = () => {
           break;
       }
 
-      // Fetch products (mock data for now)
-      // In production, this would query the actual database
-      const mockProducts: Product[] = [
-        {
-          id: '1',
-          slug: 'ai-assistant-pro',
-          name: 'AI Assistant Pro',
-          tagline: 'Your intelligent productivity companion',
-          thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop',
-          categories: ['Productivity', 'AI Agents'],
-          netVotes: 142,
-          makers: [{ username: 'alexdoe', avatar_url: '' }],
-        },
-        {
-          id: '2',
-          slug: 'design-system-kit',
-          name: 'Design System Kit',
-          tagline: 'Build beautiful UIs faster than ever',
-          thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop',
-          categories: ['Design & Creative', 'No-code Platforms'],
-          netVotes: 98,
-          makers: [{ username: 'sarahsmith', avatar_url: '' }],
-        },
-      ];
+      const { data: allProducts, error } = await supabase
+        .from('products')
+        .select(`
+          id,
+          slug,
+          name,
+          tagline,
+          launch_date,
+          product_media(url, type),
+          product_category_map(category_id),
+          product_makers(user_id, users(username, avatar_url))
+        `)
+        .eq('status', 'published')
+        .gte('launch_date', startDate.toISOString())
+        .order('launch_date', { ascending: false });
 
-      setProducts(mockProducts);
+      if (error) throw error;
+
+      const { data: voteCounts } = await supabase
+        .from('product_vote_counts')
+        .select('product_id, net_votes');
+
+      const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+
+      const { data: categories } = await supabase
+        .from('product_categories')
+        .select('id, name');
+
+      const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
+
+      const { data: userVotes } = user ? await supabase
+        .from('votes')
+        .select('product_id, value')
+        .eq('user_id', user.id) : { data: null };
+
+      const userVoteMap = new Map(userVotes?.map(v => [v.product_id, v.value]) || []);
+
+      const formattedProducts: Product[] = (allProducts || []).map((p: any) => ({
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        tagline: p.tagline,
+        thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+        categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+        netVotes: voteMap.get(p.id) || 0,
+        userVote: userVoteMap.get(p.id) as 1 | -1 | undefined,
+        makers: p.product_makers?.map((m: any) => ({
+          username: m.users?.username || 'Anonymous',
+          avatar_url: m.users?.avatar_url || ''
+        })) || []
+      }));
+
+      setProducts(formattedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products');
