@@ -1,35 +1,26 @@
 import { useState, useEffect } from 'react';
-import { Lightbulb, Rocket, Sparkles, Zap, TrendingUp, Star, Heart, Code, Palette, Music } from 'lucide-react';
+import { Rocket } from 'lucide-react';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { Newsletter } from '@/components/Newsletter';
 import { ViewToggle } from '@/components/ViewToggle';
 import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
 import { HomeLaunchCard } from '@/components/HomeLaunchCard';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Launch {
-  id: number;
+  id: string;
   rank: number;
   name: string;
   tagline: string;
   icon: any;
   votes: number;
+  thumbnail?: string;
 }
 
-const mockLaunches: Launch[] = [
-  { id: 1, rank: 1, name: 'AI Content Studio', tagline: 'Create stunning content with AI', icon: Sparkles, votes: 324 },
-  { id: 2, rank: 2, name: 'CodeMate Pro', tagline: 'Your AI pair programmer', icon: Code, votes: 298 },
-  { id: 3, rank: 3, name: 'DesignFlow', tagline: 'Design systems made simple', icon: Palette, votes: 276 },
-  { id: 4, rank: 4, name: 'RocketLaunch', tagline: 'Ship products faster', icon: Rocket, votes: 251 },
-  { id: 5, rank: 5, name: 'TrendTracker', tagline: 'Stay ahead of the curve', icon: TrendingUp, votes: 234 },
-  { id: 6, rank: 6, name: 'StarBoard', tagline: 'Project management reimagined', icon: Star, votes: 212 },
-  { id: 7, rank: 7, name: 'HeartBeat Analytics', tagline: 'Know your customers deeply', icon: Heart, votes: 198 },
-  { id: 8, rank: 8, name: 'ZapAutomation', tagline: 'Automate everything', icon: Zap, votes: 187 },
-  { id: 9, rank: 9, name: 'SoundWave Studio', tagline: 'Professional audio editing', icon: Music, votes: 176 },
-  { id: 10, rank: 10, name: 'IdeaVault', tagline: 'Never lose an idea again', icon: Lightbulb, votes: 165 },
-];
-
 const Index = () => {
-  const [launches, setLaunches] = useState<Launch[]>(mockLaunches);
+  const [launches, setLaunches] = useState<Launch[]>([]);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [view, setView] = useState<'list' | 'grid'>(() => {
     const savedView = localStorage.getItem('homeViewPreference');
@@ -40,19 +31,112 @@ const Index = () => {
     localStorage.setItem('homeViewPreference', view);
   }, [view]);
 
-  const handleVote = (launchId: number) => {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    fetchLaunches();
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchLaunches = async () => {
+    setLoading(true);
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { data: products, error } = await supabase
+        .from('products')
+        .select(`
+          id,
+          name,
+          tagline,
+          product_media(url, type)
+        `)
+        .eq('status', 'published')
+        .gte('launch_date', today.toISOString())
+        .order('launch_date', { ascending: false });
+
+      if (error) throw error;
+
+      const { data: voteCounts } = await supabase
+        .from('product_vote_counts')
+        .select('product_id, net_votes');
+
+      const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+
+      const launches: Launch[] = (products || [])
+        .map((p, index) => ({
+          id: p.id,
+          rank: index + 1,
+          name: p.name,
+          tagline: p.tagline,
+          icon: Rocket,
+          votes: voteMap.get(p.id) || 0,
+          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url
+        }))
+        .sort((a, b) => b.votes - a.votes)
+        .map((p, index) => ({ ...p, rank: index + 1 }));
+
+      setLaunches(launches);
+    } catch (error) {
+      console.error('Error fetching launches:', error);
+      toast.error('Failed to load launches');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVote = async (launchId: string) => {
     if (!user) {
       window.location.href = '/auth';
       return;
     }
-    
-    setLaunches(prev => 
-      prev.map(launch => 
-        launch.id === launchId 
-          ? { ...launch, votes: launch.votes + 1 }
-          : launch
-      )
-    );
+
+    try {
+      const { data: existingVote } = await supabase
+        .from('votes')
+        .select('*')
+        .eq('product_id', launchId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingVote) {
+        await supabase
+          .from('votes')
+          .delete()
+          .eq('id', existingVote.id);
+        
+        setLaunches(prev => 
+          prev.map(launch => 
+            launch.id === launchId 
+              ? { ...launch, votes: launch.votes - 1 }
+              : launch
+          )
+        );
+      } else {
+        await supabase
+          .from('votes')
+          .insert({ product_id: launchId, user_id: user.id, value: 1 });
+        
+        setLaunches(prev => 
+          prev.map(launch => 
+            launch.id === launchId 
+              ? { ...launch, votes: launch.votes + 1 }
+              : launch
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error voting:', error);
+      toast.error('Failed to vote');
+    }
   };
 
   return (
@@ -70,7 +154,15 @@ const Index = () => {
           <ViewToggle view={view} onViewChange={setView} />
         </div>
 
-        {view === 'list' ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading launches...</p>
+          </div>
+        ) : launches.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No launches today. Check back soon!</p>
+          </div>
+        ) : view === 'list' ? (
           <div className="space-y-4 mb-16">
             {launches.map((launch) => (
               <HomeLaunchListItem

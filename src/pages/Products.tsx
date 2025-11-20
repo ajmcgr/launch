@@ -10,6 +10,7 @@ import { CATEGORIES } from '@/lib/constants';
 import { Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,18 +43,80 @@ const Products = () => {
     );
   };
 
-  const mockProducts = [
-    {
-      id: '1',
-      slug: 'ai-assistant-pro',
-      name: 'AI Assistant Pro',
-      tagline: 'Your intelligent productivity companion',
-      thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop',
-      categories: ['Productivity', 'AI Agents'],
-      netVotes: 142,
-      makers: [{ username: 'alexdoe', avatar_url: '' }],
-    },
-  ];
+  useEffect(() => {
+    fetchProducts();
+  }, [selectedCategories, sortBy]);
+
+  const fetchProducts = async () => {
+    try {
+      let query = supabase
+        .from('products')
+        .select(`
+          id,
+          slug,
+          name,
+          tagline,
+          product_media(url, type),
+          product_category_map(category_id),
+          product_makers(user_id, users(username, avatar_url))
+        `)
+        .eq('status', 'published');
+
+      const { data: allProducts, error } = await query;
+      if (error) throw error;
+
+      const { data: voteCounts } = await supabase
+        .from('product_vote_counts')
+        .select('product_id, net_votes');
+
+      const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+
+      const { data: categories } = await supabase
+        .from('product_categories')
+        .select('id, name');
+
+      const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
+
+      let formattedProducts = (allProducts || []).map((p: any) => ({
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        tagline: p.tagline,
+        thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+        categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+        netVotes: voteMap.get(p.id) || 0,
+        makers: p.product_makers?.map((m: any) => ({
+          username: m.users?.username || 'Anonymous',
+          avatar_url: m.users?.avatar_url || ''
+        })) || []
+      }));
+
+      if (selectedCategories.length > 0) {
+        formattedProducts = formattedProducts.filter((p: any) => 
+          p.categories.some((c: string) => selectedCategories.includes(c))
+        );
+      }
+
+      if (sortBy === 'votes') {
+        formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
+      } else if (sortBy === 'newest') {
+        formattedProducts.sort((a: any, b: any) => b.id.localeCompare(a.id));
+      } else if (sortBy === 'oldest') {
+        formattedProducts.sort((a: any, b: any) => a.id.localeCompare(b.id));
+      }
+
+      if (searchQuery) {
+        formattedProducts = formattedProducts.filter((p: any) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      setProducts(formattedProducts);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background py-8">
@@ -129,7 +192,7 @@ const Products = () => {
 
             {view === 'list' ? (
               <div className="space-y-4">
-                {mockProducts.map((product) => (
+                {products.map((product) => (
                   <LaunchListItem
                     key={product.id}
                     {...product}
@@ -139,7 +202,7 @@ const Products = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {mockProducts.map((product) => (
+                {products.map((product) => (
                   <LaunchCard
                     key={product.id}
                     {...product}
