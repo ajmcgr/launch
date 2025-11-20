@@ -13,6 +13,13 @@ serve(async (req) => {
   }
 
   try {
+    // Check for authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('No Authorization header provided');
+      throw new Error('Unauthorized - No auth header');
+    }
+
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
@@ -22,7 +29,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: authHeader },
         },
       }
     );
@@ -30,10 +37,19 @@ serve(async (req) => {
     const { plan, productData } = await req.json();
 
     // Get user
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      throw new Error('Unauthorized');
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    
+    if (userError) {
+      console.error('Error getting user:', userError);
+      throw new Error('Unauthorized - Invalid token');
     }
+    
+    if (!user) {
+      console.error('No user found');
+      throw new Error('Unauthorized - No user');
+    }
+
+    console.log('User authenticated:', user.id);
 
     // Price mapping
     const priceMap: Record<string, number> = {
