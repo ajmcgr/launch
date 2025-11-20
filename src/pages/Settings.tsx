@@ -18,9 +18,14 @@ const Settings = () => {
     username: '',
     bio: '',
     twitter: '',
+    instagram: '',
+    linkedin: '',
+    youtube: '',
+    telegram: '',
     website: '',
     avatar_url: '',
   });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -65,6 +70,42 @@ const Settings = () => {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setProfile({ ...profile, avatar_url: publicUrl });
+      toast.success('Avatar updated successfully');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error(error.message || 'Failed to upload avatar');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleDeleteAccount = async () => {
     toast.info('Account deletion will be implemented');
     // In production: Soft delete user and send confirmation email
@@ -95,6 +136,25 @@ const Settings = () => {
               <CardContent>
                 <form onSubmit={handleUpdateProfile} className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="avatar">Avatar</Label>
+                    <div className="flex items-center gap-4">
+                      {profile.avatar_url && (
+                        <img
+                          src={profile.avatar_url}
+                          alt="Avatar"
+                          className="w-20 h-20 rounded-full object-cover"
+                        />
+                      )}
+                      <Input
+                        id="avatar"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        disabled={uploading}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
@@ -117,6 +177,42 @@ const Settings = () => {
                       id="twitter"
                       value={profile.twitter}
                       onChange={(e) => setProfile({ ...profile, twitter: e.target.value })}
+                      placeholder="@username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="instagram">Instagram Username</Label>
+                    <Input
+                      id="instagram"
+                      value={profile.instagram}
+                      onChange={(e) => setProfile({ ...profile, instagram: e.target.value })}
+                      placeholder="@username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="linkedin">LinkedIn Username</Label>
+                    <Input
+                      id="linkedin"
+                      value={profile.linkedin}
+                      onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
+                      placeholder="username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="youtube">YouTube Channel</Label>
+                    <Input
+                      id="youtube"
+                      value={profile.youtube}
+                      onChange={(e) => setProfile({ ...profile, youtube: e.target.value })}
+                      placeholder="@channel"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="telegram">Telegram Username</Label>
+                    <Input
+                      id="telegram"
+                      value={profile.telegram}
+                      onChange={(e) => setProfile({ ...profile, telegram: e.target.value })}
                       placeholder="@username"
                     />
                   </div>
