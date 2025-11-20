@@ -1,13 +1,36 @@
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { ArrowUp, ArrowDown, ExternalLink, Calendar } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { CommentForm } from '@/components/CommentForm';
+import { CommentList } from '@/components/CommentList';
+import { supabase } from '@/lib/supabase';
 
 const LaunchDetail = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+  const [commentRefreshTrigger, setCommentRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleCommentAdded = () => {
+    setCommentRefreshTrigger(prev => prev + 1);
+  };
 
   // Mock data - in production, fetch from database
   const product = {
@@ -121,6 +144,19 @@ const LaunchDetail = () => {
                 </Carousel>
               </Card>
             )}
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Comments</h2>
+              {user ? (
+                <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
+              ) : (
+                <Card className="p-4">
+                  <p className="text-muted-foreground mb-3">Login to leave a comment</p>
+                  <Button onClick={() => navigate('/auth')}>Login</Button>
+                </Card>
+              )}
+              <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
+            </div>
           </div>
 
           <div className="lg:col-span-1">
