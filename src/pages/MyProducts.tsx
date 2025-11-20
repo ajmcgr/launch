@@ -194,13 +194,19 @@ const MyProducts = () => {
                       </Button>
                     )}
                     {canEdit(product) && (
-                      <Button variant="outline">
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
+                      <Button variant="outline" asChild>
+                        <Link to={`/submit?draft=${product.id}`}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </Link>
                       </Button>
                     )}
                     {product.status === 'draft' && (
-                      <Button>Continue Submission</Button>
+                      <Button asChild>
+                        <Link to={`/submit?draft=${product.id}`}>
+                          Continue Submission
+                        </Link>
+                      </Button>
                     )}
                     {product.status === 'launched' && (
                       <Button variant="outline" asChild>

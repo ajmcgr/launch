@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,10 @@ import { toast } from 'sonner';
 
 const Submit = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const draftId = searchParams.get('draft');
   const [user, setUser] = useState<any>(null);
+  const [productId, setProductId] = useState<string | null>(draftId);
   const [step, setStep] = useState(() => {
     const saved = localStorage.getItem('submitStep');
     return saved ? parseInt(saved) : 1;
@@ -52,15 +55,61 @@ const Submit = () => {
   }, [step]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) {
         toast.error('Please sign up to submit a product');
         navigate('/auth?mode=signup');
       } else {
         setUser(session.user);
+        
+        // Load draft if draftId is present
+        if (draftId) {
+          await loadDraft(draftId);
+        }
       }
     });
-  }, [navigate]);
+  }, [navigate, draftId]);
+
+  const loadDraft = async (id: string) => {
+    try {
+      const { data: product, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_media(url, type),
+          product_category_map(
+            product_categories(name)
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      const media = {
+        icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
+        thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
+        screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
+      };
+
+      setFormData({
+        name: product.name || '',
+        tagline: product.tagline || '',
+        url: product.domain_url || '',
+        description: product.description || '',
+        categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
+        slug: product.slug || '',
+        plan: 'join',
+        selectedDate: product.launch_date,
+      });
+      
+      setUploadedMedia(media);
+      toast.success('Draft loaded successfully');
+    } catch (error) {
+      console.error('Error loading draft:', error);
+      toast.error('Failed to load draft');
+    }
+  };
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -174,6 +223,106 @@ const Submit = () => {
 
   const handleBack = () => {
     setStep(prev => prev - 1);
+  };
+
+  const handleSaveDraft = async () => {
+    if (!user) return;
+
+    try {
+      toast.info('Saving draft...');
+
+      // Use existing productId or create new product
+      let currentProductId = productId;
+
+      if (!currentProductId) {
+        // Create new product
+        const { data: newProduct, error: productError } = await supabase
+          .from('products')
+          .insert({
+            owner_id: user.id,
+            name: formData.name || 'Untitled Product',
+            tagline: formData.tagline,
+            domain_url: formData.url,
+            description: formData.description,
+            slug: formData.slug || `draft-${Date.now()}`,
+            status: 'draft',
+          })
+          .select()
+          .single();
+
+        if (productError) throw productError;
+        currentProductId = newProduct.id;
+        setProductId(currentProductId);
+      } else {
+        // Update existing product
+        const { error: updateError } = await supabase
+          .from('products')
+          .update({
+            name: formData.name || 'Untitled Product',
+            tagline: formData.tagline,
+            domain_url: formData.url,
+            description: formData.description,
+            slug: formData.slug,
+          })
+          .eq('id', currentProductId);
+
+        if (updateError) throw updateError;
+      }
+
+      // Save media
+      if (uploadedMedia.icon || uploadedMedia.thumbnail || uploadedMedia.screenshots.length > 0) {
+        // Delete existing media
+        await supabase
+          .from('product_media')
+          .delete()
+          .eq('product_id', currentProductId);
+
+        // Insert new media
+        const mediaInserts = [];
+        if (uploadedMedia.icon) {
+          mediaInserts.push({ product_id: currentProductId, type: 'icon', url: uploadedMedia.icon });
+        }
+        if (uploadedMedia.thumbnail) {
+          mediaInserts.push({ product_id: currentProductId, type: 'thumbnail', url: uploadedMedia.thumbnail });
+        }
+        uploadedMedia.screenshots.forEach(url => {
+          mediaInserts.push({ product_id: currentProductId, type: 'screenshot', url });
+        });
+
+        if (mediaInserts.length > 0) {
+          await supabase.from('product_media').insert(mediaInserts);
+        }
+      }
+
+      // Save categories
+      if (formData.categories.length > 0) {
+        // Delete existing categories
+        await supabase
+          .from('product_category_map')
+          .delete()
+          .eq('product_id', currentProductId);
+
+        // Get category IDs
+        const { data: categories } = await supabase
+          .from('product_categories')
+          .select('id, name')
+          .in('name', formData.categories);
+
+        if (categories) {
+          const categoryMappings = categories.map(cat => ({
+            product_id: currentProductId,
+            category_id: cat.id,
+          }));
+          await supabase.from('product_category_map').insert(categoryMappings);
+        }
+      }
+
+      toast.success('Draft saved successfully!');
+      navigate('/my-products');
+    } catch (error) {
+      console.error('Save draft error:', error);
+      toast.error('Failed to save draft');
+    }
   };
 
   const handleSubmit = async () => {
@@ -487,21 +636,28 @@ const Submit = () => {
         </Card>
 
         <div className="mt-6 flex justify-between">
-          {step > 1 && (
-            <Button variant="outline" onClick={handleBack}>
-              Back
+          <div>
+            {step > 1 && (
+              <Button variant="outline" onClick={handleBack}>
+                Back
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleSaveDraft}>
+              Save as Draft
             </Button>
-          )}
-          {step < 5 && (
-            <Button onClick={handleNext} className={step === 1 ? 'ml-auto' : ''}>
-              Next
-            </Button>
-          )}
-          {step === 5 && (
-            <Button onClick={handleSubmit} className="ml-auto">
-              Proceed to Payment
-            </Button>
-          )}
+            {step < 5 && (
+              <Button onClick={handleNext}>
+                Next
+              </Button>
+            )}
+            {step === 5 && (
+              <Button onClick={handleSubmit}>
+                Proceed to Payment
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
