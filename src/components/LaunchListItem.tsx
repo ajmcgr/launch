@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -70,13 +70,19 @@ export const LaunchListItem = ({
               ))}
             </div>
             
-            <div className="flex -space-x-2">
-              {makers.slice(0, 3).map((maker) => (
-                <Avatar key={maker.username} className="h-7 w-7 border-2 border-background">
-                  <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                  <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
-              ))}
+            <div className="flex items-center gap-3">
+              <Link to={`/launch/${slug}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+                <MessageSquare className="h-4 w-4" />
+              </Link>
+              
+              <div className="flex -space-x-2">
+                {makers.slice(0, 3).map((maker) => (
+                  <Avatar key={maker.username} className="h-7 w-7 border-2 border-background">
+                    <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                    <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                ))}
+              </div>
             </div>
           </div>
         </div>

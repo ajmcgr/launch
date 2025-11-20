@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -69,7 +69,7 @@ export const LaunchCard = ({
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
               <Button
                 size="sm"
@@ -97,6 +97,9 @@ export const LaunchCard = ({
                 <ArrowDown className="h-4 w-4" />
               </Button>
             </div>
+            <Link to={`/launch/${slug}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+              <MessageSquare className="h-4 w-4" />
+            </Link>
           </div>
           
           <div className="flex -space-x-2">
