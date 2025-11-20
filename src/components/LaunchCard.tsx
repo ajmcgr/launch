@@ -1,0 +1,114 @@
+import { Link } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowUp, ArrowDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+interface LaunchCardProps {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string;
+  thumbnail: string;
+  categories: string[];
+  netVotes: number;
+  userVote?: 1 | -1 | null;
+  makers: Array<{
+    username: string;
+    avatar_url?: string;
+  }>;
+  onVote: (productId: string, value: 1 | -1) => void;
+}
+
+export const LaunchCard = ({
+  id,
+  slug,
+  name,
+  tagline,
+  thumbnail,
+  categories,
+  netVotes,
+  userVote,
+  makers,
+  onVote,
+}: LaunchCardProps) => {
+  const handleVote = (value: 1 | -1) => {
+    onVote(id, value);
+  };
+
+  return (
+    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+      <Link to={`/launch/${slug}`} className="block">
+        <div className="aspect-video w-full overflow-hidden bg-muted">
+          <img 
+            src={thumbnail} 
+            alt={name} 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </Link>
+      
+      <div className="p-4">
+        <Link to={`/launch/${slug}`}>
+          <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
+            {name}
+          </h3>
+        </Link>
+        
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+          {tagline}
+        </p>
+        
+        <div className="flex flex-wrap gap-2 mb-3">
+          {categories.slice(0, 3).map((category) => (
+            <Badge key={category} variant="secondary" className="text-xs">
+              {category}
+            </Badge>
+          ))}
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Button
+                size="sm"
+                variant={userVote === 1 ? 'default' : 'outline'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleVote(1);
+                }}
+                className="h-8 w-8 p-0"
+              >
+                <ArrowUp className="h-4 w-4" />
+              </Button>
+              <span className="font-semibold min-w-[2rem] text-center">
+                {netVotes}
+              </span>
+              <Button
+                size="sm"
+                variant={userVote === -1 ? 'destructive' : 'outline'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleVote(-1);
+                }}
+                className="h-8 w-8 p-0"
+              >
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="flex -space-x-2">
+            {makers.slice(0, 3).map((maker) => (
+              <Avatar key={maker.username} className="h-8 w-8 border-2 border-background">
+                <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+};

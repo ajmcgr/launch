@@ -1,0 +1,41 @@
+export const CATEGORIES = [
+  'Productivity',
+  'Engineering & Development',
+  'Design & Creative',
+  'Finance',
+  'Social & Community',
+  'Marketing & Sales',
+  'Health & Fitness',
+  'Travel',
+  'Platforms',
+  'Product add-ons',
+  'AI Agents',
+  'Web3',
+  'LLMs',
+  'Physical Products',
+  'Voice AI Tools',
+  'Ecommerce',
+  'No-code Platforms',
+  'Data analysis tools',
+] as const;
+
+export const PRICING_PLANS = [
+  {
+    id: 'join',
+    name: 'Join the Line',
+    price: 9.99,
+    description: 'Automatic next available launch date',
+  },
+  {
+    id: 'skip',
+    name: 'Skip the Line',
+    price: 19.99,
+    description: 'Choose any available launch date and time',
+  },
+  {
+    id: 'relaunch',
+    name: 'Relaunch',
+    price: 12.99,
+    description: 'Relaunch existing product into spotlight',
+  },
+] as const;
