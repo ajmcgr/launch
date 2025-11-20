@@ -156,9 +156,9 @@ const Submit = () => {
 
   const handleSubmit = async () => {
     try {
-      const { data: session } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session?.session) {
+      if (!session) {
         toast.error('Please log in again');
         navigate('/auth?mode=signin');
         return;
@@ -167,6 +167,9 @@ const Submit = () => {
       toast.info('Redirecting to payment...');
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: {
           plan: formData.plan,
           selectedDate: formData.selectedDate,
