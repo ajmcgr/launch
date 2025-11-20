@@ -20,32 +20,31 @@ serve(async (req) => {
       throw new Error('Unauthorized - No auth header');
     }
 
+    // Extract JWT token from Bearer header
+    const token = authHeader.replace('Bearer ', '');
+
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
 
-    const supabaseClient = createClient(
+    // Create Supabase client with service role key for admin operations
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: authHeader },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
     const { plan, productData } = await req.json();
 
-    // Get user
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    // Verify the JWT token and get user
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
     
     if (userError) {
-      console.error('Error getting user:', userError);
+      console.error('Error verifying user token:', userError);
       throw new Error('Unauthorized - Invalid token');
     }
     
     if (!user) {
-      console.error('No user found');
+      console.error('No user found from token');
       throw new Error('Unauthorized - No user');
     }
 
