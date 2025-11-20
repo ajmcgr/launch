@@ -238,39 +238,39 @@ export type Database = {
       products: {
         Row: {
           created_at: string | null
-          description: string
-          domain_url: string
+          description: string | null
+          domain_url: string | null
           id: string
           launch_date: string | null
-          name: string
+          name: string | null
           owner_id: string
-          slug: string
+          slug: string | null
           status: string | null
-          tagline: string
+          tagline: string | null
         }
         Insert: {
           created_at?: string | null
-          description: string
-          domain_url: string
+          description?: string | null
+          domain_url?: string | null
           id?: string
           launch_date?: string | null
-          name: string
+          name?: string | null
           owner_id: string
-          slug: string
+          slug?: string | null
           status?: string | null
-          tagline: string
+          tagline?: string | null
         }
         Update: {
           created_at?: string | null
-          description?: string
-          domain_url?: string
+          description?: string | null
+          domain_url?: string | null
           id?: string
           launch_date?: string | null
-          name?: string
+          name?: string | null
           owner_id?: string
-          slug?: string
+          slug?: string | null
           status?: string | null
-          tagline?: string
+          tagline?: string | null
         }
         Relationships: [
           {
