@@ -360,7 +360,7 @@ const Submit = () => {
                             {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
                           </CardDescription>
                         </div>
-                        <div className="text-2xl font-bold">${plan.price}/launch</div>
+                        <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground">/launch</span></div>
                       </div>
                     </CardHeader>
                   </Card>
