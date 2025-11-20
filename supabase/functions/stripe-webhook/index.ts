@@ -35,6 +35,62 @@ serve(async (req) => {
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       );
 
+      // Helper function to find next available date with capacity
+      const findNextAvailableDate = async (startDaysFromNow: number): Promise<string> => {
+        const MAX_DAILY_CAPACITY = 100;
+        let daysToCheck = startDaysFromNow;
+        const maxAttempts = 365; // Don't check more than a year ahead
+        
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          const checkDate = new Date();
+          checkDate.setDate(checkDate.getDate() + daysToCheck);
+          checkDate.setHours(0, 0, 0, 0);
+          
+          const nextDay = new Date(checkDate);
+          nextDay.setDate(nextDay.getDate() + 1);
+          
+          // Count products scheduled for this date
+          const { count } = await supabaseClient
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .gte('launch_date', checkDate.toISOString())
+            .lt('launch_date', nextDay.toISOString());
+          
+          console.log(`Checking date ${checkDate.toISOString()}: ${count}/${MAX_DAILY_CAPACITY} launches`);
+          
+          if ((count ?? 0) < MAX_DAILY_CAPACITY) {
+            return checkDate.toISOString();
+          }
+          
+          daysToCheck++;
+        }
+        
+        // Fallback if no date found (shouldn't happen)
+        const fallbackDate = new Date();
+        fallbackDate.setDate(fallbackDate.getDate() + daysToCheck);
+        return fallbackDate.toISOString();
+      };
+
+      // Determine launch date based on plan
+      let launchDate: string;
+      const plan = metadata.plan;
+      
+      if (plan === 'skip') {
+        // Launch plan: Use the selected date from metadata
+        launchDate = metadata.selected_date || await findNextAvailableDate(1);
+      } else if (plan === 'join') {
+        // Join the Line: First available date >7 days out
+        launchDate = await findNextAvailableDate(8);
+      } else if (plan === 'relaunch') {
+        // Relaunch: First available date >30 days out
+        launchDate = await findNextAvailableDate(31);
+      } else {
+        // Default fallback
+        launchDate = await findNextAvailableDate(1);
+      }
+
+      console.log(`Assigning launch date for plan '${plan}': ${launchDate}`);
+
       // Create the product
       const { data: product, error: productError } = await supabaseClient
         .from('products')
@@ -46,7 +102,7 @@ serve(async (req) => {
           domain_url: metadata.product_url,
           slug: metadata.product_slug,
           status: 'scheduled',
-          launch_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+          launch_date: launchDate,
         })
         .select()
         .single();
