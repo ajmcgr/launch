@@ -5,7 +5,7 @@ import { LaunchListItem } from '@/components/LaunchListItem';
 import { Newsletter } from '@/components/Newsletter';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface Product {

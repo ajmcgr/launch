@@ -8,7 +8,7 @@ import { ArrowUp, ArrowDown, ExternalLink, Calendar } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 const LaunchDetail = () => {
   const { slug } = useParams();
