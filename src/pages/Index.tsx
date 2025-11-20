@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Lightbulb, Rocket, Sparkles, Zap, TrendingUp, Star, Heart, Code, Palette, Music } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { Newsletter } from '@/components/Newsletter';
+import { ViewToggle } from '@/components/ViewToggle';
+import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
+import { HomeLaunchCard } from '@/components/HomeLaunchCard';
 
 interface Launch {
   id: number;
@@ -29,6 +31,14 @@ const mockLaunches: Launch[] = [
 const Index = () => {
   const [launches, setLaunches] = useState<Launch[]>(mockLaunches);
   const [user, setUser] = useState<any>(null);
+  const [view, setView] = useState<'list' | 'grid'>(() => {
+    const savedView = localStorage.getItem('homeViewPreference');
+    return (savedView === 'grid' || savedView === 'list') ? savedView : 'list';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('homeViewPreference', view);
+  }, [view]);
 
   const handleVote = (launchId: number) => {
     if (!user) {
@@ -48,50 +58,47 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
-            Today's Top Launches
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Discover the best new products launching today
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div className="text-center flex-1">
+            <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
+              Today's Top Launches
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Discover the best new products launching today
+            </p>
+          </div>
+          <ViewToggle view={view} onViewChange={setView} />
         </div>
 
-        <div className="space-y-4 mb-16">
-          {launches.map((launch) => {
-            const IconComponent = launch.icon;
-            return (
-              <div 
-                key={launch.id} 
-                className="flex items-center gap-4 p-4 border rounded-lg bg-card hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center gap-4 flex-1">
-                  <span className="text-2xl font-bold text-muted-foreground w-8">
-                    {launch.rank}
-                  </span>
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <IconComponent className="w-6 h-6 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-reckless font-semibold text-lg text-foreground">
-                      {launch.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{launch.tagline}</p>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleVote(launch.id)}
-                  className="flex flex-col h-auto py-2 px-4 min-w-[70px]"
-                >
-                  <span className="text-xs text-muted-foreground">▲</span>
-                  <span className="font-bold">{launch.votes}</span>
-                </Button>
-              </div>
-            );
-          })}
-        </div>
+        {view === 'list' ? (
+          <div className="space-y-4 mb-16">
+            {launches.map((launch) => (
+              <HomeLaunchListItem
+                key={launch.id}
+                rank={launch.rank}
+                name={launch.name}
+                tagline={launch.tagline}
+                icon={launch.icon}
+                votes={launch.votes}
+                onVote={() => handleVote(launch.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {launches.map((launch) => (
+              <HomeLaunchCard
+                key={launch.id}
+                rank={launch.rank}
+                name={launch.name}
+                tagline={launch.tagline}
+                icon={launch.icon}
+                votes={launch.votes}
+                onVote={() => handleVote(launch.id)}
+              />
+            ))}
+          </div>
+        )}
 
         <CategoryCloud />
         <Newsletter />
