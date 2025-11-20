@@ -24,6 +24,7 @@ const Settings = () => {
     telegram: '',
     website: '',
     avatar_url: '',
+    stripe_customer_id: '',
   });
   const [uploading, setUploading] = useState(false);
 
@@ -110,14 +111,8 @@ const Settings = () => {
     try {
       setLoading(true);
       
-      // Get or create Stripe customer
-      const { data: orders } = await supabase
-        .from('orders')
-        .select('stripe_session_id')
-        .eq('user_id', user.id)
-        .limit(1);
-
-      if (!orders || orders.length === 0) {
+      // Check if user has a Stripe customer ID
+      if (!profile.stripe_customer_id) {
         toast.error('No billing information found. Please make a purchase first.');
         return;
       }
@@ -125,7 +120,7 @@ const Settings = () => {
       // Call edge function to create portal session
       const { data, error } = await supabase.functions.invoke('create-portal-session', {
         body: {
-          customerId: orders[0].stripe_session_id,
+          customerId: profile.stripe_customer_id,
           returnUrl: `${window.location.origin}/settings`,
         },
       });
