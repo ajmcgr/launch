@@ -142,8 +142,12 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Today's Launches</h1>
+      <div className="container mx-auto px-4 py-12 max-w-3xl">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl md:text-6xl font-reckless font-bold text-foreground mb-2">
+            Discover new AI products. Daily.
+          </h1>
+        </div>
         
         <Tabs defaultValue="today" onValueChange={(v) => fetchProducts(v as any)}>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
