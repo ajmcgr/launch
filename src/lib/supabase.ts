@@ -4,18 +4,45 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your secrets.'
-  );
-}
+// Create a mock client that returns chainable methods when env vars are missing
+const createMockClient = () => {
+  const chainableMock: any = {
+    data: [],
+    error: new Error('Supabase not configured'),
+    eq: () => chainableMock,
+    in: () => chainableMock,
+    single: () => chainableMock,
+    order: () => chainableMock,
+    limit: () => chainableMock,
+    range: () => chainableMock,
+  };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+  return {
+    auth: {
+      getSession: async () => ({ data: { session: null }, error: null }),
+      signUp: async () => ({ data: { user: null, session: null }, error: new Error('Supabase not configured') }),
+      signInWithPassword: async () => ({ data: { user: null, session: null }, error: new Error('Supabase not configured') }),
+      signInWithOAuth: async () => ({ data: { url: null }, error: new Error('Supabase not configured') }),
+      signOut: async () => ({ error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
+    from: () => ({
+      select: () => chainableMock,
+      insert: () => chainableMock,
+      update: () => chainableMock,
+      delete: () => chainableMock,
+    }),
+  };
+};
+
+export const supabase: any = (!supabaseUrl || !supabaseAnonKey)
+  ? createMockClient()
+  : createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    });
 
 export type Database = {
   public: {
