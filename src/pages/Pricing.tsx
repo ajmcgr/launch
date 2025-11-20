@@ -35,7 +35,7 @@ const Pricing = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
-                  ${plan.price}
+                  ${plan.price}/launch
                   <span className="text-base font-normal text-muted-foreground ml-1">USD</span>
                 </div>
 
