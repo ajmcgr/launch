@@ -318,7 +318,7 @@ const Submit = () => {
       }
 
       toast.success('Draft saved successfully!');
-      navigate('/my-products');
+      navigate('/me/products');
     } catch (error) {
       console.error('Save draft error:', error);
       toast.error('Failed to save draft');
