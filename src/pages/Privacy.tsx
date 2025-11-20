@@ -16,7 +16,7 @@ const Privacy = () => {
           <h2 className="text-2xl font-bold mt-8 mb-4">2. How We Use Your Information</h2>
           <p>
             We use the information we collect to provide, maintain, and improve our services,
-            to communicate with you, and to protect TryLaunch.ai and our users.
+            to communicate with you, and to protect Launch and our users.
           </p>
 
           <h2 className="text-2xl font-bold mt-8 mb-4">3. Information Sharing</h2>

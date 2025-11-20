@@ -2,11 +2,11 @@ const About = () => {
   return (
     <div className="min-h-screen bg-background py-16">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-8">About TryLaunch.ai</h1>
+        <h1 className="text-4xl font-bold mb-8">About Launch</h1>
         
         <div className="prose prose-gray max-w-none space-y-6">
           <p className="text-lg">
-            TryLaunch.ai is a platform where founders and makers discover and launch amazing products.
+            Launch is a platform where founders and makers discover and launch amazing products.
             We're building a community that celebrates innovation and helps great products get the
             attention they deserve.
           </p>
@@ -27,7 +27,7 @@ const About = () => {
           <h2 className="text-2xl font-bold mt-8 mb-4">Join the Community</h2>
           <p>
             Whether you're launching your first product or discovering your next favorite tool,
-            TryLaunch.ai is the place to be. Join thousands of founders and tech enthusiasts who
+            Launch is the place to be. Join thousands of founders and tech enthusiasts who
             are shaping the future of product discovery.
           </p>
         </div>

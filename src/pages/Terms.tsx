@@ -9,19 +9,19 @@ const Terms = () => {
 
           <h2 className="text-2xl font-bold mt-8 mb-4">1. Acceptance of Terms</h2>
           <p>
-            By accessing and using TryLaunch.ai, you accept and agree to be bound by the terms
+            By accessing and using Launch, you accept and agree to be bound by the terms
             and provision of this agreement.
           </p>
 
           <h2 className="text-2xl font-bold mt-8 mb-4">2. Use License</h2>
           <p>
-            Permission is granted to temporarily use TryLaunch.ai for personal, non-commercial
+            Permission is granted to temporarily use Launch for personal, non-commercial
             transitory viewing only.
           </p>
 
           <h2 className="text-2xl font-bold mt-8 mb-4">3. Product Submissions</h2>
           <p>
-            When you submit a product to TryLaunch.ai, you represent that you have the right
+            When you submit a product to Launch, you represent that you have the right
             to do so and that the information provided is accurate.
           </p>
 
@@ -33,7 +33,7 @@ const Terms = () => {
 
           <h2 className="text-2xl font-bold mt-8 mb-4">5. Modifications</h2>
           <p>
-            TryLaunch.ai reserves the right to modify these terms at any time. Continued use
+            Launch reserves the right to modify these terms at any time. Continued use
             of the platform constitutes acceptance of the modified terms.
           </p>
         </div>
