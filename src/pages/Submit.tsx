@@ -122,6 +122,14 @@ const Submit = () => {
 
   const handleSubmit = async () => {
     try {
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session?.session) {
+        toast.error('Please log in again');
+        navigate('/auth?mode=signin');
+        return;
+      }
+      
       toast.info('Redirecting to payment...');
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
