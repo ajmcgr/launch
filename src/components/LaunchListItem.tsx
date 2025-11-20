@@ -39,46 +39,16 @@ export const LaunchListItem = ({
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <div className="flex flex-col sm:flex-row gap-4 p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex flex-col items-center gap-1 pt-1">
-            <Button
-              size="sm"
-              variant={userVote === 1 ? 'default' : 'outline'}
-              onClick={(e) => {
-                e.preventDefault();
-                handleVote(1);
-              }}
-              className="h-8 w-8 p-0"
-            >
-              <ArrowUp className="h-4 w-4" />
-            </Button>
-            <span className="font-semibold text-sm min-w-[2rem] text-center">
-              {netVotes}
-            </span>
-            <Button
-              size="sm"
-              variant={userVote === -1 ? 'destructive' : 'outline'}
-              onClick={(e) => {
-                e.preventDefault();
-                handleVote(-1);
-              }}
-              className="h-8 w-8 p-0"
-            >
-              <ArrowDown className="h-4 w-4" />
-            </Button>
+      <div className="flex gap-4 p-4">
+        <Link to={`/launch/${slug}`} className="block flex-shrink-0">
+          <div className="w-32 h-24 overflow-hidden bg-muted rounded-md">
+            <img 
+              src={thumbnail} 
+              alt={name} 
+              className="w-full h-full object-cover"
+            />
           </div>
-
-          <Link to={`/launch/${slug}`} className="block flex-shrink-0">
-            <div className="w-32 h-24 overflow-hidden bg-muted rounded-md">
-              <img 
-                src={thumbnail} 
-                alt={name} 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </Link>
-        </div>
+        </Link>
 
         <div className="flex-1 min-w-0">
           <Link to={`/launch/${slug}`}>
@@ -109,6 +79,34 @@ export const LaunchListItem = ({
               ))}
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-1 pt-1">
+          <Button
+            size="sm"
+            variant={userVote === 1 ? 'default' : 'outline'}
+            onClick={(e) => {
+              e.preventDefault();
+              handleVote(1);
+            }}
+            className="h-8 w-8 p-0"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+          <span className="font-semibold text-sm min-w-[2rem] text-center">
+            {netVotes}
+          </span>
+          <Button
+            size="sm"
+            variant={userVote === -1 ? 'destructive' : 'outline'}
+            onClick={(e) => {
+              e.preventDefault();
+              handleVote(-1);
+            }}
+            className="h-8 w-8 p-0"
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </Card>
