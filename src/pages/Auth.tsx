@@ -66,6 +66,41 @@ const Auth = () => {
     }
   };
 
+  // Subscribe user to newsletter after successful auth
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email) {
+        // Only subscribe on first sign-in (when user is created)
+        const { data: userData } = await supabase
+          .from('users')
+          .select('created_at')
+          .eq('id', session.user.id)
+          .single();
+        
+        // Check if user was just created (within last 10 seconds)
+        if (userData?.created_at) {
+          const createdAt = new Date(userData.created_at).getTime();
+          const now = new Date().getTime();
+          const isNewUser = (now - createdAt) < 10000;
+          
+          if (isNewUser) {
+            setTimeout(async () => {
+              try {
+                await supabase.functions.invoke('subscribe-to-newsletter', {
+                  body: { email: session.user.email },
+                });
+              } catch (error) {
+                console.error('Failed to subscribe to newsletter:', error);
+              }
+            }, 0);
+          }
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-md">
