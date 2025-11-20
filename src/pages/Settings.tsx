@@ -106,6 +106,43 @@ const Settings = () => {
     }
   };
 
+  const handleManageBilling = async () => {
+    try {
+      setLoading(true);
+      
+      // Get or create Stripe customer
+      const { data: orders } = await supabase
+        .from('orders')
+        .select('stripe_session_id')
+        .eq('user_id', user.id)
+        .limit(1);
+
+      if (!orders || orders.length === 0) {
+        toast.error('No billing information found. Please make a purchase first.');
+        return;
+      }
+
+      // Call edge function to create portal session
+      const { data, error } = await supabase.functions.invoke('create-portal-session', {
+        body: {
+          customerId: orders[0].stripe_session_id,
+          returnUrl: `${window.location.origin}/settings`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error: any) {
+      console.error('Billing error:', error);
+      toast.error('Unable to access billing portal');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteAccount = async () => {
     toast.info('Account deletion will be implemented');
     // In production: Soft delete user and send confirmation email
@@ -290,7 +327,9 @@ const Settings = () => {
                 <p className="text-muted-foreground mb-4">
                   View and manage your billing information through Stripe
                 </p>
-                <Button>Manage Billing</Button>
+                <Button onClick={handleManageBilling} disabled={loading}>
+                  {loading ? 'Loading...' : 'Manage Billing'}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
