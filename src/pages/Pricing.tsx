@@ -35,8 +35,7 @@ const Pricing = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
-                  ${plan.price}<span className="text-lg font-normal text-muted-foreground">/launch</span>
-                  <span className="text-base font-normal text-muted-foreground ml-1">USD</span>
+                  ${plan.price}<span className="text-base font-normal text-muted-foreground"> / USD</span>
                 </div>
 
                 {plan.id === 'join' && (
