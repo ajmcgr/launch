@@ -1,15 +1,10 @@
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
-import { toast } from 'sonner';
 
 const Pricing = () => {
-  const handleSelectPlan = async (planId: string) => {
-    toast.info('Stripe integration will be implemented');
-    // In production: Create Stripe checkout session
-  };
-
   return (
     <div className="min-h-screen bg-background py-16">
       <div className="container mx-auto px-4">
@@ -61,11 +56,11 @@ const Pricing = () => {
                 </ul>
 
                 <Button 
+                  asChild
                   className="w-full" 
                   size="lg"
-                  onClick={() => handleSelectPlan(plan.id)}
                 >
-                  Get Started
+                  <Link to="/submit">Get Started</Link>
                 </Button>
               </CardContent>
             </Card>
