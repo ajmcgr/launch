@@ -14,6 +14,9 @@ const Submit = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(1);
+  const [uploadedMedia, setUploadedMedia] = useState<{ icon?: string; thumbnail?: string; screenshots: string[] }>({
+    screenshots: []
+  });
   const [formData, setFormData] = useState({
     name: '',
     tagline: '',
@@ -22,6 +25,7 @@ const Submit = () => {
     categories: [] as string[],
     slug: '',
     plan: 'join' as 'join' | 'skip' | 'relaunch',
+    selectedDate: null as string | null,
   });
 
   useEffect(() => {
@@ -58,6 +62,48 @@ const Submit = () => {
     }));
   };
 
+  const handleFileUpload = async (type: 'icon' | 'thumbnail' | 'screenshots', files: FileList | null) => {
+    if (!files || !user) return;
+    
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${type}/${Math.random()}.${fileExt}`;
+        
+        const { data, error } = await supabase.storage
+          .from('product-media')
+          .upload(fileName, file);
+        
+        if (error) throw error;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-media')
+          .getPublicUrl(fileName);
+        
+        return publicUrl;
+      });
+      
+      const urls = await Promise.all(uploadPromises);
+      
+      if (type === 'screenshots') {
+        setUploadedMedia(prev => ({
+          ...prev,
+          screenshots: [...prev.screenshots, ...urls]
+        }));
+      } else {
+        setUploadedMedia(prev => ({
+          ...prev,
+          [type]: urls[0]
+        }));
+      }
+      
+      toast.success('Files uploaded successfully');
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload files');
+    }
+  };
+
   const handleNext = () => {
     if (step === 1 && (!formData.name || !formData.tagline || !formData.url)) {
       toast.error('Please fill in all required fields');
@@ -81,6 +127,7 @@ const Submit = () => {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
           plan: formData.plan,
+          selectedDate: formData.selectedDate,
           productData: {
             name: formData.name,
             tagline: formData.tagline,
@@ -95,7 +142,6 @@ const Submit = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');
@@ -119,15 +165,15 @@ const Submit = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             {[1, 2, 3, 4, 5].map((s) => (
-              <div key={s} className="flex items-center flex-1">
+              <div key={s} className="flex items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                    s <= step ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    s <= step ? 'bg-primary text-primary-foreground' : 'bg-muted'
                   }`}
                 >
                   {s}
                 </div>
-                {s < 5 && <div className={`flex-1 h-1 mx-2 ${s < step ? 'bg-primary' : 'bg-muted'}`} />}
+                {s < 5 && <div className="w-12 h-0.5 bg-muted mx-2" />}
               </div>
             ))}
           </div>
@@ -139,8 +185,8 @@ const Submit = () => {
               {step === 1 && 'Basic Information'}
               {step === 2 && 'Media & Assets'}
               {step === 3 && 'Product Details'}
-              {step === 4 && 'Choose Launch Plan'}
-              {step === 5 && 'Review & Confirm'}
+              {step === 4 && 'Choose Your Plan'}
+              {step === 5 && 'Review & Submit'}
             </CardTitle>
             <CardDescription>
               {step === 1 && 'Tell us about your product'}
@@ -187,18 +233,48 @@ const Submit = () => {
             {step === 2 && (
               <>
                 <div className="space-y-2">
-                  <Label>Thumbnail Image *</Label>
-                  <Input type="file" accept="image/*" />
-                  <p className="text-sm text-muted-foreground">Recommended: 1200x630px</p>
+                  <Label>Product Icon *</Label>
+                  <Input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => handleFileUpload('icon', e.target.files)}
+                  />
+                  <p className="text-sm text-muted-foreground">Recommended: 512x512px</p>
+                  {uploadedMedia.icon && (
+                    <div className="mt-2">
+                      <img src={uploadedMedia.icon} alt="Icon preview" className="w-24 h-24 object-cover rounded-lg border" />
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label>Product Icon</Label>
-                  <Input type="file" accept="image/*" />
-                  <p className="text-sm text-muted-foreground">Recommended: 512x512px</p>
+                  <Label>Thumbnail Image *</Label>
+                  <Input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload('thumbnail', e.target.files)}
+                  />
+                  <p className="text-sm text-muted-foreground">Recommended: 1200x630px</p>
+                  {uploadedMedia.thumbnail && (
+                    <div className="mt-2">
+                      <img src={uploadedMedia.thumbnail} alt="Thumbnail preview" className="w-full h-48 object-cover rounded-lg border" />
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Screenshots (3-6 images)</Label>
-                  <Input type="file" accept="image/*" multiple />
+                  <Input 
+                    type="file" 
+                    accept="image/*" 
+                    multiple 
+                    onChange={(e) => handleFileUpload('screenshots', e.target.files)}
+                  />
+                  {uploadedMedia.screenshots.length > 0 && (
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {uploadedMedia.screenshots.map((url, idx) => (
+                        <img key={idx} src={url} alt={`Screenshot ${idx + 1}`} className="w-full h-32 object-cover rounded-lg border" />
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Demo Video URL (Optional)</Label>
@@ -269,7 +345,12 @@ const Submit = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <CardTitle>{plan.name}</CardTitle>
-                          <CardDescription>{plan.description}</CardDescription>
+                          <CardDescription>
+                            {plan.description}
+                            {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
+                            {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any date within next 7 days</span>}
+                            {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
+                          </CardDescription>
                         </div>
                         <div className="text-2xl font-bold">${plan.price}</div>
                       </div>
@@ -288,30 +369,31 @@ const Submit = () => {
                   <p className="text-sm">Plan: {PRICING_PLANS.find(p => p.id === formData.plan)?.name}</p>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  By clicking confirm, you'll be redirected to Stripe to complete your payment.
-                  After successful payment, your product will be scheduled for launch.
+                  By clicking submit, you'll be redirected to complete payment. After successful payment,
+                  your product will be scheduled for launch.
                 </p>
               </div>
             )}
-
-            <div className="flex justify-between pt-4">
-              {step > 1 && (
-                <Button variant="outline" onClick={handleBack}>
-                  Back
-                </Button>
-              )}
-              {step < 5 ? (
-                <Button onClick={handleNext} className="ml-auto">
-                  Next
-                </Button>
-              ) : (
-                <Button onClick={handleSubmit} className="ml-auto">
-                  Proceed to Payment
-                </Button>
-              )}
-            </div>
           </CardContent>
         </Card>
+
+        <div className="mt-6 flex justify-between">
+          {step > 1 && (
+            <Button variant="outline" onClick={handleBack}>
+              Back
+            </Button>
+          )}
+          {step < 5 && (
+            <Button onClick={handleNext} className={step === 1 ? 'ml-auto' : ''}>
+              Next
+            </Button>
+          )}
+          {step === 5 && (
+            <Button onClick={handleSubmit} className="ml-auto">
+              Proceed to Payment
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
