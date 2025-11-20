@@ -119,7 +119,7 @@ const Pricing = () => {
         </div>
 
         <div className="bg-muted/50 border rounded-lg p-6 max-w-3xl mx-auto mt-16">
-          <h2 className="font-semibold text-lg mb-3 text-center">How Our Launch Queue Works</h2>
+          <h2 className="font-semibold text-lg mb-3 text-center">How Our Launch Platform Works</h2>
           <div className="grid md:grid-cols-3 gap-4 text-sm">
             <div className="flex flex-col items-center text-center">
               <Calendar className="h-8 w-8 text-primary mb-2" />
@@ -138,7 +138,7 @@ const Pricing = () => {
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-4 text-center">
-            Maximum 100 launches per week across all plans
+            Maximum 1 launch per week across all plans
           </p>
         </div>
 
