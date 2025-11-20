@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,12 +9,23 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const LaunchDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [commentRefreshTrigger, setCommentRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    // Check for success parameter from Stripe redirect
+    if (searchParams.get('success') === 'true') {
+      toast.success('🎉 Payment successful! Your product has been submitted and will be launched soon.');
+      // Remove the success parameter from URL
+      window.history.replaceState({}, '', `/launch/${slug}`);
+    }
+  }, [searchParams, slug]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

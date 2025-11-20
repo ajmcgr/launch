@@ -1,0 +1,109 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
+import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno';
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2023-10-16',
+});
+
+serve(async (req) => {
+  const signature = req.headers.get('stripe-signature');
+  const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+
+  if (!signature || !webhookSecret) {
+    return new Response('Missing signature or webhook secret', { status: 400 });
+  }
+
+  try {
+    const body = await req.text();
+    const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+
+    console.log('Webhook event type:', event.type);
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const metadata = session.metadata;
+
+      if (!metadata) {
+        throw new Error('No metadata found in session');
+      }
+
+      console.log('Processing payment for user:', metadata.user_id);
+
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+
+      // Create the product
+      const { data: product, error: productError } = await supabaseClient
+        .from('products')
+        .insert({
+          owner_id: metadata.user_id,
+          name: metadata.product_name,
+          tagline: metadata.product_tagline,
+          description: metadata.product_description,
+          domain_url: metadata.product_url,
+          slug: metadata.product_slug,
+          status: 'scheduled',
+          launch_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+        })
+        .select()
+        .single();
+
+      if (productError) {
+        console.error('Error creating product:', productError);
+        throw productError;
+      }
+
+      console.log('Product created:', product.id);
+
+      // Add categories
+      const categories = JSON.parse(metadata.product_categories || '[]');
+      if (categories.length > 0) {
+        // Get category IDs
+        const { data: categoryData } = await supabaseClient
+          .from('product_categories')
+          .select('id, name')
+          .in('name', categories);
+
+        if (categoryData) {
+          const categoryMappings = categoryData.map(cat => ({
+            product_id: product.id,
+            category_id: cat.id,
+          }));
+
+          await supabaseClient
+            .from('product_category_map')
+            .insert(categoryMappings);
+        }
+      }
+
+      // Create order record
+      await supabaseClient
+        .from('orders')
+        .insert({
+          user_id: metadata.user_id,
+          product_id: product.id,
+          stripe_session_id: session.id,
+          plan: metadata.plan,
+        });
+
+      console.log('Order and product created successfully');
+    }
+
+    return new Response(JSON.stringify({ received: true }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    });
+  } catch (error) {
+    console.error('Webhook error:', error);
+    return new Response(
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Webhook error' }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      }
+    );
+  }
+});
