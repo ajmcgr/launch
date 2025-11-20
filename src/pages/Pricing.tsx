@@ -40,28 +40,37 @@ const Pricing = () => {
                 </div>
 
                 {plan.id === 'join' && (
-                  <div className="bg-muted/50 rounded-lg p-3 text-sm">
-                    <p className="font-medium mb-1">🗓️ Scheduling</p>
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm border">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="h-5 w-5 text-primary" />
+                      <p className="font-semibold">Join the Line</p>
+                    </div>
                     <p className="text-muted-foreground">
-                      Automatically assigned to the first available date more than 7 days from today
+                      Auto-scheduled 7+ days out
                     </p>
                   </div>
                 )}
 
                 {plan.id === 'skip' && (
-                  <div className="bg-primary/10 rounded-lg p-3 text-sm border border-primary/20">
-                    <p className="font-medium mb-1">⚡ Priority Scheduling</p>
+                  <div className="bg-primary/10 rounded-lg p-4 text-sm border border-primary/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="h-5 w-5 text-primary" />
+                      <p className="font-semibold">Launch</p>
+                    </div>
                     <p className="text-muted-foreground">
-                      Choose any available date within the next 7 days for maximum visibility
+                      Pick any date in next 7 days
                     </p>
                   </div>
                 )}
 
                 {plan.id === 'relaunch' && (
-                  <div className="bg-muted/50 rounded-lg p-3 text-sm">
-                    <p className="font-medium mb-1">🔄 Relaunch Window</p>
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm border">
+                    <div className="flex items-center gap-2 mb-2">
+                      <RefreshCw className="h-5 w-5 text-primary" />
+                      <p className="font-semibold">Relaunch</p>
+                    </div>
                     <p className="text-muted-foreground">
-                      Automatically assigned to first available date more than 30 days out (prevents frequent relaunches)
+                      Scheduled 30+ days out
                     </p>
                   </div>
                 )}
@@ -118,32 +127,11 @@ const Pricing = () => {
           ))}
         </div>
 
-        <div className="bg-muted/50 border rounded-lg p-6 max-w-3xl mx-auto mt-16">
-          <h2 className="font-semibold text-lg mb-3 text-center">How Our Launch Platform Works</h2>
-          <div className="grid md:grid-cols-3 gap-4 text-sm">
-            <div className="flex flex-col items-center text-center">
-              <Calendar className="h-8 w-8 text-primary mb-2" />
-              <p className="font-medium">Join the Line</p>
-              <p className="text-muted-foreground">Auto-scheduled 7+ days out</p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <Zap className="h-8 w-8 text-primary mb-2" />
-              <p className="font-medium">Launch</p>
-              <p className="text-muted-foreground">Pick any date in next 7 days</p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <RefreshCw className="h-8 w-8 text-primary mb-2" />
-              <p className="font-medium">Relaunch</p>
-              <p className="text-muted-foreground">Scheduled 30+ days out</p>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground mt-4 text-center">
+        <div className="mt-16 text-center">
+          <p className="text-muted-foreground">
             Maximum 1 launch per week across all plans
           </p>
-        </div>
-
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-4">
             All plans include support from our team. Questions?{' '}
             <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
               Contact us
