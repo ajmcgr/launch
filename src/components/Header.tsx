@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { User, Settings, Package, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
 
