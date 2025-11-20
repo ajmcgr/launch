@@ -74,9 +74,36 @@ const Submit = () => {
     setStep(prev => prev - 1);
   };
 
-  const handleSubmit = () => {
-    toast.info('Product submission will process payment and create the launch');
-    // In production: Create Stripe checkout session, then save to database
+  const handleSubmit = async () => {
+    try {
+      toast.info('Redirecting to payment...');
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          plan: formData.plan,
+          productData: {
+            name: formData.name,
+            tagline: formData.tagline,
+            url: formData.url,
+            description: formData.description,
+            categories: formData.categories,
+            slug: formData.slug,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Failed to initiate payment. Please try again.');
+    }
   };
 
   if (!user) return null;
