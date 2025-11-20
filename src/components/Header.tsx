@@ -58,7 +58,7 @@ export const Header = () => {
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Launch" className="h-8" />
+            <img src={logo} alt="Launch" className="h-10" />
           </Link>
           
           <div className="flex items-center gap-8">
