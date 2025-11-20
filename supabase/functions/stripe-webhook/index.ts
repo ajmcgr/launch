@@ -37,7 +37,7 @@ serve(async (req) => {
 
       // Helper function to find next available date with capacity
       const findNextAvailableDate = async (startDaysFromNow: number): Promise<string> => {
-        const MAX_WEEKLY_CAPACITY = 100;
+        const MAX_WEEKLY_CAPACITY = 1; // Only 1 launch per week total
         let daysToCheck = startDaysFromNow;
         const maxAttempts = 365; // Don't check more than a year ahead
         
