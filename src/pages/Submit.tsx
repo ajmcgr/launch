@@ -209,9 +209,9 @@ const Submit = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Clear localStorage on successful payment redirect
-        localStorage.setItem('submitPendingPayment', 'true');
-        window.location.href = data.url;
+        // Open Stripe checkout in new window
+        window.open(data.url, '_blank');
+        toast.success('Checkout opened in new window. Complete payment to launch your product!');
       } else {
         throw new Error('No checkout URL returned');
       }
