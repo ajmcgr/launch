@@ -47,7 +47,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
             Today's Top Launches
@@ -57,7 +57,7 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="max-w-3xl mx-auto space-y-4 mb-16">
+        <div className="space-y-4 mb-16">
           {launches.map((launch) => {
             const IconComponent = launch.icon;
             return (
