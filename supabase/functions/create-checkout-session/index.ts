@@ -63,6 +63,8 @@ serve(async (req) => {
     }
 
     // Create Stripe checkout session
+    const productionUrl = Deno.env.get('PRODUCTION_URL') || req.headers.get('origin') || '';
+    
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -79,8 +81,8 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
-      success_url: `${req.headers.get('origin')}/launch/${productData.slug}?success=true`,
-      cancel_url: `${req.headers.get('origin')}/submit?canceled=true`,
+      success_url: `${productionUrl}/launch/${productData.slug}?success=true`,
+      cancel_url: `${productionUrl}/submit?canceled=true`,
       metadata: {
         user_id: user.id,
         plan,
