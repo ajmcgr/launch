@@ -88,33 +88,41 @@ const Auth = () => {
 
   // Subscribe user to newsletter after successful auth
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Only handle SIGNED_IN event with email
       if (event === 'SIGNED_IN' && session?.user?.email) {
-        // Only subscribe on first sign-in (when user is created)
-        const { data: userData } = await supabase
-          .from('users')
-          .select('created_at')
-          .eq('id', session.user.id)
-          .single();
-        
-        // Check if user was just created (within last 10 seconds)
-        if (userData?.created_at) {
-          const createdAt = new Date(userData.created_at).getTime();
-          const now = new Date().getTime();
-          const isNewUser = (now - createdAt) < 10000;
-          
-          if (isNewUser) {
-            setTimeout(async () => {
-              try {
-                await supabase.functions.invoke('subscribe-to-newsletter', {
+        // Defer async operations using setTimeout
+        setTimeout(async () => {
+          try {
+            // Check if user was just created (within last 30 seconds)
+            const { data: userData } = await supabase
+              .from('users')
+              .select('created_at')
+              .eq('id', session.user.id)
+              .single();
+            
+            if (userData?.created_at) {
+              const createdAt = new Date(userData.created_at).getTime();
+              const now = new Date().getTime();
+              const isNewUser = (now - createdAt) < 30000; // 30 seconds window
+              
+              if (isNewUser && session.user.email) {
+                console.log('Subscribing new user to newsletter:', session.user.email);
+                const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
                   body: { email: session.user.email },
                 });
-              } catch (error) {
-                console.error('Failed to subscribe to newsletter:', error);
+                
+                if (error) {
+                  console.error('Failed to subscribe to newsletter:', error);
+                } else {
+                  console.log('Successfully subscribed to newsletter');
+                }
               }
-            }, 0);
+            }
+          } catch (error) {
+            console.error('Error checking user creation time:', error);
           }
-        }
+        }, 0);
       }
     });
 

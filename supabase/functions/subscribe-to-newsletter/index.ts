@@ -42,8 +42,13 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to subscribe to newsletter');
+      const errorText = await response.text();
+      console.error('Beehiiv API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`Beehiiv API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
