@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS } from '@/lib/constants';
 import { toast } from 'sonner';
@@ -101,6 +102,39 @@ const Submit = () => {
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload files');
+    }
+  };
+
+  const handleDeleteMedia = async (type: 'icon' | 'thumbnail' | 'screenshots', index?: number) => {
+    try {
+      if (type === 'screenshots' && index !== undefined) {
+        const url = uploadedMedia.screenshots[index];
+        // Extract file path from URL
+        const fileName = url.split('/product-media/')[1];
+        if (fileName) {
+          await supabase.storage.from('product-media').remove([fileName]);
+        }
+        setUploadedMedia(prev => ({
+          ...prev,
+          screenshots: prev.screenshots.filter((_, i) => i !== index)
+        }));
+      } else {
+        const url = uploadedMedia[type];
+        if (url && typeof url === 'string') {
+          const fileName = url.split('/product-media/')[1];
+          if (fileName) {
+            await supabase.storage.from('product-media').remove([fileName]);
+          }
+          setUploadedMedia(prev => ({
+            ...prev,
+            [type]: undefined
+          }));
+        }
+      }
+      toast.success('Image deleted');
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Failed to delete image');
     }
   };
 
@@ -249,8 +283,17 @@ const Submit = () => {
                   />
                   <p className="text-sm text-muted-foreground">Recommended: 512x512px</p>
                   {uploadedMedia.icon && (
-                    <div className="mt-2">
+                    <div className="mt-2 relative inline-block">
                       <img src={uploadedMedia.icon} alt="Icon preview" className="w-24 h-24 object-cover rounded-lg border" />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                        onClick={() => handleDeleteMedia('icon')}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -263,8 +306,17 @@ const Submit = () => {
                   />
                   <p className="text-sm text-muted-foreground">Recommended: 1200x630px</p>
                   {uploadedMedia.thumbnail && (
-                    <div className="mt-2">
+                    <div className="mt-2 relative inline-block">
                       <img src={uploadedMedia.thumbnail} alt="Thumbnail preview" className="w-full h-48 object-cover rounded-lg border" />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-8 w-8 rounded-full"
+                        onClick={() => handleDeleteMedia('thumbnail')}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -279,7 +331,18 @@ const Submit = () => {
                   {uploadedMedia.screenshots.length > 0 && (
                     <div className="mt-2 grid grid-cols-3 gap-2">
                       {uploadedMedia.screenshots.map((url, idx) => (
-                        <img key={idx} src={url} alt={`Screenshot ${idx + 1}`} className="w-full h-32 object-cover rounded-lg border" />
+                        <div key={idx} className="relative">
+                          <img src={url} alt={`Screenshot ${idx + 1}`} className="w-full h-32 object-cover rounded-lg border" />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                            onClick={() => handleDeleteMedia('screenshots', idx)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
                       ))}
                     </div>
                   )}
