@@ -72,6 +72,11 @@ export const Header = () => {
               <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Pricing
               </Link>
+              {!user && (
+                <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                  Login
+                </Link>
+              )}
             </nav>
 
             {user ? (
@@ -113,14 +118,9 @@ export const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link to="/auth">Login</Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/submit">Submit</Link>
-                </Button>
-              </>
+              <Button asChild>
+                <Link to="/submit">Submit</Link>
+              </Button>
             )}
           </div>
         </div>
