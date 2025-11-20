@@ -12,6 +12,8 @@ import Pricing from "./pages/Pricing";
 import Auth from "./pages/Auth";
 import LaunchDetail from "./pages/LaunchDetail";
 import Settings from "./pages/Settings";
+import UserProfile from "./pages/UserProfile";
+import MyProducts from "./pages/MyProducts";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -36,6 +38,8 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/launch/:slug" element={<LaunchDetail />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/u/:username" element={<UserProfile />} />
+              <Route path="/me/products" element={<MyProducts />} />
               <Route path="/about" element={<About />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
