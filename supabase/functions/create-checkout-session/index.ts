@@ -63,7 +63,7 @@ serve(async (req) => {
     }
 
     // Create Stripe checkout session
-    const productionUrl = Deno.env.get('PRODUCTION_URL') || req.headers.get('origin') || '';
+    const productionUrl = (Deno.env.get('PRODUCTION_URL') || req.headers.get('origin') || '').replace(/\/$/, '');
     
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
