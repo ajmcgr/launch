@@ -122,7 +122,7 @@ const Pricing = () => {
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-4 text-center">
-            Maximum 100 launches per day across all plans
+            Maximum 100 launches per week across all plans
           </p>
         </div>
 
