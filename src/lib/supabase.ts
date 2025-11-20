@@ -4,6 +4,11 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Debug logging
+console.log('Supabase URL configured:', !!supabaseUrl);
+console.log('Supabase Anon Key configured:', !!supabaseAnonKey);
+console.log('Environment check:', import.meta.env.MODE);
+
 // Create a mock client that returns chainable methods when env vars are missing
 const createMockClient = () => {
   const chainableMock: any = {
