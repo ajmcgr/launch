@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, MessageSquare } from 'lucide-react';
+import { ArrowUp, MessageSquare, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -23,6 +23,9 @@ interface LaunchCardProps {
   rank?: number;
   icon?: any;
   onVote: (productId: string) => void;
+  showFollowButton?: boolean;
+  isFollowing?: boolean;
+  onFollow?: (productId: string) => void;
 }
 
 export const LaunchCard = ({
@@ -40,9 +43,20 @@ export const LaunchCard = ({
   rank,
   icon: IconComponent,
   onVote,
+  showFollowButton = false,
+  isFollowing = false,
+  onFollow,
 }: LaunchCardProps) => {
   const handleVote = () => {
     onVote(id);
+  };
+
+  const handleFollow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onFollow) {
+      onFollow(id);
+    }
   };
 
   return (
@@ -79,6 +93,18 @@ export const LaunchCard = ({
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
           {tagline}
         </p>
+        
+        {showFollowButton && (
+          <Button
+            size="sm"
+            variant={isFollowing ? 'outline' : 'secondary'}
+            onClick={handleFollow}
+            className="w-full mb-3"
+          >
+            <Star className={`h-3 w-3 mr-1 ${isFollowing ? 'fill-current' : ''}`} />
+            {isFollowing ? 'Following' : 'Follow'}
+          </Button>
+        )}
         
         <div className="flex flex-wrap gap-2 mb-3">
           {categories.slice(0, 3).map((category) => (
