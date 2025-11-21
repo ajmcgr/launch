@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Rocket } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
+import defaultIcon from '@/assets/default-product-icon.png';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -300,7 +301,7 @@ const MyProducts = () => {
                     <div className="flex gap-4 flex-1">
                       {product.status === 'launched' && product.slug ? (
                         <Link to={`/launch/${product.slug}`} className="contents">
-                          <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                          <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
                             {product.iconUrl ? (
                               <img
                                 src={product.iconUrl}
@@ -308,12 +309,16 @@ const MyProducts = () => {
                                 className="w-full h-full object-cover rounded-lg"
                               />
                             ) : (
-                              <Rocket className="w-16 h-16 text-primary" />
+                              <img
+                                src={defaultIcon}
+                                alt="Default product icon"
+                                className="w-16 h-16 opacity-60"
+                              />
                             )}
                           </div>
                         </Link>
                       ) : (
-                        <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                           {product.iconUrl ? (
                             <img
                               src={product.iconUrl}
@@ -321,7 +326,11 @@ const MyProducts = () => {
                               className="w-full h-full object-cover rounded-lg"
                             />
                           ) : (
-                            <Rocket className="w-16 h-16 text-primary" />
+                            <img
+                              src={defaultIcon}
+                              alt="Default product icon"
+                              className="w-16 h-16 opacity-60"
+                            />
                           )}
                         </div>
                       )}
