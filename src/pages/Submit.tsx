@@ -17,6 +17,7 @@ const Submit = () => {
   const draftId = searchParams.get('draft');
   const [user, setUser] = useState<any>(null);
   const [productId, setProductId] = useState<string | null>(draftId);
+  const [productStatus, setProductStatus] = useState<string | null>(null);
   const [step, setStep] = useState(() => {
     const saved = localStorage.getItem('submitStep');
     return saved ? parseInt(saved) : 1;
@@ -96,6 +97,7 @@ const Submit = () => {
         localStorage.removeItem('submitMedia');
         localStorage.removeItem('submitStep');
         setProductId(null);
+        setProductStatus(null);
         setFormData({
           name: '',
           tagline: '',
@@ -113,6 +115,9 @@ const Submit = () => {
         navigate('/submit', { replace: true });
         return;
       }
+
+      // Store product status
+      setProductStatus(product.status);
 
       const media = {
         icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
@@ -246,6 +251,12 @@ const Submit = () => {
     }
     if (step === 3 && (!formData.description || formData.categories.length === 0)) {
       toast.error('Please add a description and select at least one category');
+      return;
+    }
+    // Skip step 4 (plan selection) and step 5 (review) if product is already scheduled
+    if (step === 3 && productStatus === 'scheduled') {
+      toast.info('Product is already scheduled. Saving changes...');
+      handleSaveDraft();
       return;
     }
     setStep(prev => prev + 1);
