@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Rocket } from 'lucide-react';
 import { CategoryCloud } from '@/components/CategoryCloud';
-import { Newsletter } from '@/components/Newsletter';
 import { ViewToggle } from '@/components/ViewToggle';
 import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
 import { HomeLaunchCard } from '@/components/HomeLaunchCard';
