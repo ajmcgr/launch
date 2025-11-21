@@ -75,7 +75,8 @@ const UserProfile = () => {
           slug: product.slug,
           name: product.name,
           tagline: product.tagline,
-          thumbnail: product.product_media?.[0]?.url || '',
+          thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+          iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
           categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
           netVotes: voteCounts[product.id] || 0,
           makers: [{ username: profileData.username, avatar_url: profileData.avatar_url }],
@@ -155,7 +156,8 @@ const UserProfile = () => {
             slug: product.slug,
             name: product.name,
             tagline: product.tagline,
-            thumbnail: product.product_media?.[0]?.url || '',
+            thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+            iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
             categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
             netVotes: voteCounts[product.id] || 0,
             makers: product.product_makers?.map((m: any) => m.users) || [],
@@ -325,7 +327,6 @@ const UserProfile = () => {
                 <LaunchCard
                   key={product.id}
                   {...product}
-                  icon={Rocket}
                   onVote={() => {}}
                 />
               ))}
@@ -341,7 +342,6 @@ const UserProfile = () => {
                 <LaunchCard
                   key={product.id}
                   {...product}
-                  icon={Rocket}
                   onVote={() => {}}
                 />
               ))}

@@ -11,6 +11,7 @@ interface LaunchCardProps {
   name: string;
   tagline: string;
   thumbnail: string;
+  iconUrl?: string;
   categories: string[];
   netVotes: number;
   userVote?: 1 | null;
@@ -30,6 +31,7 @@ export const LaunchCard = ({
   name,
   tagline,
   thumbnail,
+  iconUrl,
   categories,
   netVotes,
   userVote,
@@ -52,7 +54,13 @@ export const LaunchCard = ({
           </div>
         )}
         <div className="aspect-video w-full overflow-hidden bg-primary/10 flex items-center justify-center">
-          {IconComponent ? (
+          {iconUrl ? (
+            <img 
+              src={iconUrl} 
+              alt={name} 
+              className="w-16 h-16 object-contain"
+            />
+          ) : IconComponent ? (
             <IconComponent className="w-16 h-16 text-primary" />
           ) : null}
         </div>
