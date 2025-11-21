@@ -47,7 +47,7 @@ export const LaunchListItem = ({
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
       <div className="flex gap-4 p-4">
         {rank && (
-          <div className="flex items-center justify-center text-2xl font-bold text-muted-foreground w-8 flex-shrink-0">
+          <div className="flex items-center justify-center text-xl font-bold text-muted-foreground w-8 flex-shrink-0">
             {rank}
           </div>
         )}

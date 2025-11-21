@@ -48,7 +48,7 @@ export const LaunchCard = ({
       <Link to={`/launch/${slug}`} className="block relative">
         {rank && (
           <div className="absolute top-2 left-2 z-10 bg-background/90 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center">
-            <span className="text-sm font-bold">{rank}</span>
+            <span className="text-xs font-bold">{rank}</span>
           </div>
         )}
         <div className="aspect-video w-full overflow-hidden bg-primary/10 flex items-center justify-center">
