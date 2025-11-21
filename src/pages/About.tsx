@@ -1,3 +1,6 @@
+import founderPhoto from '@/assets/founder-photo.png';
+import { Linkedin } from 'lucide-react';
+
 const About = () => {
   return (
     <div className="min-h-screen bg-background py-16">
@@ -30,6 +33,27 @@ const About = () => {
             Launch is the place to be. Join thousands of founders and tech enthusiasts who
             are shaping the future of product discovery.
           </p>
+
+          <div className="mt-12 pt-8 border-t">
+            <div className="flex flex-col items-center text-center">
+              <img 
+                src={founderPhoto} 
+                alt="Alex MacGregor" 
+                className="w-48 h-48 rounded-full object-cover mb-6"
+              />
+              <h3 className="text-2xl font-bold mb-1">Alex MacGregor</h3>
+              <p className="text-lg text-muted-foreground mb-4">Founder, Media AI</p>
+              <a 
+                href="https://www.linkedin.com/in/alexmacgregor/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                <Linkedin className="w-5 h-5" />
+                Connect with me on LinkedIn
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
