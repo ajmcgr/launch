@@ -16,8 +16,7 @@ export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
         size="sm"
         className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
       >
-        <List className="h-4 w-4 mr-1.5" />
-        <span className="text-sm font-medium">List</span>
+        <List className="h-4 w-4" />
       </Toggle>
       <Toggle
         pressed={view === 'grid'}
@@ -26,8 +25,7 @@ export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
         size="sm"
         className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
       >
-        <LayoutGrid className="h-4 w-4 mr-1.5" />
-        <span className="text-sm font-medium">Card</span>
+        <LayoutGrid className="h-4 w-4" />
       </Toggle>
     </div>
   );
