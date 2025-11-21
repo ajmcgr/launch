@@ -325,22 +325,36 @@ const MyProducts = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-3" onClick={(e) => e.preventDefault()}>
+                  <div className="flex gap-3">
                     {product.status === 'launched' && (
                       <>
-                        <Button variant="outline" asChild>
+                        <Button 
+                          variant="outline" 
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Link to={`/launch/${product.slug}`}>
                             <ExternalLink className="h-4 w-4 mr-2" />
                             View Launch
                           </Link>
                         </Button>
-                        <Button onClick={() => handleRelaunch(product)}>
+                        <Button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleRelaunch(product);
+                          }}
+                        >
                           Relaunch
                         </Button>
                       </>
                     )}
                     {canEdit(product) && (
-                      <Button variant="outline" asChild>
+                      <Button 
+                        variant="outline" 
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Link to={`/submit?draft=${product.id}`}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
@@ -349,10 +363,23 @@ const MyProducts = () => {
                     )}
                     {product.status === 'draft' && (
                       <>
-                        <Button onClick={() => handleSchedule(product)}>
+                        <Button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleSchedule(product);
+                          }}
+                        >
                           Schedule Launch
                         </Button>
-                        <Button variant="destructive" onClick={() => handleDelete(product.id)}>
+                        <Button 
+                          variant="destructive" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDelete(product.id);
+                          }}
+                        >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
                         </Button>
