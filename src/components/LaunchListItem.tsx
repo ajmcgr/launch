@@ -19,6 +19,8 @@ interface LaunchListItemProps {
     username: string;
     avatar_url?: string;
   }>;
+  rank?: number;
+  icon?: any;
   onVote: (productId: string) => void;
 }
 
@@ -33,6 +35,8 @@ export const LaunchListItem = ({
   userVote,
   commentCount = 0,
   makers,
+  rank,
+  icon: IconComponent,
   onVote,
 }: LaunchListItemProps) => {
   const handleVote = () => {
@@ -42,13 +46,22 @@ export const LaunchListItem = ({
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
       <div className="flex gap-4 p-4">
+        {rank && (
+          <div className="flex items-center justify-center text-2xl font-bold text-muted-foreground w-8 flex-shrink-0">
+            {rank}
+          </div>
+        )}
         <Link to={`/launch/${slug}`} className="block flex-shrink-0">
-          <div className="w-32 h-24 overflow-hidden bg-muted rounded-md">
-            <img 
-              src={thumbnail} 
-              alt={name} 
-              className="w-full h-full object-cover"
-            />
+          <div className="w-16 h-16 overflow-hidden bg-primary/10 rounded-lg flex items-center justify-center">
+            {thumbnail ? (
+              <img 
+                src={thumbnail} 
+                alt={name} 
+                className="w-full h-full object-cover"
+              />
+            ) : IconComponent ? (
+              <IconComponent className="w-8 h-8 text-primary" />
+            ) : null}
           </div>
         </Link>
 
