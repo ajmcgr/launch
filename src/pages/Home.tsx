@@ -79,7 +79,7 @@ const Home = () => {
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
         `)
-        .eq('status', 'published')
+        .eq('status', 'launched')
         .gte('launch_date', startDate.toISOString())
         .order('launch_date', { ascending: false });
 

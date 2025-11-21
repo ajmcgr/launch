@@ -120,7 +120,7 @@ serve(async (req) => {
             tagline: metadata.product_tagline,
             description: metadata.product_description,
             domain_url: metadata.product_url,
-            status: plan === 'relaunch' ? 'scheduled' : 'published',
+            status: plan === 'relaunch' ? 'scheduled' : 'launched',
             launch_date: launchDate,
           })
           .eq('id', existingProduct.id)

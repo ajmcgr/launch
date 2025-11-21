@@ -54,7 +54,7 @@ const AdminFix = () => {
       const { error: updateError } = await supabase
         .from('products')
         .update({
-          status: 'published',
+          status: 'launched',
           launch_date: new Date().toISOString(),
         })
         .eq('slug', 'media')
