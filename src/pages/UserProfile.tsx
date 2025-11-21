@@ -13,6 +13,7 @@ const UserProfile = () => {
   const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
   const [profile, setProfile] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
+  const [upvotedProducts, setUpvotedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -108,6 +109,61 @@ const UserProfile = () => {
 
       setFollowerCount(followers || 0);
       setFollowingCount(following || 0);
+
+      // Fetch recently upvoted products
+      const { data: userVotes } = await supabase
+        .from('votes')
+        .select('product_id, created_at')
+        .eq('user_id', profileData.id)
+        .eq('value', 1)
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (userVotes && userVotes.length > 0) {
+        const votedProductIds = userVotes.map(v => v.product_id);
+        
+        const { data: votedProductsData } = await supabase
+          .from('products')
+          .select(`
+            *,
+            product_media!inner(url, type),
+            product_category_map(
+              product_categories(name)
+            ),
+            product_makers(
+              users(username, avatar_url)
+            )
+          `)
+          .in('id', votedProductIds)
+          .eq('status', 'launched')
+          .eq('product_media.type', 'thumbnail');
+
+        if (votedProductsData) {
+          // Get vote counts for upvoted products
+          const { data: votesData } = await supabase
+            .from('votes')
+            .select('product_id, value')
+            .in('product_id', votedProductIds);
+
+          const voteCounts: Record<string, number> = {};
+          votesData?.forEach(vote => {
+            voteCounts[vote.product_id] = (voteCounts[vote.product_id] || 0) + vote.value;
+          });
+
+          const formattedUpvotedProducts = votedProductsData.map(product => ({
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            tagline: product.tagline,
+            thumbnail: product.product_media?.[0]?.url || '',
+            categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
+            netVotes: voteCounts[product.id] || 0,
+            makers: product.product_makers?.map((m: any) => m.users) || [],
+          }));
+
+          setUpvotedProducts(formattedUpvotedProducts);
+        }
+      }
 
     } catch (error: any) {
       console.error('Error fetching profile:', error);
@@ -275,6 +331,21 @@ const UserProfile = () => {
             </div>
           )}
         </div>
+
+        {upvotedProducts.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">Recently Upvoted</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upvotedProducts.map((product) => (
+                <LaunchCard
+                  key={product.id}
+                  {...product}
+                  onVote={() => {}}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
