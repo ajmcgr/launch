@@ -433,7 +433,7 @@ const MyProducts = () => {
                             handleLaunch(product);
                           }}
                         >
-                          Launch
+                          Schedule Launch
                         </Button>
                         <Button 
                           variant="outline"
@@ -443,7 +443,7 @@ const MyProducts = () => {
                             handleScheduleLine(product);
                           }}
                         >
-                          Schedule Line
+                          Join The Line
                         </Button>
                         <Button 
                           variant="destructive" 
