@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { ArrowUp, ArrowDown, ExternalLink, Calendar } from 'lucide-react';
+import { ArrowUp, ArrowDown, ExternalLink, Calendar, Star } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
@@ -21,6 +21,7 @@ const LaunchDetail = () => {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
   const [userVote, setUserVote] = useState<1 | -1 | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
@@ -101,6 +102,16 @@ const LaunchDetail = () => {
             .maybeSingle();
           
           setUserVote((userVoteData?.value as 1 | -1) || null);
+
+          // Check if user follows this product
+          const { data: followData } = await supabase
+            .from('product_follows')
+            .select('*')
+            .eq('follower_id', user.id)
+            .eq('product_id', productData.id)
+            .maybeSingle();
+          
+          setIsFollowing(!!followData);
         }
 
         setProduct({
@@ -166,6 +177,40 @@ const LaunchDetail = () => {
 
   const handleCommentAdded = () => {
     setCommentRefreshTrigger(prev => prev + 1);
+  };
+
+  const handleFollow = async () => {
+    if (!user) {
+      toast.error('Please login to follow products');
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      if (isFollowing) {
+        await supabase
+          .from('product_follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('product_id', product.id);
+
+        setIsFollowing(false);
+        toast.success('Unfollowed product');
+      } else {
+        await supabase
+          .from('product_follows')
+          .insert({
+            follower_id: user.id,
+            product_id: product.id,
+          });
+
+        setIsFollowing(true);
+        toast.success('Following product');
+      }
+    } catch (error: any) {
+      console.error('Error following/unfollowing:', error);
+      toast.error('Failed to update follow status');
+    }
   };
 
   if (!product) {
@@ -354,6 +399,18 @@ const LaunchDetail = () => {
                       <ArrowDown className="h-5 w-5" />
                     </Button>
                   </div>
+                </div>
+
+                {/* Follow Product */}
+                <div>
+                  <Button
+                    variant={isFollowing ? 'outline' : 'default'}
+                    className="w-full"
+                    onClick={handleFollow}
+                  >
+                    <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
+                    {isFollowing ? 'Following' : 'Follow Product'}
+                  </Button>
                 </div>
 
                 {/* Visit Website & Share */}

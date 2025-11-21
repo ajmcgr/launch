@@ -16,6 +16,7 @@ const UserProfile = () => {
   const [upvotedProducts, setUpvotedProducts] = useState<any[]>([]);
   const [followedUsers, setFollowedUsers] = useState<any[]>([]);
   const [followedProducts, setFollowedProducts] = useState<any[]>([]);
+  const [followedProductIds, setFollowedProductIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -197,6 +198,7 @@ const UserProfile = () => {
 
       if (followedProductsData) {
         const productIds = followedProductsData.map(f => f.products.id);
+        setFollowedProductIds(new Set(productIds));
         
         // Get vote counts
         const { data: votesData } = await supabase
@@ -224,11 +226,66 @@ const UserProfile = () => {
         setFollowedProducts(formattedFollowedProducts);
       }
 
+      // If current user is viewing, also get their follow status for all products on this page
+      if (currentUser && currentUser.id === profileData.id) {
+        const allProductIds = [...products.map(p => p.id), ...upvotedProducts.map(p => p.id)];
+        if (allProductIds.length > 0) {
+          const { data: userFollowsData } = await supabase
+            .from('product_follows')
+            .select('product_id')
+            .eq('follower_id', currentUser.id)
+            .in('product_id', allProductIds);
+          
+          if (userFollowsData) {
+            setFollowedProductIds(new Set(userFollowsData.map(f => f.product_id)));
+          }
+        }
+      }
+
     } catch (error: any) {
       console.error('Error fetching profile:', error);
       toast.error('Failed to load profile');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleProductFollow = async (productId: string) => {
+    if (!currentUser) {
+      toast.error('Please login to follow products');
+      return;
+    }
+
+    try {
+      const isCurrentlyFollowing = followedProductIds.has(productId);
+      
+      if (isCurrentlyFollowing) {
+        await supabase
+          .from('product_follows')
+          .delete()
+          .eq('follower_id', currentUser.id)
+          .eq('product_id', productId);
+
+        setFollowedProductIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(productId);
+          return newSet;
+        });
+        toast.success('Unfollowed product');
+      } else {
+        await supabase
+          .from('product_follows')
+          .insert({
+            follower_id: currentUser.id,
+            product_id: productId,
+          });
+
+        setFollowedProductIds(prev => new Set(prev).add(productId));
+        toast.success('Following product');
+      }
+    } catch (error: any) {
+      console.error('Error following/unfollowing product:', error);
+      toast.error('Failed to update follow status');
     }
   };
 
@@ -387,6 +444,9 @@ const UserProfile = () => {
                   key={product.id}
                   {...product}
                   onVote={() => {}}
+                  showFollowButton={currentUser && currentUser.id !== profile.id}
+                  isFollowing={followedProductIds.has(product.id)}
+                  onFollow={handleProductFollow}
                 />
               ))}
             </div>
@@ -402,6 +462,9 @@ const UserProfile = () => {
                   key={product.id}
                   {...product}
                   onVote={() => {}}
+                  showFollowButton={currentUser && currentUser.id !== profile.id}
+                  isFollowing={followedProductIds.has(product.id)}
+                  onFollow={handleProductFollow}
                 />
               ))}
             </div>
