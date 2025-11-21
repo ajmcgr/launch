@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Twitter } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, X as XIcon } from 'lucide-react';
 import { LaunchCard } from '@/components/LaunchCard';
 
 const UserProfile = () => {
@@ -301,13 +301,13 @@ const UserProfile = () => {
                 )}
                 {profile.twitter && (
                   <a
-                    href={`https://twitter.com/${profile.twitter.replace('@', '')}`}
+                    href={`https://x.com/${profile.twitter.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:underline flex items-center gap-1"
                   >
-                    <Twitter className="h-4 w-4" />
-                    Twitter
+                    <XIcon className="h-4 w-4" />
+                    X
                   </a>
                 )}
               </div>

@@ -92,7 +92,7 @@ export const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  X (Twitter)
+                  X
                 </a>
               </li>
               <li>

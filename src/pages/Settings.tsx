@@ -204,7 +204,7 @@ const Settings = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="twitter">Twitter Username</Label>
+                    <Label htmlFor="twitter">X Username</Label>
                     <Input
                       id="twitter"
                       value={profile.twitter}
