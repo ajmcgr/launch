@@ -180,6 +180,25 @@ serve(async (req) => {
         }
       }
 
+      // Add media if provided and product is new (not updating draft with existing media)
+      if (!existingProduct || existingProduct.status !== 'draft') {
+        const mediaInserts = [];
+        if (metadata.product_icon) {
+          mediaInserts.push({ product_id: product.id, type: 'icon', url: metadata.product_icon });
+        }
+        if (metadata.product_thumbnail) {
+          mediaInserts.push({ product_id: product.id, type: 'thumbnail', url: metadata.product_thumbnail });
+        }
+        const screenshots = JSON.parse(metadata.product_screenshots || '[]');
+        screenshots.forEach((url: string) => {
+          mediaInserts.push({ product_id: product.id, type: 'screenshot', url });
+        });
+
+        if (mediaInserts.length > 0) {
+          await supabaseClient.from('product_media').insert(mediaInserts);
+        }
+      }
+
       // Create order record
       await supabaseClient
         .from('orders')

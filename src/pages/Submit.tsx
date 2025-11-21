@@ -385,6 +385,9 @@ const Submit = () => {
             description: formData.description,
             categories: formData.categories,
             slug: formData.slug,
+            icon: uploadedMedia.icon,
+            thumbnail: uploadedMedia.thumbnail,
+            screenshots: uploadedMedia.screenshots,
           },
         },
       });
