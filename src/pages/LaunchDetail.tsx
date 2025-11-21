@@ -106,7 +106,7 @@ const LaunchDetail = () => {
         setProduct({
           ...productData,
           netVotes: voteData?.net_votes || 0,
-          makers: productData.product_makers?.map((m: any) => m.users) || []
+          makers: productData.product_makers?.map((m: any) => m.users).filter((maker: any) => maker && maker.username) || []
         });
       } catch (error) {
         console.error('Error:', error);
