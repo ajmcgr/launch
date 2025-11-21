@@ -309,11 +309,11 @@ const MyProducts = () => {
                                 className="w-full h-full object-cover rounded-lg"
                               />
                             ) : (
-                              <img
-                                src={defaultIcon}
-                                alt="Default product icon"
-                                className="w-16 h-16 opacity-60"
-                              />
+                            <img
+                              src={defaultIcon}
+                              alt="Default product icon"
+                              className="w-20 h-20 object-contain"
+                            />
                             )}
                           </div>
                         </Link>
@@ -329,7 +329,7 @@ const MyProducts = () => {
                             <img
                               src={defaultIcon}
                               alt="Default product icon"
-                              className="w-16 h-16 opacity-60"
+                              className="w-20 h-20 object-contain"
                             />
                           )}
                         </div>
