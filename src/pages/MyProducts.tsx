@@ -144,7 +144,51 @@ const MyProducts = () => {
     }
   };
 
-  const handleSchedule = async (product: any) => {
+  const handleLaunch = async (product: any) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error('Please log in again');
+        navigate('/auth?mode=signin');
+        return;
+      }
+      
+      toast.info('Redirecting to payment...');
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: {
+          plan: 'skip',
+          selectedDate: null,
+          productData: {
+            name: product.name,
+            tagline: product.tagline,
+            url: product.domain_url,
+            description: product.description,
+            categories: product.categories,
+            slug: product.slug,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success('Checkout opened in new window. Complete payment to launch your product!');
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Failed to initiate payment. Please try again.');
+    }
+  };
+
+  const handleScheduleLine = async (product: any) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -178,7 +222,7 @@ const MyProducts = () => {
 
       if (data?.url) {
         window.open(data.url, '_blank');
-        toast.success('Checkout opened in new window. Complete payment to launch your product!');
+        toast.success('Checkout opened in new window. Complete payment to schedule your product!');
       } else {
         throw new Error('No checkout URL returned');
       }
@@ -386,10 +430,20 @@ const MyProducts = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleSchedule(product);
+                            handleLaunch(product);
                           }}
                         >
-                          Schedule Launch
+                          Launch
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleScheduleLine(product);
+                          }}
+                        >
+                          Schedule Line
                         </Button>
                         <Button 
                           variant="destructive" 
