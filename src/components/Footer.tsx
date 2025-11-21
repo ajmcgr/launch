@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 export const Footer = () => {
   return (
     <footer className="border-t bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-3xl">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">About</h3>
             <ul className="space-y-2">
@@ -81,6 +81,28 @@ export const Footer = () => {
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Discord
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4 text-foreground">Advertise</h3>
+            <ul className="space-y-2">
+              <li>
+                <a 
+                  href="mailto:alex@trylaunch.ai"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Display
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="mailto:alex@trylaunch.ai"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Newsletter
                 </a>
               </li>
             </ul>
