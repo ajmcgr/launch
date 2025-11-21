@@ -356,28 +356,28 @@ const LaunchDetail = () => {
                   </div>
                 </div>
 
-                {/* Visit Website */}
-                {product.domain_url && (
-                  <Button size="lg" className="w-full" asChild>
-                    <a href={product.domain_url} target="_blank" rel="noopener noreferrer">
-                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
+                {/* Visit Website & Share */}
+                <div className="flex gap-3">
+                  {product.domain_url && (
+                    <Button size="lg" className="flex-1" asChild>
+                      <a href={product.domain_url} target="_blank" rel="noopener noreferrer">
+                        Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                      </a>
+                    </Button>
+                  )}
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className={product.domain_url ? "w-24" : "w-full"}
+                    onClick={() => {
+                      const url = window.location.href;
+                      navigator.clipboard.writeText(url);
+                      toast.success('Link copied to clipboard!');
+                    }}
+                  >
+                    Share
                   </Button>
-                )}
-
-                {/* Share Button */}
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => {
-                    const url = window.location.href;
-                    navigator.clipboard.writeText(url);
-                    toast.success('Link copied to clipboard!');
-                  }}
-                >
-                  Share
-                </Button>
+                </div>
 
                 {/* Launch Date */}
                 {product.launch_date && (
