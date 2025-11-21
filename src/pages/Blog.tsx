@@ -5,7 +5,7 @@ const Blog = () => {
         <iframe
           src="https://trylaunch.beehiiv.com/"
           className="w-full h-full border-0 rounded-lg"
-          title="Launch Blog"
+          title="Launch Newsletter"
           sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
         />
       </div>
