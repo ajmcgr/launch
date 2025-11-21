@@ -1,49 +1,102 @@
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-background py-16">
-      <div className="container mx-auto px-4 max-w-3xl">
+      <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
         
         <div className="prose prose-gray max-w-none space-y-6">
-          <p className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Who we are</h2>
+            <p>
+              We are Works App, Inc., doing business as Launch. Our website address is: {window.location.origin}
+            </p>
+          </section>
 
-          <h2 className="text-2xl font-bold mt-8 mb-4">1. Information We Collect</h2>
-          <p>
-            We collect information you provide directly to us when you create an account, submit
-            a product, or interact with our services.
-          </p>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Comments</h2>
+            <p>
+              When visitors leave comments on the site we collect the data shown in the comments form, and also the visitor's IP address and browser user agent string to help spam detection.
+            </p>
+            <p>
+              An anonymized string created from your email address (also called a hash) may be provided to the Gravatar service to see if you are using it. The Gravatar service privacy policy is available here: https://automattic.com/privacy/. After approval of your comment, your profile picture is visible to the public in the context of your comment.
+            </p>
+          </section>
 
-          <h2 className="text-2xl font-bold mt-8 mb-4">2. How We Use Your Information</h2>
-          <p>
-            We use the information we collect to provide, maintain, and improve our services,
-            to communicate with you, and to protect Launch and our users.
-          </p>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Media</h2>
+            <p>
+              If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.
+            </p>
+          </section>
 
-          <h2 className="text-2xl font-bold mt-8 mb-4">3. Information Sharing</h2>
-          <p>
-            We do not share your personal information with third parties except as described
-            in this privacy policy or with your consent.
-          </p>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Cookies</h2>
+            <p>
+              If you leave a comment on our site you may opt-in to saving your name, email address and website in cookies. These are for your convenience so that you do not have to fill in your details again when you leave another comment. These cookies will last for one year.
+            </p>
+            <p>
+              If you visit our login page, we will set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.
+            </p>
+            <p>
+              When you log in, we will also set up several cookies to save your login information and your screen display choices. Login cookies last for two days, and screen options cookies last for a year. If you select "Remember Me", your login will persist for two weeks. If you log out of your account, the login cookies will be removed.
+            </p>
+            <p>
+              If you edit or publish an article, an additional cookie will be saved in your browser. This cookie includes no personal data and simply indicates the post ID of the article you just edited. It expires after 1 day.
+            </p>
+          </section>
 
-          <h2 className="text-2xl font-bold mt-8 mb-4">4. Data Security</h2>
-          <p>
-            We take reasonable measures to help protect information about you from loss, theft,
-            misuse, unauthorized access, disclosure, alteration, and destruction.
-          </p>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Embedded content from other websites</h2>
+            <p>
+              Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website.
+            </p>
+            <p>
+              These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracking your interaction with the embedded content if you have an account and are logged in to that website.
+            </p>
+          </section>
 
-          <h2 className="text-2xl font-bold mt-8 mb-4">5. Your Rights</h2>
-          <p>
-            You have the right to access, update, or delete your personal information at any time
-            through your account settings.
-          </p>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Who we share your data with</h2>
+            <p>
+              If you request a password reset, your IP address will be included in the reset email.
+            </p>
+          </section>
 
-          <h2 className="text-2xl font-bold mt-8 mb-4">6. Contact Us</h2>
-          <p>
-            If you have any questions about this Privacy Policy, please contact us at{' '}
-            <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
-              alex@trylaunch.ai
-            </a>
-          </p>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">How long we retain your data</h2>
+            <p>
+              If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.
+            </p>
+            <p>
+              For users that register on our website (if any), we also store the personal information they provide in their user profile. All users can see, edit, or delete their personal information at any time (except they cannot change their username). Website administrators can also see and edit that information.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4">What rights you have over your data</h2>
+            <p>
+              If you have an account on this site, or have left comments, you can request to receive an exported file of the personal data we hold about you, including any data you have provided to us. You can also request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security purposes.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Where your data is sent</h2>
+            <p>
+              Visitor comments may be checked through an automated spam detection service.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Our contact address</h2>
+            <address className="not-italic">
+              Works App, Inc.<br />
+              651 N Broad St,<br />
+              Suite 201,<br />
+              Middletown,<br />
+              DE 19709<br />
+              US
+            </address>
+          </section>
         </div>
       </div>
     </div>
