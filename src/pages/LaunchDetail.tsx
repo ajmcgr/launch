@@ -207,34 +207,6 @@ const LaunchDetail = () => {
               </Card>
             )}
 
-            {product.makers && product.makers.length > 0 && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Makers</h2>
-                <div className="space-y-4">
-                  {product.makers.map((maker: any) => (
-                    <Link
-                      key={maker.username}
-                      to={`/u/${maker.username}`}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                    >
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                        <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold">@{maker.username}</p>
-                        {maker.bio && (
-                          <p className="text-sm text-muted-foreground truncate">
-                            {maker.bio}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </Card>
-            )}
-
             <Card className="p-6">
               <h2 className="text-2xl font-bold mb-4">About</h2>
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
@@ -312,6 +284,35 @@ const LaunchDetail = () => {
           <div className="lg:col-span-1 space-y-4">
             <Card className="p-6 sticky top-6">
               <div className="space-y-6">
+                {/* Makers */}
+                {product.makers && product.makers.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3">Makers</h3>
+                    <div className="space-y-3">
+                      {product.makers.map((maker: any) => (
+                        <Link
+                          key={maker.username}
+                          to={`/u/${maker.username}`}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
+                        >
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                            <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm">@{maker.username}</p>
+                            {maker.bio && (
+                              <p className="text-xs text-muted-foreground truncate">
+                                {maker.bio}
+                              </p>
+                            )}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Categories */}
                 <div>
                   <h3 className="font-semibold mb-3">Categories</h3>
