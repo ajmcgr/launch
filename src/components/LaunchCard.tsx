@@ -47,7 +47,7 @@ export const LaunchCard = ({
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <Link to={`/launch/${slug}`} className="block relative">
+      <Link to={`/launch/${slug}`} className="block">
         {rank && (
           <div className="absolute top-2 left-2 z-10 bg-background/90 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center">
             <span className="text-xs font-bold">{rank}</span>
@@ -64,14 +64,11 @@ export const LaunchCard = ({
             <IconComponent className="w-16 h-16 text-primary" />
           ) : null}
         </div>
-      </Link>
       
       <div className="p-4">
-        <Link to={`/launch/${slug}`}>
           <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
             {name}
           </h3>
-        </Link>
         
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
           {tagline}
@@ -79,15 +76,21 @@ export const LaunchCard = ({
         
         <div className="flex flex-wrap gap-2 mb-3">
           {categories.slice(0, 3).map((category) => (
-            <Link 
-              key={category} 
-              to={`/products?category=${encodeURIComponent(category)}`}
-              onClick={(e) => e.stopPropagation()}
+            <span
+              key={category}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
             >
-              <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
-                {category}
-              </Badge>
-            </Link>
+              <Link 
+                to={`/products?category=${encodeURIComponent(category)}`}
+              >
+                <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
+                  {category}
+                </Badge>
+              </Link>
+            </span>
           ))}
         </div>
         
@@ -99,6 +102,7 @@ export const LaunchCard = ({
                 variant={userVote === 1 ? 'default' : 'outline'}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   handleVote();
                 }}
                 className="h-12 w-12 p-0 !hover:bg-transparent hover:text-white hover:border-primary transition-all hover:scale-105"
@@ -109,29 +113,36 @@ export const LaunchCard = ({
                 {netVotes}
               </span>
             </div>
-            <Link to={`/launch/${slug}`} className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-all hover:scale-105">
+            <div className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-all hover:scale-105">
               <MessageSquare className="h-4 w-4" />
               <span className="text-sm">{commentCount}</span>
-            </Link>
+            </div>
           </div>
           
           <div className="flex -space-x-2">
             {makers.slice(0, 3).map((maker) => (
-              <Link 
-                key={maker.username} 
-                to={`/@${maker.username}`}
-                onClick={(e) => e.stopPropagation()}
-                className="hover:z-10"
+              <span
+                key={maker.username}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
               >
-                <Avatar className="h-8 w-8 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
-                  <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                  <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
-                </Avatar>
-              </Link>
+                <Link 
+                  to={`/@${maker.username}`}
+                  className="hover:z-10"
+                >
+                  <Avatar className="h-8 w-8 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                    <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                    <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </Link>
+              </span>
             ))}
           </div>
         </div>
       </div>
+      </Link>
     </Card>
   );
 };
