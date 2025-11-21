@@ -287,17 +287,29 @@ const Submit = () => {
         setProductId(currentProductId);
       } else {
         // Update existing product
+        const updateData: any = {
+          name: formData.name || 'Untitled Product',
+          tagline: formData.tagline,
+          domain_url: formData.url,
+          description: formData.description,
+          slug: formData.slug,
+          coupon_code: formData.couponCode || null,
+          coupon_description: formData.couponDescription || null,
+        };
+        
+        // If product is scheduled and being edited, keep it scheduled
+        // Only drafts stay as drafts
+        const { data: existingProduct } = await supabase
+          .from('products')
+          .select('status')
+          .eq('id', currentProductId)
+          .single();
+        
+        // Don't change status - keep draft as draft, scheduled as scheduled
+        
         const { error: updateError } = await supabase
           .from('products')
-          .update({
-            name: formData.name || 'Untitled Product',
-            tagline: formData.tagline,
-            domain_url: formData.url,
-            description: formData.description,
-            slug: formData.slug,
-            coupon_code: formData.couponCode || null,
-            coupon_description: formData.couponDescription || null,
-          })
+          .update(updateData)
           .eq('id', currentProductId);
 
         if (updateError) throw updateError;
