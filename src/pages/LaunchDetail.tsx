@@ -168,7 +168,7 @@ const LaunchDetail = () => {
     setCommentRefreshTrigger(prev => prev + 1);
   };
 
-  if (!product && !loading) {
+  if (!product) {
     return null;
   }
 
@@ -189,13 +189,7 @@ const LaunchDetail = () => {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
-        {!product ? (
-          <div className="space-y-6 animate-pulse">
-            <div className="h-8 bg-muted rounded w-3/4"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
-          </div>
-        ) : (
-          <div className="space-y-6">
+        <div className="space-y-6">
             <div>
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
@@ -344,9 +338,8 @@ const LaunchDetail = () => {
               </Card>
             )}
             <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
-            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
