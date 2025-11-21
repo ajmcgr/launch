@@ -15,7 +15,11 @@ const About = () => {
             </p>
 
             <p>
-              <strong>Hello there!</strong> We believe that every great product deserves to be discovered. Our mission is to connect
+              <strong>Hello there!</strong>
+            </p>
+
+            <p>
+              We believe that every great product deserves to be discovered. Our mission is to connect
               innovative makers with engaged audiences, helping products reach the people who will love them.
             </p>
 
