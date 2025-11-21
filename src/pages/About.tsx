@@ -14,20 +14,17 @@ const About = () => {
               attention they deserve.
             </p>
 
-            <h2 className="text-2xl font-bold mt-8 mb-4">Our Mission</h2>
             <p>
-              We believe that every great product deserves to be discovered. Our mission is to connect
+              <strong>Hello there!</strong> We believe that every great product deserves to be discovered. Our mission is to connect
               innovative makers with engaged audiences, helping products reach the people who will love them.
             </p>
 
-            <h2 className="text-2xl font-bold mt-8 mb-4">How It Works</h2>
             <p>
               Founders submit their products through our simple launch wizard, choosing when they want to
               go live. The community then votes on products they find interesting, helping the best
               products rise to the top.
             </p>
 
-            <h2 className="text-2xl font-bold mt-8 mb-4">Join the Community</h2>
             <p>
               Whether you're launching your first product or discovering your next favorite tool,
               Launch is the place to be. Join thousands of founders and tech enthusiasts who
