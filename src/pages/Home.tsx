@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
-import { Newsletter } from '@/components/Newsletter';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { supabase } from '@/integrations/supabase/client';
@@ -267,7 +266,6 @@ const Home = () => {
       </div>
 
       <CategoryCloud />
-      <Newsletter />
     </div>
   );
 };
