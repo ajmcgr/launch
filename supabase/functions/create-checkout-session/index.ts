@@ -52,9 +52,9 @@ serve(async (req) => {
 
     // Price mapping
     const priceMap: Record<string, number> = {
-      join: 999,    // $9.99 in cents
-      skip: 1999,   // $19.99 in cents
-      relaunch: 1299 // $12.99 in cents
+      join: 900,    // $9 in cents
+      skip: 1900,   // $19 in cents
+      relaunch: 1200 // $12 in cents
     };
 
     const amount = priceMap[plan];
