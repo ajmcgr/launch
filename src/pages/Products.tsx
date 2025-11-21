@@ -60,7 +60,7 @@ const Products = () => {
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
         `)
-        .eq('status', 'published');
+        .eq('status', 'launched');
 
       const { data: allProducts, error } = await query;
       if (error) throw error;
