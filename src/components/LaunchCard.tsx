@@ -107,7 +107,7 @@ export const LaunchCard = ({
                 {netVotes}
               </span>
             </div>
-            <Link to={`/launch/${slug}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+            <Link to={`/launch/${slug}`} className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-all hover:scale-105">
               <MessageSquare className="h-4 w-4" />
               <span className="text-sm">{commentCount}</span>
             </Link>
