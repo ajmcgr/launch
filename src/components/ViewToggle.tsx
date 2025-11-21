@@ -14,7 +14,7 @@ export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
         onPressedChange={() => onViewChange('list')}
         aria-label="List view"
         size="sm"
-        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground"
       >
         <List className="h-4 w-4" />
       </Toggle>
@@ -23,7 +23,7 @@ export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
         onPressedChange={() => onViewChange('grid')}
         aria-label="Card view"
         size="sm"
-        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground"
       >
         <LayoutGrid className="h-4 w-4" />
       </Toggle>
