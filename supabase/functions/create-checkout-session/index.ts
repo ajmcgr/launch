@@ -87,6 +87,9 @@ serve(async (req) => {
         product_description: productData.description,
         product_categories: JSON.stringify(productData.categories),
         product_slug: productData.slug,
+        product_icon: productData.icon || '',
+        product_thumbnail: productData.thumbnail || '',
+        product_screenshots: JSON.stringify(productData.screenshots || []),
       },
     });
 
