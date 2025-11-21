@@ -1,5 +1,4 @@
 import founderPhoto from '@/assets/founder-photo.png';
-import { Linkedin } from 'lucide-react';
 
 const About = () => {
   return (
@@ -34,23 +33,25 @@ const About = () => {
             are shaping the future of product discovery.
           </p>
 
-          <div className="mt-12 pt-8 border-t">
-            <div className="flex flex-col items-center text-center">
+          <div className="mt-12">
+            <div className="flex flex-col items-start">
               <img 
                 src={founderPhoto} 
                 alt="Alex MacGregor" 
-                className="w-48 h-48 rounded-full object-cover mb-6"
+                className="w-32 h-32 object-cover mb-4"
               />
               <h3 className="text-2xl font-bold mb-1">Alex MacGregor</h3>
               <p className="text-lg text-muted-foreground mb-4">Founder, Media AI</p>
               <a 
-                href="https://www.linkedin.com/in/alexmacgregor/" 
+                href="https://x.com/alexmacgregor__/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-primary hover:underline"
               >
-                <Linkedin className="w-5 h-5" />
-                Connect with me on LinkedIn
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Follow me on X
               </a>
             </div>
           </div>
