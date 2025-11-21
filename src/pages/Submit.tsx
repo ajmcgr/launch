@@ -720,7 +720,7 @@ const Submit = () => {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleSaveDraft}>
-              Save as Draft
+              Save
             </Button>
             {step < 5 && (
               <Button onClick={handleNext}>
