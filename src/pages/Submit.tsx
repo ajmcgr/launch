@@ -88,6 +88,13 @@ const Submit = () => {
 
       if (error) throw error;
 
+      // Check if product is already launched
+      if (product.status === 'launched') {
+        toast.error('Cannot edit a launched product. Please create a new submission.');
+        navigate('/submit');
+        return;
+      }
+
       const media = {
         icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
         thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,

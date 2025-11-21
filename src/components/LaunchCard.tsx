@@ -19,6 +19,8 @@ interface LaunchCardProps {
     username: string;
     avatar_url?: string;
   }>;
+  rank?: number;
+  icon?: any;
   onVote: (productId: string) => void;
 }
 
@@ -33,6 +35,8 @@ export const LaunchCard = ({
   userVote,
   commentCount = 0,
   makers,
+  rank,
+  icon: IconComponent,
   onVote,
 }: LaunchCardProps) => {
   const handleVote = () => {
@@ -41,13 +45,22 @@ export const LaunchCard = ({
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <Link to={`/launch/${slug}`} className="block">
-        <div className="aspect-video w-full overflow-hidden bg-muted">
-          <img 
-            src={thumbnail} 
-            alt={name} 
-            className="w-full h-full object-cover"
-          />
+      <Link to={`/launch/${slug}`} className="block relative">
+        {rank && (
+          <div className="absolute top-2 left-2 z-10 bg-background/90 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center">
+            <span className="text-sm font-bold">{rank}</span>
+          </div>
+        )}
+        <div className="aspect-video w-full overflow-hidden bg-primary/10 flex items-center justify-center">
+          {thumbnail ? (
+            <img 
+              src={thumbnail} 
+              alt={name} 
+              className="w-full h-full object-cover"
+            />
+          ) : IconComponent ? (
+            <IconComponent className="w-16 h-16 text-primary" />
+          ) : null}
         </div>
       </Link>
       

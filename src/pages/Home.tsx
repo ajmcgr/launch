@@ -4,6 +4,8 @@ import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -28,6 +30,9 @@ const Home = () => {
     const saved = localStorage.getItem('productView');
     return (saved as 'list' | 'grid') || 'list';
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 25;
+  const MAX_ITEMS = 100;
 
   const handleViewChange = (newView: 'list' | 'grid') => {
     setView(newView);
@@ -120,7 +125,7 @@ const Home = () => {
           slug: p.slug,
           name: p.name,
           tagline: p.tagline,
-          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+          thumbnail: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
           categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
           netVotes: voteMap.get(p.id) || 0,
           userVote: userVoteMap.get(p.id) || null,
@@ -130,9 +135,11 @@ const Home = () => {
             avatar_url: m.users?.avatar_url || ''
           })) || []
         }))
-        .sort((a, b) => b.netVotes - a.netVotes);
+        .sort((a, b) => b.netVotes - a.netVotes)
+        .slice(0, MAX_ITEMS);
 
       setProducts(formattedProducts);
+      setCurrentPage(1);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products');
@@ -189,6 +196,76 @@ const Home = () => {
     }
   };
 
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentProducts = products.slice(startIndex, endIndex);
+
+  const renderProductList = (productList: Product[]) => {
+    if (loading) {
+      return <div className="text-center py-12">Loading...</div>;
+    }
+
+    if (productList.length === 0) {
+      return <div className="text-center py-12 text-muted-foreground">No products found for this period.</div>;
+    }
+
+    const productsToRender = view === 'list' ? (
+      <div className="space-y-4">
+        {productList.map((product, index) => (
+          <LaunchListItem
+            key={product.id}
+            {...product}
+            rank={startIndex + index + 1}
+            icon={Rocket}
+            onVote={handleVote}
+          />
+        ))}
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {productList.map((product, index) => (
+          <LaunchCard
+            key={product.id}
+            {...product}
+            rank={startIndex + index + 1}
+            icon={Rocket}
+            onVote={handleVote}
+          />
+        ))}
+      </div>
+    );
+
+    return (
+      <>
+        {productsToRender}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
@@ -198,7 +275,7 @@ const Home = () => {
           </h1>
         </div>
         
-        <Tabs defaultValue="today" onValueChange={(v) => fetchProducts(v as any)}>
+        <Tabs defaultValue="today" onValueChange={(v) => { fetchProducts(v as any); setCurrentPage(1); }}>
           <div className="flex flex-row items-center justify-between gap-4 mb-8">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
@@ -209,81 +286,15 @@ const Home = () => {
           </div>
 
           <TabsContent value="today" className="space-y-6">
-            {loading ? (
-              <div className="text-center py-12">Loading...</div>
-            ) : view === 'list' ? (
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <LaunchListItem
-                    key={product.id}
-                    {...product}
-                    onVote={handleVote}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <LaunchCard
-                    key={product.id}
-                    {...product}
-                    onVote={handleVote}
-                  />
-                ))}
-              </div>
-            )}
+            {renderProductList(currentProducts)}
           </TabsContent>
 
           <TabsContent value="week" className="space-y-6">
-            {loading ? (
-              <div className="text-center py-12">Loading...</div>
-            ) : view === 'list' ? (
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <LaunchListItem
-                    key={product.id}
-                    {...product}
-                    onVote={handleVote}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <LaunchCard
-                    key={product.id}
-                    {...product}
-                    onVote={handleVote}
-                  />
-                ))}
-              </div>
-            )}
+            {renderProductList(currentProducts)}
           </TabsContent>
 
           <TabsContent value="month" className="space-y-6">
-            {loading ? (
-              <div className="text-center py-12">Loading...</div>
-            ) : view === 'list' ? (
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <LaunchListItem
-                    key={product.id}
-                    {...product}
-                    onVote={handleVote}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <LaunchCard
-                    key={product.id}
-                    {...product}
-                    onVote={handleVote}
-                  />
-                ))}
-              </div>
-            )}
+            {renderProductList(currentProducts)}
           </TabsContent>
         </Tabs>
       </div>
