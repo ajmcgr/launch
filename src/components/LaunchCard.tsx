@@ -86,11 +86,11 @@ export const LaunchCard = ({
                   e.preventDefault();
                   handleVote();
                 }}
-                className="h-8 w-8 p-0"
+                className="h-12 w-12 p-0"
               >
-                <ArrowUp className="h-4 w-4" />
+                <ArrowUp className="h-6 w-6" />
               </Button>
-              <span className="font-semibold min-w-[2rem] text-center">
+              <span className="font-semibold text-lg min-w-[2.5rem] text-center">
                 {netVotes}
               </span>
             </div>
