@@ -436,7 +436,7 @@ const MyProducts = () => {
                           Schedule Launch
                         </Button>
                         <Button 
-                          variant="outline"
+                          className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
