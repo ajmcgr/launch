@@ -14,14 +14,9 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="https://blog.works.xyz" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
                 <a 
