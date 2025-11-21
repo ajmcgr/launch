@@ -168,17 +168,7 @@ const LaunchDetail = () => {
     setCommentRefreshTrigger(prev => prev + 1);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background py-8">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center py-12">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!product) {
+  if (!product && !loading) {
     return null;
   }
 
@@ -199,14 +189,20 @@ const LaunchDetail = () => {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="space-y-6">
-          <div>
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
-                <p className="text-xl text-muted-foreground">{product.tagline}</p>
+        {!product ? (
+          <div className="space-y-6 animate-pulse">
+            <div className="h-8 bg-muted rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-1/2"></div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+                  <p className="text-xl text-muted-foreground">{product.tagline}</p>
+                </div>
               </div>
-            </div>
 
             <div className="flex flex-wrap gap-2 mb-6">
               {categories.map((category) => (
@@ -348,8 +344,9 @@ const LaunchDetail = () => {
               </Card>
             )}
             <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
