@@ -99,12 +99,12 @@ export const LaunchListItem = ({
         <div className="flex flex-col items-center gap-1 pt-1">
           <Button
             size="sm"
-            variant="default"
+            variant={userVote === 1 ? 'default' : 'outline'}
             onClick={(e) => {
               e.preventDefault();
               handleVote();
             }}
-            className="h-12 w-12 p-0"
+            className="h-12 w-12 p-0 !hover:bg-transparent hover:text-primary hover:border-primary transition-all hover:scale-105"
           >
             <ArrowUp className="h-6 w-6" />
           </Button>

@@ -79,17 +79,17 @@ export const LaunchCard = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
-          <Button
-            size="sm"
-            variant="default"
-            onClick={(e) => {
-              e.preventDefault();
-              handleVote();
-            }}
-            className="h-12 w-12 p-0"
-          >
-            <ArrowUp className="h-6 w-6" />
-          </Button>
+              <Button
+                size="sm"
+                variant={userVote === 1 ? 'default' : 'outline'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleVote();
+                }}
+                className="h-12 w-12 p-0 !hover:bg-transparent hover:text-primary hover:border-primary transition-all hover:scale-105"
+              >
+                <ArrowUp className="h-6 w-6" />
+              </Button>
               <span className="font-semibold text-lg min-w-[2.5rem] text-center">
                 {netVotes}
               </span>
