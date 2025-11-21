@@ -86,7 +86,7 @@ export const LaunchCard = ({
                   e.preventDefault();
                   handleVote();
                 }}
-                className="h-12 w-12 p-0 transition-all hover:scale-105"
+                className="h-12 w-12 p-0 hover:text-primary hover:border-primary transition-all hover:scale-105"
               >
                 <ArrowUp className="h-6 w-6" />
               </Button>
