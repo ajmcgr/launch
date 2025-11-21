@@ -247,6 +247,8 @@ export type Database = {
       }
       products: {
         Row: {
+          coupon_code: string | null
+          coupon_description: string | null
           created_at: string | null
           description: string | null
           domain_url: string | null
@@ -259,6 +261,8 @@ export type Database = {
           tagline: string | null
         }
         Insert: {
+          coupon_code?: string | null
+          coupon_description?: string | null
           created_at?: string | null
           description?: string | null
           domain_url?: string | null
@@ -271,6 +275,8 @@ export type Database = {
           tagline?: string | null
         }
         Update: {
+          coupon_code?: string | null
+          coupon_description?: string | null
           created_at?: string | null
           description?: string | null
           domain_url?: string | null
