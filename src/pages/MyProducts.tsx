@@ -264,7 +264,7 @@ const MyProducts = () => {
 
   return (
     <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-bold">My Products</h1>
           <Button asChild>
