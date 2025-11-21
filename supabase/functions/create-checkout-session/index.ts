@@ -82,6 +82,7 @@ serve(async (req) => {
         },
       ],
       mode: 'payment',
+      allow_promotion_codes: true,
       success_url: `${productionUrl}/launch/${productData.slug}?success=true`,
       cancel_url: `${productionUrl}/submit?canceled=true`,
       metadata: {
