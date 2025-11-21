@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, MessageSquare } from 'lucide-react';
+import { ArrowUp, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -14,6 +14,7 @@ interface LaunchListItemProps {
   categories: string[];
   netVotes: number;
   userVote?: 1 | -1 | null;
+  commentCount?: number;
   makers: Array<{
     username: string;
     avatar_url?: string;
@@ -30,6 +31,7 @@ export const LaunchListItem = ({
   categories,
   netVotes,
   userVote,
+  commentCount = 0,
   makers,
   onVote,
 }: LaunchListItemProps) => {

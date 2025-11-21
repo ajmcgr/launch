@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, MessageSquare } from 'lucide-react';
+import { ArrowUp, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -14,6 +14,7 @@ interface LaunchCardProps {
   categories: string[];
   netVotes: number;
   userVote?: 1 | -1 | null;
+  commentCount?: number;
   makers: Array<{
     username: string;
     avatar_url?: string;
@@ -30,6 +31,7 @@ export const LaunchCard = ({
   categories,
   netVotes,
   userVote,
+  commentCount = 0,
   makers,
   onVote,
 }: LaunchCardProps) => {
@@ -76,35 +78,21 @@ export const LaunchCard = ({
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <Button
-                size="sm"
-                variant={userVote === 1 ? 'default' : 'outline'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleVote(1);
-                }}
-                className="h-8 w-8 p-0"
-              >
-                <ArrowUp className="h-4 w-4" />
-              </Button>
-              <span className="font-semibold min-w-[2rem] text-center">
-                {netVotes}
-              </span>
-              <Button
-                size="sm"
-                variant={userVote === -1 ? 'destructive' : 'outline'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleVote(-1);
-                }}
-                className="h-8 w-8 p-0"
-              >
-                <ArrowDown className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              variant={userVote === 1 ? 'default' : 'outline'}
+              onClick={(e) => {
+                e.preventDefault();
+                handleVote(1);
+              }}
+              className="flex items-center gap-1 h-8 px-3"
+            >
+              <ArrowUp className="h-4 w-4" />
+              <span className="font-semibold">{netVotes}</span>
+            </Button>
             <Link to={`/launch/${slug}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
               <MessageSquare className="h-4 w-4" />
+              <span className="text-sm">{commentCount}</span>
             </Link>
           </div>
           
