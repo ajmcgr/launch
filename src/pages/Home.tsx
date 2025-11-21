@@ -5,7 +5,7 @@ import { LaunchListItem } from '@/components/LaunchListItem';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -15,6 +15,7 @@ interface Product {
   name: string;
   tagline: string;
   thumbnail: string;
+  iconUrl?: string;
   categories: string[];
   netVotes: number;
   userVote?: 1 | null;
@@ -125,7 +126,8 @@ const Home = () => {
           slug: p.slug,
           name: p.name,
           tagline: p.tagline,
-          thumbnail: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+          iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
           categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
           netVotes: voteMap.get(p.id) || 0,
           userVote: userVoteMap.get(p.id) || null,
@@ -217,7 +219,6 @@ const Home = () => {
             key={product.id}
             {...product}
             rank={startIndex + index + 1}
-            icon={Rocket}
             onVote={handleVote}
           />
         ))}
@@ -229,7 +230,6 @@ const Home = () => {
             key={product.id}
             {...product}
             rank={startIndex + index + 1}
-            icon={Rocket}
             onVote={handleVote}
           />
         ))}
