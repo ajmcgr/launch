@@ -291,6 +291,22 @@ const LaunchDetail = () => {
             </p>
           </Card>
 
+          {product.coupon_code && (
+            <Card className="p-6 bg-primary/5 border-primary/20">
+              <div className="flex items-start justify-between mb-2">
+                <h2 className="text-2xl font-bold">Special Offer</h2>
+                <Badge variant="default" className="text-lg px-4 py-1">
+                  {product.coupon_code}
+                </Badge>
+              </div>
+              {product.coupon_description && (
+                <p className="text-muted-foreground">
+                  {product.coupon_description}
+                </p>
+              )}
+            </Card>
+          )}
+
           {embedUrl && (
             <Card className="p-6">
               <h2 className="text-2xl font-bold mb-4">Video</h2>

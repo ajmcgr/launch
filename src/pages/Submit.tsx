@@ -34,6 +34,8 @@ const Submit = () => {
       description: '',
       categories: [] as string[],
       slug: '',
+      couponCode: '',
+      couponDescription: '',
       plan: 'join' as 'join' | 'skip' | 'relaunch',
       selectedDate: null as string | null,
     };
@@ -99,8 +101,10 @@ const Submit = () => {
         description: product.description || '',
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         slug: product.slug || '',
+        couponCode: product.coupon_code || '',
+        couponDescription: product.coupon_description || '',
         plan: 'join',
-        selectedDate: product.launch_date,
+        selectedDate: null,
       });
       
       setUploadedMedia(media);
@@ -246,6 +250,8 @@ const Submit = () => {
             description: formData.description,
             slug: formData.slug || `draft-${Date.now()}`,
             status: 'draft',
+            coupon_code: formData.couponCode || null,
+            coupon_description: formData.couponDescription || null,
           })
           .select()
           .single();
@@ -263,6 +269,8 @@ const Submit = () => {
             domain_url: formData.url,
             description: formData.description,
             slug: formData.slug,
+            coupon_code: formData.couponCode || null,
+            coupon_description: formData.couponDescription || null,
           })
           .eq('id', currentProductId);
 
@@ -584,6 +592,32 @@ const Submit = () => {
                   />
                   <p className="text-sm text-muted-foreground">
                     Your product will be available at: trylaunch.ai/launch/{formData.slug || 'your-slug'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="couponCode">Discount Coupon Code (Optional)</Label>
+                  <Input
+                    id="couponCode"
+                    value={formData.couponCode}
+                    onChange={(e) => handleInputChange('couponCode', e.target.value)}
+                    placeholder="SAVE20"
+                    maxLength={50}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Offer a discount code to your customers
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="couponDescription">Discount Description (Optional)</Label>
+                  <Input
+                    id="couponDescription"
+                    value={formData.couponDescription}
+                    onChange={(e) => handleInputChange('couponDescription', e.target.value)}
+                    placeholder="Get 20% off your first month"
+                    maxLength={100}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Describe what the coupon offers
                   </p>
                 </div>
               </>
