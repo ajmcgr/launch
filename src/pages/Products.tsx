@@ -7,7 +7,7 @@ import { LaunchListItem } from '@/components/LaunchListItem';
 import { ViewToggle } from '@/components/ViewToggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CATEGORIES } from '@/lib/constants';
-import { Search } from 'lucide-react';
+import { Search, Rocket } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
@@ -196,6 +196,7 @@ const Products = () => {
                   <LaunchListItem
                     key={product.id}
                     {...product}
+                    icon={Rocket}
                     onVote={() => {}}
                   />
                 ))}
@@ -206,6 +207,7 @@ const Products = () => {
                   <LaunchCard
                     key={product.id}
                     {...product}
+                    icon={Rocket}
                     onVote={() => {}}
                   />
                 ))}

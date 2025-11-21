@@ -91,7 +91,26 @@ const Submit = () => {
       // Check if product is already launched
       if (product.status === 'launched') {
         toast.error('Cannot edit a launched product. Please create a new submission.');
-        navigate('/submit');
+        // Clear localStorage and navigate to fresh form
+        localStorage.removeItem('submitFormData');
+        localStorage.removeItem('submitMedia');
+        localStorage.removeItem('submitStep');
+        setProductId(null);
+        setFormData({
+          name: '',
+          tagline: '',
+          url: '',
+          description: '',
+          categories: [],
+          slug: '',
+          couponCode: '',
+          couponDescription: '',
+          plan: 'join',
+          selectedDate: null,
+        });
+        setUploadedMedia({ screenshots: [] });
+        setStep(1);
+        navigate('/submit', { replace: true });
         return;
       }
 
@@ -500,7 +519,7 @@ const Submit = () => {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label>Thumbnail Image *</Label>
+                  <Label>Hero Image *</Label>
                   <Input 
                     type="file" 
                     accept="image/*"
