@@ -61,6 +61,7 @@ const MyProducts = () => {
       const formattedProducts = productsData?.map(product => ({
         ...product,
         thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
+        iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         netVotes: voteCounts[product.id] || 0,
       })) || [];
@@ -257,7 +258,15 @@ const MyProducts = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex gap-4 flex-1">
                       <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Rocket className="w-16 h-16 text-primary" />
+                        {product.iconUrl ? (
+                          <img
+                            src={product.iconUrl}
+                            alt={product.name}
+                            className="w-24 h-24 object-contain"
+                          />
+                        ) : (
+                          <Rocket className="w-16 h-16 text-primary" />
+                        )}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">

@@ -83,6 +83,7 @@ const Products = () => {
         name: p.name,
         tagline: p.tagline,
         thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+        iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
         netVotes: voteMap.get(p.id) || 0,
         makers: p.product_makers?.map((m: any) => ({
@@ -196,7 +197,6 @@ const Products = () => {
                   <LaunchListItem
                     key={product.id}
                     {...product}
-                    icon={Rocket}
                     onVote={() => {}}
                   />
                 ))}
@@ -207,7 +207,6 @@ const Products = () => {
                   <LaunchCard
                     key={product.id}
                     {...product}
-                    icon={Rocket}
                     onVote={() => {}}
                   />
                 ))}

@@ -11,6 +11,7 @@ interface LaunchListItemProps {
   name: string;
   tagline: string;
   thumbnail: string;
+  iconUrl?: string;
   categories: string[];
   netVotes: number;
   userVote?: 1 | null;
@@ -30,6 +31,7 @@ export const LaunchListItem = ({
   name,
   tagline,
   thumbnail,
+  iconUrl,
   categories,
   netVotes,
   userVote,
@@ -53,7 +55,13 @@ export const LaunchListItem = ({
         )}
         <Link to={`/launch/${slug}`} className="block flex-shrink-0">
           <div className="w-16 h-16 overflow-hidden bg-primary/10 rounded-lg flex items-center justify-center">
-            {IconComponent ? (
+            {iconUrl ? (
+              <img 
+                src={iconUrl} 
+                alt={name} 
+                className="w-12 h-12 object-contain"
+              />
+            ) : IconComponent ? (
               <IconComponent className="w-8 h-8 text-primary" />
             ) : null}
           </div>
