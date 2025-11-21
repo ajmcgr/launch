@@ -5,7 +5,7 @@ const About = () => {
     <div className="min-h-screen bg-background py-16">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="border border-border rounded-lg p-8 md:p-12 bg-card">
-          <h1 className="text-4xl font-bold mb-8">About Launch</h1>
+          <h1 className="text-4xl font-bold mb-8 text-center">About Launch</h1>
           
           <div className="prose prose-gray max-w-none space-y-6">
             <p className="text-lg">
