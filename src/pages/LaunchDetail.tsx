@@ -292,7 +292,7 @@ const LaunchDetail = () => {
                       {product.makers.map((maker: any) => (
                         <Link
                           key={maker.username}
-                          to={`/u/${maker.username}`}
+                          to={`/@${maker.username}`}
                           className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
                         >
                           <Avatar className="h-10 w-10">

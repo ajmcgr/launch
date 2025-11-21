@@ -97,7 +97,7 @@ export const Header = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuItem asChild>
-                      <Link to={`/u/${profile?.username}`} className="flex items-center gap-2">
+                      <Link to={`/@${profile?.username}`} className="flex items-center gap-2">
                         <User className="h-4 w-4" />
                         Profile
                       </Link>
