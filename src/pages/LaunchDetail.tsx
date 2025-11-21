@@ -20,6 +20,7 @@ const LaunchDetail = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
+  const [userVote, setUserVote] = useState<1 | -1 | null>(null);
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
@@ -88,7 +89,19 @@ const LaunchDetail = () => {
           .from('product_vote_counts')
           .select('net_votes')
           .eq('product_id', productData.id)
-          .single();
+          .maybeSingle();
+
+        // Fetch user's vote if authenticated
+        if (user) {
+          const { data: userVoteData } = await supabase
+            .from('votes')
+            .select('value')
+            .eq('product_id', productData.id)
+            .eq('user_id', user.id)
+            .maybeSingle();
+          
+          setUserVote((userVoteData?.value as 1 | -1) || null);
+        }
 
         setProduct({
           ...productData,
@@ -104,7 +117,52 @@ const LaunchDetail = () => {
     };
 
     fetchProduct();
-  }, [slug, navigate]);
+  }, [slug, navigate, user]);
+
+  const handleVote = async (value: 1 | -1) => {
+    if (!user) {
+      toast.error('Please login to vote');
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      const newVote: 1 | -1 | null = userVote === value ? null : value;
+      
+      if (newVote === null) {
+        // Remove vote
+        await supabase
+          .from('votes')
+          .delete()
+          .eq('product_id', product.id)
+          .eq('user_id', user.id);
+      } else if (userVote === null) {
+        // Insert new vote
+        await supabase
+          .from('votes')
+          .insert({
+            product_id: product.id,
+            user_id: user.id,
+            value: newVote
+          });
+      } else {
+        // Update existing vote
+        await supabase
+          .from('votes')
+          .update({ value: newVote })
+          .eq('product_id', product.id)
+          .eq('user_id', user.id);
+      }
+
+      // Update local state
+      const voteDiff = (newVote || 0) - (userVote || 0);
+      setUserVote(newVote);
+      setProduct({ ...product, netVotes: product.netVotes + voteDiff });
+    } catch (error) {
+      console.error('Error voting:', error);
+      toast.error('Failed to vote');
+    }
+  };
 
   const handleCommentAdded = () => {
     setCommentRefreshTrigger(prev => prev + 1);
@@ -126,123 +184,136 @@ const LaunchDetail = () => {
 
   const thumbnail = product.product_media?.find((m: any) => m.type === 'thumbnail')?.url;
   const screenshots = product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [];
+  const videoUrl = product.product_media?.find((m: any) => m.type === 'video')?.url;
+  
+  // Extract YouTube video ID if it's a YouTube URL
+  const getYouTubeEmbedUrl = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null;
+  };
+  
+  const embedUrl = videoUrl ? getYouTubeEmbedUrl(videoUrl) : null;
 
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            {thumbnail && (
-              <Card className="overflow-hidden">
-                <img 
-                  src={thumbnail} 
-                  alt={product.name}
-                  className="w-full aspect-video object-cover"
-                />
-              </Card>
-            )}
-
-            <div>
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
-                  <p className="text-xl text-muted-foreground">{product.tagline}</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-6">
-                {categories.map((category) => (
-                  <Badge key={category} variant="secondary">
-                    {category}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex items-center gap-2 border rounded-lg p-2">
-                  <Button
-                    size="sm"
-                    variant={product.userVote === 1 ? 'default' : 'outline'}
-                    className="h-10 w-10 p-0"
-                  >
-                    <ArrowUp className="h-5 w-5" />
-                  </Button>
-                  <span className="font-bold text-lg min-w-[3rem] text-center">
-                    {product.netVotes}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant={product.userVote === -1 ? 'destructive' : 'outline'}
-                    className="h-10 w-10 p-0"
-                  >
-                    <ArrowDown className="h-5 w-5" />
-                  </Button>
-                </div>
-
-                {product.domain_url && (
-                  <Button size="lg" asChild>
-                    <a href={product.domain_url} target="_blank" rel="noopener noreferrer">
-                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-                )}
-              </div>
-
-              {product.launch_date && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-                  <Calendar className="h-4 w-4" />
-                  <span>Launched on {new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-              )}
-            </div>
-
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">About</h2>
-              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                {product.description}
-              </p>
+        <div className="space-y-6">
+          {thumbnail && (
+            <Card className="overflow-hidden">
+              <img 
+                src={thumbnail} 
+                alt={product.name}
+                className="w-full aspect-video object-cover"
+              />
             </Card>
+          )}
 
-            {screenshots.length > 0 && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Screenshots</h2>
-                <Carousel className="w-full">
-                  <CarouselContent>
-                    {screenshots.map((screenshot, index) => (
-                      <CarouselItem key={index}>
-                        <img
-                          src={screenshot}
-                          alt={`Screenshot ${index + 1}`}
-                          className="w-full rounded-lg"
-                        />
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-                </Carousel>
-              </Card>
-            )}
-
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Comments</h2>
-              {user ? (
-                <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
-              ) : (
-                <Card className="p-4">
-                  <p className="text-muted-foreground mb-3">Login to leave a comment</p>
-                  <Button onClick={() => navigate('/auth')}>Login</Button>
-                </Card>
-              )}
-              <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
+          <div>
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+                <p className="text-xl text-muted-foreground">{product.tagline}</p>
+              </div>
             </div>
+
+            <div className="flex flex-wrap gap-2 mb-6">
+              {categories.map((category) => (
+                <Badge key={category} variant="secondary">
+                  {category}
+                </Badge>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-2 border rounded-lg p-2">
+                <Button
+                  size="sm"
+                  variant={userVote === 1 ? 'default' : 'outline'}
+                  className="h-10 w-10 p-0"
+                  onClick={() => handleVote(1)}
+                >
+                  <ArrowUp className="h-5 w-5" />
+                </Button>
+                <span className="font-bold text-lg min-w-[3rem] text-center">
+                  {product.netVotes}
+                </span>
+                <Button
+                  size="sm"
+                  variant={userVote === -1 ? 'destructive' : 'outline'}
+                  className="h-10 w-10 p-0"
+                  onClick={() => handleVote(-1)}
+                >
+                  <ArrowDown className="h-5 w-5" />
+                </Button>
+              </div>
+
+              {product.domain_url && (
+                <Button size="lg" asChild>
+                  <a href={product.domain_url} target="_blank" rel="noopener noreferrer">
+                    Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
+              )}
+            </div>
+
+            {product.launch_date && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+                <Calendar className="h-4 w-4" />
+                <span>Launched on {new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+            )}
           </div>
 
-          <div className="lg:col-span-1">
-            <Card className="p-6 sticky top-24">
-              <h2 className="text-xl font-bold mb-4">Makers</h2>
+          <Card className="p-6">
+            <h2 className="text-2xl font-bold mb-4">About</h2>
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+              {product.description}
+            </p>
+          </Card>
+
+          {embedUrl && (
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Video</h2>
+              <div className="aspect-video">
+                <iframe
+                  src={embedUrl}
+                  title="Product video"
+                  className="w-full h-full rounded-lg"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </Card>
+          )}
+
+          {screenshots.length > 0 && (
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Screenshots</h2>
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {screenshots.map((screenshot, index) => (
+                    <CarouselItem key={index}>
+                      <img
+                        src={screenshot}
+                        alt={`Screenshot ${index + 1}`}
+                        className="w-full rounded-lg"
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </Card>
+          )}
+
+          {product.makers && product.makers.length > 0 && (
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Makers</h2>
               <div className="space-y-4">
-                {product.makers.map((maker) => (
+                {product.makers.map((maker: any) => (
                   <Link
                     key={maker.username}
                     to={`/u/${maker.username}`}
@@ -264,6 +335,19 @@ const LaunchDetail = () => {
                 ))}
               </div>
             </Card>
+          )}
+
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Comments</h2>
+            {user ? (
+              <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
+            ) : (
+              <Card className="p-4">
+                <p className="text-muted-foreground mb-3">Login to leave a comment</p>
+                <Button onClick={() => navigate('/auth')}>Login</Button>
+              </Card>
+            )}
+            <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
           </div>
         </div>
       </div>
