@@ -257,12 +257,12 @@ const MyProducts = () => {
                   <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex gap-4 flex-1">
-                      <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                         {product.iconUrl ? (
                           <img
                             src={product.iconUrl}
                             alt={product.name}
-                            className="w-24 h-24 object-contain"
+                            className="w-full h-full object-cover rounded-lg"
                           />
                         ) : (
                           <Rocket className="w-16 h-16 text-primary" />
