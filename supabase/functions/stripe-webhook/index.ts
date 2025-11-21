@@ -134,7 +134,7 @@ serve(async (req) => {
         product = updatedProduct;
         console.log('Product updated:', product.id);
       } else {
-        // Create new product (for relaunch or if no draft exists)
+        // Create new product
         console.log('Creating new product');
         const { data: newProduct, error: productError } = await supabaseClient
           .from('products')
@@ -145,7 +145,7 @@ serve(async (req) => {
             description: metadata.product_description,
             domain_url: metadata.product_url,
             slug: metadata.product_slug,
-            status: 'scheduled',
+            status: plan === 'relaunch' ? 'scheduled' : 'launched',
             launch_date: launchDate,
           })
           .select()
