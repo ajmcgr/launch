@@ -188,172 +188,205 @@ const LaunchDetail = () => {
 
   return (
     <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-5xl">
-        <div className="space-y-6">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content - Left Column */}
+          <div className="lg:col-span-2 space-y-6">
             <div>
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
-                  <p className="text-xl text-muted-foreground">{product.tagline}</p>
-                </div>
-              </div>
-
-            <div className="flex flex-wrap gap-2 mb-6">
-              {categories.map((category) => (
-                <Badge key={category} variant="secondary">
-                  {category}
-                </Badge>
-              ))}
+              <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+              <p className="text-xl text-muted-foreground">{product.tagline}</p>
             </div>
 
-            <div className="flex items-center gap-4 mb-6">
-              <div className="flex items-center gap-2 border rounded-lg p-2">
-                <Button
-                  size="sm"
-                  variant={userVote === 1 ? 'default' : 'outline'}
-                  className="h-10 w-10 p-0"
-                  onClick={() => handleVote(1)}
-                >
-                  <ArrowUp className="h-5 w-5" />
-                </Button>
-                <span className="font-bold text-lg min-w-[3rem] text-center">
-                  {product.netVotes}
-                </span>
-                <Button
-                  size="sm"
-                  variant={userVote === -1 ? 'destructive' : 'outline'}
-                  className="h-10 w-10 p-0"
-                  onClick={() => handleVote(-1)}
-                >
-                  <ArrowDown className="h-5 w-5" />
-                </Button>
-              </div>
-
-              {product.domain_url && (
-                <Button size="lg" asChild>
-                  <a href={product.domain_url} target="_blank" rel="noopener noreferrer">
-                    Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-              )}
-            </div>
-
-            {product.launch_date && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-                <Calendar className="h-4 w-4" />
-                <span>Launched on {new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-              </div>
-            )}
-          </div>
-
-          {thumbnail && (
-            <Card className="overflow-hidden">
-              <img 
-                src={thumbnail} 
-                alt={product.name}
-                className="w-full aspect-video object-cover"
-              />
-            </Card>
-          )}
-
-          {product.makers && product.makers.length > 0 && (
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Makers</h2>
-              <div className="space-y-4">
-                {product.makers.map((maker: any) => (
-                  <Link
-                    key={maker.username}
-                    to={`/u/${maker.username}`}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                  >
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                      <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold">@{maker.username}</p>
-                      {maker.bio && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          {maker.bio}
-                        </p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </Card>
-          )}
-
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold mb-4">About</h2>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-              {product.description}
-            </p>
-          </Card>
-
-          {product.coupon_code && (
-            <Card className="p-6 bg-primary/5 border-primary/20">
-              <div className="flex items-start justify-between mb-2">
-                <h2 className="text-2xl font-bold">Special Offer</h2>
-                <Badge variant="default" className="text-lg px-4 py-1">
-                  {product.coupon_code}
-                </Badge>
-              </div>
-              {product.coupon_description && (
-                <p className="text-muted-foreground">
-                  {product.coupon_description}
-                </p>
-              )}
-            </Card>
-          )}
-
-          {embedUrl && (
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Video</h2>
-              <div className="aspect-video">
-                <iframe
-                  src={embedUrl}
-                  title="Product video"
-                  className="w-full h-full rounded-lg"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+            {thumbnail && (
+              <Card className="overflow-hidden">
+                <img 
+                  src={thumbnail} 
+                  alt={product.name}
+                  className="w-full aspect-video object-cover"
                 />
-              </div>
-            </Card>
-          )}
-
-          {screenshots.length > 0 && (
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Screenshots</h2>
-              <Carousel className="w-full">
-                <CarouselContent>
-                  {screenshots.map((screenshot, index) => (
-                    <CarouselItem key={index}>
-                      <img
-                        src={screenshot}
-                        alt={`Screenshot ${index + 1}`}
-                        className="w-full rounded-lg"
-                      />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-              </Carousel>
-            </Card>
-          )}
-
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Comments</h2>
-            {user ? (
-              <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
-            ) : (
-              <Card className="p-4">
-                <p className="text-muted-foreground mb-3">Login to leave a comment</p>
-                <Button onClick={() => navigate('/auth')}>Login</Button>
               </Card>
             )}
-            <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
+
+            {product.makers && product.makers.length > 0 && (
+              <Card className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Makers</h2>
+                <div className="space-y-4">
+                  {product.makers.map((maker: any) => (
+                    <Link
+                      key={maker.username}
+                      to={`/u/${maker.username}`}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                    >
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                        <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold">@{maker.username}</p>
+                        {maker.bio && (
+                          <p className="text-sm text-muted-foreground truncate">
+                            {maker.bio}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">About</h2>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                {product.description}
+              </p>
+            </Card>
+
+            {product.coupon_code && (
+              <Card className="p-6 bg-primary/5 border-primary/20">
+                <div className="flex items-start justify-between mb-2">
+                  <h2 className="text-2xl font-bold">Special Offer</h2>
+                  <Badge variant="default" className="text-lg px-4 py-1">
+                    {product.coupon_code}
+                  </Badge>
+                </div>
+                {product.coupon_description && (
+                  <p className="text-muted-foreground">
+                    {product.coupon_description}
+                  </p>
+                )}
+              </Card>
+            )}
+
+            {embedUrl && (
+              <Card className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Video</h2>
+                <div className="aspect-video">
+                  <iframe
+                    src={embedUrl}
+                    title="Product video"
+                    className="w-full h-full rounded-lg"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </Card>
+            )}
+
+            {screenshots.length > 0 && (
+              <Card className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Screenshots</h2>
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {screenshots.map((screenshot, index) => (
+                      <CarouselItem key={index}>
+                        <img
+                          src={screenshot}
+                          alt={`Screenshot ${index + 1}`}
+                          className="w-full rounded-lg"
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </Card>
+            )}
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold">Comments</h2>
+              {user ? (
+                <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
+              ) : (
+                <Card className="p-4">
+                  <p className="text-muted-foreground mb-3">Login to leave a comment</p>
+                  <Button onClick={() => navigate('/auth')}>Login</Button>
+                </Card>
+              )}
+              <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
+            </div>
+          </div>
+
+          {/* Right Sidebar - Desktop Only */}
+          <div className="lg:col-span-1 space-y-4">
+            <Card className="p-6 sticky top-6">
+              <div className="space-y-6">
+                {/* Categories */}
+                <div>
+                  <h3 className="font-semibold mb-3">Categories</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => (
+                      <Badge key={category} variant="secondary">
+                        {category}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Voting */}
+                <div>
+                  <h3 className="font-semibold mb-3">Upvote this product</h3>
+                  <div className="flex items-center gap-2 border rounded-lg p-2 w-full justify-center">
+                    <Button
+                      size="sm"
+                      variant={userVote === 1 ? 'default' : 'outline'}
+                      className="h-10 w-10 p-0"
+                      onClick={() => handleVote(1)}
+                    >
+                      <ArrowUp className="h-5 w-5" />
+                    </Button>
+                    <span className="font-bold text-lg min-w-[3rem] text-center">
+                      {product.netVotes}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant={userVote === -1 ? 'destructive' : 'outline'}
+                      className="h-10 w-10 p-0"
+                      onClick={() => handleVote(-1)}
+                    >
+                      <ArrowDown className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Visit Website */}
+                {product.domain_url && (
+                  <Button size="lg" className="w-full" asChild>
+                    <a href={product.domain_url} target="_blank" rel="noopener noreferrer">
+                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
+                )}
+
+                {/* Share Button */}
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    const url = window.location.href;
+                    navigator.clipboard.writeText(url);
+                    toast.success('Link copied to clipboard!');
+                  }}
+                >
+                  Share
+                </Button>
+
+                {/* Launch Date */}
+                {product.launch_date && (
+                  <div className="pt-4 border-t">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      <div>
+                        <div className="font-medium text-foreground">Launched</div>
+                        <div>{new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
           </div>
         </div>
       </div>
