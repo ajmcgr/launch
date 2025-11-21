@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, MessageSquare } from 'lucide-react';
+import { ArrowUp, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -13,12 +13,13 @@ interface LaunchCardProps {
   thumbnail: string;
   categories: string[];
   netVotes: number;
-  userVote?: 1 | -1 | null;
+  userVote?: 1 | null;
+  commentCount?: number;
   makers: Array<{
     username: string;
     avatar_url?: string;
   }>;
-  onVote: (productId: string, value: 1 | -1) => void;
+  onVote: (productId: string) => void;
 }
 
 export const LaunchCard = ({
@@ -30,11 +31,12 @@ export const LaunchCard = ({
   categories,
   netVotes,
   userVote,
+  commentCount = 0,
   makers,
   onVote,
 }: LaunchCardProps) => {
-  const handleVote = (value: 1 | -1) => {
-    onVote(id, value);
+  const handleVote = () => {
+    onVote(id);
   };
 
   return (
@@ -82,7 +84,7 @@ export const LaunchCard = ({
                 variant={userVote === 1 ? 'default' : 'outline'}
                 onClick={(e) => {
                   e.preventDefault();
-                  handleVote(1);
+                  handleVote();
                 }}
                 className="h-8 w-8 p-0"
               >
@@ -91,20 +93,10 @@ export const LaunchCard = ({
               <span className="font-semibold min-w-[2rem] text-center">
                 {netVotes}
               </span>
-              <Button
-                size="sm"
-                variant={userVote === -1 ? 'destructive' : 'outline'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleVote(-1);
-                }}
-                className="h-8 w-8 p-0"
-              >
-                <ArrowDown className="h-4 w-4" />
-              </Button>
             </div>
             <Link to={`/launch/${slug}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
               <MessageSquare className="h-4 w-4" />
+              <span className="text-sm">{commentCount}</span>
             </Link>
           </div>
           

@@ -15,7 +15,8 @@ interface Product {
   thumbnail: string;
   categories: string[];
   netVotes: number;
-  userVote?: 1 | -1 | null;
+  userVote?: 1 | null;
+  commentCount: number;
   makers: Array<{ username: string; avatar_url?: string }>;
 }
 
@@ -79,8 +80,7 @@ const Home = () => {
           product_makers(user_id, users(username, avatar_url))
         `)
         .eq('status', 'launched')
-        .gte('launch_date', startDate.toISOString())
-        .order('launch_date', { ascending: false });
+        .gte('launch_date', startDate.toISOString());
 
       if (error) throw error;
 
@@ -99,24 +99,38 @@ const Home = () => {
       const { data: userVotes } = user ? await supabase
         .from('votes')
         .select('product_id, value')
-        .eq('user_id', user.id) : { data: null };
+        .eq('user_id', user.id)
+        .eq('value', 1) : { data: null };
 
-      const userVoteMap = new Map(userVotes?.map(v => [v.product_id, v.value]) || []);
+      const userVoteMap = new Map(userVotes?.map(v => [v.product_id, 1 as const]) || []);
 
-      const formattedProducts: Product[] = (allProducts || []).map((p: any) => ({
-        id: p.id,
-        slug: p.slug,
-        name: p.name,
-        tagline: p.tagline,
-        thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
-        categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
-        netVotes: voteMap.get(p.id) || 0,
-        userVote: userVoteMap.get(p.id) as 1 | -1 | undefined,
-        makers: p.product_makers?.map((m: any) => ({
-          username: m.users?.username || 'Anonymous',
-          avatar_url: m.users?.avatar_url || ''
-        })) || []
-      }));
+      const productIds = allProducts?.map(p => p.id) || [];
+      const commentCounts = await Promise.all(
+        productIds.map(async (id) => {
+          const { data } = await supabase.rpc('get_comment_count', { product_uuid: id });
+          return { product_id: id, count: data || 0 };
+        })
+      );
+
+      const commentMap = new Map(commentCounts.map(c => [c.product_id, c.count]));
+
+      const formattedProducts: Product[] = (allProducts || [])
+        .map((p: any) => ({
+          id: p.id,
+          slug: p.slug,
+          name: p.name,
+          tagline: p.tagline,
+          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+          categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+          netVotes: voteMap.get(p.id) || 0,
+          userVote: userVoteMap.get(p.id) || null,
+          commentCount: commentMap.get(p.id) || 0,
+          makers: p.product_makers?.map((m: any) => ({
+            username: m.users?.username || 'Anonymous',
+            avatar_url: m.users?.avatar_url || ''
+          })) || []
+        }))
+        .sort((a, b) => b.netVotes - a.netVotes);
 
       setProducts(formattedProducts);
     } catch (error) {
@@ -127,7 +141,7 @@ const Home = () => {
     }
   };
 
-  const handleVote = async (productId: string, value: 1 | -1) => {
+  const handleVote = async (productId: string) => {
     if (!user) {
       toast.error('Please login to vote');
       return;
@@ -138,28 +152,37 @@ const Home = () => {
       if (p.id === productId) {
         const currentVote = p.userVote;
         let newNetVotes = p.netVotes;
-        let newUserVote: 1 | -1 | null = value;
+        let newUserVote: 1 | null = null;
 
-        if (currentVote === value) {
+        if (currentVote === 1) {
           // Remove vote
-          newNetVotes -= value;
+          newNetVotes -= 1;
           newUserVote = null;
-        } else if (currentVote) {
-          // Flip vote
-          newNetVotes += (value * 2);
         } else {
-          // New vote
-          newNetVotes += value;
+          // Add vote
+          newNetVotes += 1;
+          newUserVote = 1;
         }
 
         return { ...p, netVotes: newNetVotes, userVote: newUserVote };
       }
       return p;
-    }));
+    }).sort((a, b) => b.netVotes - a.netVotes));
 
     try {
-      // In production, this would sync with the database
-      // await supabase.from('votes').upsert({...})
+      const { data: existingVote } = await supabase
+        .from('votes')
+        .select('id')
+        .eq('product_id', productId)
+        .eq('user_id', user.id)
+        .eq('value', 1)
+        .maybeSingle();
+
+      if (existingVote) {
+        await supabase.from('votes').delete().eq('id', existingVote.id);
+      } else {
+        await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
+      }
     } catch (error) {
       console.error('Error voting:', error);
       toast.error('Failed to record vote');
