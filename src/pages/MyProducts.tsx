@@ -203,13 +203,15 @@ const MyProducts = () => {
   };
 
   const canEdit = (product: any) => {
+    // Drafts are always editable
     if (product.status === 'draft') return true;
+    
+    // Scheduled products are editable until launch
     if (product.status === 'scheduled') {
-      // Can edit until 1 hour before launch
       const launchDate = new Date(product.launch_date);
-      const oneHourBefore = new Date(launchDate.getTime() - 60 * 60 * 1000);
-      return new Date() < oneHourBefore;
+      return new Date() < launchDate;
     }
+    
     return false;
   };
 
