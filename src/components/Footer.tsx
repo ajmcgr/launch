@@ -61,6 +61,28 @@ export const Footer = () => {
           </div>
 
           <div>
+            <h3 className="font-semibold mb-4 text-foreground">Advertise</h3>
+            <ul className="space-y-2">
+              <li>
+                <a 
+                  href="mailto:alex@trylaunch.ai"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Display
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="mailto:alex@trylaunch.ai"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Newsletter
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
             <h3 className="font-semibold mb-4 text-foreground">Connect</h3>
             <ul className="space-y-2">
               <li>
@@ -81,28 +103,6 @@ export const Footer = () => {
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Discord
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4 text-foreground">Advertise</h3>
-            <ul className="space-y-2">
-              <li>
-                <a 
-                  href="mailto:alex@trylaunch.ai"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Display
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="mailto:alex@trylaunch.ai"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Newsletter
                 </a>
               </li>
             </ul>
