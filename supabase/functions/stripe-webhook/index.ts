@@ -37,46 +37,44 @@ serve(async (req) => {
 
       // Helper function to find next available date with capacity
       const findNextAvailableDate = async (startDaysFromNow: number): Promise<string> => {
-        const MAX_WEEKLY_CAPACITY = 1; // Only 1 launch per week total
+        const MAX_DAILY_CAPACITY = 100; // Cap at 100 launches per day
         let daysToCheck = startDaysFromNow;
         const maxAttempts = 365; // Don't check more than a year ahead
         
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
           const checkDate = new Date();
           checkDate.setDate(checkDate.getDate() + daysToCheck);
-          checkDate.setHours(0, 0, 0, 0);
+          checkDate.setHours(9, 0, 0, 0); // 4am EST = 9am UTC
           
-          // Calculate the start of the week (Monday) for this date
-          const weekStart = new Date(checkDate);
-          const dayOfWeek = weekStart.getDay();
-          const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust to Monday
-          weekStart.setDate(weekStart.getDate() + diff);
-          weekStart.setHours(0, 0, 0, 0);
+          // Calculate the start and end of the day for this date
+          const dayStart = new Date(checkDate);
+          dayStart.setHours(0, 0, 0, 0);
           
-          // Calculate the end of the week (Sunday)
-          const weekEnd = new Date(weekStart);
-          weekEnd.setDate(weekEnd.getDate() + 7);
+          const dayEnd = new Date(checkDate);
+          dayEnd.setHours(23, 59, 59, 999);
           
-          // Count products scheduled for this week
+          // Count products scheduled for this day
           const { count } = await supabaseClient
             .from('products')
             .select('*', { count: 'exact', head: true })
-            .gte('launch_date', weekStart.toISOString())
-            .lt('launch_date', weekEnd.toISOString());
+            .eq('status', 'launched')
+            .gte('launch_date', dayStart.toISOString())
+            .lte('launch_date', dayEnd.toISOString());
           
-          console.log(`Checking week starting ${weekStart.toISOString()}: ${count}/${MAX_WEEKLY_CAPACITY} launches`);
+          console.log(`Checking day ${checkDate.toDateString()}: ${count}/${MAX_DAILY_CAPACITY} launches`);
           
-          if ((count ?? 0) < MAX_WEEKLY_CAPACITY) {
+          if ((count ?? 0) < MAX_DAILY_CAPACITY) {
             return checkDate.toISOString();
           }
           
-          // Move to next week if this week is full
-          daysToCheck += 7;
+          // Move to next day if this day is full
+          daysToCheck += 1;
         }
         
         // Fallback if no date found (shouldn't happen)
         const fallbackDate = new Date();
         fallbackDate.setDate(fallbackDate.getDate() + daysToCheck);
+        fallbackDate.setHours(9, 0, 0, 0);
         return fallbackDate.toISOString();
       };
 
