@@ -100,28 +100,64 @@ serve(async (req) => {
 
       console.log(`Assigning launch date for plan '${plan}': ${launchDate}`);
 
-      // Create the product
-      const { data: product, error: productError } = await supabaseClient
+      // Check if a draft product with this slug already exists
+      const { data: existingProduct } = await supabaseClient
         .from('products')
-        .insert({
-          owner_id: metadata.user_id,
-          name: metadata.product_name,
-          tagline: metadata.product_tagline,
-          description: metadata.product_description,
-          domain_url: metadata.product_url,
-          slug: metadata.product_slug,
-          status: 'scheduled',
-          launch_date: launchDate,
-        })
-        .select()
-        .single();
+        .select('id, status, owner_id')
+        .eq('slug', metadata.product_slug)
+        .eq('owner_id', metadata.user_id)
+        .maybeSingle();
 
-      if (productError) {
-        console.error('Error creating product:', productError);
-        throw productError;
+      let product;
+      
+      if (existingProduct && existingProduct.status === 'draft') {
+        // Update existing draft product
+        console.log('Updating existing draft product:', existingProduct.id);
+        const { data: updatedProduct, error: updateError } = await supabaseClient
+          .from('products')
+          .update({
+            name: metadata.product_name,
+            tagline: metadata.product_tagline,
+            description: metadata.product_description,
+            domain_url: metadata.product_url,
+            status: plan === 'relaunch' ? 'scheduled' : 'published',
+            launch_date: launchDate,
+          })
+          .eq('id', existingProduct.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('Error updating product:', updateError);
+          throw updateError;
+        }
+        product = updatedProduct;
+        console.log('Product updated:', product.id);
+      } else {
+        // Create new product (for relaunch or if no draft exists)
+        console.log('Creating new product');
+        const { data: newProduct, error: productError } = await supabaseClient
+          .from('products')
+          .insert({
+            owner_id: metadata.user_id,
+            name: metadata.product_name,
+            tagline: metadata.product_tagline,
+            description: metadata.product_description,
+            domain_url: metadata.product_url,
+            slug: metadata.product_slug,
+            status: 'scheduled',
+            launch_date: launchDate,
+          })
+          .select()
+          .single();
+
+        if (productError) {
+          console.error('Error creating product:', productError);
+          throw productError;
+        }
+        product = newProduct;
+        console.log('Product created:', product.id);
       }
-
-      console.log('Product created:', product.id);
 
       // Add categories
       const categories = JSON.parse(metadata.product_categories || '[]');
