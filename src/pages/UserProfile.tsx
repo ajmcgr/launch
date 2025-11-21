@@ -9,7 +9,8 @@ import { UserPlus, UserMinus, Globe, Twitter } from 'lucide-react';
 import { LaunchCard } from '@/components/LaunchCard';
 
 const UserProfile = () => {
-  const { username } = useParams();
+  const { username: rawUsername } = useParams();
+  const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
   const [profile, setProfile] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
