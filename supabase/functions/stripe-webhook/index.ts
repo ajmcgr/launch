@@ -108,8 +108,8 @@ serve(async (req) => {
 
       let product;
       
-      if (existingProduct && (existingProduct.status === 'draft' || existingProduct.status === 'scheduled')) {
-        // Update existing draft or scheduled product
+      if (existingProduct && (existingProduct.status === 'draft' || existingProduct.status === 'scheduled' || (existingProduct.status === 'launched' && plan === 'relaunch'))) {
+        // Update existing draft, scheduled, or launched product (for relaunch)
         console.log('Updating existing product:', existingProduct.id);
         const { data: updatedProduct, error: updateError } = await supabaseClient
           .from('products')
