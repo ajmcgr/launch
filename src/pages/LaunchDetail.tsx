@@ -22,6 +22,7 @@ const LaunchDetail = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [userVote, setUserVote] = useState<1 | -1 | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
@@ -114,6 +115,14 @@ const LaunchDetail = () => {
           setIsFollowing(!!followData);
         }
 
+        // Get follower count for this product
+        const { count: followersCount } = await supabase
+          .from('product_follows')
+          .select('*', { count: 'exact', head: true })
+          .eq('product_id', productData.id);
+
+        setFollowerCount(followersCount || 0);
+
         setProduct({
           ...productData,
           netVotes: voteData?.net_votes || 0,
@@ -195,6 +204,7 @@ const LaunchDetail = () => {
           .eq('product_id', product.id);
 
         setIsFollowing(false);
+        setFollowerCount(prev => Math.max(0, prev - 1));
         toast.success('Unfollowed product');
       } else {
         await supabase
@@ -205,6 +215,7 @@ const LaunchDetail = () => {
           });
 
         setIsFollowing(true);
+        setFollowerCount(prev => prev + 1);
         toast.success('Following product');
       }
     } catch (error: any) {
@@ -411,6 +422,9 @@ const LaunchDetail = () => {
                     <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
                     {isFollowing ? 'Following' : 'Follow Product'}
                   </Button>
+                  <p className="text-sm text-center text-muted-foreground mt-2">
+                    {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
+                  </p>
                 </div>
 
                 {/* Visit Website & Share */}
