@@ -17,6 +17,9 @@ const LaunchDetail = () => {
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [commentRefreshTrigger, setCommentRefreshTrigger] = useState(0);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
@@ -39,44 +42,105 @@ const LaunchDetail = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!slug) return;
+      
+      try {
+        setLoading(true);
+        
+        // Fetch product with media and makers
+        const { data: productData, error: productError } = await supabase
+          .from('products')
+          .select(`
+            *,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url, bio))
+          `)
+          .eq('slug', slug)
+          .single();
+
+        if (productError) {
+          console.error('Error fetching product:', productError);
+          navigate('/404');
+          return;
+        }
+
+        if (!productData) {
+          navigate('/404');
+          return;
+        }
+
+        // Fetch categories
+        const categoryIds = productData.product_category_map?.map((m: any) => m.category_id) || [];
+        if (categoryIds.length > 0) {
+          const { data: categoriesData } = await supabase
+            .from('product_categories')
+            .select('name')
+            .in('id', categoryIds);
+          
+          setCategories(categoriesData?.map((c: any) => c.name) || []);
+        }
+
+        // Fetch vote counts
+        const { data: voteData } = await supabase
+          .from('product_vote_counts')
+          .select('net_votes')
+          .eq('product_id', productData.id)
+          .single();
+
+        setProduct({
+          ...productData,
+          netVotes: voteData?.net_votes || 0,
+          makers: productData.product_makers?.map((m: any) => m.users) || []
+        });
+      } catch (error) {
+        console.error('Error:', error);
+        navigate('/404');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [slug, navigate]);
+
   const handleCommentAdded = () => {
     setCommentRefreshTrigger(prev => prev + 1);
   };
 
-  // Mock data - in production, fetch from database
-  const product = {
-    id: '1',
-    slug: 'ai-assistant-pro',
-    name: 'AI Assistant Pro',
-    tagline: 'Your intelligent productivity companion',
-    description: 'AI Assistant Pro is a cutting-edge productivity tool that leverages advanced artificial intelligence to help you manage your daily tasks, schedule meetings, and optimize your workflow. With natural language processing and machine learning capabilities, it understands your needs and provides personalized assistance.',
-    url: 'https://example.com',
-    thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=630&fit=crop',
-    screenshots: [
-      'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
-    ],
-    categories: ['Productivity', 'AI Agents', 'Engineering & Development'],
-    launchDate: '2024-01-15',
-    netVotes: 142,
-    userVote: null as 1 | -1 | null,
-    makers: [
-      { username: 'alexdoe', avatar_url: '', bio: 'Founder & CEO' },
-    ],
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background py-8">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="text-center py-12">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return null;
+  }
+
+  const thumbnail = product.product_media?.find((m: any) => m.type === 'thumbnail')?.url;
+  const screenshots = product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [];
 
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="overflow-hidden">
-              <img 
-                src={product.thumbnail} 
-                alt={product.name}
-                className="w-full aspect-video object-cover"
-              />
-            </Card>
+            {thumbnail && (
+              <Card className="overflow-hidden">
+                <img 
+                  src={thumbnail} 
+                  alt={product.name}
+                  className="w-full aspect-video object-cover"
+                />
+              </Card>
+            )}
 
             <div>
               <div className="flex items-start justify-between mb-4">
@@ -87,7 +151,7 @@ const LaunchDetail = () => {
               </div>
 
               <div className="flex flex-wrap gap-2 mb-6">
-                {product.categories.map((category) => (
+                {categories.map((category) => (
                   <Badge key={category} variant="secondary">
                     {category}
                   </Badge>
@@ -115,17 +179,21 @@ const LaunchDetail = () => {
                   </Button>
                 </div>
 
-                <Button size="lg" asChild>
-                  <a href={product.url} target="_blank" rel="noopener noreferrer">
-                    Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
+                {product.domain_url && (
+                  <Button size="lg" asChild>
+                    <a href={product.domain_url} target="_blank" rel="noopener noreferrer">
+                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
+                )}
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-                <Calendar className="h-4 w-4" />
-                <span>Launched on {new Date(product.launchDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-              </div>
+              {product.launch_date && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+                  <Calendar className="h-4 w-4" />
+                  <span>Launched on {new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+              )}
             </div>
 
             <Card className="p-6">
@@ -135,12 +203,12 @@ const LaunchDetail = () => {
               </p>
             </Card>
 
-            {product.screenshots.length > 0 && (
+            {screenshots.length > 0 && (
               <Card className="p-6">
                 <h2 className="text-2xl font-bold mb-4">Screenshots</h2>
                 <Carousel className="w-full">
                   <CarouselContent>
-                    {product.screenshots.map((screenshot, index) => (
+                    {screenshots.map((screenshot, index) => (
                       <CarouselItem key={index}>
                         <img
                           src={screenshot}
