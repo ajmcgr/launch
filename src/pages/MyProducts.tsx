@@ -227,8 +227,18 @@ const MyProducts = () => {
                             </Badge>
                           ))}
                         </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            Created {new Date(product.created_at).toLocaleDateString('en-US', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </span>
+                        </div>
                         {product.launch_date && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                             <Calendar className="h-4 w-4" />
                             <span>
                               {product.status === 'launched' ? 'Launched' : 'Scheduled for'}{' '}

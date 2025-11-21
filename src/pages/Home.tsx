@@ -172,12 +172,12 @@ const Home = () => {
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-reckless font-bold text-foreground mb-2">
-            Discover new AI products. Daily.
+            The best new AI products. Every day.
           </h1>
         </div>
         
         <Tabs defaultValue="today" onValueChange={(v) => fetchProducts(v as any)}>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+          <div className="flex flex-row items-center justify-between gap-4 mb-8">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="week">This Week</TabsTrigger>
