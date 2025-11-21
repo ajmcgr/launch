@@ -40,8 +40,8 @@ const About = () => {
                 alt="Alex MacGregor" 
                 className="w-32 h-32 object-cover mb-4"
               />
-              <h3 className="text-2xl font-bold mb-1">Alex MacGregor</h3>
-              <p className="text-lg text-muted-foreground mb-4">Founder, Media AI</p>
+              <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
+              <p className="text-lg font-bold mb-4">Founder, Launch</p>
               <a 
                 href="https://x.com/alexmacgregor__/" 
                 target="_blank" 
