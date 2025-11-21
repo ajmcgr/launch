@@ -87,6 +87,16 @@ export const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a 
+                  href="https://x.com/trylaunchai" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  X
+                </a>
+              </li>
+              <li>
+                <a 
                   href="https://discord.gg/uTgwQsJWdS" 
                   target="_blank" 
                   rel="noopener noreferrer"
