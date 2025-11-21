@@ -186,6 +186,32 @@ export type Database = {
           },
         ]
       }
+      product_follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_follows_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_makers: {
         Row: {
           product_id: string

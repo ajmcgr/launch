@@ -14,6 +14,8 @@ const UserProfile = () => {
   const [profile, setProfile] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [upvotedProducts, setUpvotedProducts] = useState<any[]>([]);
+  const [followedUsers, setFollowedUsers] = useState<any[]>([]);
+  const [followedProducts, setFollowedProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -165,6 +167,61 @@ const UserProfile = () => {
 
           setUpvotedProducts(formattedUpvotedProducts);
         }
+      }
+
+      // Fetch followed users
+      const { data: followedUsersData } = await supabase
+        .from('follows')
+        .select('followed_id, users!follows_followed_id_fkey(username, avatar_url, bio)')
+        .eq('follower_id', profileData.id);
+
+      if (followedUsersData) {
+        setFollowedUsers(followedUsersData.map(f => f.users));
+      }
+
+      // Fetch followed products
+      const { data: followedProductsData } = await supabase
+        .from('product_follows')
+        .select(`
+          product_id,
+          products(
+            id,
+            slug,
+            name,
+            tagline,
+            product_media(url, type),
+            product_category_map(product_categories(name))
+          )
+        `)
+        .eq('follower_id', profileData.id);
+
+      if (followedProductsData) {
+        const productIds = followedProductsData.map(f => f.products.id);
+        
+        // Get vote counts
+        const { data: votesData } = await supabase
+          .from('votes')
+          .select('product_id, value')
+          .in('product_id', productIds);
+
+        const voteCounts: Record<string, number> = {};
+        votesData?.forEach(vote => {
+          voteCounts[vote.product_id] = (voteCounts[vote.product_id] || 0) + vote.value;
+        });
+
+        const formattedFollowedProducts = followedProductsData.map(f => ({
+          id: f.products.id,
+          slug: f.products.slug,
+          name: f.products.name,
+          tagline: f.products.tagline,
+          thumbnail: f.products.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+          iconUrl: f.products.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+          categories: f.products.product_category_map?.map((c: any) => c.product_categories.name) || [],
+          netVotes: voteCounts[f.products.id] || 0,
+          makers: [],
+        }));
+
+        setFollowedProducts(formattedFollowedProducts);
       }
 
     } catch (error: any) {
@@ -346,6 +403,49 @@ const UserProfile = () => {
                   {...product}
                   onVote={() => {}}
                 />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {followedProducts.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">Following Products</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {followedProducts.map((product) => (
+                <LaunchCard
+                  key={product.id}
+                  {...product}
+                  onVote={() => {}}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {followedUsers.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">Following People</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {followedUsers.map((user) => (
+                <Link
+                  key={user.username}
+                  to={`/@${user.username}`}
+                  className="flex flex-col items-center p-4 rounded-lg border hover:border-primary transition-colors"
+                >
+                  <Avatar className="h-16 w-16 mb-2">
+                    <AvatarImage src={user.avatar_url} alt={user.username} />
+                    <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="text-center">
+                    <p className="font-semibold">@{user.username}</p>
+                    {user.bio && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                        {user.bio}
+                      </p>
+                    )}
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
