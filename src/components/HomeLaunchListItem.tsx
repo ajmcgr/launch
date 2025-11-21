@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 interface HomeLaunchListItemProps {
@@ -6,6 +7,7 @@ interface HomeLaunchListItemProps {
   tagline: string;
   icon: any;
   votes: number;
+  slug: string;
   onVote: () => void;
 }
 
@@ -15,12 +17,14 @@ export const HomeLaunchListItem = ({
   tagline,
   icon: IconComponent,
   votes,
+  slug,
   onVote,
 }: HomeLaunchListItemProps) => {
   return (
-    <div 
-      className="flex items-center gap-4 p-4 border rounded-lg bg-card hover:shadow-md transition-shadow"
-    >
+    <Link to={`/launch/${slug}`} className="block">
+      <div 
+        className="flex items-center gap-4 p-4 border rounded-lg bg-card hover:shadow-md transition-shadow cursor-pointer"
+      >
       <div className="flex items-center gap-4 flex-1">
         <span className="text-2xl font-bold text-muted-foreground w-8">
           {rank}
@@ -38,12 +42,16 @@ export const HomeLaunchListItem = ({
       <Button
         variant="outline"
         size="sm"
-        onClick={onVote}
+        onClick={(e) => {
+          e.preventDefault();
+          onVote();
+        }}
         className="flex flex-col h-auto py-2 px-4 min-w-[70px]"
       >
         <span className="text-xs text-muted-foreground">▲</span>
         <span className="font-bold">{votes}</span>
       </Button>
-    </div>
+      </div>
+    </Link>
   );
 };

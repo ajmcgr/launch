@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -7,6 +8,7 @@ interface HomeLaunchCardProps {
   tagline: string;
   icon: any;
   votes: number;
+  slug: string;
   onVote: () => void;
 }
 
@@ -16,11 +18,13 @@ export const HomeLaunchCard = ({
   tagline,
   icon: IconComponent,
   votes,
+  slug,
   onVote,
 }: HomeLaunchCardProps) => {
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <div className="p-6">
+    <Link to={`/launch/${slug}`} className="block">
+      <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+        <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <span className="text-xl font-bold text-muted-foreground">
             #{rank}
@@ -28,7 +32,10 @@ export const HomeLaunchCard = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={onVote}
+            onClick={(e) => {
+              e.preventDefault();
+              onVote();
+            }}
             className="flex flex-col h-auto py-2 px-4"
           >
             <span className="text-xs text-muted-foreground">▲</span>
@@ -47,6 +54,7 @@ export const HomeLaunchCard = ({
           {tagline}
         </p>
       </div>
-    </Card>
+      </Card>
+    </Link>
   );
 };

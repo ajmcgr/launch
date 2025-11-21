@@ -247,8 +247,13 @@ const MyProducts = () => {
         ) : (
           <div className="space-y-6">
             {products.map((product) => (
-              <Card key={product.id}>
-                <CardHeader>
+              <Link 
+                key={product.id} 
+                to={product.status === 'launched' && product.slug ? `/launch/${product.slug}` : '#'}
+                className={product.status === 'launched' && product.slug ? 'block' : 'block pointer-events-none'}
+              >
+                <Card className={product.status === 'launched' && product.slug ? 'hover:shadow-md transition-shadow cursor-pointer' : ''}>
+                  <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex gap-4 flex-1">
                       {product.thumbnail && (
@@ -307,7 +312,7 @@ const MyProducts = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3" onClick={(e) => e.preventDefault()}>
                     {product.status === 'launched' && (
                       <>
                         <Button variant="outline" asChild>
@@ -342,7 +347,8 @@ const MyProducts = () => {
                     )}
                   </div>
                 </CardContent>
-              </Card>
+                </Card>
+              </Link>
             ))}
           </div>
         )}
