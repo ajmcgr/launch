@@ -8,9 +8,11 @@ import { toast } from 'sonner';
 interface CommentFormProps {
   productId: string;
   onCommentAdded: () => void;
+  parentCommentId?: string;
+  onCancel?: () => void;
 }
 
-export const CommentForm = ({ productId, onCommentAdded }: CommentFormProps) => {
+export const CommentForm = ({ productId, onCommentAdded, parentCommentId, onCancel }: CommentFormProps) => {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,13 +40,15 @@ export const CommentForm = ({ productId, onCommentAdded }: CommentFormProps) => 
           product_id: productId,
           user_id: user.id,
           content: content.trim(),
+          parent_comment_id: parentCommentId || null,
         });
 
       if (error) throw error;
 
       setContent('');
-      toast.success('Comment added!');
+      toast.success(parentCommentId ? 'Reply added!' : 'Comment added!');
       onCommentAdded();
+      if (onCancel) onCancel();
     } catch (error) {
       console.error('Error posting comment:', error);
       toast.error('Failed to post comment');
@@ -57,7 +61,7 @@ export const CommentForm = ({ productId, onCommentAdded }: CommentFormProps) => 
     <Card className="p-4">
       <form onSubmit={handleSubmit} className="space-y-3">
         <Textarea
-          placeholder="Share your thoughts..."
+          placeholder={parentCommentId ? "Write a reply..." : "Share your thoughts..."}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="min-h-[100px]"
@@ -67,9 +71,16 @@ export const CommentForm = ({ productId, onCommentAdded }: CommentFormProps) => 
           <span className="text-sm text-muted-foreground">
             {content.length}/1000
           </span>
-          <Button type="submit" disabled={isSubmitting || !content.trim()}>
-            {isSubmitting ? 'Posting...' : 'Post Comment'}
-          </Button>
+          <div className="flex gap-2">
+            {onCancel && (
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Cancel
+              </Button>
+            )}
+            <Button type="submit" disabled={isSubmitting || !content.trim()}>
+              {isSubmitting ? 'Posting...' : (parentCommentId ? 'Post Reply' : 'Post Comment')}
+            </Button>
+          </div>
         </div>
       </form>
     </Card>

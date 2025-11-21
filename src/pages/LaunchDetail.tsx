@@ -200,16 +200,6 @@ const LaunchDetail = () => {
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="space-y-6">
-          {thumbnail && (
-            <Card className="overflow-hidden">
-              <img 
-                src={thumbnail} 
-                alt={product.name}
-                className="w-full aspect-video object-cover"
-              />
-            </Card>
-          )}
-
           <div>
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
@@ -266,6 +256,44 @@ const LaunchDetail = () => {
             )}
           </div>
 
+          {thumbnail && (
+            <Card className="overflow-hidden">
+              <img 
+                src={thumbnail} 
+                alt={product.name}
+                className="w-full aspect-video object-cover"
+              />
+            </Card>
+          )}
+
+          {product.makers && product.makers.length > 0 && (
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Makers</h2>
+              <div className="space-y-4">
+                {product.makers.map((maker: any) => (
+                  <Link
+                    key={maker.username}
+                    to={`/u/${maker.username}`}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                      <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">@{maker.username}</p>
+                      {maker.bio && (
+                        <p className="text-sm text-muted-foreground truncate">
+                          {maker.bio}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </Card>
+          )}
+
           <Card className="p-6">
             <h2 className="text-2xl font-bold mb-4">About</h2>
             <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
@@ -306,34 +334,6 @@ const LaunchDetail = () => {
                 <CarouselPrevious />
                 <CarouselNext />
               </Carousel>
-            </Card>
-          )}
-
-          {product.makers && product.makers.length > 0 && (
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Makers</h2>
-              <div className="space-y-4">
-                {product.makers.map((maker: any) => (
-                  <Link
-                    key={maker.username}
-                    to={`/u/${maker.username}`}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors"
-                  >
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                      <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold">@{maker.username}</p>
-                      {maker.bio && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          {maker.bio}
-                        </p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </div>
             </Card>
           )}
 
