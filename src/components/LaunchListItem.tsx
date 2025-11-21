@@ -53,13 +53,7 @@ export const LaunchListItem = ({
         )}
         <Link to={`/launch/${slug}`} className="block flex-shrink-0">
           <div className="w-16 h-16 overflow-hidden bg-primary/10 rounded-lg flex items-center justify-center">
-            {thumbnail ? (
-              <img 
-                src={thumbnail} 
-                alt={name} 
-                className="w-full h-full object-cover"
-              />
-            ) : IconComponent ? (
+            {IconComponent ? (
               <IconComponent className="w-8 h-8 text-primary" />
             ) : null}
           </div>

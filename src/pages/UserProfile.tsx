@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Twitter } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Twitter, Rocket } from 'lucide-react';
 import { LaunchCard } from '@/components/LaunchCard';
 
 const UserProfile = () => {
@@ -325,6 +325,7 @@ const UserProfile = () => {
                 <LaunchCard
                   key={product.id}
                   {...product}
+                  icon={Rocket}
                   onVote={() => {}}
                 />
               ))}
@@ -340,6 +341,7 @@ const UserProfile = () => {
                 <LaunchCard
                   key={product.id}
                   {...product}
+                  icon={Rocket}
                   onVote={() => {}}
                 />
               ))}
