@@ -198,7 +198,6 @@ const Index = () => {
         )}
 
         <CategoryCloud />
-        <Newsletter />
       </div>
     </div>
   );
