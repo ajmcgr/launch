@@ -250,29 +250,48 @@ const MyProducts = () => {
         ) : (
           <div className="space-y-6">
             {products.map((product) => (
-              <Link 
-                key={product.id} 
-                to={product.status === 'launched' && product.slug ? `/launch/${product.slug}` : '#'}
-                className={product.status === 'launched' && product.slug ? 'block' : 'block pointer-events-none'}
-              >
-                <Card className={product.status === 'launched' && product.slug ? 'hover:shadow-md transition-shadow cursor-pointer' : ''}>
-                  <CardHeader>
+              <Card key={product.id} className={product.status === 'launched' && product.slug ? 'hover:shadow-md transition-shadow' : ''}>
+                <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex gap-4 flex-1">
-                      <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                        {product.iconUrl ? (
-                          <img
-                            src={product.iconUrl}
-                            alt={product.name}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        ) : (
-                          <Rocket className="w-16 h-16 text-primary" />
-                        )}
-                      </div>
+                      {product.status === 'launched' && product.slug ? (
+                        <Link to={`/launch/${product.slug}`} className="contents">
+                          <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                            {product.iconUrl ? (
+                              <img
+                                src={product.iconUrl}
+                                alt={product.name}
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                            ) : (
+                              <Rocket className="w-16 h-16 text-primary" />
+                            )}
+                          </div>
+                        </Link>
+                      ) : (
+                        <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                          {product.iconUrl ? (
+                            <img
+                              src={product.iconUrl}
+                              alt={product.name}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <Rocket className="w-16 h-16 text-primary" />
+                          )}
+                        </div>
+                      )}
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                          <CardTitle className="text-2xl">{product.name}</CardTitle>
+                          {product.status === 'launched' && product.slug ? (
+                            <Link to={`/launch/${product.slug}`}>
+                              <CardTitle className="text-2xl hover:text-primary transition-colors cursor-pointer">
+                                {product.name}
+                              </CardTitle>
+                            </Link>
+                          ) : (
+                            <CardTitle className="text-2xl">{product.name}</CardTitle>
+                          )}
                           {getStatusBadge(product.status)}
                         </div>
                         <p className="text-muted-foreground mb-3">{product.tagline}</p>
@@ -387,8 +406,7 @@ const MyProducts = () => {
                     )}
                   </div>
                 </CardContent>
-                </Card>
-              </Link>
+              </Card>
             ))}
           </div>
         )}
