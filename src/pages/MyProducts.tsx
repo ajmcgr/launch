@@ -99,6 +99,50 @@ const MyProducts = () => {
     }
   };
 
+  const handleRelaunch = async (product: any) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error('Please log in again');
+        navigate('/auth?mode=signin');
+        return;
+      }
+      
+      toast.info('Redirecting to payment...');
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: {
+          plan: 'relaunch',
+          selectedDate: null,
+          productData: {
+            name: product.name,
+            tagline: product.tagline,
+            url: product.domain_url,
+            description: product.description,
+            categories: product.categories,
+            slug: product.slug,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        toast.success('Checkout opened in new window. Complete payment to relaunch your product!');
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Failed to initiate payment. Please try again.');
+    }
+  };
+
   const handleSchedule = async (product: any) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -265,12 +309,17 @@ const MyProducts = () => {
                 <CardContent>
                   <div className="flex gap-3">
                     {product.status === 'launched' && (
-                      <Button variant="outline" asChild>
-                        <Link to={`/launch/${product.slug}`}>
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          View Launch
-                        </Link>
-                      </Button>
+                      <>
+                        <Button variant="outline" asChild>
+                          <Link to={`/launch/${product.slug}`}>
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            View Launch
+                          </Link>
+                        </Button>
+                        <Button onClick={() => handleRelaunch(product)}>
+                          Relaunch
+                        </Button>
+                      </>
                     )}
                     {canEdit(product) && (
                       <Button variant="outline" asChild>
@@ -290,13 +339,6 @@ const MyProducts = () => {
                           Delete
                         </Button>
                       </>
-                    )}
-                    {product.status === 'launched' && (
-                      <Button variant="outline" asChild>
-                        <Link to="/pricing">
-                          Relaunch
-                        </Link>
-                      </Button>
                     )}
                   </div>
                 </CardContent>
