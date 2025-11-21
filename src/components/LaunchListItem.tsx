@@ -99,10 +99,17 @@ export const LaunchListItem = ({
               
               <div className="flex -space-x-2">
                 {makers.slice(0, 3).map((maker) => (
-                  <Avatar key={maker.username} className="h-7 w-7 border-2 border-background">
-                    <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                    <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
-                  </Avatar>
+                  <Link 
+                    key={maker.username} 
+                    to={`/@${maker.username}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:z-10"
+                  >
+                    <Avatar className="h-7 w-7 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                      <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </Link>
                 ))}
               </div>
             </div>
