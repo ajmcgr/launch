@@ -271,9 +271,15 @@ const MyProducts = () => {
                         <p className="text-muted-foreground mb-3">{product.tagline}</p>
                         <div className="flex flex-wrap gap-2 mb-3">
                           {product.categories.slice(0, 3).map((category: string) => (
-                            <Badge key={category} variant="secondary">
-                              {category}
-                            </Badge>
+                            <Link 
+                              key={category} 
+                              to={`/products?category=${encodeURIComponent(category)}`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                                {category}
+                              </Badge>
+                            </Link>
                           ))}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">

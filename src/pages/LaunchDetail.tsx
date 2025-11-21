@@ -317,9 +317,14 @@ const LaunchDetail = () => {
                   <h3 className="font-semibold mb-3">Categories</h3>
                   <div className="flex flex-wrap gap-2">
                     {categories.map((category) => (
-                      <Badge key={category} variant="secondary">
-                        {category}
-                      </Badge>
+                      <Link 
+                        key={category} 
+                        to={`/products?category=${encodeURIComponent(category)}`}
+                      >
+                        <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                          {category}
+                        </Badge>
+                      </Link>
                     ))}
                   </div>
                 </div>

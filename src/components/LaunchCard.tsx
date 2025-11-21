@@ -62,9 +62,15 @@ export const LaunchCard = ({
         
         <div className="flex flex-wrap gap-2 mb-3">
           {categories.slice(0, 3).map((category) => (
-            <Badge key={category} variant="secondary" className="text-xs">
-              {category}
-            </Badge>
+            <Link 
+              key={category} 
+              to={`/products?category=${encodeURIComponent(category)}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
+                {category}
+              </Badge>
+            </Link>
           ))}
         </div>
         
