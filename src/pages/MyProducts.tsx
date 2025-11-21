@@ -312,7 +312,7 @@ const MyProducts = () => {
                               <img
                                 src={defaultIcon}
                                 alt="Default product icon"
-                                className="w-20 h-20 object-contain"
+                                className="w-24 h-24 object-contain"
                               />
                             )}
                           </div>
@@ -329,7 +329,7 @@ const MyProducts = () => {
                             <img
                               src={defaultIcon}
                               alt="Default product icon"
-                              className="w-20 h-20 object-contain"
+                              className="w-24 h-24 object-contain"
                             />
                           )}
                         </div>
