@@ -301,7 +301,7 @@ const MyProducts = () => {
                     <div className="flex gap-4 flex-1">
                       {product.status === 'launched' && product.slug ? (
                         <Link to={`/launch/${product.slug}`} className="contents">
-                          <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                          <div className="w-32 h-32 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity" style={{ backgroundColor: '#545454' }}>
                             {product.iconUrl ? (
                               <img
                                 src={product.iconUrl}
@@ -309,16 +309,16 @@ const MyProducts = () => {
                                 className="w-full h-full object-cover rounded-lg"
                               />
                             ) : (
-                            <img
-                              src={defaultIcon}
-                              alt="Default product icon"
-                              className="w-20 h-20 object-contain"
-                            />
+                              <img
+                                src={defaultIcon}
+                                alt="Default product icon"
+                                className="w-20 h-20 object-contain"
+                              />
                             )}
                           </div>
                         </Link>
                       ) : (
-                        <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <div className="w-32 h-32 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ backgroundColor: '#545454' }}>
                           {product.iconUrl ? (
                             <img
                               src={product.iconUrl}
