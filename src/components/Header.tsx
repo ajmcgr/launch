@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -15,6 +15,7 @@ import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
 
 export const Header = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<any>(null);
 
@@ -53,6 +54,15 @@ export const Header = () => {
     await supabase.auth.signOut();
   };
 
+  const handleSubmitClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Clear any existing submit form data to ensure fresh form
+    localStorage.removeItem('submitFormData');
+    localStorage.removeItem('submitMedia');
+    localStorage.removeItem('submitStep');
+    navigate('/submit');
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -81,8 +91,8 @@ export const Header = () => {
 
             {user ? (
               <div className="flex items-center gap-4">
-                <Button asChild>
-                  <Link to="/submit">Submit</Link>
+                <Button onClick={handleSubmitClick}>
+                  Submit
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -123,8 +133,8 @@ export const Header = () => {
                 </DropdownMenu>
               </div>
             ) : (
-              <Button asChild>
-                <Link to="/submit">Submit</Link>
+              <Button onClick={handleSubmitClick}>
+                Submit
               </Button>
             )}
           </div>
