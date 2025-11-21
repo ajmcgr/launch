@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Rocket } from 'lucide-react';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -256,13 +256,9 @@ const MyProducts = () => {
                   <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex gap-4 flex-1">
-                      {product.thumbnail && (
-                        <img
-                          src={product.thumbnail}
-                          alt={product.name}
-                          className="w-32 h-32 object-cover rounded-lg"
-                        />
-                      )}
+                      <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Rocket className="w-16 h-16 text-primary" />
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                           <CardTitle className="text-2xl">{product.name}</CardTitle>

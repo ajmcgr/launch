@@ -52,13 +52,7 @@ export const LaunchCard = ({
           </div>
         )}
         <div className="aspect-video w-full overflow-hidden bg-primary/10 flex items-center justify-center">
-          {thumbnail ? (
-            <img 
-              src={thumbnail} 
-              alt={name} 
-              className="w-full h-full object-cover"
-            />
-          ) : IconComponent ? (
+          {IconComponent ? (
             <IconComponent className="w-16 h-16 text-primary" />
           ) : null}
         </div>
