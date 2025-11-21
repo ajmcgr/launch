@@ -16,6 +16,7 @@ interface Launch {
   icon: any;
   votes: number;
   thumbnail?: string;
+  slug: string;
 }
 
 const Index = () => {
@@ -57,6 +58,7 @@ const Index = () => {
           id,
           name,
           tagline,
+          slug,
           product_media(url, type)
         `)
         .eq('status', 'published')
@@ -79,7 +81,8 @@ const Index = () => {
           tagline: p.tagline,
           icon: Rocket,
           votes: voteMap.get(p.id) || 0,
-          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url
+          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
+          slug: p.slug
         }))
         .sort((a, b) => b.votes - a.votes)
         .map((p, index) => ({ ...p, rank: index + 1 }));
@@ -172,6 +175,7 @@ const Index = () => {
                 tagline={launch.tagline}
                 icon={launch.icon}
                 votes={launch.votes}
+                slug={launch.slug}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
@@ -186,6 +190,7 @@ const Index = () => {
                 tagline={launch.tagline}
                 icon={launch.icon}
                 votes={launch.votes}
+                slug={launch.slug}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
