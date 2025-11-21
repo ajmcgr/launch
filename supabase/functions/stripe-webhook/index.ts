@@ -98,7 +98,7 @@ serve(async (req) => {
 
       console.log(`Assigning launch date for plan '${plan}': ${launchDate}`);
 
-      // Check if a draft product with this slug already exists
+      // Check if a product with this slug already exists for this user
       const { data: existingProduct } = await supabaseClient
         .from('products')
         .select('id, status, owner_id')
@@ -108,9 +108,9 @@ serve(async (req) => {
 
       let product;
       
-      if (existingProduct && existingProduct.status === 'draft') {
-        // Update existing draft product
-        console.log('Updating existing draft product:', existingProduct.id);
+      if (existingProduct && (existingProduct.status === 'draft' || existingProduct.status === 'scheduled')) {
+        // Update existing draft or scheduled product
+        console.log('Updating existing product:', existingProduct.id);
         const { data: updatedProduct, error: updateError } = await supabaseClient
           .from('products')
           .update({
@@ -131,6 +131,12 @@ serve(async (req) => {
         }
         product = updatedProduct;
         console.log('Product updated:', product.id);
+        
+        // Delete existing media to replace with new uploads
+        await supabaseClient
+          .from('product_media')
+          .delete()
+          .eq('product_id', product.id);
       } else {
         // Create new product
         console.log('Creating new product');
@@ -178,23 +184,21 @@ serve(async (req) => {
         }
       }
 
-      // Add media if provided and product is new (not updating draft with existing media)
-      if (!existingProduct || existingProduct.status !== 'draft') {
-        const mediaInserts = [];
-        if (metadata.product_icon) {
-          mediaInserts.push({ product_id: product.id, type: 'icon', url: metadata.product_icon });
-        }
-        if (metadata.product_thumbnail) {
-          mediaInserts.push({ product_id: product.id, type: 'thumbnail', url: metadata.product_thumbnail });
-        }
-        const screenshots = JSON.parse(metadata.product_screenshots || '[]');
-        screenshots.forEach((url: string) => {
-          mediaInserts.push({ product_id: product.id, type: 'screenshot', url });
-        });
+      // Add media if provided
+      const mediaInserts = [];
+      if (metadata.product_icon) {
+        mediaInserts.push({ product_id: product.id, type: 'icon', url: metadata.product_icon });
+      }
+      if (metadata.product_thumbnail) {
+        mediaInserts.push({ product_id: product.id, type: 'thumbnail', url: metadata.product_thumbnail });
+      }
+      const screenshots = JSON.parse(metadata.product_screenshots || '[]');
+      screenshots.forEach((url: string) => {
+        mediaInserts.push({ product_id: product.id, type: 'screenshot', url });
+      });
 
-        if (mediaInserts.length > 0) {
-          await supabaseClient.from('product_media').insert(mediaInserts);
-        }
+      if (mediaInserts.length > 0) {
+        await supabaseClient.from('product_media').insert(mediaInserts);
       }
 
       // Create order record
