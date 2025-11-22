@@ -49,7 +49,7 @@ const Home = () => {
       setUser(session?.user ?? null);
     });
 
-    fetchProducts('today');
+    fetchProducts('week');
 
     return () => subscription.unsubscribe();
   }, []);
@@ -275,11 +275,11 @@ const Home = () => {
           </h1>
         </div>
         
-        <Tabs defaultValue="today" onValueChange={(v) => { fetchProducts(v as any); setCurrentPage(1); }}>
+        <Tabs defaultValue="week" onValueChange={(v) => { fetchProducts(v as any); setCurrentPage(1); }}>
           <div className="flex flex-row items-center justify-between gap-4 mb-8">
             <TabsList>
-              <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="week">This Week</TabsTrigger>
+              <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="month">This Month</TabsTrigger>
             </TabsList>
             <ViewToggle view={view} onViewChange={handleViewChange} />
