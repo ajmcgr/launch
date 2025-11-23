@@ -153,7 +153,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full justify-center"
                   onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
                 >
                   {copiedBasic === theme ? (
@@ -182,7 +182,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full justify-center"
                   onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
                 >
                   {copiedWithCategories === theme ? (
@@ -219,7 +219,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full justify-center"
                 onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
               >
                 {copiedBasic === theme ? (
@@ -256,7 +256,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full justify-center"
                   onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
                 >
                   {copiedWithCategories === theme ? (
