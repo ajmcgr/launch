@@ -66,25 +66,27 @@ Deno.serve(async (req) => {
         console.error(`Error fetching followers for ${product.id}:`, followersError);
       }
 
-      // Create notifications for followers
+      // Send notifications to all followers
       if (followers && followers.length > 0) {
-        const notifications = followers.map(f => ({
-          user_id: f.follower_id,
-          type: 'product_launch',
-          title: `${product.name} just launched!`,
-          message: `The product you're following is now live.`,
-          related_product_id: product.id,
-        }));
-
-        const { error: notifError } = await supabaseAdmin
-          .from('notifications')
-          .insert(notifications);
-
-        if (notifError) {
-          console.error(`Error creating notifications for ${product.id}:`, notifError);
-        } else {
-          console.log(`Created ${notifications.length} notifications for product ${product.id}`);
+        console.log(`Notifying ${followers.length} followers of product ${product.id}`);
+        
+        for (const follower of followers) {
+          try {
+            await supabaseAdmin.functions.invoke('send-notifications', {
+              body: {
+                userId: follower.follower_id,
+                type: 'product_launch',
+                title: `${product.name} just launched!`,
+                message: `The product you're following is now live.`,
+                relatedProductId: product.id,
+              },
+            });
+          } catch (notifError) {
+            console.error(`Error sending notification to follower ${follower.follower_id}:`, notifError);
+          }
         }
+        
+        console.log(`Sent notifications to ${followers.length} followers for product ${product.id}`);
       }
 
       results.push({ id: product.id, name: product.name, success: true });
