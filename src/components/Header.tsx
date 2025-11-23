@@ -11,8 +11,6 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { User, Settings, Package, LogOut, Menu } from 'lucide-react';
