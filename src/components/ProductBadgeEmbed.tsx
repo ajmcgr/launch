@@ -141,10 +141,13 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         <div className="mb-6">
           <h4 className="text-sm font-medium mb-3 text-muted-foreground">Top Product Badge</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(['gold'] as BadgeTheme[]).map((theme) => (
+             {(['gold'] as BadgeTheme[]).map((theme) => (
               <div key={`${theme}-basic`} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">Basic</div>
-                <div className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2">
+                <div 
+                  className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
+                >
                   {renderPreview(theme, false)}
                 </div>
                 <Button
@@ -170,7 +173,10 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
             {categories.length > 0 && (['gold'] as BadgeTheme[]).map((theme) => (
               <div key={`${theme}-category`} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">With Categories</div>
-                <div className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2">
+                <div 
+                  className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2 cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
+                >
                   {renderPreview(theme, true)}
                 </div>
                 <Button
@@ -204,7 +210,10 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
           {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
             <div key={theme} className="space-y-2">
               <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
-              <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
+              <div 
+                className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2 cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
+              >
                 {renderPreview(theme, false)}
               </div>
               <Button
@@ -238,7 +247,10 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
             {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
               <div key={theme} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
-                <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
+                <div 
+                  className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2 cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
+                >
                   {renderPreview(theme, true)}
                 </div>
                 <Button
