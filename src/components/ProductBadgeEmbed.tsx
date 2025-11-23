@@ -73,7 +73,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     const categoryBorder = theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
     const categoriesText = categories.slice(0, 2).join(' · ');
     
-    return `<a href="${productUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
+    return `<a href="${productUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
   <div style="display: flex; align-items: center; gap: 8px;">
     <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
     <span style="white-space: nowrap;">${badgeText}</span>
@@ -98,27 +98,9 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     const styles = getThemeStyles(theme);
     const iconSrc = theme === 'dark' ? launchIconLight : launchIconDark;
     const badgeText = 'Support our Launch';
-    
-    if (!withCategories || categories.length === 0) {
-      return (
-        <div 
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-all"
-          style={{
-            background: styles.bg,
-            color: styles.text,
-            borderColor: styles.border,
-            ...(theme === 'gold' && { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' })
-          }}
-        >
-          <img src={iconSrc} alt="Launch" width="20" height="20" className="block" />
-          <span className="text-sm font-medium whitespace-nowrap">{badgeText}</span>
-        </div>
-      );
-    }
-    
     return (
       <div 
-        className="inline-flex flex-col items-center gap-2 px-4 py-2 rounded-lg border transition-all"
+        className="inline-flex flex-wrap items-center gap-2 px-4 py-2 rounded-lg border transition-all"
         style={{
           background: styles.bg,
           color: styles.text,
@@ -130,16 +112,18 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
           <img src={iconSrc} alt="Launch" width="20" height="20" className="block" />
           <span className="text-sm font-medium whitespace-nowrap">{badgeText}</span>
         </div>
-        <span 
-          className="px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap"
-          style={{
-            background: 'transparent',
-            border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
-            opacity: 0.9
-          }}
-        >
-          {categories.slice(0, 2).join(' · ')}
-        </span>
+        {withCategories && categories.length > 0 && (
+          <span 
+            className="px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap"
+            style={{
+              background: 'transparent',
+              border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
+              opacity: 0.9
+            }}
+          >
+            {categories.slice(0, 2).join(' · ')}
+          </span>
+        )}
       </div>
     );
   };
