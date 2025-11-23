@@ -123,7 +123,7 @@ export const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/me/products" className="flex items-center gap-2">
+                      <Link to="/myproducts" className="flex items-center gap-2">
                         <Package className="h-4 w-4" />
                         My Products
                       </Link>
@@ -203,7 +203,7 @@ export const Header = () => {
                           Profile
                         </Link>
                         <Link 
-                          to="/me/products"
+                          to="/myproducts"
                           className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors mb-4"
                           onClick={() => setMobileMenuOpen(false)}
                         >
