@@ -397,17 +397,7 @@ const MyProducts = () => {
                           ) : (
                             <CardTitle className="text-2xl">{product.name}</CardTitle>
                           )}
-                          <div className="flex gap-2">
-                            {getStatusBadge(product.status)}
-                            {(product.won_daily || product.won_weekly || product.won_monthly) && (
-                              <Badge 
-                                variant="outline" 
-                                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black border-yellow-500 font-semibold"
-                              >
-                                🏆 {product.won_daily ? 'Top Daily' : product.won_weekly ? 'Top Weekly' : 'Top Monthly'}
-                              </Badge>
-                            )}
-                          </div>
+                          {getStatusBadge(product.status)}
                         </div>
                         <p className="text-muted-foreground mb-3">{product.tagline}</p>
                         <div className="flex flex-wrap gap-2 mb-3">
@@ -449,9 +439,39 @@ const MyProducts = () => {
                           </div>
                         )}
                         {product.status === 'launched' && (
-                          <div className="mt-2">
-                            <span className="font-semibold">{product.netVotes}</span>
-                            <span className="text-muted-foreground ml-1">votes</span>
+                          <div className="mt-2 flex flex-col gap-2">
+                            <div>
+                              <span className="font-semibold">{product.netVotes}</span>
+                              <span className="text-muted-foreground ml-1">votes</span>
+                            </div>
+                            {(product.won_daily || product.won_weekly || product.won_monthly) && (
+                              <div className="mt-2">
+                                <div 
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-all whitespace-nowrap"
+                                  style={{
+                                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                                    color: '#1A1A1A',
+                                    borderColor: '#FFD700',
+                                    boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)'
+                                  }}
+                                >
+                                  <span className="text-xl">🏆</span>
+                                  <span className="text-sm font-medium">Top Product</span>
+                                  {product.categories.length > 0 && (
+                                    <span 
+                                      className="px-2.5 py-1 rounded text-xs font-medium ml-2"
+                                      style={{
+                                        background: 'transparent',
+                                        border: '1px solid rgba(255, 215, 0, 0.5)',
+                                        opacity: 0.9
+                                      }}
+                                    >
+                                      {product.categories.slice(0, 2).join(' · ')}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
