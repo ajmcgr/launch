@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { notifyProductVote } from '@/lib/notifications';
 
 interface Product {
   id: string;
@@ -194,6 +195,17 @@ const Home = () => {
         await supabase.from('votes').delete().eq('id', existingVote.id);
       } else {
         await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
+        
+        // Send notification to product owner
+        const { data: userData } = await supabase
+          .from('users')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+
+        if (userData?.username) {
+          notifyProductVote(productId, userData.username);
+        }
       }
     } catch (error) {
       console.error('Error voting:', error);

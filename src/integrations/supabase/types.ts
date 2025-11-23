@@ -413,9 +413,14 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string | null
+          email_notifications_enabled: boolean | null
           id: string
           instagram: string | null
           linkedin: string | null
+          notify_on_comment: boolean | null
+          notify_on_follow: boolean | null
+          notify_on_launch: boolean | null
+          notify_on_vote: boolean | null
           stripe_customer_id: string | null
           telegram: string | null
           twitter: string | null
@@ -428,9 +433,14 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          email_notifications_enabled?: boolean | null
           id: string
           instagram?: string | null
           linkedin?: string | null
+          notify_on_comment?: boolean | null
+          notify_on_follow?: boolean | null
+          notify_on_launch?: boolean | null
+          notify_on_vote?: boolean | null
           stripe_customer_id?: string | null
           telegram?: string | null
           twitter?: string | null
@@ -443,9 +453,14 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          email_notifications_enabled?: boolean | null
           id?: string
           instagram?: string | null
           linkedin?: string | null
+          notify_on_comment?: boolean | null
+          notify_on_follow?: boolean | null
+          notify_on_launch?: boolean | null
+          notify_on_vote?: boolean | null
           stripe_customer_id?: string | null
           telegram?: string | null
           twitter?: string | null
