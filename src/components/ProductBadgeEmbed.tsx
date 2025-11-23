@@ -98,7 +98,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     const badgeText = 'Support our Launch';
     return (
       <div 
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-all"
+        className="inline-flex flex-wrap items-center gap-2 px-4 py-2 rounded-lg border transition-all"
         style={{
           background: styles.bg,
           color: styles.text,
@@ -106,11 +106,13 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
           ...(theme === 'gold' && { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' })
         }}
       >
-        <img src={iconSrc} alt="Launch" width="20" height="20" className="block" />
-        <span className="text-sm font-medium whitespace-nowrap">{badgeText}</span>
+        <div className="flex items-center gap-2">
+          <img src={iconSrc} alt="Launch" width="20" height="20" className="block" />
+          <span className="text-sm font-medium whitespace-nowrap">{badgeText}</span>
+        </div>
         {withCategories && categories.length > 0 && (
           <span 
-            className="px-2.5 py-1 rounded text-xs font-medium ml-2"
+            className="px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap"
             style={{
               background: 'transparent',
               border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
@@ -136,11 +138,8 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
 
       {/* Gold Winner Badge */}
       {hasWon && (
-        <div className="mb-6 p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">🏆</span>
-            <h4 className="text-sm font-semibold text-yellow-900">Top Product Badge</h4>
-          </div>
+        <div className="mb-6">
+          <h4 className="text-sm font-medium mb-3 text-muted-foreground">Top Product Badge</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(['gold'] as BadgeTheme[]).map((theme) => (
               <div key={`${theme}-basic`} className="space-y-2">
