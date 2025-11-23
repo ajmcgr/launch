@@ -139,7 +139,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         <div className="mb-6 p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">🏆</span>
-            <h4 className="text-sm font-semibold text-yellow-900">Top {winnerLabel} Product Badge</h4>
+            <h4 className="text-sm font-semibold text-yellow-900">Top Product Badge</h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(['gold'] as BadgeTheme[]).map((theme) => (
