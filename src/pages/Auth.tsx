@@ -76,6 +76,9 @@ const Auth = () => {
         provider,
         options: {
           redirectTo: `${window.location.origin}${isSignUp ? '/submit' : '/'}`,
+          queryParams: provider === 'google' ? {
+            prompt: 'select_account',
+          } : undefined,
         },
       });
 
