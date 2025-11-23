@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.setup-stripe-products]
 verify_jwt = false
+
+[functions.detect-winners]
+verify_jwt = false
