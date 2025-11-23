@@ -298,7 +298,9 @@ const Home = () => {
               <TabsTrigger value="month">This Month</TabsTrigger>
               <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
-            <ViewToggle view={view} onViewChange={handleViewChange} />
+            <div className="hidden md:block">
+              <ViewToggle view={view} onViewChange={handleViewChange} />
+            </div>
           </div>
 
           <TabsContent value="today" className="space-y-6">
