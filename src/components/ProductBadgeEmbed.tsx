@@ -70,13 +70,13 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       ? 'https://trylaunch.ai/src/assets/launch-icon-light.png' 
       : 'https://trylaunch.ai/src/assets/launch-icon-dark.png';
     const badgeText = theme === 'gold' ? '🏆 Top Product' : 'Support our Launch';
-    const categoryBg = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.2)' : 'rgba(0, 0, 0, 0.06)';
+    const categoryBorder = theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
     const categoriesText = categories.slice(0, 2).join(' · ');
     
     return `<a href="${productUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
   <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
   <span>${badgeText}</span>
-  ${categoriesText ? `<span style="padding: 2px 10px; background: ${categoryBg}; border-radius: 4px; font-size: 12px; font-weight: 500; opacity: 0.9;">${categoriesText}</span>` : ''}
+  ${categoriesText ? `<span style="padding: 2px 10px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 12px; font-weight: 500; opacity: 0.9;">${categoriesText}</span>` : ''}
 </a>`;
   };
 
@@ -112,7 +112,8 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
           <span 
             className="px-2.5 py-1 rounded text-xs font-medium ml-2"
             style={{
-              background: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.2)' : 'rgba(0, 0, 0, 0.06)',
+              background: 'transparent',
+              border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
               opacity: 0.9
             }}
           >
