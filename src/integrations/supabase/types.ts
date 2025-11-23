@@ -285,6 +285,9 @@ export type Database = {
           slug: string | null
           status: string | null
           tagline: string | null
+          won_daily: boolean | null
+          won_monthly: boolean | null
+          won_weekly: boolean | null
         }
         Insert: {
           coupon_code?: string | null
@@ -299,6 +302,9 @@ export type Database = {
           slug?: string | null
           status?: string | null
           tagline?: string | null
+          won_daily?: boolean | null
+          won_monthly?: boolean | null
+          won_weekly?: boolean | null
         }
         Update: {
           coupon_code?: string | null
@@ -313,6 +319,9 @@ export type Database = {
           slug?: string | null
           status?: string | null
           tagline?: string | null
+          won_daily?: boolean | null
+          won_monthly?: boolean | null
+          won_weekly?: boolean | null
         }
         Relationships: [
           {
