@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
@@ -14,6 +15,7 @@ const MyProducts = () => {
   const [user, setUser] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -264,6 +266,32 @@ const MyProducts = () => {
     return false;
   };
 
+  const filterProductsByPeriod = (products: any[], period: 'day' | 'month' | 'year' | 'all') => {
+    if (period === 'all') return products;
+    
+    const now = new Date();
+    let startDate: Date;
+    
+    switch (period) {
+      case 'day':
+        startDate = new Date(now.setHours(0, 0, 0, 0));
+        break;
+      case 'month':
+        startDate = new Date(now.setMonth(now.getMonth() - 1));
+        break;
+      case 'year':
+        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+        break;
+    }
+    
+    return products.filter(product => {
+      if (product.status !== 'launched' || !product.launch_date) return false;
+      return new Date(product.launch_date) >= startDate;
+    });
+  };
+
+  const filteredProducts = filterProductsByPeriod(products, timePeriod);
+
   if (!user) return null;
 
   return (
@@ -297,8 +325,28 @@ const MyProducts = () => {
             </div>
           </Card>
         ) : (
-          <div className="space-y-6">
-            {products.map((product) => (
+          <>
+            <Tabs value={timePeriod} onValueChange={(v) => setTimePeriod(v as any)} className="mb-6">
+              <TabsList>
+                <TabsTrigger value="all">All Products</TabsTrigger>
+                <TabsTrigger value="day">Today</TabsTrigger>
+                <TabsTrigger value="month">This Month</TabsTrigger>
+                <TabsTrigger value="year">This Year</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {filteredProducts.length === 0 ? (
+              <Card className="p-12 text-center">
+                <div className="max-w-md mx-auto">
+                  <h2 className="text-2xl font-bold mb-4">No Products Found</h2>
+                  <p className="text-muted-foreground">
+                    No launched products found for this time period.
+                  </p>
+                </div>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                {filteredProducts.map((product) => (
               <Card key={product.id} className={product.status === 'launched' && product.slug ? 'hover:shadow-md transition-shadow' : ''}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -484,8 +532,10 @@ const MyProducts = () => {
                   )}
                 </CardContent>
               </Card>
-            ))}
-          </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

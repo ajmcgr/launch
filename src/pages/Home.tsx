@@ -54,7 +54,7 @@ const Home = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month') => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year') => {
     setLoading(true);
     try {
       // Calculate date range based on period
@@ -70,6 +70,9 @@ const Home = () => {
           break;
         case 'month':
           startDate = new Date(now.setMonth(now.getMonth() - 1));
+          break;
+        case 'year':
+          startDate = new Date(now.setFullYear(now.getFullYear() - 1));
           break;
       }
 
@@ -281,6 +284,7 @@ const Home = () => {
               <TabsTrigger value="week">This Week</TabsTrigger>
               <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="month">This Month</TabsTrigger>
+              <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
             <ViewToggle view={view} onViewChange={handleViewChange} />
           </div>
@@ -294,6 +298,10 @@ const Home = () => {
           </TabsContent>
 
           <TabsContent value="month" className="space-y-6">
+            {renderProductList(currentProducts)}
+          </TabsContent>
+
+          <TabsContent value="year" className="space-y-6">
             {renderProductList(currentProducts)}
           </TabsContent>
         </Tabs>
