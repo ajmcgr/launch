@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
@@ -14,6 +15,7 @@ const MyProducts = () => {
   const [user, setUser] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortPeriod, setSortPeriod] = useState<'all' | 'day' | 'month' | 'year'>('all');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -27,10 +29,10 @@ const MyProducts = () => {
     });
   }, [navigate]);
 
-  const fetchProducts = async (userId: string) => {
+  const fetchProducts = async (userId: string, period: 'all' | 'day' | 'month' | 'year' = 'all') => {
     setLoading(true);
     try {
-      const { data: productsData, error } = await supabase
+      let query = supabase
         .from('products')
         .select(`
           *,
@@ -39,8 +41,29 @@ const MyProducts = () => {
             product_categories(name)
           )
         `)
-        .eq('owner_id', userId)
-        .order('created_at', { ascending: false });
+        .eq('owner_id', userId);
+
+      // Apply date filter for launched products based on period
+      if (period !== 'all') {
+        const now = new Date();
+        let startDate: Date;
+        
+        switch (period) {
+          case 'day':
+            startDate = new Date(now.setHours(0, 0, 0, 0));
+            break;
+          case 'month':
+            startDate = new Date(now.setMonth(now.getMonth() - 1));
+            break;
+          case 'year':
+            startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+            break;
+        }
+        
+        query = query.gte('launch_date', startDate.toISOString());
+      }
+
+      const { data: productsData, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
 
