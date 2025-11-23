@@ -66,6 +66,9 @@ const MyProducts = () => {
         iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         netVotes: voteCounts[product.id] || 0,
+        won_daily: product.won_daily || false,
+        won_weekly: product.won_weekly || false,
+        won_monthly: product.won_monthly || false,
       })) || [];
 
       setProducts(formattedProducts);
@@ -474,6 +477,9 @@ const MyProducts = () => {
                       productSlug={product.slug}
                       productName={product.name}
                       categories={product.categories}
+                      wonDaily={product.won_daily}
+                      wonWeekly={product.won_weekly}
+                      wonMonthly={product.won_monthly}
                     />
                   )}
                 </CardContent>
