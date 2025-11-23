@@ -54,7 +54,7 @@ const Home = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month') => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year') => {
     setLoading(true);
     try {
       // Calculate date range based on period
@@ -70,6 +70,9 @@ const Home = () => {
           break;
         case 'month':
           startDate = new Date(now.setMonth(now.getMonth() - 1));
+          break;
+        case 'year':
+          startDate = new Date(now.setFullYear(now.getFullYear() - 1));
           break;
       }
 
