@@ -242,7 +242,7 @@ const MyProducts = () => {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
       draft: 'secondary',
-      scheduled: 'default',
+      scheduled: 'outline',
       launched: 'outline',
     };
 
