@@ -6,10 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { X } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { X, CalendarIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS } from '@/lib/constants';
 import { toast } from 'sonner';
+import { format, addDays } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const Submit = () => {
   const navigate = useNavigate();
@@ -251,6 +255,10 @@ const Submit = () => {
     }
     if (step === 3 && (!formData.description || formData.categories.length === 0)) {
       toast.error('Please add a description and select at least one category');
+      return;
+    }
+    if (step === 4 && formData.plan === 'skip' && !formData.selectedDate) {
+      toast.error('Please select a launch date and time');
       return;
     }
     // Skip step 4 (plan selection) and step 5 (review) if product is already scheduled
@@ -701,6 +709,69 @@ const Submit = () => {
                     </CardHeader>
                   </Card>
                 ))}
+                
+                {formData.plan === 'skip' && (
+                  <div className="space-y-2 mt-6">
+                    <Label>Select Launch Date & Time *</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !formData.selectedDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.selectedDate 
+                            ? format(new Date(formData.selectedDate), "PPP 'at' h:mm a")
+                            : "Pick your launch date and time"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={formData.selectedDate ? new Date(formData.selectedDate) : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              // Set default time to 9 AM PST
+                              date.setHours(9, 0, 0, 0);
+                              handleInputChange('selectedDate', date.toISOString());
+                            }
+                          }}
+                          disabled={(date) => {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const maxDate = addDays(today, 7);
+                            return date < today || date > maxDate;
+                          }}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                        <div className="p-3 border-t">
+                          <Label className="text-sm mb-2 block">Launch Time (PST)</Label>
+                          <Input
+                            type="time"
+                            value={formData.selectedDate ? format(new Date(formData.selectedDate), 'HH:mm') : '09:00'}
+                            onChange={(e) => {
+                              const [hours, minutes] = e.target.value.split(':');
+                              const date = formData.selectedDate ? new Date(formData.selectedDate) : new Date();
+                              date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                              handleInputChange('selectedDate', date.toISOString());
+                            }}
+                            className="w-full"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Choose the exact time your product goes live
+                          </p>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                    <p className="text-sm text-muted-foreground">
+                      Select any date within the next 7 days
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -711,6 +782,11 @@ const Submit = () => {
                   <p className="text-sm text-muted-foreground">{formData.tagline}</p>
                   <p className="text-sm">Categories: {formData.categories.join(', ')}</p>
                   <p className="text-sm">Plan: {PRICING_PLANS.find(p => p.id === formData.plan)?.name}</p>
+                  {formData.selectedDate && (
+                    <p className="text-sm">
+                      Launch Date: {format(new Date(formData.selectedDate), "PPP 'at' h:mm a")}
+                    </p>
+                  )}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   By clicking submit, you'll be redirected to complete payment. After successful payment,

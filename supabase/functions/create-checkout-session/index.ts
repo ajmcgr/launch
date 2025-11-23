@@ -33,7 +33,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    const { plan, productData } = await req.json();
+    const { plan, selectedDate, productData } = await req.json();
 
     // Verify the JWT token and get user
     const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
@@ -81,6 +81,7 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         plan,
+        selected_date: selectedDate || '',
         product_name: productData.name,
         product_tagline: productData.tagline,
         product_url: productData.url,

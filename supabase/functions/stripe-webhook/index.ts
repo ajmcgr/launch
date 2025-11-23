@@ -83,7 +83,7 @@ serve(async (req) => {
       const plan = metadata.plan;
       
       if (plan === 'skip') {
-        // Launch plan: Use the selected date from metadata
+        // Skip the Line: Use the selected date from metadata
         launchDate = metadata.selected_date || await findNextAvailableDate(1);
       } else if (plan === 'join') {
         // Join the Line: First available date >7 days out
@@ -97,6 +97,11 @@ serve(async (req) => {
       }
 
       console.log(`Assigning launch date for plan '${plan}': ${launchDate}`);
+
+      // Determine if product should be 'scheduled' or 'launched'
+      const now = new Date();
+      const launchDateObj = new Date(launchDate);
+      const shouldBeScheduled = launchDateObj > now;
 
       // Check if a product with this slug already exists for this user
       const { data: existingProduct } = await supabaseClient
@@ -118,7 +123,7 @@ serve(async (req) => {
             tagline: metadata.product_tagline,
             description: metadata.product_description,
             domain_url: metadata.product_url,
-            status: plan === 'relaunch' ? 'scheduled' : 'launched',
+            status: shouldBeScheduled ? 'scheduled' : 'live',
             launch_date: launchDate,
           })
           .eq('id', existingProduct.id)
@@ -149,7 +154,7 @@ serve(async (req) => {
             description: metadata.product_description,
             domain_url: metadata.product_url,
             slug: metadata.product_slug,
-            status: plan === 'relaunch' ? 'scheduled' : 'launched',
+            status: shouldBeScheduled ? 'scheduled' : 'live',
             launch_date: launchDate,
           })
           .select()
