@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
+import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -469,6 +470,13 @@ const MyProducts = () => {
                     )}
                   </div>
                 </CardContent>
+                {product.status === 'launched' && product.slug && (
+                  <ProductBadgeEmbed 
+                    productSlug={product.slug}
+                    productName={product.name}
+                    categories={product.categories}
+                  />
+                )}
               </Card>
             ))}
           </div>
