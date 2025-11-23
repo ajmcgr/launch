@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { notifyProductComment } from '@/lib/notifications';
 
 interface CommentFormProps {
   productId: string;
@@ -44,6 +45,18 @@ export const CommentForm = ({ productId, onCommentAdded, parentCommentId, onCanc
         });
 
       if (error) throw error;
+
+      // Get user's username for notification
+      const { data: userData } = await supabase
+        .from('users')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      // Send notification to product owner
+      if (userData?.username) {
+        notifyProductComment(productId, userData.username);
+      }
 
       setContent('');
       toast.success(parentCommentId ? 'Reply added!' : 'Comment added!');

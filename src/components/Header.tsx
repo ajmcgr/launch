@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
+import { NotificationBell } from '@/components/NotificationBell';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -100,10 +101,11 @@ export const Header = () => {
 
             {/* Desktop User Menu */}
             {user ? (
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2">
                 <Button onClick={handleSubmitClick}>
                   Submit
                 </Button>
+                <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">

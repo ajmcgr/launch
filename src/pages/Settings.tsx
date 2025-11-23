@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,6 +26,11 @@ const Settings = () => {
     website: '',
     avatar_url: '',
     stripe_customer_id: '',
+    email_notifications_enabled: true,
+    notify_on_follow: true,
+    notify_on_comment: true,
+    notify_on_vote: true,
+    notify_on_launch: true,
   });
   const [uploading, setUploading] = useState(false);
 
@@ -153,6 +159,7 @@ const Settings = () => {
         <Tabs defaultValue="profile" className="space-y-6">
           <TabsList>
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
             <TabsTrigger value="billing">Billing</TabsTrigger>
           </TabsList>
@@ -262,6 +269,109 @@ const Settings = () => {
                     {loading ? 'Saving...' : 'Save Changes'}
                   </Button>
                 </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="notifications">
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Notifications</CardTitle>
+                <CardDescription>
+                  Choose what you want to be notified about via email
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="email-enabled">Email Notifications</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enable or disable all email notifications
+                    </p>
+                  </div>
+                  <Switch
+                    id="email-enabled"
+                    checked={profile.email_notifications_enabled}
+                    onCheckedChange={(checked) => {
+                      setProfile({ ...profile, email_notifications_enabled: checked });
+                      handleUpdateProfile(new Event('submit') as any);
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="notify-follow">New Followers</Label>
+                      <p className="text-sm text-muted-foreground">
+                        When someone follows you or your product
+                      </p>
+                    </div>
+                    <Switch
+                      id="notify-follow"
+                      checked={profile.notify_on_follow}
+                      disabled={!profile.email_notifications_enabled}
+                      onCheckedChange={(checked) => {
+                        setProfile({ ...profile, notify_on_follow: checked });
+                        handleUpdateProfile(new Event('submit') as any);
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="notify-comment">Comments</Label>
+                      <p className="text-sm text-muted-foreground">
+                        When someone comments on your product
+                      </p>
+                    </div>
+                    <Switch
+                      id="notify-comment"
+                      checked={profile.notify_on_comment}
+                      disabled={!profile.email_notifications_enabled}
+                      onCheckedChange={(checked) => {
+                        setProfile({ ...profile, notify_on_comment: checked });
+                        handleUpdateProfile(new Event('submit') as any);
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="notify-vote">Votes</Label>
+                      <p className="text-sm text-muted-foreground">
+                        When someone upvotes your product
+                      </p>
+                    </div>
+                    <Switch
+                      id="notify-vote"
+                      checked={profile.notify_on_vote}
+                      disabled={!profile.email_notifications_enabled}
+                      onCheckedChange={(checked) => {
+                        setProfile({ ...profile, notify_on_vote: checked });
+                        handleUpdateProfile(new Event('submit') as any);
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="notify-launch">Product Launches</Label>
+                      <p className="text-sm text-muted-foreground">
+                        When products you follow are launched
+                      </p>
+                    </div>
+                    <Switch
+                      id="notify-launch"
+                      checked={profile.notify_on_launch}
+                      disabled={!profile.email_notifications_enabled}
+                      onCheckedChange={(checked) => {
+                        setProfile({ ...profile, notify_on_launch: checked });
+                        handleUpdateProfile(new Event('submit') as any);
+                      }}
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

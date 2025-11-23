@@ -10,6 +10,7 @@ import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { notifyProductFollow, notifyProductVote } from '@/lib/notifications';
 
 const LaunchDetail = () => {
   const { slug } = useParams();
@@ -178,6 +179,19 @@ const LaunchDetail = () => {
       const voteDiff = (newVote || 0) - (userVote || 0);
       setUserVote(newVote);
       setProduct({ ...product, netVotes: product.netVotes + voteDiff });
+
+      // Send notification if upvoting
+      if (newVote === 1 && userVote !== 1) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+
+        if (userData?.username) {
+          notifyProductVote(product.id, userData.username);
+        }
+      }
     } catch (error) {
       console.error('Error voting:', error);
       toast.error('Failed to vote');
@@ -217,6 +231,17 @@ const LaunchDetail = () => {
         setIsFollowing(true);
         setFollowerCount(prev => prev + 1);
         toast.success('Following product');
+
+        // Send notification to product owner
+        const { data: userData } = await supabase
+          .from('users')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+
+        if (userData?.username) {
+          notifyProductFollow(product.id, userData.username);
+        }
       }
     } catch (error: any) {
       console.error('Error following/unfollowing:', error);
