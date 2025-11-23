@@ -455,8 +455,7 @@ const MyProducts = () => {
                                     boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)'
                                   }}
                                 >
-                                  <span className="text-xl">🏆</span>
-                                  <span className="text-sm font-medium">Top Product</span>
+                                  <span className="text-sm font-medium">Support our Launch</span>
                                   {product.categories.length > 0 && (
                                     <span 
                                       className="px-2.5 py-1 rounded text-xs font-medium ml-2"
