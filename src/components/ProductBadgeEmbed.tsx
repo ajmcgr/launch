@@ -70,15 +70,13 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       ? 'https://trylaunch.ai/src/assets/launch-icon-light.png' 
       : 'https://trylaunch.ai/src/assets/launch-icon-dark.png';
     const badgeText = theme === 'gold' ? '🏆 Top Product' : 'Support our Launch';
-    const categoryBg = theme === 'dark' ? '#2A2A2A' : theme === 'gold' ? 'rgba(255, 215, 0, 0.3)' : '#E5E5E5';
-    const categoriesHTML = categories.slice(0, 3).map(cat => 
-      `<span style="padding: 2px 8px; background: ${categoryBg}; color: ${styles.text}; border-radius: 12px; font-size: 11px; font-weight: 500;">${cat}</span>`
-    ).join('');
+    const categoryBg = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.2)' : 'rgba(0, 0, 0, 0.06)';
+    const categoriesText = categories.slice(0, 2).join(' · ');
     
     return `<a href="${productUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
   <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
   <span>${badgeText}</span>
-  ${categoriesHTML ? `<span style="display: flex; gap: 4px; margin-left: 4px;">${categoriesHTML}</span>` : ''}
+  ${categoriesText ? `<span style="padding: 2px 10px; background: ${categoryBg}; border-radius: 4px; font-size: 12px; font-weight: 500; opacity: 0.9;">${categoriesText}</span>` : ''}
 </a>`;
   };
 
@@ -111,20 +109,15 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         <img src={iconSrc} alt="Launch" width="20" height="20" className="block" />
         <span className="text-sm font-medium">{badgeText}</span>
         {withCategories && categories.length > 0 && (
-          <div className="flex gap-1.5 ml-2">
-            {categories.slice(0, 3).map((cat) => (
-              <span 
-                key={cat} 
-                className="px-2 py-0.5 rounded-full text-xs font-medium"
-                style={{
-                  background: theme === 'dark' ? '#2A2A2A' : theme === 'gold' ? 'rgba(255, 215, 0, 0.3)' : '#E5E5E5',
-                  color: styles.text,
-                }}
-              >
-                {cat}
-              </span>
-            ))}
-          </div>
+          <span 
+            className="px-2.5 py-1 rounded text-xs font-medium ml-2"
+            style={{
+              background: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.2)' : 'rgba(0, 0, 0, 0.06)',
+              opacity: 0.9
+            }}
+          >
+            {categories.slice(0, 2).join(' · ')}
+          </span>
         )}
       </div>
     );
