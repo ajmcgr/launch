@@ -158,9 +158,6 @@ export const Header = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] bg-background">
-                <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
-                </SheetHeader>
                 <nav className="flex flex-col gap-4 mt-8">
                   <Link 
                     to="/" 
