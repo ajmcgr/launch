@@ -245,7 +245,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       {categories.length > 0 && (
         <div>
           <h4 className="text-sm font-medium mb-3 text-muted-foreground">Badge with Categories</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
               <div key={theme} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
