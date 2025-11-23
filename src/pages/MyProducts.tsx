@@ -397,7 +397,17 @@ const MyProducts = () => {
                           ) : (
                             <CardTitle className="text-2xl">{product.name}</CardTitle>
                           )}
-                          {getStatusBadge(product.status)}
+                          <div className="flex gap-2">
+                            {getStatusBadge(product.status)}
+                            {(product.won_daily || product.won_weekly || product.won_monthly) && (
+                              <Badge 
+                                variant="outline" 
+                                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black border-yellow-500 font-semibold"
+                              >
+                                🏆 {product.won_daily ? 'Top Daily' : product.won_weekly ? 'Top Weekly' : 'Top Monthly'}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                         <p className="text-muted-foreground mb-3">{product.tagline}</p>
                         <div className="flex flex-wrap gap-2 mb-3">
