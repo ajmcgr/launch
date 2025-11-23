@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import launchIcon from '@/assets/launch-icon.png';
+import launchIconLight from '@/assets/launch-icon-light.png';
+import launchIconDark from '@/assets/launch-icon-dark.png';
 
 interface ProductBadgeEmbedProps {
   productSlug: string;
@@ -44,20 +45,26 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [] }: Produc
 
   const generateBasicBadgeHTML = (theme: BadgeTheme) => {
     const styles = getThemeStyles(theme);
+    const iconUrl = theme === 'dark' 
+      ? 'https://trylaunch.ai/src/assets/launch-icon-light.png' 
+      : 'https://trylaunch.ai/src/assets/launch-icon-dark.png';
     return `<a href="${productUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s;">
-  <img src="https://trylaunch.ai/src/assets/launch-icon.png" alt="Launch" width="20" height="20" style="display: block;" />
+  <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
   <span>Support our Launch</span>
 </a>`;
   };
 
   const generateCategoryBadgeHTML = (theme: BadgeTheme) => {
     const styles = getThemeStyles(theme);
+    const iconUrl = theme === 'dark' 
+      ? 'https://trylaunch.ai/src/assets/launch-icon-light.png' 
+      : 'https://trylaunch.ai/src/assets/launch-icon-dark.png';
     const categoriesHTML = categories.slice(0, 3).map(cat => 
       `<span style="padding: 2px 8px; background: ${theme === 'dark' ? '#2A2A2A' : '#E5E5E5'}; color: ${styles.text}; border-radius: 12px; font-size: 11px; font-weight: 500;">${cat}</span>`
     ).join('');
     
     return `<a href="${productUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s;">
-  <img src="https://trylaunch.ai/src/assets/launch-icon.png" alt="Launch" width="20" height="20" style="display: block;" />
+  <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
   <span>Support our Launch</span>
   ${categoriesHTML ? `<span style="display: flex; gap: 4px; margin-left: 4px;">${categoriesHTML}</span>` : ''}
 </a>`;
@@ -77,6 +84,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [] }: Produc
 
   const renderPreview = (theme: BadgeTheme, withCategories: boolean) => {
     const styles = getThemeStyles(theme);
+    const iconSrc = theme === 'dark' ? launchIconLight : launchIconDark;
     return (
       <div 
         className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-all"
@@ -86,7 +94,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [] }: Produc
           borderColor: styles.border,
         }}
       >
-        <img src={launchIcon} alt="Launch" width="20" height="20" className="block" />
+        <img src={iconSrc} alt="Launch" width="20" height="20" className="block" />
         <span className="text-sm font-medium">Support our Launch</span>
         {withCategories && categories.length > 0 && (
           <div className="flex gap-1.5 ml-2">
