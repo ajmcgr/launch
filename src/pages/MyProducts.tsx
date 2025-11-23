@@ -439,38 +439,9 @@ const MyProducts = () => {
                           </div>
                         )}
                         {product.status === 'launched' && (
-                          <div className="mt-2 flex flex-col gap-2">
-                            <div>
-                              <span className="font-semibold">{product.netVotes}</span>
-                              <span className="text-muted-foreground ml-1">votes</span>
-                            </div>
-                            {(product.won_daily || product.won_weekly || product.won_monthly) && (
-                              <div className="mt-2">
-                                <div 
-                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-all whitespace-nowrap"
-                                  style={{
-                                    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                                    color: '#1A1A1A',
-                                    borderColor: '#FFD700',
-                                    boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)'
-                                  }}
-                                >
-                                  <span className="text-sm font-medium">Support our Launch</span>
-                                  {product.categories.length > 0 && (
-                                    <span 
-                                      className="px-2.5 py-1 rounded text-xs font-medium ml-2"
-                                      style={{
-                                        background: 'transparent',
-                                        border: '1px solid rgba(255, 215, 0, 0.5)',
-                                        opacity: 0.9
-                                      }}
-                                    >
-                                      {product.categories.slice(0, 2).join(' · ')}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            )}
+                          <div className="mt-2">
+                            <span className="font-semibold">{product.netVotes}</span>
+                            <span className="text-muted-foreground ml-1">votes</span>
                           </div>
                         )}
                       </div>
