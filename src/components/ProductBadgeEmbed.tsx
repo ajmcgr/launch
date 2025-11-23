@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, Check } from 'lucide-react';
@@ -110,15 +109,15 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [] }: Produc
   };
 
   return (
-    <Card className="p-6 mt-4">
-      <h3 className="text-lg font-semibold mb-4">Embeddable Launch Badges</h3>
-      <p className="text-sm text-muted-foreground mb-6">
+    <div className="border-t pt-6 mt-6">
+      <h3 className="text-base font-semibold mb-2">Embeddable Launch Badges</h3>
+      <p className="text-sm text-muted-foreground mb-4">
         Copy and paste these badges on your website to drive traffic back to your launch.
       </p>
 
       {/* Basic Badge */}
-      <div className="mb-8">
-        <h4 className="text-sm font-semibold mb-3">Basic Badge</h4>
+      <div className="mb-6">
+        <h4 className="text-sm font-medium mb-3 text-muted-foreground">Basic Badge</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
             <div key={theme} className="space-y-2">
@@ -152,7 +151,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [] }: Produc
       {/* Badge with Categories */}
       {categories.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold mb-3">Badge with Categories</h4>
+          <h4 className="text-sm font-medium mb-3 text-muted-foreground">Badge with Categories</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
               <div key={theme} className="space-y-2">
@@ -183,7 +182,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [] }: Produc
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 };
 

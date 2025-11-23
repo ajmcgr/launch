@@ -469,14 +469,14 @@ const MyProducts = () => {
                       </>
                     )}
                   </div>
+                  {product.status === 'launched' && product.slug && (
+                    <ProductBadgeEmbed 
+                      productSlug={product.slug}
+                      productName={product.name}
+                      categories={product.categories}
+                    />
+                  )}
                 </CardContent>
-                {product.status === 'launched' && product.slug && (
-                  <ProductBadgeEmbed 
-                    productSlug={product.slug}
-                    productName={product.name}
-                    categories={product.categories}
-                  />
-                )}
               </Card>
             ))}
           </div>
