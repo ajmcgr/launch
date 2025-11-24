@@ -27,7 +27,19 @@ const MyProducts = () => {
         fetchProducts(session.user.id);
       }
     });
-  }, [navigate]);
+
+    // Check for successful payment and refresh
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      toast.success('Payment successful! Your product has been scheduled.');
+      // Remove success param and refresh
+      window.history.replaceState({}, '', '/my-products');
+      // Refresh products after a brief delay
+      setTimeout(() => {
+        if (user) fetchProducts(user.id);
+      }, 1000);
+    }
+  }, [navigate, user]);
 
   const fetchProducts = async (userId: string) => {
     setLoading(true);
@@ -126,22 +138,14 @@ const MyProducts = () => {
         body: {
           plan: 'relaunch',
           selectedDate: null,
-          productData: {
-            name: product.name,
-            tagline: product.tagline,
-            url: product.domain_url,
-            description: product.description,
-            categories: product.categories,
-            slug: product.slug,
-          },
+          productId: product.id,
         },
       });
 
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, '_blank');
-        toast.success('Checkout opened in new window. Complete payment to relaunch your product!');
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');
       }
@@ -170,22 +174,14 @@ const MyProducts = () => {
         body: {
           plan: 'skip',
           selectedDate: null,
-          productData: {
-            name: product.name,
-            tagline: product.tagline,
-            url: product.domain_url,
-            description: product.description,
-            categories: product.categories,
-            slug: product.slug,
-          },
+          productId: product.id,
         },
       });
 
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, '_blank');
-        toast.success('Checkout opened in new window. Complete payment to launch your product!');
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');
       }
@@ -214,22 +210,14 @@ const MyProducts = () => {
         body: {
           plan: 'join',
           selectedDate: null,
-          productData: {
-            name: product.name,
-            tagline: product.tagline,
-            url: product.domain_url,
-            description: product.description,
-            categories: product.categories,
-            slug: product.slug,
-          },
+          productId: product.id,
         },
       });
 
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, '_blank');
-        toast.success('Checkout opened in new window. Complete payment to schedule your product!');
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');
       }
