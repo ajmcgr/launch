@@ -574,6 +574,23 @@ const MyProducts = () => {
                     )}
                     {product.status === 'scheduled' && (
                       <>
+                        <div className="w-full p-3 bg-primary/10 rounded-md mb-3">
+                          <div className="flex items-center gap-2 text-sm">
+                            <Calendar className="h-4 w-4 text-primary" />
+                            <span className="font-medium">Scheduled to launch:</span>
+                            <span className="text-primary">
+                              {new Date(product.launch_date).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })} at {new Date(product.launch_date).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                timeZoneName: 'short',
+                              })}
+                            </span>
+                          </div>
+                        </div>
                         <Button 
                           variant="outline" 
                           onClick={(e) => {
