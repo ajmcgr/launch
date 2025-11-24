@@ -439,9 +439,8 @@ const Submit = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Open Stripe checkout in new window
-        window.open(data.url, '_blank');
-        toast.success('Checkout opened in new window. Complete payment to launch your product!');
+        // Redirect to Stripe checkout in same window
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');
       }
