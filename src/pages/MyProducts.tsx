@@ -266,7 +266,7 @@ const MyProducts = () => {
       const { error } = await supabase
         .from('products')
         .update({
-          status: 'paused',
+          status: 'draft',
           launch_date: null,
         })
         .eq('id', product.id);
@@ -326,7 +326,6 @@ const MyProducts = () => {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
       draft: 'secondary',
-      paused: 'secondary',
       scheduled: 'outline',
       launched: 'outline',
     };
@@ -339,8 +338,8 @@ const MyProducts = () => {
   };
 
   const canEdit = (product: any) => {
-    // Drafts and paused products are always editable
-    if (product.status === 'draft' || product.status === 'paused') return true;
+    // Drafts are always editable
+    if (product.status === 'draft') return true;
     
     // Scheduled products are editable until launch
     if (product.status === 'scheduled') {
@@ -626,29 +625,6 @@ const MyProducts = () => {
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
-                        </Button>
-                      </>
-                    )}
-                    {product.status === 'paused' && (
-                      <>
-                        <Button 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleScheduleLine(product);
-                          }}
-                        >
-                          Resume Launch
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          asChild
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Link to={`/submit?draft=${product.id}`}>
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit
-                          </Link>
                         </Button>
                       </>
                     )}
