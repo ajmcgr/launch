@@ -158,7 +158,7 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
-            {isForgotPassword ? 'Reset Password' : (isSignUp ? 'Join Launch' : 'Welcome to Launch')}
+            {isForgotPassword ? 'Reset Password' : (isSignUp ? 'Join Launch' : 'Welcome Back')}
           </CardTitle>
           <CardDescription>
             {isForgotPassword 
