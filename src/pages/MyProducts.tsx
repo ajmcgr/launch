@@ -4,9 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 
@@ -16,6 +21,9 @@ const MyProducts = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
+  const [rescheduleDialog, setRescheduleDialog] = useState<{ open: boolean; product: any | null }>({ open: false, product: null });
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedTime, setSelectedTime] = useState<string>('09:00');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -273,36 +281,41 @@ const MyProducts = () => {
     }
   };
 
-  const handleRescheduleLaunch = async (product: any) => {
-    const newDateStr = prompt('Enter new launch date (YYYY-MM-DD):');
-    
-    if (!newDateStr) return;
+  const openRescheduleDialog = (product: any) => {
+    const launchDate = product.launch_date ? new Date(product.launch_date) : undefined;
+    setSelectedDate(launchDate);
+    if (launchDate) {
+      setSelectedTime(`${String(launchDate.getHours()).padStart(2, '0')}:${String(launchDate.getMinutes()).padStart(2, '0')}`);
+    } else {
+      setSelectedTime('09:00');
+    }
+    setRescheduleDialog({ open: true, product });
+  };
+
+  const handleRescheduleLaunch = async () => {
+    if (!selectedDate || !rescheduleDialog.product) return;
 
     try {
-      const newDate = new Date(newDateStr);
-      
-      if (isNaN(newDate.getTime())) {
-        toast.error('Invalid date format. Please use YYYY-MM-DD');
-        return;
-      }
+      const [hours, minutes] = selectedTime.split(':').map(Number);
+      const newDate = new Date(selectedDate);
+      newDate.setHours(hours, minutes, 0, 0);
 
       if (newDate <= new Date()) {
         toast.error('Launch date must be in the future');
         return;
       }
 
-      newDate.setHours(9, 0, 0, 0); // Set to 9am UTC
-
       const { error } = await supabase
         .from('products')
         .update({
           launch_date: newDate.toISOString(),
         })
-        .eq('id', product.id);
+        .eq('id', rescheduleDialog.product.id);
 
       if (error) throw error;
 
       toast.success('Launch rescheduled successfully');
+      setRescheduleDialog({ open: false, product: null });
       if (user) fetchProducts(user.id);
     } catch (error) {
       console.error('Reschedule error:', error);
@@ -552,7 +565,7 @@ const MyProducts = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleRescheduleLaunch(product);
+                            openRescheduleDialog(product);
                           }}
                         >
                           <Calendar className="h-4 w-4 mr-2" />
@@ -658,6 +671,64 @@ const MyProducts = () => {
           </>
         )}
       </div>
+
+      {/* Reschedule Dialog */}
+      <Dialog open={rescheduleDialog.open} onOpenChange={(open) => setRescheduleDialog({ open, product: null })}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Reschedule Launch</DialogTitle>
+            <DialogDescription>
+              Choose a new date and time for {rescheduleDialog.product?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Launch Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Launch Time (UTC)</label>
+              <input
+                type="time"
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRescheduleDialog({ open: false, product: null })}>
+              Cancel
+            </Button>
+            <Button onClick={handleRescheduleLaunch} disabled={!selectedDate}>
+              Reschedule
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
