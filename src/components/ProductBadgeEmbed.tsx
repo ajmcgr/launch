@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import launchIconLight from '@/assets/launch-icon-light.png';
 import launchIconDark from '@/assets/launch-icon-dark.png';
@@ -20,6 +20,7 @@ type BadgeTheme = 'light' | 'neutral' | 'dark' | 'gold';
 const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily = false, wonWeekly = false, wonMonthly = false }: ProductBadgeEmbedProps) => {
   const [copiedBasic, setCopiedBasic] = useState<BadgeTheme | null>(null);
   const [copiedWithCategories, setCopiedWithCategories] = useState<BadgeTheme | null>(null);
+  const badgeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const productUrl = `https://trylaunch.ai/launch/${productSlug}`;
 
@@ -94,12 +95,45 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     toast.success('Embed code copied to clipboard!');
   };
 
-  const renderPreview = (theme: BadgeTheme, withCategories: boolean) => {
+  const downloadAsImage = async (type: 'basic' | 'category', theme: BadgeTheme) => {
+    const refKey = `${type}-${theme}`;
+    const element = badgeRefs.current[refKey];
+    
+    if (!element) {
+      toast.error('Failed to capture badge');
+      return;
+    }
+
+    try {
+      // Dynamically import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
+      
+      const canvas = await html2canvas(element, {
+        backgroundColor: null,
+        scale: 3,
+      });
+      
+      const link = document.createElement('a');
+      link.download = `${productName.replace(/\s+/g, '-')}-badge-${theme}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      toast.success('Badge downloaded as image!');
+    } catch (error) {
+      console.error('Error generating image:', error);
+      toast.error('Failed to download badge');
+    }
+  };
+
+  const renderPreview = (theme: BadgeTheme, withCategories: boolean, type: 'basic' | 'category') => {
     const styles = getThemeStyles(theme);
     const iconSrc = theme === 'dark' ? launchIconLight : launchIconDark;
     const badgeText = theme === 'gold' ? '#1 Product on Launch' : 'Live on Launch';
+    const refKey = `${type}-${theme}`;
+    
     return (
       <div 
+        ref={(el) => (badgeRefs.current[refKey] = el)}
         className="inline-flex flex-wrap items-center gap-2 px-4 py-2 rounded-lg border transition-all"
         style={{
           background: styles.bg,
@@ -145,32 +179,54 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
               <div key={`${theme}-basic`} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">Basic</div>
                 <div className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2">
-                  {renderPreview(theme, false)}
+                  {renderPreview(theme, false, 'basic')}
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
-                >
-                  {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
+                  >
+                    {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => downloadAsImage('basic', theme)}
+                  >
+                    <Download className="h-3 w-3 mr-2" />
+                    Image
+                  </Button>
+                </div>
               </div>
             ))}
             {categories.length > 0 && (['gold'] as BadgeTheme[]).map((theme) => (
               <div key={`${theme}-category`} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">With Categories</div>
                 <div className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2">
-                  {renderPreview(theme, true)}
+                  {renderPreview(theme, true, 'category')}
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
-                >
-                  {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
+                  >
+                    {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => downloadAsImage('category', theme)}
+                  >
+                    <Download className="h-3 w-3 mr-2" />
+                    Image
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -184,16 +240,27 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
             <div key={theme} className="space-y-2">
               <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
               <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
-                {renderPreview(theme, false)}
+                {renderPreview(theme, false, 'basic')}
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
-              >
-                {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
+                >
+                  {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => downloadAsImage('basic', theme)}
+                >
+                  <Download className="h-3 w-3 mr-2" />
+                  Image
+                </Button>
+              </div>
             </div>
           ))}
         </div>
@@ -207,16 +274,27 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
               <div key={theme} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
                 <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
-                  {renderPreview(theme, true)}
+                  {renderPreview(theme, true, 'category')}
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
-                >
-                  {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
+                  >
+                    {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => downloadAsImage('category', theme)}
+                  >
+                    <Download className="h-3 w-3 mr-2" />
+                    Image
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
