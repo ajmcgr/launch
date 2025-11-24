@@ -129,75 +129,47 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
   };
 
   const hasWon = wonDaily || wonWeekly || wonMonthly;
-  const winnerLabel = wonDaily ? 'Daily' : wonWeekly ? 'Weekly' : wonMonthly ? 'Monthly' : '';
 
   return (
     <div className="border-t pt-6 mt-6">
       <h3 className="text-base font-semibold mb-2">Embeddable Launch Badges</h3>
       <p className="text-sm text-muted-foreground mb-4">
-        Copy and paste these badges on your website to drive traffic back to your launch.
+        Copy the embed code to add these badges to your website.
       </p>
 
-      {/* Gold Winner Badge */}
       {hasWon && (
         <div className="mb-6">
           <h4 className="text-sm font-medium mb-3 text-muted-foreground">Top Product Badge</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {(['gold'] as BadgeTheme[]).map((theme) => (
+            {(['gold'] as BadgeTheme[]).map((theme) => (
               <div key={`${theme}-basic`} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">Basic</div>
-                <div 
-                  className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
-                >
+                <div className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2">
                   {renderPreview(theme, false)}
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full"
                   onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
                 >
-                  {copiedBasic === theme ? (
-                    <>
-                      <Check className="h-3 w-3" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      Copy Code
-                    </>
-                  )}
+                  {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
                 </Button>
               </div>
             ))}
             {categories.length > 0 && (['gold'] as BadgeTheme[]).map((theme) => (
               <div key={`${theme}-category`} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">With Categories</div>
-                <div 
-                  className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2 cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
-                >
+                <div className="flex items-center justify-center p-4 rounded-lg border bg-white mb-2">
                   {renderPreview(theme, true)}
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full"
                   onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
                 >
-                  {copiedWithCategories === theme ? (
-                    <>
-                      <Check className="h-3 w-3" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      Copy Code
-                    </>
-                  )}
+                  {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
                 </Button>
               </div>
             ))}
@@ -205,43 +177,28 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         </div>
       )}
 
-      {/* Basic Badge */}
       <div className="mb-6">
         <h4 className="text-sm font-medium mb-3 text-muted-foreground">Basic Badge</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
             <div key={theme} className="space-y-2">
               <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
-              <div 
-                className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2 cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
-              >
+              <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
                 {renderPreview(theme, false)}
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full flex items-center justify-center gap-2"
+                className="w-full"
                 onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
               >
-                {copiedBasic === theme ? (
-                  <>
-                    <Check className="h-3 w-3" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3 w-3" />
-                    Copy Code
-                  </>
-                )}
+                {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
               </Button>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Badge with Categories */}
       {categories.length > 0 && (
         <div>
           <h4 className="text-sm font-medium mb-3 text-muted-foreground">Badge with Categories</h4>
@@ -249,29 +206,16 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
             {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
               <div key={theme} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
-                <div 
-                  className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2 cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
-                >
+                <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
                   {renderPreview(theme, true)}
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full"
                   onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
                 >
-                  {copiedWithCategories === theme ? (
-                    <>
-                      <Check className="h-3 w-3" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      Copy Code
-                    </>
-                  )}
+                  {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy Code</>}
                 </Button>
               </div>
             ))}
