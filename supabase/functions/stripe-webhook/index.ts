@@ -123,7 +123,7 @@ serve(async (req) => {
             tagline: metadata.product_tagline,
             description: metadata.product_description,
             domain_url: metadata.product_url,
-            status: shouldBeScheduled ? 'scheduled' : 'live',
+            status: shouldBeScheduled ? 'scheduled' : 'launched',
             launch_date: launchDate,
           })
           .eq('id', existingProduct.id)
@@ -154,7 +154,7 @@ serve(async (req) => {
             description: metadata.product_description,
             domain_url: metadata.product_url,
             slug: metadata.product_slug,
-            status: shouldBeScheduled ? 'scheduled' : 'live',
+            status: shouldBeScheduled ? 'scheduled' : 'launched',
             launch_date: launchDate,
           })
           .select()
