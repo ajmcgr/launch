@@ -172,6 +172,20 @@ const MyProducts = () => {
         navigate('/auth?mode=signin');
         return;
       }
+
+      // Check if product already has an order (already paid)
+      const { data: existingOrder } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('product_id', product.id)
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (existingOrder) {
+        // Already paid, open date picker
+        openRescheduleDialog(product);
+        return;
+      }
       
       toast.info('Redirecting to payment...');
       
@@ -308,18 +322,19 @@ const MyProducts = () => {
       const { error } = await supabase
         .from('products')
         .update({
+          status: 'scheduled',
           launch_date: newDate.toISOString(),
         })
         .eq('id', rescheduleDialog.product.id);
 
       if (error) throw error;
 
-      toast.success('Launch rescheduled successfully');
+      toast.success('Launch scheduled successfully');
       setRescheduleDialog({ open: false, product: null });
       if (user) fetchProducts(user.id);
     } catch (error) {
       console.error('Reschedule error:', error);
-      toast.error('Failed to reschedule launch');
+      toast.error('Failed to schedule launch');
     }
   };
 
@@ -652,9 +667,11 @@ const MyProducts = () => {
       <Dialog open={rescheduleDialog.open} onOpenChange={(open) => setRescheduleDialog({ open, product: null })}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Reschedule Launch</DialogTitle>
+            <DialogTitle>
+              {rescheduleDialog.product?.status === 'scheduled' ? 'Reschedule Launch' : 'Schedule Launch'}
+            </DialogTitle>
             <DialogDescription>
-              Choose a new date and time for {rescheduleDialog.product?.name}
+              Choose a date and time for {rescheduleDialog.product?.name}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -700,7 +717,7 @@ const MyProducts = () => {
               Cancel
             </Button>
             <Button onClick={handleRescheduleLaunch} disabled={!selectedDate}>
-              Reschedule
+              {rescheduleDialog.product?.status === 'scheduled' ? 'Reschedule' : 'Schedule'}
             </Button>
           </DialogFooter>
         </DialogContent>
