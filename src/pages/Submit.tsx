@@ -384,7 +384,7 @@ const Submit = () => {
 
       if (!skipNavigation) {
         toast.success('Draft saved successfully!');
-        navigate('/myproducts');
+        navigate('/my-products');
       }
       
       return currentProductId;
@@ -735,20 +735,28 @@ const Submit = () => {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {formData.selectedDate 
-                            ? format(new Date(formData.selectedDate), "PPP 'at' h:mm a")
-                            : "Pick your launch date and time"}
+                          {formData.selectedDate && (() => {
+                            try {
+                              const d = new Date(formData.selectedDate);
+                              return !isNaN(d.getTime()) 
+                                ? format(d, "PPP 'at' h:mm a")
+                                : "Pick your launch date and time";
+                            } catch {
+                              return "Pick your launch date and time";
+                            }
+                          })() || "Pick your launch date and time"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={formData.selectedDate ? new Date(formData.selectedDate) : undefined}
                           onSelect={(date) => {
                             if (date) {
                               // Set default time to 9 AM PST
-                              date.setHours(9, 0, 0, 0);
-                              handleInputChange('selectedDate', date.toISOString());
+                              const newDate = new Date(date);
+                              newDate.setHours(9, 0, 0, 0);
+                              handleInputChange('selectedDate', newDate.toISOString());
                             }
                           }}
                           disabled={(date) => {
@@ -764,12 +772,41 @@ const Submit = () => {
                           <Label className="text-sm mb-2 block">Launch Time (PST)</Label>
                           <Input
                             type="time"
-                            value={formData.selectedDate ? format(new Date(formData.selectedDate), 'HH:mm') : '09:00'}
+                            value={
+                              formData.selectedDate 
+                                ? (() => {
+                                    try {
+                                      const d = new Date(formData.selectedDate);
+                                      return isNaN(d.getTime()) ? '09:00' : format(d, 'HH:mm');
+                                    } catch {
+                                      return '09:00';
+                                    }
+                                  })()
+                                : '09:00'
+                            }
                             onChange={(e) => {
                               const [hours, minutes] = e.target.value.split(':');
-                              const date = formData.selectedDate ? new Date(formData.selectedDate) : new Date();
+                              let date: Date;
+                              
+                              if (formData.selectedDate) {
+                                try {
+                                  date = new Date(formData.selectedDate);
+                                  if (isNaN(date.getTime())) {
+                                    date = new Date();
+                                  }
+                                } catch {
+                                  date = new Date();
+                                }
+                              } else {
+                                date = new Date();
+                              }
+                              
                               date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                              handleInputChange('selectedDate', date.toISOString());
+                              
+                              // Validate the date before saving
+                              if (!isNaN(date.getTime())) {
+                                handleInputChange('selectedDate', date.toISOString());
+                              }
                             }}
                             className="w-full"
                           />
@@ -794,11 +831,21 @@ const Submit = () => {
                   <p className="text-sm text-muted-foreground">{formData.tagline}</p>
                   <p className="text-sm">Categories: {formData.categories.join(', ')}</p>
                   <p className="text-sm">Plan: {PRICING_PLANS.find(p => p.id === formData.plan)?.name}</p>
-                  {formData.selectedDate && (
-                    <p className="text-sm">
-                      Launch Date: {format(new Date(formData.selectedDate), "PPP 'at' h:mm a")}
-                    </p>
-                  )}
+                  {formData.selectedDate && (() => {
+                    try {
+                      const d = new Date(formData.selectedDate);
+                      if (!isNaN(d.getTime())) {
+                        return (
+                          <p className="text-sm">
+                            Launch Date: {format(d, "PPP 'at' h:mm a")}
+                          </p>
+                        );
+                      }
+                    } catch {
+                      // Invalid date, don't display
+                    }
+                    return null;
+                  })()}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   By clicking submit, you'll be redirected to complete payment. After successful payment,
