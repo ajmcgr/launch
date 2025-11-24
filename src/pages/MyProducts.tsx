@@ -227,6 +227,67 @@ const MyProducts = () => {
     }
   };
 
+  const handlePauseLaunch = async (product: any) => {
+    if (!confirm('Are you sure you want to pause this launch? You can resume it later.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({
+          status: 'draft',
+          launch_date: null,
+        })
+        .eq('id', product.id);
+
+      if (error) throw error;
+
+      toast.success('Launch paused successfully');
+      if (user) fetchProducts(user.id);
+    } catch (error) {
+      console.error('Pause error:', error);
+      toast.error('Failed to pause launch');
+    }
+  };
+
+  const handleRescheduleLaunch = async (product: any) => {
+    const newDateStr = prompt('Enter new launch date (YYYY-MM-DD):');
+    
+    if (!newDateStr) return;
+
+    try {
+      const newDate = new Date(newDateStr);
+      
+      if (isNaN(newDate.getTime())) {
+        toast.error('Invalid date format. Please use YYYY-MM-DD');
+        return;
+      }
+
+      if (newDate <= new Date()) {
+        toast.error('Launch date must be in the future');
+        return;
+      }
+
+      newDate.setHours(9, 0, 0, 0); // Set to 9am UTC
+
+      const { error } = await supabase
+        .from('products')
+        .update({
+          launch_date: newDate.toISOString(),
+        })
+        .eq('id', product.id);
+
+      if (error) throw error;
+
+      toast.success('Launch rescheduled successfully');
+      if (user) fetchProducts(user.id);
+    } catch (error) {
+      console.error('Reschedule error:', error);
+      toast.error('Failed to reschedule launch');
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
       draft: 'secondary',
@@ -437,7 +498,7 @@ const MyProducts = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 flex-wrap">
                     {product.status === 'launched' && (
                       <>
                         <Button 
@@ -461,7 +522,32 @@ const MyProducts = () => {
                         </Button>
                       </>
                     )}
-                    {canEdit(product) && (
+                    {product.status === 'scheduled' && (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleRescheduleLaunch(product);
+                          }}
+                        >
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Re-schedule
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handlePauseLaunch(product);
+                          }}
+                        >
+                          Pause Launch
+                        </Button>
+                      </>
+                    )}
+                    {canEdit(product) && product.status !== 'scheduled' && (
                       <Button 
                         variant="outline" 
                         asChild
