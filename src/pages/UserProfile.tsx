@@ -35,6 +35,7 @@ const UserProfile = () => {
 
   const fetchProfile = async () => {
     setLoading(true);
+    console.log('Fetching profile for username:', username);
     try {
       // Fetch user profile
       const { data: profileData, error: profileError } = await supabase
@@ -43,8 +44,21 @@ const UserProfile = () => {
         .eq('username', username)
         .single();
 
-      if (profileError) throw profileError;
+      console.log('Profile query result:', { profileData, profileError });
+
+      if (profileError) {
+        console.error('Profile error:', profileError);
+        throw profileError;
+      }
+      
+      if (!profileData) {
+        console.log('No profile found for username:', username);
+        setLoading(false);
+        return;
+      }
+      
       setProfile(profileData);
+      console.log('Profile set successfully:', profileData);
 
       // Fetch user's products
       const { data: productsData } = await supabase
