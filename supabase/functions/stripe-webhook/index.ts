@@ -103,108 +103,35 @@ serve(async (req) => {
       const launchDateObj = new Date(launchDate);
       const shouldBeScheduled = launchDateObj > now;
 
-      // Check if a product with this slug already exists for this user
-      const { data: existingProduct } = await supabaseClient
+      // Fetch the product by ID
+      const { data: product, error: productError } = await supabaseClient
         .from('products')
-        .select('id, status, owner_id')
-        .eq('slug', metadata.product_slug)
-        .eq('owner_id', metadata.user_id)
-        .maybeSingle();
+        .select('id, slug')
+        .eq('id', metadata.product_id)
+        .single();
 
-      let product;
+      if (productError || !product) {
+        console.error('Error fetching product:', productError);
+        throw new Error('Product not found');
+      }
+
+      console.log('Updating product:', product.id);
       
-      if (existingProduct && (existingProduct.status === 'draft' || existingProduct.status === 'scheduled' || (existingProduct.status === 'launched' && plan === 'relaunch'))) {
-        // Update existing draft, scheduled, or launched product (for relaunch)
-        console.log('Updating existing product:', existingProduct.id);
-        const { data: updatedProduct, error: updateError } = await supabaseClient
-          .from('products')
-          .update({
-            name: metadata.product_name,
-            tagline: metadata.product_tagline,
-            description: metadata.product_description,
-            domain_url: metadata.product_url,
-            status: shouldBeScheduled ? 'scheduled' : 'launched',
-            launch_date: launchDate,
-          })
-          .eq('id', existingProduct.id)
-          .select()
-          .single();
+      // Update product with launch date and status
+      const { error: updateError } = await supabaseClient
+        .from('products')
+        .update({
+          status: shouldBeScheduled ? 'scheduled' : 'launched',
+          launch_date: launchDate,
+        })
+        .eq('id', product.id);
 
-        if (updateError) {
-          console.error('Error updating product:', updateError);
-          throw updateError;
-        }
-        product = updatedProduct;
-        console.log('Product updated:', product.id);
-        
-        // Delete existing media to replace with new uploads
-        await supabaseClient
-          .from('product_media')
-          .delete()
-          .eq('product_id', product.id);
-      } else {
-        // Create new product
-        console.log('Creating new product');
-        const { data: newProduct, error: productError } = await supabaseClient
-          .from('products')
-          .insert({
-            owner_id: metadata.user_id,
-            name: metadata.product_name,
-            tagline: metadata.product_tagline,
-            description: metadata.product_description,
-            domain_url: metadata.product_url,
-            slug: metadata.product_slug,
-            status: shouldBeScheduled ? 'scheduled' : 'launched',
-            launch_date: launchDate,
-          })
-          .select()
-          .single();
-
-        if (productError) {
-          console.error('Error creating product:', productError);
-          throw productError;
-        }
-        product = newProduct;
-        console.log('Product created:', product.id);
+      if (updateError) {
+        console.error('Error updating product:', updateError);
+        throw updateError;
       }
-
-      // Add categories
-      const categories = JSON.parse(metadata.product_categories || '[]');
-      if (categories.length > 0) {
-        // Get category IDs
-        const { data: categoryData } = await supabaseClient
-          .from('product_categories')
-          .select('id, name')
-          .in('name', categories);
-
-        if (categoryData) {
-          const categoryMappings = categoryData.map(cat => ({
-            product_id: product.id,
-            category_id: cat.id,
-          }));
-
-          await supabaseClient
-            .from('product_category_map')
-            .insert(categoryMappings);
-        }
-      }
-
-      // Add media if provided
-      const mediaInserts = [];
-      if (metadata.product_icon) {
-        mediaInserts.push({ product_id: product.id, type: 'icon', url: metadata.product_icon });
-      }
-      if (metadata.product_thumbnail) {
-        mediaInserts.push({ product_id: product.id, type: 'thumbnail', url: metadata.product_thumbnail });
-      }
-      const screenshots = JSON.parse(metadata.product_screenshots || '[]');
-      screenshots.forEach((url: string) => {
-        mediaInserts.push({ product_id: product.id, type: 'screenshot', url });
-      });
-
-      if (mediaInserts.length > 0) {
-        await supabaseClient.from('product_media').insert(mediaInserts);
-      }
+      
+      console.log('Product updated successfully');
 
       // Create order record
       await supabaseClient

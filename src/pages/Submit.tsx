@@ -274,11 +274,11 @@ const Submit = () => {
     setStep(prev => prev - 1);
   };
 
-  const handleSaveDraft = async () => {
-    if (!user) return;
+  const handleSaveDraft = async (skipNavigation = false) => {
+    if (!user) return null;
 
     try {
-      toast.info('Saving draft...');
+      if (!skipNavigation) toast.info('Saving draft...');
 
       // Use existing productId or create new product
       let currentProductId = productId;
@@ -382,21 +382,44 @@ const Submit = () => {
         }
       }
 
-      toast.success('Draft saved successfully!');
-      navigate('/myproducts');
+      if (!skipNavigation) {
+        toast.success('Draft saved successfully!');
+        navigate('/myproducts');
+      }
+      
+      return currentProductId;
     } catch (error) {
       console.error('Save draft error:', error);
-      toast.error('Failed to save draft');
+      if (!skipNavigation) toast.error('Failed to save draft');
+      return null;
     }
   };
 
+  const handleSaveButtonClick = () => {
+    handleSaveDraft(false);
+  };
+
   const handleSubmit = async () => {
+    if (!user) {
+      toast.error('Please sign in to submit your product');
+      return;
+    }
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
         toast.error('Please log in again');
         navigate('/auth?mode=signin');
+        return;
+      }
+
+      // Save product as draft first
+      toast.info('Saving product...');
+      const savedProductId = await handleSaveDraft(true);
+      
+      if (!savedProductId) {
+        toast.error('Failed to save product');
         return;
       }
       
@@ -409,17 +432,7 @@ const Submit = () => {
         body: {
           plan: formData.plan,
           selectedDate: formData.selectedDate,
-          productData: {
-            name: formData.name,
-            tagline: formData.tagline,
-            url: formData.url,
-            description: formData.description,
-            categories: formData.categories,
-            slug: formData.slug,
-            icon: uploadedMedia.icon,
-            thumbnail: uploadedMedia.thumbnail,
-            screenshots: uploadedMedia.screenshots,
-          },
+          productId: savedProductId,
         },
       });
 
@@ -806,7 +819,7 @@ const Submit = () => {
             )}
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleSaveDraft}>
+            <Button variant="outline" onClick={handleSaveButtonClick}>
               Save
             </Button>
             {step < 5 && (

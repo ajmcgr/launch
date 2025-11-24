@@ -33,7 +33,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    const { plan, selectedDate, productData } = await req.json();
+    const { plan, selectedDate, productId } = await req.json();
 
     // Verify the JWT token and get user
     const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
@@ -76,21 +76,13 @@ serve(async (req) => {
       ],
       mode: 'payment',
       allow_promotion_codes: true,
-      success_url: `${productionUrl}/launch/${productData.slug}?success=true`,
+      success_url: `${productionUrl}/my-products?success=true`,
       cancel_url: `${productionUrl}/submit?canceled=true`,
       metadata: {
         user_id: user.id,
         plan,
         selected_date: selectedDate || '',
-        product_name: productData.name,
-        product_tagline: productData.tagline,
-        product_url: productData.url,
-        product_description: productData.description,
-        product_categories: JSON.stringify(productData.categories),
-        product_slug: productData.slug,
-        product_icon: productData.icon || '',
-        product_thumbnail: productData.thumbnail || '',
-        product_screenshots: JSON.stringify(productData.screenshots || []),
+        product_id: productId,
       },
     });
 
