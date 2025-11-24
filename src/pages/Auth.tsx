@@ -241,18 +241,7 @@ const Auth = () => {
             </div>
             {!isForgotPassword && (
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  {!isSignUp && (
-                    <button
-                      type="button"
-                      onClick={() => setIsForgotPassword(true)}
-                      className="text-xs text-primary hover:underline"
-                    >
-                      Forgot password?
-                    </button>
-                  )}
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -262,6 +251,15 @@ const Auth = () => {
                   required
                   minLength={6}
                 />
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPassword(true)}
+                    className="text-sm text-primary hover:underline block"
+                  >
+                    Forgot password?
+                  </button>
+                )}
               </div>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
