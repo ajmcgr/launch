@@ -62,6 +62,13 @@ const Settings = () => {
     setLoading(true);
 
     try {
+      // Store old username to check if it changed
+      const oldUsername = (await supabase
+        .from('users')
+        .select('username')
+        .eq('id', user.id)
+        .single()).data?.username;
+
       const { error } = await supabase
         .from('users')
         .update(profile)
@@ -69,6 +76,13 @@ const Settings = () => {
 
       if (error) throw error;
       toast.success('Profile updated successfully');
+
+      // If username changed, redirect to new profile URL
+      if (oldUsername && oldUsername !== profile.username) {
+        setTimeout(() => {
+          navigate(`/@${profile.username}`);
+        }, 1000);
+      }
     } catch (error: any) {
       console.error('Update error:', error);
       toast.error(error.message || 'Failed to update profile');
