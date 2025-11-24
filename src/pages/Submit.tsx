@@ -62,19 +62,32 @@ const Submit = () => {
   }, [step]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const checkAuth = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Auth error:', error);
+        toast.error('Authentication error. Please sign in.');
+        navigate('/auth?mode=signup');
+        return;
+      }
+      
       if (!session) {
         toast.error('Please sign up to submit a product');
         navigate('/auth?mode=signup');
-      } else {
-        setUser(session.user);
-        
-        // Load draft if draftId is present
-        if (draftId) {
-          await loadDraft(draftId);
-        }
+        return;
       }
-    });
+      
+      console.log('User authenticated:', session.user.id);
+      setUser(session.user);
+      
+      // Load draft if draftId is present
+      if (draftId) {
+        await loadDraft(draftId);
+      }
+    };
+    
+    checkAuth();
   }, [navigate, draftId]);
 
   const loadDraft = async (id: string) => {
@@ -275,9 +288,23 @@ const Submit = () => {
   };
 
   const handleSaveDraft = async (skipNavigation = false) => {
-    if (!user) return null;
+    if (!user) {
+      toast.error('Please log in to save your product');
+      return null;
+    }
 
     try {
+      // Verify we have an active session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        console.error('Session error:', sessionError);
+        toast.error('Your session has expired. Please log in again.');
+        navigate('/auth?mode=signin');
+        return null;
+      }
+
+      console.log('Saving draft with user ID:', user.id);
       if (!skipNavigation) toast.info('Saving draft...');
 
       // Use existing productId or create new product
@@ -285,6 +312,7 @@ const Submit = () => {
 
       if (!currentProductId) {
         // Create new product
+        console.log('Creating new product with owner_id:', user.id);
         const { data: newProduct, error: productError } = await supabase
           .from('products')
           .insert({
@@ -301,7 +329,10 @@ const Submit = () => {
           .select()
           .single();
 
-        if (productError) throw productError;
+        if (productError) {
+          console.error('Product creation error:', productError);
+          throw productError;
+        }
         currentProductId = newProduct.id;
         setProductId(currentProductId);
       } else {
@@ -388,9 +419,19 @@ const Submit = () => {
       }
       
       return currentProductId;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Save draft error:', error);
-      if (!skipNavigation) toast.error('Failed to save draft');
+      
+      // Provide specific error messages
+      if (error?.message?.includes('row-level security')) {
+        toast.error('Authentication error. Please log in again.');
+        navigate('/auth?mode=signin');
+      } else if (error?.code === '23505') {
+        toast.error('A product with this slug already exists. Please choose a different name.');
+      } else {
+        toast.error('Failed to save draft: ' + (error?.message || 'Unknown error'));
+      }
+      
       return null;
     }
   };
