@@ -200,6 +200,28 @@ const MyProducts = () => {
         navigate('/auth?mode=signin');
         return;
       }
+
+      // Check if product already has an order (already paid)
+      const { data: existingOrder } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('product_id', product.id)
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (existingOrder) {
+        // Already paid, just update status to scheduled
+        const { error } = await supabase
+          .from('products')
+          .update({ status: 'scheduled' })
+          .eq('id', product.id);
+
+        if (error) throw error;
+        
+        toast.success('Product scheduled successfully!');
+        if (user) fetchProducts(user.id);
+        return;
+      }
       
       toast.info('Redirecting to payment...');
       
@@ -236,7 +258,7 @@ const MyProducts = () => {
       const { error } = await supabase
         .from('products')
         .update({
-          status: 'draft',
+          status: 'paused',
           launch_date: null,
         })
         .eq('id', product.id);
@@ -291,6 +313,7 @@ const MyProducts = () => {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
       draft: 'secondary',
+      paused: 'secondary',
       scheduled: 'outline',
       launched: 'outline',
     };
@@ -303,8 +326,8 @@ const MyProducts = () => {
   };
 
   const canEdit = (product: any) => {
-    // Drafts are always editable
-    if (product.status === 'draft') return true;
+    // Drafts and paused products are always editable
+    if (product.status === 'draft' || product.status === 'paused') return true;
     
     // Scheduled products are editable until launch
     if (product.status === 'scheduled') {
@@ -590,6 +613,29 @@ const MyProducts = () => {
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
+                        </Button>
+                      </>
+                    )}
+                    {product.status === 'paused' && (
+                      <>
+                        <Button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleScheduleLine(product);
+                          }}
+                        >
+                          Resume Launch
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Link to={`/submit?draft=${product.id}`}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </Link>
                         </Button>
                       </>
                     )}
