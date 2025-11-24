@@ -27,19 +27,19 @@ const MyProducts = () => {
         fetchProducts(session.user.id);
       }
     });
+  }, [navigate]);
 
-    // Check for successful payment and refresh
+  useEffect(() => {
+    // Check for successful payment and refresh once
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true') {
+    if (urlParams.get('success') === 'true' && user) {
       toast.success('Payment successful! Your product has been scheduled.');
-      // Remove success param and refresh
       window.history.replaceState({}, '', '/my-products');
-      // Refresh products after a brief delay
       setTimeout(() => {
-        if (user) fetchProducts(user.id);
+        fetchProducts(user.id);
       }, 1000);
     }
-  }, [navigate, user]);
+  }, []);
 
   const fetchProducts = async (userId: string) => {
     setLoading(true);
