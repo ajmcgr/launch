@@ -137,9 +137,16 @@ const Submit = () => {
         .order('created_at', { ascending: false })
         .maybeSingle();
 
+      console.log('Order found:', order);
+      console.log('Order plan:', order?.plan);
+      
       if (order) {
         setExistingPlan(order.plan as 'join' | 'skip' | 'relaunch');
         setIsRescheduling(true);
+        console.log('Set existingPlan to:', order.plan);
+        console.log('Set isRescheduling to: true');
+      } else {
+        console.log('No order found for this product');
       }
 
       setProductStatus(product.status);
@@ -1077,37 +1084,41 @@ const Submit = () => {
                 {isLoadingProduct ? (
                   <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
                 ) : (
-                  PRICING_PLANS.map((plan) => {
-                  const isDisabled = isRescheduling && existingPlan && plan.id !== existingPlan;
-                  return (
-                    <Card
-                      key={plan.id}
-                      className={`transition-all ${
-                        isDisabled 
-                          ? 'opacity-50 cursor-not-allowed' 
-                          : 'cursor-pointer'
-                      } ${
-                        formData.plan === plan.id ? 'border-primary ring-2 ring-primary' : ''
-                      }`}
-                      onClick={() => !isDisabled && handleInputChange('plan', plan.id)}
-                    >
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle>{plan.name}</CardTitle>
-                            <CardDescription>
-                              {plan.description}
-                              {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
-                              {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
-                              {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
-                            </CardDescription>
-                          </div>
-                          <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  );
-                  })
+                  <>
+                    {console.log('Rendering plans. isRescheduling:', isRescheduling, 'existingPlan:', existingPlan)}
+                    {PRICING_PLANS.map((plan) => {
+                      const isDisabled = isRescheduling && existingPlan && plan.id !== existingPlan;
+                      console.log(`Plan ${plan.id}: isDisabled=${isDisabled}, isRescheduling=${isRescheduling}, existingPlan=${existingPlan}, plan.id=${plan.id}`);
+                      return (
+                        <Card
+                          key={plan.id}
+                          className={`transition-all ${
+                            isDisabled 
+                              ? 'opacity-50 cursor-not-allowed' 
+                              : 'cursor-pointer'
+                          } ${
+                            formData.plan === plan.id ? 'border-primary ring-2 ring-primary' : ''
+                          }`}
+                          onClick={() => !isDisabled && handleInputChange('plan', plan.id)}
+                        >
+                          <CardHeader>
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <CardTitle>{plan.name}</CardTitle>
+                                <CardDescription>
+                                  {plan.description}
+                                  {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
+                                  {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
+                                  {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
+                                </CardDescription>
+                              </div>
+                              <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
+                            </div>
+                          </CardHeader>
+                        </Card>
+                      );
+                    })}
+                  </>
                 )}
                 
                 {!isLoadingProduct && formData.plan === 'skip' && (
