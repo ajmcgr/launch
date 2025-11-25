@@ -478,29 +478,44 @@ const Submit = () => {
       // Handle free plan separately
       if (formData.plan === 'free') {
         try {
+          console.log('Starting free launch process for product:', savedProductId);
+          console.log('User ID:', session.user.id);
+          
           // Create a free order entry (no Stripe session)
-          const { error: orderError } = await supabase
+          const { data: orderData, error: orderError } = await supabase
             .from('orders')
             .insert({
               user_id: session.user.id,
               product_id: savedProductId,
               plan: 'free',
               stripe_session_id: 'free_launch', // Special identifier for free launches
-            });
+            })
+            .select();
 
-          if (orderError) throw orderError;
+          if (orderError) {
+            console.error('Order insert error:', orderError);
+            throw orderError;
+          }
+          
+          console.log('Order created successfully:', orderData);
 
           // Update product status to scheduled with a placeholder date
           // The launch-scheduler will assign the actual date
-          const { error: updateError } = await supabase
+          const { data: updateData, error: updateError } = await supabase
             .from('products')
             .update({
               status: 'scheduled',
               launch_date: null, // Will be assigned by scheduler
             })
-            .eq('id', savedProductId);
+            .eq('id', savedProductId)
+            .select();
 
-          if (updateError) throw updateError;
+          if (updateError) {
+            console.error('Product update error:', updateError);
+            throw updateError;
+          }
+          
+          console.log('Product updated successfully:', updateData);
 
           // Clear form data
           localStorage.removeItem('submitFormData');
@@ -510,9 +525,15 @@ const Submit = () => {
           toast.success('Product queued for free launch! It will be scheduled after paid launches.');
           navigate('/my-products');
           return;
-        } catch (error) {
-          console.error('Free launch error:', error);
-          toast.error('Failed to queue free launch. Please try again.');
+        } catch (error: any) {
+          console.error('Free launch error details:', {
+            message: error?.message,
+            code: error?.code,
+            details: error?.details,
+            hint: error?.hint,
+            error
+          });
+          toast.error(`Failed to queue free launch: ${error?.message || 'Please try again.'}`);
           return;
         }
       }
