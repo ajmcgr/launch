@@ -508,13 +508,51 @@ const Submit = () => {
           
           console.log('Order created successfully:', orderData);
 
-          // Update product status to scheduled with a placeholder date
-          // The launch-scheduler will assign the actual date
+          // Find next available date for free launch (after paid launches)
+          // Free launches get scheduled 3+ days out to prioritize paid launches
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const startDate = new Date(today);
+          startDate.setDate(startDate.getDate() + 3);
+          
+          let launchDate = new Date(startDate);
+          let foundSlot = false;
+          
+          // Try to find an available slot for next 30 days
+          for (let i = 0; i < 30; i++) {
+            const checkDate = new Date(startDate);
+            checkDate.setDate(checkDate.getDate() + i);
+            checkDate.setHours(0, 0, 0, 0);
+            
+            const nextDay = new Date(checkDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            
+            const { count } = await supabase
+              .from('products')
+              .select('*', { count: 'exact', head: true })
+              .eq('status', 'scheduled')
+              .gte('launch_date', checkDate.toISOString())
+              .lt('launch_date', nextDay.toISOString());
+            
+            // Allow 5 launches per day total (paid + free)
+            if ((count || 0) < 5) {
+              launchDate = checkDate;
+              foundSlot = true;
+              break;
+            }
+          }
+          
+          if (!foundSlot) {
+            toast.error('No available launch slots in the next 30 days. Please try again later.');
+            return;
+          }
+
+          // Update product status to scheduled with assigned date
           const { data: updateData, error: updateError } = await supabase
             .from('products')
             .update({
               status: 'scheduled',
-              launch_date: null, // Will be assigned by scheduler
+              launch_date: launchDate.toISOString(),
             })
             .eq('id', savedProductId)
             .select();
@@ -531,7 +569,12 @@ const Submit = () => {
           localStorage.removeItem('submitMedia');
           localStorage.removeItem('submitStep');
           
-          toast.success('Product queued for free launch! It will be scheduled after paid launches.');
+          const formattedDate = launchDate.toLocaleDateString('en-US', { 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric' 
+          });
+          toast.success(`Product scheduled for free launch on ${formattedDate}!`);
           navigate('/my-products');
           return;
         } catch (error: any) {
