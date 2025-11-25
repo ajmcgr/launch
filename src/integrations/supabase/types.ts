@@ -417,6 +417,7 @@ export type Database = {
           id: string
           instagram: string | null
           linkedin: string | null
+          name: string | null
           notify_on_comment: boolean | null
           notify_on_follow: boolean | null
           notify_on_launch: boolean | null
@@ -437,6 +438,7 @@ export type Database = {
           id: string
           instagram?: string | null
           linkedin?: string | null
+          name?: string | null
           notify_on_comment?: boolean | null
           notify_on_follow?: boolean | null
           notify_on_launch?: boolean | null
@@ -457,6 +459,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           linkedin?: string | null
+          name?: string | null
           notify_on_comment?: boolean | null
           notify_on_follow?: boolean | null
           notify_on_launch?: boolean | null

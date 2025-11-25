@@ -376,12 +376,15 @@ const UserProfile = () => {
 
             <div className="flex-1">
               <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h1 className="text-3xl font-bold mb-1">@{profile.username}</h1>
-                  {profile.bio && (
-                    <p className="text-muted-foreground">{profile.bio}</p>
-                  )}
-                </div>
+              <div>
+                <h1 className="text-3xl font-bold mb-1">@{profile.username}</h1>
+                {profile.name && (
+                  <p className="text-xl text-muted-foreground mb-2">{profile.name}</p>
+                )}
+                {profile.bio && (
+                  <p className="text-muted-foreground">{profile.bio}</p>
+                )}
+              </div>
 
                 {currentUser && currentUser.id !== profile.id && (
                   <Button
