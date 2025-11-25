@@ -148,22 +148,33 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     return (
       <div 
         ref={(el) => (badgeRefs.current[refKey] = el)}
-        className="inline-flex flex-wrap items-center gap-2 px-4 py-2 rounded-lg border transition-all"
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 16px',
+          borderRadius: '8px',
+          border: `1px solid ${styles.border}`,
           background: styles.bg,
           color: styles.text,
-          borderColor: styles.border,
           ...(theme === 'gold' && { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' })
         }}
       >
-        <div className="flex items-center gap-2">
-          <img src={iconSrc} alt="Launch" width="20" height="20" className="block" />
-          <span className="text-sm font-medium whitespace-nowrap">{badgeText}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img src={iconSrc} alt="Launch" width="20" height="20" style={{ display: 'block' }} />
+          <span style={{ fontSize: '14px', fontWeight: '500', whiteSpace: 'nowrap', lineHeight: '20px' }}>{badgeText}</span>
         </div>
         {withCategories && categories.length > 0 && (
           <span 
-            className="px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap"
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '2px 10px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: '500',
+              whiteSpace: 'nowrap',
+              lineHeight: '20px',
               background: 'transparent',
               border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
               opacity: 0.9
