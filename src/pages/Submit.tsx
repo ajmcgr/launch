@@ -508,36 +508,52 @@ const Submit = () => {
           
           console.log('Order created successfully:', orderData);
 
-          // Find next available date for free launch starting from today
+          // Check if there's capacity to launch immediately today
           const today = new Date();
           today.setHours(0, 0, 0, 0);
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
           
-          let launchDate = new Date(today);
+          const { count: todayCount } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .in('status', ['scheduled', 'live'])
+            .gte('launch_date', today.toISOString())
+            .lt('launch_date', tomorrow.toISOString());
+          
+          let launchDate: Date;
+          let productStatus: string;
           let foundSlot = false;
           
-          // Try to find an available slot starting from today
-          for (let i = 0; i < 30; i++) {
-            const checkDate = new Date(today);
-            checkDate.setDate(checkDate.getDate() + i);
-            checkDate.setHours(0, 0, 0, 0);
-            
-            const nextDay = new Date(checkDate);
-            nextDay.setDate(nextDay.getDate() + 1);
-            
-            const { count } = await supabase
-              .from('products')
-              .select('*', { count: 'exact', head: true })
-              .eq('status', 'scheduled')
-              .gte('launch_date', checkDate.toISOString())
-              .lt('launch_date', nextDay.toISOString());
-            
-            // Allow 5 launches per day total (paid + free)
-            if ((count || 0) < 5) {
-              launchDate = new Date(checkDate);
-              // Set a default launch time of 9:00 AM UTC for free launches
-              launchDate.setHours(9, 0, 0, 0);
-              foundSlot = true;
-              break;
+          // If there's capacity today (less than 5 launches), go live immediately
+          if ((todayCount || 0) < 5) {
+            launchDate = new Date(); // Current time
+            productStatus = 'live';
+            foundSlot = true;
+          } else {
+            // Otherwise, find next available slot
+            for (let i = 1; i < 30; i++) {
+              const checkDate = new Date(today);
+              checkDate.setDate(checkDate.getDate() + i);
+              checkDate.setHours(0, 0, 0, 0);
+              
+              const nextDay = new Date(checkDate);
+              nextDay.setDate(nextDay.getDate() + 1);
+              
+              const { count } = await supabase
+                .from('products')
+                .select('*', { count: 'exact', head: true })
+                .in('status', ['scheduled', 'live'])
+                .gte('launch_date', checkDate.toISOString())
+                .lt('launch_date', nextDay.toISOString());
+              
+              if ((count || 0) < 5) {
+                launchDate = new Date(checkDate);
+                launchDate.setHours(9, 0, 0, 0);
+                productStatus = 'scheduled';
+                foundSlot = true;
+                break;
+              }
             }
           }
           
@@ -546,11 +562,11 @@ const Submit = () => {
             return;
           }
 
-          // Update product status to scheduled with assigned date
+          // Update product status to scheduled/live with assigned date
           const { data: updateData, error: updateError } = await supabase
             .from('products')
             .update({
-              status: 'scheduled',
+              status: productStatus,
               launch_date: launchDate.toISOString(),
             })
             .eq('id', savedProductId)
@@ -568,10 +584,9 @@ const Submit = () => {
           localStorage.removeItem('submitMedia');
           localStorage.removeItem('submitStep');
           
-          const isToday = launchDate.toDateString() === new Date().toDateString();
-          const message = isToday 
-            ? 'Product scheduled for launch today!' 
-            : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}!`;
+          const message = productStatus === 'live'
+            ? 'Product launched successfully!'
+            : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${launchDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
           toast.success(message);
           navigate('/my-products');
           return;
