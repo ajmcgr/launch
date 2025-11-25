@@ -51,14 +51,10 @@ serve(async (req) => {
     console.log('User authenticated:', user.id);
 
     // Price ID mapping - these are the actual Stripe price IDs
-    // IMPORTANT: You need to create new Stripe products with the updated prices:
-    // - Launch (skip): $39 (currently mapped to old $19 price)
-    // - Relaunch: $19 (currently mapped to old $12 price)
-    // Then update the price IDs below with the new ones from your Stripe dashboard
     const priceIdMap: Record<string, string> = {
-      join: 'price_1SVnzHL6sVtfkDGlI3qbH6UN',    // $9
-      skip: 'price_1SVnzIL6sVtfkDGl60DAVmhv',   // UPDATE THIS: Should be $39 price ID
-      relaunch: 'price_1SVnzIL6sVtfkDGlBQi5EeHG' // UPDATE THIS: Should be $19 price ID
+      join: 'price_1SXE8NL6sVtfkDGlQZEi0eOb',    // $9
+      skip: 'price_1SXE8OL6sVtfkDGlEhEGF1dY',   // $39
+      relaunch: 'price_1SXE8PL6sVtfkDGlvVDVkYf6' // $19
     };
 
     const priceId = priceIdMap[plan];

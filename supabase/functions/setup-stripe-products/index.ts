@@ -29,13 +29,13 @@ serve(async (req) => {
       {
         name: 'Launch',
         description: 'Choose any available launch date and time',
-        amount: 1900, // $19 in cents
+        amount: 3900, // $39 in cents
         metadata: { plan_id: 'skip' }
       },
       {
         name: 'Relaunch',
         description: 'Relaunch existing product into spotlight',
-        amount: 1200, // $12 in cents
+        amount: 1900, // $19 in cents
         metadata: { plan_id: 'relaunch' }
       }
     ];
