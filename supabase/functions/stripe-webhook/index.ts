@@ -44,7 +44,7 @@ serve(async (req) => {
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
           const checkDate = new Date();
           checkDate.setDate(checkDate.getDate() + daysToCheck);
-          checkDate.setHours(9, 0, 0, 0); // 4am EST = 9am UTC
+          checkDate.setHours(0, 1, 0, 0); // 12:01 AM PST
           
           // Calculate the start and end of the day for this date
           const dayStart = new Date(checkDate);
@@ -74,7 +74,7 @@ serve(async (req) => {
         // Fallback if no date found (shouldn't happen)
         const fallbackDate = new Date();
         fallbackDate.setDate(fallbackDate.getDate() + daysToCheck);
-        fallbackDate.setHours(9, 0, 0, 0);
+        fallbackDate.setHours(0, 1, 0, 0); // 12:01 AM PST
         return fallbackDate.toISOString();
       };
 
