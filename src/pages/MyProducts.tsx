@@ -338,31 +338,6 @@ const MyProducts = () => {
     }
   };
 
-  const handlePauseLaunch = async (product: any) => {
-    if (!confirm('Are you sure you want to pause this launch? You can resume it later.')) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('products')
-        .update({
-          status: 'draft',
-          launch_date: null,
-        })
-        .eq('id', product.id);
-
-      if (error) throw error;
-
-      toast.success('Launch paused successfully');
-      if (user) fetchProducts(user.id);
-    } catch (error) {
-      console.error('Pause error:', error);
-      toast.error('Failed to pause launch');
-    }
-  };
-
-
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
       draft: 'secondary',
@@ -640,16 +615,6 @@ const MyProducts = () => {
                             </span>
                           </div>
                         </div>
-                        <Button
-                          variant="outline" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handlePauseLaunch(product);
-                          }}
-                        >
-                          Revert to Draft
-                        </Button>
                       </>
                     )}
                     {canEdit(product) && (
