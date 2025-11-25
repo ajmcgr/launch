@@ -45,7 +45,7 @@ const Pricing = () => {
                       <p className="font-semibold">Join the Line</p>
                     </div>
                     <p className="text-muted-foreground">
-                      Auto-scheduled 7+ days out
+                      Scheduled 7+ days out
                     </p>
                   </div>
                 )}
