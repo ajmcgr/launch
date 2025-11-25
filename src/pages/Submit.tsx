@@ -517,7 +517,7 @@ const Submit = () => {
           const { count: todayCount } = await supabase
             .from('products')
             .select('*', { count: 'exact', head: true })
-            .in('status', ['scheduled', 'live'])
+            .in('status', ['scheduled', 'launched'])
             .gte('launch_date', today.toISOString())
             .lt('launch_date', tomorrow.toISOString());
           
@@ -525,8 +525,8 @@ const Submit = () => {
           let productStatus: string;
           let foundSlot = false;
           
-          // If there's capacity today (less than 5 launches), launch immediately
-          if ((todayCount || 0) < 5) {
+          // If there's capacity today (less than 100 launches), launch immediately
+          if ((todayCount || 0) < 100) {
             launchDate = new Date(); // Current time
             productStatus = 'launched';
             foundSlot = true;
@@ -543,11 +543,11 @@ const Submit = () => {
               const { count } = await supabase
                 .from('products')
                 .select('*', { count: 'exact', head: true })
-                .in('status', ['scheduled', 'live'])
+                .in('status', ['scheduled', 'launched'])
                 .gte('launch_date', checkDate.toISOString())
                 .lt('launch_date', nextDay.toISOString());
               
-              if ((count || 0) < 5) {
+              if ((count || 0) < 100) {
                 launchDate = new Date(checkDate);
                 launchDate.setHours(9, 0, 0, 0);
                 productStatus = 'scheduled';
