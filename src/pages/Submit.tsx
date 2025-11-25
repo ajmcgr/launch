@@ -533,7 +533,9 @@ const Submit = () => {
             
             // Allow 5 launches per day total (paid + free)
             if ((count || 0) < 5) {
-              launchDate = checkDate;
+              launchDate = new Date(checkDate);
+              // Set a default launch time of 9:00 AM UTC for free launches
+              launchDate.setHours(9, 0, 0, 0);
               foundSlot = true;
               break;
             }

@@ -690,17 +690,19 @@ const MyProducts = () => {
                             </span>
                           </div>
                         </div>
-                        <Button 
-                          variant="outline" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            openRescheduleDialog(product);
-                          }}
-                        >
-                          <Calendar className="h-4 w-4 mr-2" />
-                          Re-schedule
-                        </Button>
+                        {product.orderPlan !== 'free' && (
+                          <Button 
+                            variant="outline" 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              openRescheduleDialog(product);
+                            }}
+                          >
+                            <Calendar className="h-4 w-4 mr-2" />
+                            Re-schedule
+                          </Button>
+                        )}
                         <Button 
                           variant="outline" 
                           onClick={(e) => {
