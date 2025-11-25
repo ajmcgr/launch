@@ -1151,12 +1151,15 @@ const Submit = () => {
                       {filteredPlans.map((plan) => {
                         const isPaidPlan = isRescheduling && plan.id === existingPlan;
                         const isSelected = formData.plan === plan.id;
+                        const isDisabled = isRescheduling && !isPaidPlan;
                         return (
                           <Card
                             key={plan.id}
                             className={`transition-all ${
                               isPaidPlan || isSelected
                                 ? 'border-primary ring-2 ring-primary bg-primary/5' 
+                                : isDisabled
+                                ? 'opacity-40 cursor-not-allowed'
                                 : 'cursor-pointer hover:border-primary/50'
                             }`}
                             onClick={() => !isRescheduling && handleInputChange('plan', plan.id)}
