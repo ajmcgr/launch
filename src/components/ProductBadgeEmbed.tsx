@@ -181,15 +181,8 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
   return (
     <div className="border-t pt-6 mt-6">
       <h3 className="text-base font-semibold mb-2">Embeddable Launch Badges</h3>
-      <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
-        <p className="text-sm font-medium mb-2">🎁 Get a Dofollow Backlink!</p>
-        <p className="text-xs text-muted-foreground">
-          Embed this badge with a dofollow link to Launch on your website and we'll give your product a dofollow backlink. 
-          Great for SEO! Once embedded, verify your badge to activate the backlink.
-        </p>
-      </div>
       <p className="text-sm text-muted-foreground mb-4">
-        Copy the embed code to add these badges to your website.
+        Copy the embed code to add these badges to your website to get a dofollow backlink.
       </p>
 
       {hasWon && (
