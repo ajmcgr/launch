@@ -294,8 +294,8 @@ const Home = () => {
           <div className="flex flex-row items-center justify-between gap-4 mb-8">
             <TabsList>
               <TabsTrigger value="month">This Month</TabsTrigger>
-              <TabsTrigger value="week">This Week</TabsTrigger>
               <TabsTrigger value="today">Today</TabsTrigger>
+              <TabsTrigger value="week">This Week</TabsTrigger>
               <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
             <div className="hidden md:block">
