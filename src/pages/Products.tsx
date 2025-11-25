@@ -245,90 +245,6 @@ const Products = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <aside className="lg:col-span-1 space-y-6">
-            <div>
-              <h3 className="font-semibold mb-3">Categories</h3>
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {CATEGORIES.map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={category}
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={() => handleCategoryToggle(category)}
-                    />
-                    <Label htmlFor={category} className="text-sm cursor-pointer">
-                      {category}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-3">Top Products</h3>
-              <div className="space-y-2">
-                <Button
-                  variant={topPeriod === 'today' && !selectedArchiveYear ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setTopPeriod('today');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  Today
-                </Button>
-                <Button
-                  variant={topPeriod === 'week' && !selectedArchiveYear ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setTopPeriod('week');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  This Week
-                </Button>
-                <Button
-                  variant={topPeriod === 'month' && !selectedArchiveYear ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setTopPeriod('month');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  This Month
-                </Button>
-                <Button
-                  variant={topPeriod === 'year' && !selectedArchiveYear ? 'default' : 'ghost'}
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setTopPeriod('year');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  This Year
-                </Button>
-              </div>
-            </div>
-
-            {archiveYears.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-3">Archived</h3>
-                <div className="space-y-2">
-                  {archiveYears.map((year) => (
-                    <Button
-                      key={year}
-                      variant={selectedArchiveYear === year ? 'default' : 'ghost'}
-                      className="w-full justify-start"
-                      onClick={() => setSelectedArchiveYear(year)}
-                    >
-                      {year}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </aside>
-
           <div className="lg:col-span-3 space-y-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex gap-4 flex-1">
@@ -383,6 +299,90 @@ const Products = () => {
               </div>
             )}
           </div>
+
+          <aside className="lg:col-span-1 space-y-6">
+            <div>
+              <h3 className="font-semibold mb-3">Top Products</h3>
+              <div className="space-y-2">
+                <Button
+                  variant={topPeriod === 'today' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('today');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  Today
+                </Button>
+                <Button
+                  variant={topPeriod === 'week' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('week');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  This Week
+                </Button>
+                <Button
+                  variant={topPeriod === 'month' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('month');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  This Month
+                </Button>
+                <Button
+                  variant={topPeriod === 'year' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('year');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  This Year
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-3">Categories</h3>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {CATEGORIES.map((category) => (
+                  <div key={category} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={category}
+                      checked={selectedCategories.includes(category)}
+                      onCheckedChange={() => handleCategoryToggle(category)}
+                    />
+                    <Label htmlFor={category} className="text-sm cursor-pointer">
+                      {category}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {archiveYears.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-3">Archived</h3>
+                <div className="space-y-2">
+                  {archiveYears.map((year) => (
+                    <Button
+                      key={year}
+                      variant={selectedArchiveYear === year ? 'default' : 'ghost'}
+                      className="w-full justify-start"
+                      onClick={() => setSelectedArchiveYear(year)}
+                    >
+                      {year}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
         </div>
       </div>
     </div>
