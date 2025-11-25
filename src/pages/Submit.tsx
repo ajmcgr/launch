@@ -139,9 +139,9 @@ const Submit = () => {
 
       if (order) {
         setExistingPlan(order.plan as 'join' | 'skip' | 'relaunch');
+        setIsRescheduling(true);
       }
 
-      setIsRescheduling(true);
       setProductStatus(product.status);
 
       const media = {
