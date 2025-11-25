@@ -146,12 +146,6 @@ const Submit = () => {
         setIsRescheduling(true);
         console.log('Set existingPlan to:', planValue);
         console.log('Set isRescheduling to: true');
-        
-        // Force the plan to be set correctly
-        setFormData(prev => ({
-          ...prev,
-          plan: planValue
-        }));
       } else {
         console.log('No order found for this product');
       }
@@ -1086,23 +1080,29 @@ const Submit = () => {
               </>
             )}
 
-            {step === 4 && (
-              <div className="space-y-4">
-                {isLoadingProduct ? (
-                  <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
-                ) : (
-                  <>
-                    {isRescheduling && existingPlan && (
-                      <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
-                        <p className="text-sm font-medium">
-                          You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan for this product. 
-                          {existingPlan === 'skip' && ' You can choose any available date and time below.'}
-                          {existingPlan === 'join' && ' Your launch date will be automatically assigned.'}
-                          {existingPlan === 'relaunch' && ' Your relaunch date will be automatically assigned.'}
-                        </p>
-                      </div>
-                    )}
-                    {PRICING_PLANS.filter(plan => !isRescheduling || plan.id === existingPlan).map((plan) => {
+            {step === 4 && (() => {
+              console.log('STEP 4 RENDER - isLoadingProduct:', isLoadingProduct, 'isRescheduling:', isRescheduling, 'existingPlan:', existingPlan, 'formData.plan:', formData.plan);
+              console.log('About to filter plans. isRescheduling:', isRescheduling, 'existingPlan:', existingPlan);
+              console.log('All plans:', PRICING_PLANS.map(p => p.id));
+              console.log('Filtered plans:', PRICING_PLANS.filter(plan => !isRescheduling || plan.id === existingPlan).map(p => p.id));
+              
+              return (
+                <div className="space-y-4">
+                  {isLoadingProduct ? (
+                    <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
+                  ) : (
+                    <>
+                      {isRescheduling && existingPlan && (
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+                          <p className="text-sm font-medium">
+                            You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan for this product. 
+                            {existingPlan === 'skip' && ' You can choose any available date and time below.'}
+                            {existingPlan === 'join' && ' Your launch date will be automatically assigned.'}
+                            {existingPlan === 'relaunch' && ' Your relaunch date will be automatically assigned.'}
+                          </p>
+                        </div>
+                      )}
+                      {PRICING_PLANS.filter(plan => !isRescheduling || plan.id === existingPlan).map((plan) => {
                       const isPaidPlan = isRescheduling && plan.id === existingPlan;
                       return (
                         <Card
@@ -1237,9 +1237,10 @@ const Submit = () => {
                       Select any available date within the calendar year
                     </p>
                   </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              );
+            })()}
 
             {step === 5 && (
               <div className="space-y-4">
