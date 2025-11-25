@@ -48,7 +48,7 @@ export const LaunchListItem = ({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow min-h-[120px]">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow min-h-[110px]">
       <Link to={`/launch/${slug}`} className="block">
         <div className="flex gap-3 p-3">
           <div className="flex-shrink-0">
