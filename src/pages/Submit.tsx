@@ -540,6 +540,15 @@ const Submit = () => {
       // Handle rescheduling existing product
       if (isRescheduling && productId && formData.selectedDate) {
         try {
+          // First save all the product edits
+          toast.info('Saving changes...');
+          const savedProductId = await handleSaveDraft(true);
+          
+          if (!savedProductId) {
+            toast.error('Failed to save product changes');
+            return;
+          }
+
           const selectedDate = new Date(formData.selectedDate);
           const now = new Date();
           const daysOut = Math.ceil((selectedDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
