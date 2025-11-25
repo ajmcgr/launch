@@ -508,7 +508,7 @@ const Submit = () => {
           localStorage.removeItem('submitStep');
           
           toast.success('Product queued for free launch! It will be scheduled after paid launches.');
-          navigate('/myproducts');
+          navigate('/my-products');
           return;
         } catch (error) {
           console.error('Free launch error:', error);
