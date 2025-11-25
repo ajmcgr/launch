@@ -6,6 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+const authSchema = z.object({
+  email: z.string().email('Invalid email address').max(255, 'Email too long'),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(100, 'Password too long'),
+});
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -43,10 +49,19 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate input
+      const validation = authSchema.safeParse({ email, password });
+      if (!validation.success) {
+        const errors = validation.error.errors.map(e => e.message).join(', ');
+        toast.error(errors);
+        setLoading(false);
+        return;
+      }
+
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email,
-          password,
+          email: validation.data.email.trim().toLowerCase(),
+          password: validation.data.password,
           options: {
             emailRedirectTo: `${window.location.origin}/submit`,
           },
@@ -56,15 +71,14 @@ const Auth = () => {
         toast.success('Successfully signed up! Please check your email to confirm.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: validation.data.email.trim().toLowerCase(),
+          password: validation.data.password,
         });
 
         if (error) throw error;
         toast.success('Successfully logged in!');
       }
     } catch (error: any) {
-      console.error('Auth error:', error);
       toast.error(error.message || `Failed to ${isSignUp ? 'sign up' : 'login'}`);
     } finally {
       setLoading(false);
@@ -85,7 +99,6 @@ const Auth = () => {
 
       if (error) throw error;
     } catch (error: any) {
-      console.error(`${provider} login error:`, error);
       toast.error(error.message || `Failed to login with ${provider}`);
     }
   };
@@ -95,7 +108,15 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // Validate email
+      const emailValidation = z.string().email('Invalid email address').safeParse(email);
+      if (!emailValidation.success) {
+        toast.error(emailValidation.error.errors[0].message);
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(emailValidation.data.trim().toLowerCase(), {
         redirectTo: `${window.location.origin}/auth?mode=reset`,
       });
 
@@ -103,7 +124,6 @@ const Auth = () => {
       toast.success('Password reset email sent! Check your inbox.');
       setIsForgotPassword(false);
     } catch (error: any) {
-      console.error('Password reset error:', error);
       toast.error(error.message || 'Failed to send reset email');
     } finally {
       setLoading(false);
@@ -131,15 +151,12 @@ const Auth = () => {
               const isNewUser = (now - createdAt) < 30000; // 30 seconds window
               
               if (isNewUser && session.user.email) {
-                console.log('Subscribing new user to newsletter:', session.user.email);
                 const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
                   body: { email: session.user.email },
                 });
                 
                 if (error) {
-                  console.error('Failed to subscribe to newsletter:', error);
-                } else {
-                  console.log('Successfully subscribed to newsletter');
+                  console.error('Newsletter subscription failed');
                 }
               }
             }

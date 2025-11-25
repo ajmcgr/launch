@@ -28,8 +28,6 @@ serve(async (req) => {
         throw new Error('No metadata found in session');
       }
 
-      console.log('Processing payment for user:', metadata.user_id);
-
       const supabaseClient = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''

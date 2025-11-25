@@ -48,8 +48,6 @@ serve(async (req) => {
       throw new Error('Unauthorized - No user');
     }
 
-    console.log('User authenticated:', user.id);
-
     // Price ID mapping - these are the actual Stripe price IDs
     const priceIdMap: Record<string, string> = {
       join: 'price_1SXE8NL6sVtfkDGlQZEi0eOb',    // $9
