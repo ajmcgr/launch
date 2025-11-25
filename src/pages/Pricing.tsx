@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Calendar, Zap, RefreshCw } from 'lucide-react';
+import { Check, Calendar, Zap, RefreshCw, Rocket } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 
 const Pricing = () => {
@@ -16,13 +16,13 @@ const Pricing = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
           {PRICING_PLANS.map((plan) => (
             <Card 
               key={plan.id} 
               className={`relative hover:shadow-lg transition-shadow ${
                 plan.id === 'skip' ? 'border-primary shadow-md' : ''
-              }`}
+              } ${plan.id === 'free' ? 'md:max-h-[600px]' : ''}`}
             >
               {plan.id === 'skip' && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -37,6 +37,15 @@ const Pricing = () => {
                 <div className="text-4xl font-bold">
                   ${plan.price}<span className="text-base font-normal text-muted-foreground"> / USD</span>
                 </div>
+
+                {plan.id === 'free' && (
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm border">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Rocket className="h-5 w-5 text-primary" />
+                      <p className="font-semibold">Basic Launch</p>
+                    </div>
+                  </div>
+                )}
 
                 {plan.id === 'join' && (
                   <div className="bg-muted/50 rounded-lg p-4 text-sm border">
@@ -75,42 +84,72 @@ const Pricing = () => {
                 )}
 
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Get a Backlink from a DR website to boost your SEO</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Put your product in front of 1K monthly visitors</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">1.5K newsletter subscribers with huge open rate</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Audience of founders, technologists, marketers and more</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Featured on homepage launch day</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Email notification to all subscribers</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Social media promotion</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Permanent product listing</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">User voting & comments</span>
-                  </li>
+                  {plan.id === 'free' ? (
+                    <>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Permanent product listing</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">SEO backlink to your site</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Eligible to appear when no paid launch scheduled</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Access to comments and upvotes</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Upgrade anytime for more visibility</span>
+                      </li>
+                      <li className="flex items-start gap-2 opacity-60">
+                        <span className="text-sm">Free listings do not include homepage feature, social promotion, or email blast</span>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Get a Backlink from a DR website to boost your SEO</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Put your product in front of 1K monthly visitors</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">1.5K newsletter subscribers with huge open rate</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Audience of founders, technologists, marketers and more</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Featured on homepage launch day</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Email notification to all subscribers</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Social media promotion</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">Permanent product listing</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">User voting & comments</span>
+                      </li>
+                    </>
+                  )}
                 </ul>
 
                 <Button 
@@ -119,7 +158,7 @@ const Pricing = () => {
                   size="lg"
                   variant={plan.id === 'skip' ? 'default' : 'outline'}
                 >
-                  <Link to="/submit">Get Started</Link>
+                  <Link to={plan.id === 'free' ? '/submit?plan=free' : '/submit'}>Get Started</Link>
                 </Button>
               </CardContent>
             </Card>
