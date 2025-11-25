@@ -119,6 +119,25 @@ const Submit = () => {
       } else if (draftId) {
         // Load draft if draftId is present
         await loadDraft(draftId);
+      } else {
+        // Check if user has an existing paid plan for new submissions
+        const { data: existingOrders } = await supabase
+          .from('orders')
+          .select('plan')
+          .eq('user_id', session.user.id)
+          .in('plan', ['join', 'skip', 'relaunch'])
+          .order('created_at', { ascending: false })
+          .limit(1);
+        
+        if (existingOrders && existingOrders.length > 0) {
+          const userPlan = existingOrders[0].plan as 'join' | 'skip' | 'relaunch';
+          console.log('User has existing paid plan:', userPlan);
+          setExistingPlan(userPlan);
+          setFormData(prev => ({
+            ...prev,
+            plan: userPlan,
+          }));
+        }
       }
     };
     
@@ -1167,7 +1186,8 @@ const Submit = () => {
             )}
 
             {step === 4 && (() => {
-              const filteredPlans = isRescheduling && existingPlan 
+              // Show only the paid plan if user has one (for both reschedule and new submissions)
+              const filteredPlans = existingPlan 
                 ? PRICING_PLANS.filter(plan => plan.id === existingPlan)
                 : PRICING_PLANS;
               
@@ -1184,10 +1204,10 @@ const Submit = () => {
                     <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
                   ) : (
                     <>
-                      {isRescheduling && existingPlan && (
+                      {existingPlan && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
                           <p className="text-sm font-medium">
-                            You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan for this product. 
+                            You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan. 
                             {existingPlan === 'skip' && ' You can choose any available date and time below.'}
                             {existingPlan === 'join' && ' Your launch date will be automatically assigned.'}
                             {existingPlan === 'relaunch' && ' Your relaunch date will be automatically assigned.'}
@@ -1195,9 +1215,9 @@ const Submit = () => {
                         </div>
                       )}
                       {filteredPlans.map((plan) => {
-                        const isPaidPlan = isRescheduling && plan.id === existingPlan;
+                        const isPaidPlan = existingPlan && plan.id === existingPlan;
                         const isSelected = formData.plan === plan.id;
-                        const isDisabled = isRescheduling && !isPaidPlan;
+                        const isDisabled = existingPlan && !isPaidPlan;
                         return (
                           <Card
                             key={plan.id}
@@ -1208,7 +1228,7 @@ const Submit = () => {
                                 ? 'opacity-40 cursor-not-allowed'
                                 : 'cursor-pointer hover:border-primary/50'
                             }`}
-                            onClick={() => !isRescheduling && handleInputChange('plan', plan.id)}
+                            onClick={() => !existingPlan && handleInputChange('plan', plan.id)}
                           >
                             <CardHeader>
                               <div className="flex justify-between items-start">
