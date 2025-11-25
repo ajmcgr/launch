@@ -53,11 +53,11 @@ serve(async (req) => {
           const dayEnd = new Date(checkDate);
           dayEnd.setHours(23, 59, 59, 999);
           
-          // Count products scheduled for this day
+          // Count products scheduled for this day (both scheduled and launched)
           const { count } = await supabaseClient
             .from('products')
             .select('*', { count: 'exact', head: true })
-            .eq('status', 'launched')
+            .in('status', ['scheduled', 'launched'])
             .gte('launch_date', dayStart.toISOString())
             .lte('launch_date', dayEnd.toISOString());
           
