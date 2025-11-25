@@ -35,7 +35,6 @@ const UserProfile = () => {
 
   const fetchProfile = async () => {
     setLoading(true);
-    console.log('Fetching profile for username:', username);
     try {
       // Fetch user profile
       const { data: profileData, error: profileError } = await supabase
@@ -52,7 +51,6 @@ const UserProfile = () => {
       }
       
       if (!profileData) {
-        console.log('No profile found for username:', username);
         setLoading(false);
         return;
       }

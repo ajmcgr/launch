@@ -15,8 +15,20 @@ import { toast } from 'sonner';
 import { format, addDays } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
+import { z } from 'zod';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
+
+const productSchema = z.object({
+  name: z.string().trim().min(1, 'Product name is required').max(100, 'Name too long'),
+  tagline: z.string().trim().min(1, 'Tagline is required').max(200, 'Tagline too long'),
+  url: z.string().trim().url('Invalid URL').max(500, 'URL too long'),
+  description: z.string().trim().min(1, 'Description is required').max(5000, 'Description too long'),
+  categories: z.array(z.string()).min(1, 'Select at least one category').max(3, 'Maximum 3 categories'),
+  slug: z.string().trim().min(1, 'Slug is required').max(100, 'Slug too long').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
+  couponCode: z.string().trim().max(50, 'Coupon code too long').optional(),
+  couponDescription: z.string().trim().max(200, 'Coupon description too long').optional(),
+});
 
 const Submit = () => {
   const navigate = useNavigate();
@@ -113,7 +125,6 @@ const Submit = () => {
         return;
       }
       
-      console.log('User authenticated:', session.user.id);
       setUser(session.user);
       
       // Load product for rescheduling if productId is present
@@ -131,8 +142,6 @@ const Submit = () => {
 
   const loadProductForReschedule = async (id: string, userId: string) => {
     setIsLoadingProduct(true);
-    console.log('=== LOADING PRODUCT FOR RESCHEDULE ===');
-    console.log('Product ID:', id, 'User ID:', userId);
     
     try {
       const { data: product, error } = await supabase
@@ -149,7 +158,6 @@ const Submit = () => {
         .single();
 
       if (error) throw error;
-      console.log('Product loaded:', product);
 
       // Get the order to determine the plan
       const { data: order, error: orderError } = await supabase
@@ -159,13 +167,9 @@ const Submit = () => {
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .maybeSingle();
-
-      console.log('Order query result:', { order, orderError });
       
       if (order && order.plan) {
         const planValue = order.plan as 'join' | 'skip' | 'relaunch';
-        console.log('Setting existingPlan to:', planValue);
-        console.log('Setting isRescheduling to: true');
         
         // Force formData.plan to match the paid plan
         const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
@@ -195,12 +199,8 @@ const Submit = () => {
         setUploadedMedia(media);
         setProductStatus(product.status);
         
-        console.log('=== RESCHEDULE SETUP COMPLETE ===');
-        console.log('Final formData.plan:', planValue, 'existingPlan:', planValue, 'isRescheduling: true');
-        
         toast.success(`Product loaded - ${PRICING_PLANS.find(p => p.id === planValue)?.name} plan`);
       } else {
-        console.log('No order found - treating as new submission');
         // No order means this is a draft, not a paid product
         const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
         const media = {
@@ -289,14 +289,11 @@ const Submit = () => {
         .order('created_at', { ascending: false })
         .maybeSingle();
 
-      console.log('Order found:', order);
-
       // If product is scheduled and has an order, treat it as rescheduling
       if (product.status === 'scheduled' && order && order.plan) {
         const planValue = order.plan as 'join' | 'skip' | 'relaunch';
         setExistingPlan(planValue);
         setIsRescheduling(true);
-        console.log('Setting up reschedule mode - plan:', planValue);
       }
 
       // Store product status
@@ -323,8 +320,6 @@ const Submit = () => {
         plan: paidPlan,
         selectedDate: product.launch_date || null,
       });
-      
-      console.log('Form data set with plan:', paidPlan);
       
       setUploadedMedia(media);
       toast.success(product.status === 'scheduled' && order ? 'Product loaded for rescheduling' : 'Draft loaded successfully');
@@ -435,18 +430,40 @@ const Submit = () => {
   };
 
   const handleNext = () => {
-    if (step === 1 && (!formData.name || !formData.tagline || !formData.url)) {
-      toast.error('Please fill in all required fields');
-      return;
+    // Validate based on current step
+    if (step === 1) {
+      const validation = productSchema.pick({ name: true, tagline: true, url: true }).safeParse({
+        name: formData.name,
+        tagline: formData.tagline,
+        url: formData.url,
+      });
+      
+      if (!validation.success) {
+        const errors = validation.error.errors.map(e => `${e.path[0]}: ${e.message}`).join(', ');
+        toast.error(errors);
+        return;
+      }
     }
-    if (step === 3 && (!formData.description || formData.categories.length === 0)) {
-      toast.error('Please add a description and select at least one category');
-      return;
+    
+    if (step === 3) {
+      const validation = productSchema.pick({ description: true, categories: true, slug: true }).safeParse({
+        description: formData.description,
+        categories: formData.categories,
+        slug: formData.slug,
+      });
+      
+      if (!validation.success) {
+        const errors = validation.error.errors.map(e => `${e.path[0]}: ${e.message}`).join(', ');
+        toast.error(errors);
+        return;
+      }
     }
+    
     if (step === 4 && formData.plan === 'skip' && !formData.selectedDate) {
       toast.error('Please select a launch date and time');
       return;
     }
+    
     // Skip step 4 (plan selection) and step 5 (review) if product is already scheduled
     if (step === 3 && productStatus === 'scheduled') {
       toast.info('Product is already scheduled. Saving changes...');
@@ -477,7 +494,6 @@ const Submit = () => {
         return null;
       }
 
-      console.log('Saving draft with user ID:', user.id);
       if (!skipNavigation) toast.info('Saving draft...');
 
       // Use existing productId or create new product
@@ -485,7 +501,6 @@ const Submit = () => {
 
       if (!currentProductId) {
         // Create new product
-        console.log('Creating new product with owner_id:', user.id);
         const { data: newProduct, error: productError } = await supabase
           .from('products')
           .insert({
@@ -714,8 +729,6 @@ const Submit = () => {
       // Handle free plan separately
       if (formData.plan === 'free') {
         try {
-          console.log('Starting free launch process for product:', savedProductId);
-          console.log('User ID:', session.user.id);
           
           // Create a free order entry (no Stripe session)
           const { data: orderData, error: orderError } = await supabase
@@ -1183,15 +1196,6 @@ const Submit = () => {
               const filteredPlans = isPaidPlan
                 ? PRICING_PLANS.filter(plan => plan.id === existingPlan)
                 : PRICING_PLANS;
-              
-              console.log('=== STEP 4 RENDER ===');
-              console.log('isLoadingProduct:', isLoadingProduct);
-              console.log('isRescheduling:', isRescheduling);
-              console.log('existingPlan:', existingPlan);
-              console.log('isPaidPlan:', isPaidPlan);
-              console.log('canUpgrade:', canUpgrade);
-              console.log('formData.plan:', formData.plan);
-              console.log('Filtered plans:', filteredPlans.map(p => `${p.id} (${p.name})`));
               
               return (
                 <div className="space-y-4">

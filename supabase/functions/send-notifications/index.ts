@@ -37,8 +37,6 @@ Deno.serve(async (req) => {
 
     const { userId, type, title, message, relatedProductId, relatedUserId, sendEmail = true }: NotificationRequest = await req.json();
 
-    console.log(`Creating notification for user ${userId}, type: ${type}`);
-
     // Create in-app notification
     const { data: notification, error: notifError } = await supabaseAdmin
       .from('notifications')
@@ -65,9 +63,7 @@ Deno.serve(async (req) => {
       const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
       
       if (authUser?.user?.email) {
-        console.log(`Sending email to ${authUser.user.email}`);
-
-        const productUrl = relatedProductId 
+        const productUrl = relatedProductId
           ? `${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/launch/${relatedProductId}`
           : Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
 
@@ -109,8 +105,6 @@ Deno.serve(async (req) => {
             subject: title,
             html: emailHtml,
           });
-
-          console.log('Email sent successfully:', emailResponse);
 
           // Update notification to mark email as sent
           await supabaseAdmin

@@ -19,7 +19,6 @@ export const sendNotification = async (params: SendNotificationParams) => {
       .single();
 
     if (!userPrefs?.email_notifications_enabled) {
-      console.log('User has email notifications disabled');
       return;
     }
 
@@ -33,7 +32,6 @@ export const sendNotification = async (params: SendNotificationParams) => {
 
     const prefKey = prefMap[params.type];
     if (prefKey && !userPrefs[prefKey as keyof typeof userPrefs]) {
-      console.log(`User has ${params.type} notifications disabled`);
       return;
     }
 
