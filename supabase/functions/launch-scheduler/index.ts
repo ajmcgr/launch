@@ -44,10 +44,10 @@ Deno.serve(async (req) => {
     for (const product of productsToLaunch) {
       console.log(`Launching product: ${product.name} (${product.id})`);
 
-      // Update product status to 'live'
+      // Update product status to 'launched'
       const { error: updateError } = await supabaseAdmin
         .from('products')
-        .update({ status: 'live' })
+        .update({ status: 'launched' })
         .eq('id', product.id);
 
       if (updateError) {

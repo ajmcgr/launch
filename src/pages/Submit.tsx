@@ -625,7 +625,7 @@ const Submit = () => {
       }
 
       // Handle rescheduling existing product
-      if (isRescheduling && productId && formData.selectedDate) {
+      if (isRescheduling && productId) {
         try {
           // First save all the product edits
           toast.info('Saving changes...');
@@ -636,23 +636,31 @@ const Submit = () => {
             return;
           }
 
-          const selectedDate = new Date(formData.selectedDate);
-          const now = new Date();
-          const daysOut = Math.ceil((selectedDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-          // Validate based on plan type
-          if (existingPlan === 'join' && daysOut < 7) {
-            toast.error('Join The Line requires scheduling at least 7 days in advance');
-            return;
-          }
-
-          if (existingPlan === 'relaunch' && daysOut < 30) {
-            toast.error('Relaunch requires scheduling at least 30 days in advance');
-            return;
-          }
-
-          if (selectedDate <= now && existingPlan !== 'skip') {
-            toast.error('Launch date must be in the future');
+          let launchDate: Date;
+          
+          // Auto-assign date for 'join' and 'relaunch' plans
+          if (existingPlan === 'join') {
+            // Find first available slot at least 7 days out
+            const minDate = new Date();
+            minDate.setDate(minDate.getDate() + 7);
+            minDate.setHours(9, 0, 0, 0);
+            launchDate = minDate;
+          } else if (existingPlan === 'relaunch') {
+            // Find first available slot at least 30 days out
+            const minDate = new Date();
+            minDate.setDate(minDate.getDate() + 30);
+            minDate.setHours(9, 0, 0, 0);
+            launchDate = minDate;
+          } else if (existingPlan === 'skip' && formData.selectedDate) {
+            // User selected date for 'skip' plan
+            launchDate = new Date(formData.selectedDate);
+            const now = new Date();
+            if (launchDate <= now) {
+              toast.error('Launch date must be in the future');
+              return;
+            }
+          } else {
+            toast.error('Please select a launch date');
             return;
           }
 
@@ -660,7 +668,7 @@ const Submit = () => {
             .from('products')
             .update({
               status: 'scheduled',
-              launch_date: selectedDate.toISOString(),
+              launch_date: launchDate.toISOString(),
             })
             .eq('id', productId);
 
@@ -821,6 +829,27 @@ const Submit = () => {
         try {
           // Reuse existing order for this launch
           const existingOrder = existingOrders[0];
+          const planType = existingOrder.plan as 'join' | 'skip' | 'relaunch';
+          
+          // Auto-assign date based on plan type
+          let launchDate: Date;
+          if (planType === 'join') {
+            // Auto-assign at least 7 days out
+            launchDate = new Date();
+            launchDate.setDate(launchDate.getDate() + 7);
+            launchDate.setHours(9, 0, 0, 0);
+          } else if (planType === 'relaunch') {
+            // Auto-assign at least 30 days out
+            launchDate = new Date();
+            launchDate.setDate(launchDate.getDate() + 30);
+            launchDate.setHours(9, 0, 0, 0);
+          } else if (planType === 'skip' && formData.selectedDate) {
+            // Use user-selected date
+            launchDate = new Date(formData.selectedDate);
+          } else {
+            toast.error('Please select a launch date');
+            return;
+          }
           
           // Create a new order entry referencing the same plan
           const { error: orderError } = await supabase
@@ -828,7 +857,7 @@ const Submit = () => {
             .insert({
               user_id: session.user.id,
               product_id: savedProductId,
-              plan: existingOrder.plan, // Use their existing plan
+              plan: planType,
               stripe_session_id: existingOrder.stripe_session_id, // Reference original payment
             });
 
@@ -839,7 +868,7 @@ const Submit = () => {
             .from('products')
             .update({
               status: 'scheduled',
-              launch_date: formData.selectedDate,
+              launch_date: launchDate.toISOString(),
             })
             .eq('id', savedProductId);
 
