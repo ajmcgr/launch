@@ -21,7 +21,7 @@ const MyProducts = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
-  const [rescheduleDialog, setRescheduleDialog] = useState<{ open: boolean; product: any | null }>({ open: false, product: null });
+  const [rescheduleDialog, setRescheduleDialog] = useState<{ open: boolean; product: any | null; planType?: 'skip' | 'join' | 'relaunch' }>({ open: false, product: null });
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>('09:00');
 
@@ -82,6 +82,19 @@ const MyProducts = () => {
         });
       }
 
+      // Get orders to check which plan was used
+      const allProductIds = productsData?.map(p => p.id) || [];
+      const { data: ordersData } = await supabase
+        .from('orders')
+        .select('product_id, plan')
+        .in('product_id', allProductIds)
+        .eq('user_id', userId);
+
+      const ordersByProduct: Record<string, string> = {};
+      ordersData?.forEach(order => {
+        ordersByProduct[order.product_id] = order.plan;
+      });
+
       const formattedProducts = productsData?.map(product => ({
         ...product,
         thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
@@ -91,6 +104,7 @@ const MyProducts = () => {
         won_daily: product.won_daily || false,
         won_weekly: product.won_weekly || false,
         won_monthly: product.won_monthly || false,
+        orderPlan: ordersByProduct[product.id] || null,
       })) || [];
 
       setProducts(formattedProducts);
@@ -134,6 +148,20 @@ const MyProducts = () => {
       if (!session) {
         toast.error('Please log in again');
         navigate('/auth?mode=signin');
+        return;
+      }
+
+      // Check if product already has an order (already paid)
+      const { data: existingOrder } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('product_id', product.id)
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (existingOrder) {
+        // Already paid, open date picker with relaunch validation
+        openRescheduleDialog(product, 'relaunch');
         return;
       }
       
@@ -183,7 +211,7 @@ const MyProducts = () => {
 
       if (existingOrder) {
         // Already paid, open date picker
-        openRescheduleDialog(product);
+        openRescheduleDialog(product, 'skip');
         return;
       }
       
@@ -232,16 +260,8 @@ const MyProducts = () => {
         .maybeSingle();
 
       if (existingOrder) {
-        // Already paid, just update status to scheduled
-        const { error } = await supabase
-          .from('products')
-          .update({ status: 'scheduled' })
-          .eq('id', product.id);
-
-        if (error) throw error;
-        
-        toast.success('Product scheduled successfully!');
-        if (user) fetchProducts(user.id);
+        // Already paid, open date picker with join validation
+        openRescheduleDialog(product, 'join');
         return;
       }
       
@@ -295,7 +315,7 @@ const MyProducts = () => {
     }
   };
 
-  const openRescheduleDialog = (product: any) => {
+  const openRescheduleDialog = (product: any, planType?: 'skip' | 'join' | 'relaunch') => {
     const launchDate = product.launch_date ? new Date(product.launch_date) : undefined;
     setSelectedDate(launchDate);
     if (launchDate) {
@@ -303,7 +323,7 @@ const MyProducts = () => {
     } else {
       setSelectedTime('09:00');
     }
-    setRescheduleDialog({ open: true, product });
+    setRescheduleDialog({ open: true, product, planType });
   };
 
   const handleRescheduleLaunch = async () => {
@@ -314,7 +334,21 @@ const MyProducts = () => {
       const newDate = new Date(selectedDate);
       newDate.setHours(hours, minutes, 0, 0);
 
-      if (newDate <= new Date()) {
+      const now = new Date();
+      const daysOut = Math.ceil((newDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+      // Validate based on plan type
+      if (rescheduleDialog.planType === 'join' && daysOut < 7) {
+        toast.error('Join The Line requires scheduling at least 7 days in advance');
+        return;
+      }
+
+      if (rescheduleDialog.planType === 'relaunch' && daysOut < 30) {
+        toast.error('Relaunch requires scheduling at least 30 days in advance');
+        return;
+      }
+
+      if (newDate <= now && rescheduleDialog.planType !== 'skip') {
         toast.error('Launch date must be in the future');
         return;
       }
@@ -358,8 +392,22 @@ const MyProducts = () => {
     
     // Scheduled products are editable until launch
     if (product.status === 'scheduled') {
+      return true;
+    }
+    
+    return false;
+  };
+
+  const canDelete = (product: any) => {
+    // Drafts can always be deleted
+    if (product.status === 'draft') return true;
+    
+    // Scheduled products can be deleted if launch date is more than 7 days away
+    if (product.status === 'scheduled' && product.launch_date) {
       const launchDate = new Date(product.launch_date);
-      return new Date() < launchDate;
+      const now = new Date();
+      const daysUntilLaunch = Math.ceil((launchDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilLaunch >= 7;
     }
     
     return false;
@@ -522,11 +570,11 @@ const MyProducts = () => {
                             })}
                           </span>
                         </div>
-                        {product.launch_date && (
+                        {product.launch_date && product.status === 'launched' && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                             <Calendar className="h-4 w-4" />
                             <span>
-                              {product.status === 'launched' ? 'Launched' : 'Scheduled for'}{' '}
+                              Launched{' '}
                               {new Date(product.launch_date).toLocaleDateString('en-US', {
                                 month: 'long',
                                 day: 'numeric',
@@ -610,11 +658,24 @@ const MyProducts = () => {
                             handlePauseLaunch(product);
                           }}
                         >
-                          Pause Launch
+                          Revert to Draft
                         </Button>
+                        {canDelete(product) && (
+                          <Button 
+                            variant="destructive" 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDelete(product.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </Button>
+                        )}
                       </>
                     )}
-                    {canEdit(product) && product.status !== 'scheduled' && (
+                    {canEdit(product) && (
                       <Button 
                         variant="outline" 
                         asChild
@@ -637,16 +698,18 @@ const MyProducts = () => {
                         >
                           Schedule Launch
                         </Button>
-                        <Button 
-                          className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleScheduleLine(product);
-                          }}
-                        >
-                          Join The Line
-                        </Button>
+                        {product.orderPlan !== 'skip' && (
+                          <Button 
+                            className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleScheduleLine(product);
+                            }}
+                          >
+                            Join The Line
+                          </Button>
+                        )}
                         <Button 
                           variant="destructive" 
                           onClick={(e) => {
@@ -712,7 +775,11 @@ const MyProducts = () => {
                     mode="single"
                     selected={selectedDate}
                     onSelect={setSelectedDate}
-                    disabled={(date) => date < new Date()}
+                    disabled={(date) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return date < today;
+                    }}
                     initialFocus
                     className={cn("p-3 pointer-events-auto")}
                   />
