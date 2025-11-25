@@ -14,10 +14,10 @@ const FAQ = () => {
           Everything you need to know about TryLaunch.ai
         </p>
 
-        <Accordion type="single" collapsible className="w-full space-y-4">
+        <Accordion type="multiple" defaultValue={["what-is-trylaunch", "how-to-submit", "voting-system", "top-products", "archives", "categories", "notifications", "following", "comments", "badge", "pricing", "scheduled-launches", "profile", "winners", "search", "support"]} className="w-full space-y-4">
           <AccordionItem value="what-is-trylaunch" className="border rounded-lg px-6">
             <AccordionTrigger className="text-left">
-              What is TryLaunch.ai?
+              Launch?
             </AccordionTrigger>
             <AccordionContent>
               TryLaunch.ai is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings. Users can discover innovative AI tools, vote for their favorites, and stay updated with the latest launches.
