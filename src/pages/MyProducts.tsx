@@ -631,10 +631,9 @@ const MyProducts = () => {
                         )}
                         {product.orderPlan && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                            <span>Plan:</span>
-                            <Badge variant="outline" className="capitalize">
-                              {product.orderPlan === 'free' ? 'Free' : product.orderPlan === 'join' ? 'Join the Line' : product.orderPlan === 'skip' ? 'Launch' : product.orderPlan === 'relaunch' ? 'Relaunch' : product.orderPlan}
-                            </Badge>
+                            <span>
+                              Plan: {product.orderPlan === 'free' ? 'Free' : product.orderPlan === 'join' ? 'Join the Line' : product.orderPlan === 'skip' ? 'Launch' : product.orderPlan === 'relaunch' ? 'Relaunch' : product.orderPlan}
+                            </span>
                           </div>
                         )}
                         {product.status === 'launched' && (
