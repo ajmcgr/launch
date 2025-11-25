@@ -25,6 +25,7 @@ const Submit = () => {
   const [productStatus, setProductStatus] = useState<string | null>(null);
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [existingPlan, setExistingPlan] = useState<'join' | 'skip' | 'relaunch' | null>(null);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(!!productIdParam);
   const [step, setStep] = useState(() => {
     // If productId is present, we're rescheduling, go to step 4
     if (productIdParam) {
@@ -173,6 +174,7 @@ const Submit = () => {
   };
 
   const loadDraft = async (id: string) => {
+    setIsLoadingProduct(true);
     try {
       const { data: product, error } = await supabase
         .from('products')
@@ -257,6 +259,8 @@ const Submit = () => {
     } catch (error) {
       console.error('Error loading draft:', error);
       toast.error('Failed to load draft');
+    } finally {
+      setIsLoadingProduct(false);
     }
   };
 
@@ -1067,7 +1071,10 @@ const Submit = () => {
 
             {step === 4 && (
               <div className="space-y-4">
-                {PRICING_PLANS.map((plan) => {
+                {isLoadingProduct ? (
+                  <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
+                ) : (
+                  PRICING_PLANS.map((plan) => {
                   const isDisabled = isRescheduling && existingPlan && plan.id !== existingPlan;
                   return (
                     <Card
@@ -1097,9 +1104,10 @@ const Submit = () => {
                       </CardHeader>
                     </Card>
                   );
-                })}
+                  })
+                )}
                 
-                {formData.plan === 'skip' && (
+                {!isLoadingProduct && formData.plan === 'skip' && (
                   <div className="space-y-2 mt-6">
                     <Label>Select Launch Date & Time *</Label>
                     <Popover>
