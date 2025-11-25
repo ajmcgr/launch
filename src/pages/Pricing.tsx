@@ -22,7 +22,7 @@ const Pricing = () => {
               key={plan.id} 
               className={`relative hover:shadow-lg transition-shadow ${
                 plan.id === 'skip' ? 'border-primary shadow-md' : ''
-              } ${plan.id === 'free' ? 'md:max-h-[600px]' : ''}`}
+              }`}
             >
               {plan.id === 'skip' && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -44,6 +44,9 @@ const Pricing = () => {
                       <Rocket className="h-5 w-5 text-primary" />
                       <p className="font-semibold">Basic Launch</p>
                     </div>
+                    <p className="text-muted-foreground">
+                      Scheduled after paid launches
+                    </p>
                   </div>
                 )}
 
@@ -105,9 +108,6 @@ const Pricing = () => {
                       <li className="flex items-start gap-2">
                         <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                         <span className="text-sm">Upgrade anytime for more visibility</span>
-                      </li>
-                      <li className="flex items-start gap-2 opacity-60">
-                        <span className="text-sm">Free listings do not include homepage feature, social promotion, or email blast</span>
                       </li>
                     </>
                   ) : (
