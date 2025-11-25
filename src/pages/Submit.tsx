@@ -112,6 +112,9 @@ const Submit = () => {
 
   const loadProductForReschedule = async (id: string, userId: string) => {
     setIsLoadingProduct(true);
+    console.log('=== LOADING PRODUCT FOR RESCHEDULE ===');
+    console.log('Product ID:', id, 'User ID:', userId);
+    
     try {
       const { data: product, error } = await supabase
         .from('products')
@@ -127,9 +130,10 @@ const Submit = () => {
         .single();
 
       if (error) throw error;
+      console.log('Product loaded:', product);
 
       // Get the order to determine the plan
-      const { data: order } = await supabase
+      const { data: order, error: orderError } = await supabase
         .from('orders')
         .select('plan')
         .eq('product_id', id)
@@ -137,44 +141,71 @@ const Submit = () => {
         .order('created_at', { ascending: false })
         .maybeSingle();
 
-      console.log('Order found:', order);
-      console.log('Order plan:', order?.plan);
+      console.log('Order query result:', { order, orderError });
       
-      if (order) {
+      if (order && order.plan) {
         const planValue = order.plan as 'join' | 'skip' | 'relaunch';
+        console.log('Setting existingPlan to:', planValue);
+        console.log('Setting isRescheduling to: true');
         setExistingPlan(planValue);
         setIsRescheduling(true);
-        console.log('Set existingPlan to:', planValue);
-        console.log('Set isRescheduling to: true');
+        
+        // Force formData.plan to match the paid plan
+        const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
+        const media = {
+          icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
+          thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
+          screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
+        };
+
+        setFormData({
+          name: product.name || '',
+          tagline: product.tagline || '',
+          url: product.domain_url || '',
+          description: product.description || '',
+          categories,
+          slug: product.slug || '',
+          couponCode: product.coupon_code || '',
+          couponDescription: product.coupon_description || '',
+          plan: planValue, // Use the order plan
+          selectedDate: product.launch_date || null,
+        });
+
+        setUploadedMedia(media);
+        setProductStatus(product.status);
+        
+        console.log('=== RESCHEDULE SETUP COMPLETE ===');
+        console.log('Final state - existingPlan:', planValue, 'isRescheduling: true');
+        
+        toast.success(`Product loaded - ${PRICING_PLANS.find(p => p.id === planValue)?.name} plan`);
       } else {
-        console.log('No order found for this product');
+        console.log('No order found - treating as new submission');
+        // No order means this is a draft, not a paid product
+        const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
+        const media = {
+          icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
+          thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
+          screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
+        };
+
+        setFormData({
+          name: product.name || '',
+          tagline: product.tagline || '',
+          url: product.domain_url || '',
+          description: product.description || '',
+          categories,
+          slug: product.slug || '',
+          couponCode: product.coupon_code || '',
+          couponDescription: product.coupon_description || '',
+          plan: 'join',
+          selectedDate: product.launch_date || null,
+        });
+
+        setUploadedMedia(media);
+        setProductStatus(product.status);
+        toast.success('Draft loaded');
       }
 
-      setProductStatus(product.status);
-
-      const media = {
-        icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
-        thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
-        screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
-      };
-
-      const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
-
-      setFormData({
-        name: product.name || '',
-        tagline: product.tagline || '',
-        url: product.domain_url || '',
-        description: product.description || '',
-        categories,
-        slug: product.slug || '',
-        couponCode: product.coupon_code || '',
-        couponDescription: product.coupon_description || '',
-        plan: order?.plan || 'join',
-        selectedDate: product.launch_date || null,
-      });
-
-      setUploadedMedia(media);
-      toast.success('Product loaded for rescheduling');
     } catch (error) {
       console.error('Error loading product:', error);
       toast.error('Failed to load product');
@@ -1081,10 +1112,16 @@ const Submit = () => {
             )}
 
             {step === 4 && (() => {
-              console.log('STEP 4 RENDER - isLoadingProduct:', isLoadingProduct, 'isRescheduling:', isRescheduling, 'existingPlan:', existingPlan, 'formData.plan:', formData.plan);
-              console.log('About to filter plans. isRescheduling:', isRescheduling, 'existingPlan:', existingPlan);
-              console.log('All plans:', PRICING_PLANS.map(p => p.id));
-              console.log('Filtered plans:', PRICING_PLANS.filter(plan => !isRescheduling || plan.id === existingPlan).map(p => p.id));
+              const filteredPlans = isRescheduling && existingPlan 
+                ? PRICING_PLANS.filter(plan => plan.id === existingPlan)
+                : PRICING_PLANS;
+              
+              console.log('=== STEP 4 RENDER ===');
+              console.log('isLoadingProduct:', isLoadingProduct);
+              console.log('isRescheduling:', isRescheduling);
+              console.log('existingPlan:', existingPlan);
+              console.log('formData.plan:', formData.plan);
+              console.log('Filtered plans:', filteredPlans.map(p => `${p.id} (${p.name})`));
               
               return (
                 <div className="space-y-4">
@@ -1102,40 +1139,40 @@ const Submit = () => {
                           </p>
                         </div>
                       )}
-                      {PRICING_PLANS.filter(plan => !isRescheduling || plan.id === existingPlan).map((plan) => {
-                      const isPaidPlan = isRescheduling && plan.id === existingPlan;
-                      return (
-                        <Card
-                          key={plan.id}
-                          className={`transition-all ${
-                            isPaidPlan ? 'border-primary ring-2 ring-primary bg-primary/5' : 'cursor-pointer'
-                          }`}
-                          onClick={() => !isRescheduling && handleInputChange('plan', plan.id)}
-                        >
-                          <CardHeader>
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <CardTitle className="flex items-center gap-2">
-                                  {plan.name}
-                                  {isPaidPlan && (
-                                    <span className="text-xs font-normal px-2 py-1 rounded-full bg-primary text-primary-foreground">
-                                      Your Plan
-                                    </span>
-                                  )}
-                                </CardTitle>
-                                <CardDescription>
-                                  {plan.description}
-                                  {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
-                                  {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
-                                  {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
-                                </CardDescription>
+                      {filteredPlans.map((plan) => {
+                        const isPaidPlan = isRescheduling && plan.id === existingPlan;
+                        return (
+                          <Card
+                            key={plan.id}
+                            className={`transition-all ${
+                              isPaidPlan ? 'border-primary ring-2 ring-primary bg-primary/5' : 'cursor-pointer'
+                            }`}
+                            onClick={() => !isRescheduling && handleInputChange('plan', plan.id)}
+                          >
+                            <CardHeader>
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <CardTitle className="flex items-center gap-2">
+                                    {plan.name}
+                                    {isPaidPlan && (
+                                      <span className="text-xs font-normal px-2 py-1 rounded-full bg-primary text-primary-foreground">
+                                        Your Plan
+                                      </span>
+                                    )}
+                                  </CardTitle>
+                                  <CardDescription>
+                                    {plan.description}
+                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
+                                    {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
+                                    {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
+                                  </CardDescription>
+                                </div>
+                                <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
                               </div>
-                              <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
-                            </div>
-                          </CardHeader>
-                        </Card>
-                      );
-                    })}
+                            </CardHeader>
+                          </Card>
+                        );
+                      })}
                   </>
                 )}
                 
