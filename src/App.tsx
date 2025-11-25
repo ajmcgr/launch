@@ -24,6 +24,7 @@ import Admin from "./pages/Admin";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import Notifications from "./pages/Notifications";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const AppContent = () => {
           <Route path="/settings" element={<Settings />} />
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/newsletter" element={<Blog />} />
