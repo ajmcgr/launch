@@ -23,6 +23,15 @@ const Submit = () => {
   const [productId, setProductId] = useState<string | null>(draftId);
   const [productStatus, setProductStatus] = useState<string | null>(null);
   const [step, setStep] = useState(() => {
+    // Check URL parameter first
+    const urlStep = searchParams.get('step');
+    if (urlStep) {
+      const stepNum = parseInt(urlStep);
+      if (!isNaN(stepNum) && stepNum >= 1 && stepNum <= 4) {
+        return stepNum;
+      }
+    }
+    // Fall back to localStorage
     const saved = localStorage.getItem('submitStep');
     return saved ? parseInt(saved) : 1;
   });
