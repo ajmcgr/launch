@@ -48,14 +48,14 @@ export const LaunchListItem = ({
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
       <Link to={`/launch/${slug}`} className="block">
-        <div className="flex gap-4 p-4">
+        <div className="flex gap-3 p-3">
           {rank && (
-            <div className="flex items-center justify-center text-xl font-bold text-muted-foreground w-8 flex-shrink-0">
+            <div className="flex items-center justify-center text-lg font-bold text-muted-foreground w-6 flex-shrink-0">
               {rank}
             </div>
           )}
           <div className="flex-shrink-0">
-            <div className="w-16 h-16 overflow-hidden bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 overflow-hidden bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
               {iconUrl ? (
                 <img 
                   src={iconUrl} 
@@ -69,16 +69,16 @@ export const LaunchListItem = ({
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
+            <h3 className="font-semibold text-base mb-0.5 hover:text-primary transition-colors">
               {name}
             </h3>
             
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+            <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
               {tagline}
             </p>
             
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {categories.slice(0, 3).map((category) => (
                   <span
                     key={category}
@@ -98,13 +98,13 @@ export const LaunchListItem = ({
                 ))}
               </div>
               
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-all hover:scale-105">
-                  <MessageSquare className="h-4 w-4" />
-                  <span className="text-sm">{commentCount}</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  <span className="text-xs">{commentCount}</span>
                 </div>
                 
-                <div className="flex -space-x-2">
+                <div className="flex -space-x-1.5">
                   {makers.slice(0, 3).map((maker) => (
                     <span
                       key={maker.username}
@@ -117,9 +117,9 @@ export const LaunchListItem = ({
                         to={`/@${maker.username}`}
                         className="hover:z-10"
                       >
-                        <Avatar className="h-7 w-7 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                        <Avatar className="h-6 w-6 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
                           <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                          <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                          <AvatarFallback className="text-xs">{maker.username[0].toUpperCase()}</AvatarFallback>
                         </Avatar>
                       </Link>
                     </span>
@@ -129,7 +129,7 @@ export const LaunchListItem = ({
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-1 pt-1">
+          <div className="flex flex-col items-center gap-0.5 pt-0.5">
             <Button
               size="sm"
               variant={userVote === 1 ? 'default' : 'outline'}
@@ -138,11 +138,11 @@ export const LaunchListItem = ({
                 e.stopPropagation();
                 handleVote();
               }}
-              className="h-12 w-12 p-0 !hover:bg-transparent hover:text-white hover:border-primary transition-all hover:scale-105"
+              className="h-9 w-9 p-0 !hover:bg-transparent hover:text-white hover:border-primary transition-all hover:scale-105"
             >
-              <ArrowUp className="h-6 w-6" />
+              <ArrowUp className="h-4 w-4" />
             </Button>
-            <span className="font-semibold text-base min-w-[2.5rem] text-center">
+            <span className="font-semibold text-sm min-w-[2rem] text-center">
               {netVotes}
             </span>
           </div>

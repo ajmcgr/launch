@@ -85,12 +85,12 @@ export const LaunchCard = ({
           ) : null}
         </div>
       
-      <div className="p-4">
-          <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
+      <div className="p-3">
+          <h3 className="font-semibold text-base mb-0.5 hover:text-primary transition-colors">
             {name}
           </h3>
         
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
           {tagline}
         </p>
         
@@ -106,7 +106,7 @@ export const LaunchCard = ({
           </Button>
         )}
         
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-1.5 mb-2">
           {categories.slice(0, 3).map((category) => (
             <span
               key={category}
@@ -127,8 +127,8 @@ export const LaunchCard = ({
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5">
               <Button
                 size="sm"
                 variant={userVote === 1 ? 'default' : 'outline'}
@@ -137,17 +137,17 @@ export const LaunchCard = ({
                   e.stopPropagation();
                   handleVote();
                 }}
-                className="h-12 w-12 p-0 !hover:bg-transparent hover:text-white hover:border-primary transition-all hover:scale-105"
+                className="h-9 w-9 p-0 !hover:bg-transparent hover:text-white hover:border-primary transition-all hover:scale-105"
               >
-                <ArrowUp className="h-6 w-6" />
+                <ArrowUp className="h-4 w-4" />
               </Button>
-              <span className="font-semibold text-lg min-w-[2.5rem] text-center">
+              <span className="font-semibold text-sm min-w-[2rem] text-center">
                 {netVotes}
               </span>
             </div>
-            <div className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-all hover:scale-105">
-              <MessageSquare className="h-4 w-4" />
-              <span className="text-sm">{commentCount}</span>
+            <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span className="text-xs">{commentCount}</span>
             </div>
           </div>
           
@@ -164,9 +164,9 @@ export const LaunchCard = ({
                   to={`/@${maker.username}`}
                   className="hover:z-10"
                 >
-                  <Avatar className="h-8 w-8 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                  <Avatar className="h-6 w-6 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
                     <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                    <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="text-xs">{maker.username[0].toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </Link>
               </span>
