@@ -1419,9 +1419,7 @@ const Submit = () => {
               <Button onClick={handleSubmit}>
                 {isRescheduling 
                   ? 'Reschedule Launch' 
-                  : formData.plan === 'free' 
-                    ? 'Submit Launch' 
-                    : 'Proceed to Payment'
+                  : 'Submit to Launch'
                 }
               </Button>
             )}
