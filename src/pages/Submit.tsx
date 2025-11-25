@@ -708,6 +708,8 @@ const Submit = () => {
         .limit(1);
 
       const hasExistingPlan = existingOrders && existingOrders.length > 0;
+      const canReuseExistingPlan = hasExistingPlan && existingOrders[0].plan !== 'join';
+      const isUpgrading = hasExistingPlan && existingOrders[0].plan === 'join' && formData.plan !== 'join';
       
       // Handle free plan separately
       if (formData.plan === 'free') {
@@ -829,8 +831,9 @@ const Submit = () => {
       }
       
       // Handle paid plans
-      // If user already has a paid plan, use it without requiring another payment
-      if (hasExistingPlan && formData.plan !== 'free') {
+      // If user has a paid plan that can be reused (skip/relaunch), use it without requiring another payment
+      // If upgrading from 'join', go through payment for the new plan
+      if (canReuseExistingPlan && formData.plan !== 'free') {
         try {
           // Reuse existing order for this launch
           const existingOrder = existingOrders[0];
@@ -894,7 +897,7 @@ const Submit = () => {
         }
       }
       
-      // Handle new paid plans with Stripe checkout
+      // Handle new paid plans with Stripe checkout (including upgrades from 'join' to other plans)
       toast.info('Redirecting to payment...');
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
@@ -1172,8 +1175,12 @@ const Submit = () => {
             )}
 
             {step === 4 && (() => {
-              // Show only the paid plan if user has one (for both reschedule and new submissions)
-              const filteredPlans = existingPlan 
+              // Allow upgrading from 'join' plan to paid plans
+              // Only restrict if user has a paid plan ('skip' or 'relaunch')
+              const isPaidPlan = existingPlan === 'skip' || existingPlan === 'relaunch';
+              const canUpgrade = existingPlan === 'join'; // Allow upgrade from free 'join' plan
+              
+              const filteredPlans = isPaidPlan
                 ? PRICING_PLANS.filter(plan => plan.id === existingPlan)
                 : PRICING_PLANS;
               
@@ -1181,6 +1188,8 @@ const Submit = () => {
               console.log('isLoadingProduct:', isLoadingProduct);
               console.log('isRescheduling:', isRescheduling);
               console.log('existingPlan:', existingPlan);
+              console.log('isPaidPlan:', isPaidPlan);
+              console.log('canUpgrade:', canUpgrade);
               console.log('formData.plan:', formData.plan);
               console.log('Filtered plans:', filteredPlans.map(p => `${p.id} (${p.name})`));
               
@@ -1190,43 +1199,51 @@ const Submit = () => {
                     <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
                   ) : (
                     <>
-                      {existingPlan && (
+                      {isPaidPlan && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
                           <p className="text-sm font-medium">
                             You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan. 
                             {existingPlan === 'skip' && ' You can choose any available date and time below.'}
-                            {existingPlan === 'join' && ' Your launch date will be automatically assigned.'}
                             {existingPlan === 'relaunch' && ' Your relaunch date will be automatically assigned.'}
                           </p>
                         </div>
                       )}
+                      {canUpgrade && (
+                        <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4 mb-4">
+                          <p className="text-sm font-medium">
+                            You currently have the <span className="font-bold">Join The Live</span> plan selected. You can upgrade to the <span className="font-bold">Launch</span> plan to choose your preferred launch date and time.
+                          </p>
+                        </div>
+                      )}
                       {filteredPlans.map((plan) => {
-                        const isPaidPlan = existingPlan && plan.id === existingPlan;
+                        const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
                         const isSelected = formData.plan === plan.id;
-                        const isDisabled = existingPlan && !isPaidPlan;
+                        const isDisabled = isPaidPlan && !isCurrentPaidPlan;
+                        const isClickable = !isPaidPlan; // Can click if no paid plan or can upgrade
+                        
                         return (
                           <Card
                             key={plan.id}
                             className={`transition-all ${
-                              isPaidPlan || isSelected
+                              isCurrentPaidPlan || isSelected
                                 ? 'border-primary ring-2 ring-primary bg-primary/5' 
                                 : isDisabled
                                 ? 'opacity-40 cursor-not-allowed'
                                 : 'cursor-pointer hover:border-primary/50'
                             }`}
-                            onClick={() => !existingPlan && handleInputChange('plan', plan.id)}
+                            onClick={() => isClickable && handleInputChange('plan', plan.id)}
                           >
                             <CardHeader>
                               <div className="flex justify-between items-start">
                                 <div>
                                   <CardTitle className="flex items-center gap-2">
                                     {plan.name}
-                                    {isPaidPlan && (
+                                    {isCurrentPaidPlan && (
                                       <span className="text-xs font-normal px-2 py-1 rounded-full bg-primary text-primary-foreground">
                                         Your Plan
                                       </span>
                                     )}
-                                    {!isRescheduling && isSelected && (
+                                    {!isPaidPlan && isSelected && (
                                       <span className="text-xs font-normal px-2 py-1 rounded-full bg-secondary text-secondary-foreground">
                                         Selected
                                       </span>
