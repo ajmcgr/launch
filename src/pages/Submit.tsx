@@ -1067,30 +1067,37 @@ const Submit = () => {
 
             {step === 4 && (
               <div className="space-y-4">
-                {PRICING_PLANS.map((plan) => (
-                  <Card
-                    key={plan.id}
-                    className={`cursor-pointer transition-all ${
-                      formData.plan === plan.id ? 'border-primary ring-2 ring-primary' : ''
-                    }`}
-                    onClick={() => handleInputChange('plan', plan.id)}
-                  >
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle>{plan.name}</CardTitle>
-                          <CardDescription>
-                            {plan.description}
-                            {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
-                            {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
-                            {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
-                          </CardDescription>
+                {PRICING_PLANS.map((plan) => {
+                  const isDisabled = isRescheduling && existingPlan && plan.id !== existingPlan;
+                  return (
+                    <Card
+                      key={plan.id}
+                      className={`transition-all ${
+                        isDisabled 
+                          ? 'opacity-50 cursor-not-allowed' 
+                          : 'cursor-pointer'
+                      } ${
+                        formData.plan === plan.id ? 'border-primary ring-2 ring-primary' : ''
+                      }`}
+                      onClick={() => !isDisabled && handleInputChange('plan', plan.id)}
+                    >
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle>{plan.name}</CardTitle>
+                            <CardDescription>
+                              {plan.description}
+                              {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
+                              {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
+                              {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
+                            </CardDescription>
+                          </div>
+                          <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
                         </div>
-                        <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                ))}
+                      </CardHeader>
+                    </Card>
+                  );
+                })}
                 
                 {formData.plan === 'skip' && (
                   <div className="space-y-2 mt-6">
