@@ -4,14 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 
@@ -21,9 +16,6 @@ const MyProducts = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
-  const [rescheduleDialog, setRescheduleDialog] = useState<{ open: boolean; product: any | null; planType?: 'skip' | 'join' | 'relaunch' }>({ open: false, product: null });
-  const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedTime, setSelectedTime] = useState<string>('09:00');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -160,8 +152,8 @@ const MyProducts = () => {
         .maybeSingle();
 
       if (existingOrder) {
-        // Already paid, open date picker with relaunch validation (30+ days)
-        openRescheduleDialog(product, 'relaunch');
+        // Already paid, redirect to submit page to reschedule
+        navigate(`/submit?productId=${product.id}`);
         return;
       }
       
@@ -252,10 +244,8 @@ const MyProducts = () => {
         .order('created_at', { ascending: false });
 
       if (existingOrders && existingOrders.length > 0) {
-        // Already paid, open date picker with the correct plan type
-        const existingOrder = existingOrders[0];
-        const planType = existingOrder.plan === 'join' ? 'join' : existingOrder.plan === 'relaunch' ? 'relaunch' : 'skip';
-        openRescheduleDialog(product, planType);
+        // Already paid, redirect to submit page to reschedule
+        navigate(`/submit?productId=${product.id}`);
         return;
       }
       
@@ -304,8 +294,8 @@ const MyProducts = () => {
         .maybeSingle();
 
       if (existingOrder) {
-        // Already paid, open date picker with join validation (7+ days)
-        openRescheduleDialog(product, 'join');
+        // Already paid, redirect to submit page to reschedule
+        navigate(`/submit?productId=${product.id}`);
         return;
       }
       
@@ -359,62 +349,6 @@ const MyProducts = () => {
     }
   };
 
-  const openRescheduleDialog = (product: any, planType?: 'skip' | 'join' | 'relaunch') => {
-    const launchDate = product.launch_date ? new Date(product.launch_date) : undefined;
-    setSelectedDate(launchDate);
-    if (launchDate) {
-      setSelectedTime(`${String(launchDate.getHours()).padStart(2, '0')}:${String(launchDate.getMinutes()).padStart(2, '0')}`);
-    } else {
-      setSelectedTime('09:00');
-    }
-    setRescheduleDialog({ open: true, product, planType });
-  };
-
-  const handleRescheduleLaunch = async () => {
-    if (!selectedDate || !rescheduleDialog.product) return;
-
-    try {
-      const [hours, minutes] = selectedTime.split(':').map(Number);
-      const newDate = new Date(selectedDate);
-      newDate.setHours(hours, minutes, 0, 0);
-
-      const now = new Date();
-      const daysOut = Math.ceil((newDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-      // Validate based on plan type
-      if (rescheduleDialog.planType === 'join' && daysOut < 7) {
-        toast.error('Join The Line requires scheduling at least 7 days in advance');
-        return;
-      }
-
-      if (rescheduleDialog.planType === 'relaunch' && daysOut < 30) {
-        toast.error('Relaunch requires scheduling at least 30 days in advance');
-        return;
-      }
-
-      if (newDate <= now && rescheduleDialog.planType !== 'skip') {
-        toast.error('Launch date must be in the future');
-        return;
-      }
-
-      const { error } = await supabase
-        .from('products')
-        .update({
-          status: 'scheduled',
-          launch_date: newDate.toISOString(),
-        })
-        .eq('id', rescheduleDialog.product.id);
-
-      if (error) throw error;
-
-      toast.success('Launch scheduled successfully');
-      setRescheduleDialog({ open: false, product: null });
-      if (user) fetchProducts(user.id);
-    } catch (error) {
-      console.error('Reschedule error:', error);
-      toast.error('Failed to schedule launch');
-    }
-  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'outline'> = {
@@ -690,20 +624,7 @@ const MyProducts = () => {
                             </span>
                           </div>
                         </div>
-                        {product.orderPlan !== 'free' && (
-                          <Button 
-                            variant="outline" 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              openRescheduleDialog(product, product.orderPlan as 'skip' | 'join' | 'relaunch');
-                            }}
-                          >
-                            <Calendar className="h-4 w-4 mr-2" />
-                            Re-schedule
-                          </Button>
-                        )}
-                        <Button 
+                        <Button
                           variant="outline" 
                           onClick={(e) => {
                             e.preventDefault();
@@ -760,93 +681,6 @@ const MyProducts = () => {
         )}
       </div>
 
-      {/* Reschedule Dialog */}
-      <Dialog open={rescheduleDialog.open} onOpenChange={(open) => setRescheduleDialog({ open, product: null })}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
-              {rescheduleDialog.product?.status === 'scheduled' ? 'Reschedule Launch' : 'Schedule Launch'}
-            </DialogTitle>
-            <DialogDescription>
-              {rescheduleDialog.planType === 'join' && 'Select a date at least 7 days in advance'}
-              {rescheduleDialog.planType === 'relaunch' && 'Select a date at least 30 days in advance'}
-              {rescheduleDialog.planType === 'skip' && 'Choose any date in the current calendar year'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Launch Date</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !selectedDate && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    disabled={(date) => {
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      
-                      // For 'join' plan, enforce 7+ days minimum
-                      if (rescheduleDialog.planType === 'join') {
-                        const minDate = new Date(today);
-                        minDate.setDate(minDate.getDate() + 7);
-                        return date < minDate;
-                      }
-                      
-                      // For 'relaunch' plan, enforce 30+ days minimum
-                      if (rescheduleDialog.planType === 'relaunch') {
-                        const minDate = new Date(today);
-                        minDate.setDate(minDate.getDate() + 30);
-                        return date < minDate;
-                      }
-                      
-                      // For 'skip' (Launch) plan, allow any date in current calendar year
-                      if (rescheduleDialog.planType === 'skip') {
-                        const endOfYear = new Date(today.getFullYear(), 11, 31);
-                        return date < today || date > endOfYear;
-                      }
-                      
-                      // Default: prevent past dates
-                      return date < today;
-                    }}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Launch Time (UTC)</label>
-              <input
-                type="time"
-                value={selectedTime}
-                onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRescheduleDialog({ open: false, product: null })}>
-              Cancel
-            </Button>
-            <Button onClick={handleRescheduleLaunch} disabled={!selectedDate}>
-              {rescheduleDialog.product?.status === 'scheduled' ? 'Reschedule' : 'Schedule'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
