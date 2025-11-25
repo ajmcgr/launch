@@ -696,7 +696,7 @@ const MyProducts = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              openRescheduleDialog(product);
+                              openRescheduleDialog(product, product.orderPlan as 'skip' | 'join' | 'relaunch');
                             }}
                           >
                             <Calendar className="h-4 w-4 mr-2" />
