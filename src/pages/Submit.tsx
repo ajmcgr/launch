@@ -119,26 +119,8 @@ const Submit = () => {
       } else if (draftId) {
         // Load draft if draftId is present
         await loadDraft(draftId);
-      } else {
-        // Check if user has an existing paid plan for new submissions
-        const { data: existingOrders } = await supabase
-          .from('orders')
-          .select('plan')
-          .eq('user_id', session.user.id)
-          .in('plan', ['join', 'skip', 'relaunch'])
-          .order('created_at', { ascending: false })
-          .limit(1);
-        
-        if (existingOrders && existingOrders.length > 0) {
-          const userPlan = existingOrders[0].plan as 'join' | 'skip' | 'relaunch';
-          console.log('User has existing paid plan:', userPlan);
-          setExistingPlan(userPlan);
-          setFormData(prev => ({
-            ...prev,
-            plan: userPlan,
-          }));
-        }
       }
+      // For new submissions, existingPlan remains null - users must choose and pay for a plan
     };
     
     checkAuth();
