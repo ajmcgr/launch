@@ -960,7 +960,7 @@ const Submit = () => {
             )}
             {step === 5 && (
               <Button onClick={handleSubmit}>
-                {formData.plan === 'free' ? 'Submit for Free Launch' : 'Proceed to Payment'}
+                {formData.plan === 'free' ? 'Submit for Free' : 'Proceed to Payment'}
               </Button>
             )}
           </div>
