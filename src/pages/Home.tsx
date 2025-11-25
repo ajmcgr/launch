@@ -50,7 +50,7 @@ const Home = () => {
       setUser(session?.user ?? null);
     });
 
-    fetchProducts('month');
+    fetchProducts('year');
 
     return () => subscription.unsubscribe();
   }, []);
@@ -290,12 +290,12 @@ const Home = () => {
           </h1>
         </div>
         
-        <Tabs defaultValue="month" onValueChange={(v) => { fetchProducts(v as any); setCurrentPage(1); }}>
+        <Tabs defaultValue="year" onValueChange={(v) => { fetchProducts(v as any); setCurrentPage(1); }}>
           <div className="flex flex-row items-center justify-between gap-4 mb-8">
             <TabsList>
-              <TabsTrigger value="month">This Month</TabsTrigger>
               <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="week">This Week</TabsTrigger>
+              <TabsTrigger value="month">This Month</TabsTrigger>
               <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
             <div className="hidden md:block">
