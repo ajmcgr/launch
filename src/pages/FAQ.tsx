@@ -11,7 +11,7 @@ const FAQ = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
         <p className="text-muted-foreground mb-8">
-          Everything you need to know about TryLaunch.ai
+          Everything you need to know about Launch
         </p>
 
         <Accordion type="multiple" defaultValue={["what-is-trylaunch", "how-to-submit", "voting-system", "top-products", "archives", "categories", "notifications", "following", "comments", "badge", "pricing", "scheduled-launches", "profile", "winners", "search", "support"]} className="w-full space-y-4">
@@ -137,7 +137,7 @@ const FAQ = () => {
               What is the product badge?
             </AccordionTrigger>
             <AccordionContent>
-              The product badge is an embeddable widget you can add to your product's website to showcase your TryLaunch ranking and votes. After your product is launched, you'll receive HTML code that you can paste into your website. The badge displays real-time vote counts and links back to your product page on TryLaunch.
+              The product badge is an embeddable widget you can add to your product's website to showcase your Launch ranking and votes. After your product is launched, you'll receive HTML code that you can paste into your website. The badge displays real-time vote counts and links back to your product page on Launch.
             </AccordionContent>
           </AccordionItem>
 
@@ -146,7 +146,7 @@ const FAQ = () => {
               What are the pricing plans?
             </AccordionTrigger>
             <AccordionContent>
-              TryLaunch offers different plans for makers who want to maximize their product's visibility:
+              Launch offers different plans for makers who want to maximize their product's visibility:
               <ul className="list-disc ml-5 mt-2 space-y-1">
                 <li><strong>Free:</strong> Submit products and compete in rankings</li>
                 <li><strong>Premium Plans:</strong> Access additional features like priority support, advanced analytics, and promotional opportunities</li>
