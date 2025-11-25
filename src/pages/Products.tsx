@@ -305,7 +305,7 @@ const Products = () => {
               <h3 className="font-semibold mb-3">Top Products</h3>
               <div className="space-y-2">
                 <Button
-                  variant={topPeriod === 'today' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  variant={topPeriod === 'today' && !selectedArchiveYear ? 'secondary' : 'ghost'}
                   className="w-full justify-start"
                   onClick={() => {
                     setTopPeriod('today');
@@ -315,7 +315,7 @@ const Products = () => {
                   Today
                 </Button>
                 <Button
-                  variant={topPeriod === 'week' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  variant={topPeriod === 'week' && !selectedArchiveYear ? 'secondary' : 'ghost'}
                   className="w-full justify-start"
                   onClick={() => {
                     setTopPeriod('week');
@@ -325,7 +325,7 @@ const Products = () => {
                   This Week
                 </Button>
                 <Button
-                  variant={topPeriod === 'month' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  variant={topPeriod === 'month' && !selectedArchiveYear ? 'secondary' : 'ghost'}
                   className="w-full justify-start"
                   onClick={() => {
                     setTopPeriod('month');
@@ -335,7 +335,7 @@ const Products = () => {
                   This Month
                 </Button>
                 <Button
-                  variant={topPeriod === 'year' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  variant={topPeriod === 'year' && !selectedArchiveYear ? 'secondary' : 'ghost'}
                   className="w-full justify-start"
                   onClick={() => {
                     setTopPeriod('year');
@@ -372,7 +372,7 @@ const Products = () => {
                   {archiveYears.map((year) => (
                     <Button
                       key={year}
-                      variant={selectedArchiveYear === year ? 'default' : 'ghost'}
+                      variant={selectedArchiveYear === year ? 'secondary' : 'ghost'}
                       className="w-full justify-start"
                       onClick={() => setSelectedArchiveYear(year)}
                     >
