@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { UserPlus, UserMinus, Globe } from 'lucide-react';
 
 interface UserItem {
   id: string;
   username: string;
   avatar_url: string | null;
   bio: string | null;
+  name: string | null;
 }
 
 const Followers = () => {
@@ -19,8 +21,17 @@ const Followers = () => {
   const [followers, setFollowers] = useState<UserItem[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [productsCount, setProductsCount] = useState(0);
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUser(session?.user ?? null);
+    });
+
     if (username) {
       fetchData();
     }
@@ -43,10 +54,43 @@ const Followers = () => {
 
       setProfile(profileData);
 
+      // Check if current user follows this profile
+      if (currentUser) {
+        const { data: followData } = await supabase
+          .from('follows')
+          .select('*')
+          .eq('follower_id', currentUser.id)
+          .eq('followed_id', profileData.id)
+          .single();
+
+        setIsFollowing(!!followData);
+      }
+
+      // Get follower/following counts
+      const { count: followersTotal } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('followed_id', profileData.id);
+
+      const { count: followingTotal } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower_id', profileData.id);
+
+      const { count: productsTotal } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', profileData.id)
+        .eq('status', 'launched');
+
+      setFollowerCount(followersTotal || 0);
+      setFollowingCount(followingTotal || 0);
+      setProductsCount(productsTotal || 0);
+
       // Fetch followers
       const { data: followersData } = await supabase
         .from('follows')
-        .select('follower_id, users!follows_follower_id_fkey(id, username, avatar_url, bio)')
+        .select('follower_id, users!follows_follower_id_fkey(id, username, avatar_url, bio, name)')
         .eq('followed_id', profileData.id);
 
       if (followersData) {
@@ -56,6 +100,41 @@ const Followers = () => {
       console.error('Error fetching followers:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFollow = async () => {
+    if (!currentUser) {
+      toast.error('Please login to follow users');
+      return;
+    }
+
+    try {
+      if (isFollowing) {
+        await supabase
+          .from('follows')
+          .delete()
+          .eq('follower_id', currentUser.id)
+          .eq('followed_id', profile.id);
+
+        setIsFollowing(false);
+        setFollowerCount(prev => prev - 1);
+        toast.success('Unfollowed successfully');
+      } else {
+        await supabase
+          .from('follows')
+          .insert({
+            follower_id: currentUser.id,
+            followed_id: profile.id,
+          });
+
+        setIsFollowing(true);
+        setFollowerCount(prev => prev + 1);
+        toast.success('Following successfully');
+      }
+    } catch (error: any) {
+      console.error('Error following/unfollowing:', error);
+      toast.error('Failed to update follow status');
     }
   };
 
@@ -82,17 +161,104 @@ const Followers = () => {
 
   return (
     <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-2xl">
-        <div className="mb-6">
-          <Link to={`/@${profile.username}`}>
-            <Button variant="ghost" size="sm" className="mb-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to profile
-            </Button>
-          </Link>
-          <h1 className="text-3xl font-bold">@{profile.username}'s Followers</h1>
-          <p className="text-muted-foreground mt-1">{followers.length} followers</p>
-        </div>
+      <div className="container mx-auto px-4 max-w-5xl">
+        <Card className="p-8 mb-8">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            <Avatar className="h-24 w-24">
+              <AvatarImage src={profile.avatar_url} alt={profile.username} />
+              <AvatarFallback className="text-2xl">
+                {profile.username[0].toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h1 className="text-3xl font-bold mb-1">@{profile.username}</h1>
+                  {profile.name && (
+                    <p className="text-xl text-muted-foreground mb-2">{profile.name}</p>
+                  )}
+                  {profile.bio && (
+                    <p className="text-muted-foreground">{profile.bio}</p>
+                  )}
+                </div>
+
+                {currentUser && currentUser.id !== profile.id && (
+                  <Button
+                    onClick={handleFollow}
+                    variant={isFollowing ? 'outline' : 'default'}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <UserMinus className="h-4 w-4 mr-2" />
+                        Unfollow
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Follow
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex gap-6 mb-4">
+                <Link
+                  to={`/@${profile.username}/followers`}
+                  className="hover:underline font-bold"
+                >
+                  <span className="font-bold">{followerCount}</span>
+                  <span className="text-muted-foreground ml-1 font-normal">Followers</span>
+                </Link>
+                <Link
+                  to={`/@${profile.username}/following`}
+                  className="hover:underline"
+                >
+                  <span className="font-bold">{followingCount}</span>
+                  <span className="text-muted-foreground ml-1">Following</span>
+                </Link>
+                <Link
+                  to={`/@${profile.username}`}
+                  className="hover:underline"
+                >
+                  <span className="font-bold">{productsCount}</span>
+                  <span className="text-muted-foreground ml-1">Products</span>
+                </Link>
+              </div>
+
+              <div className="flex gap-3">
+                {profile.website && (
+                  <a
+                    href={profile.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    title="Website"
+                  >
+                    <Globe className="h-5 w-5" />
+                  </a>
+                )}
+                {profile.twitter && (
+                  <a
+                    href={`https://x.com/${profile.twitter.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    title="X (Twitter)"
+                  >
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <div>
+          <h2 className="text-2xl font-bold mb-6">Followers</h2>
 
         {followers.length === 0 ? (
           <Card className="p-12 text-center">
@@ -114,6 +280,9 @@ const Followers = () => {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold">@{user.username}</div>
+                      {user.name && (
+                        <div className="text-sm text-muted-foreground">{user.name}</div>
+                      )}
                       {user.bio && (
                         <div className="text-sm text-muted-foreground truncate">{user.bio}</div>
                       )}
@@ -124,6 +293,7 @@ const Followers = () => {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
