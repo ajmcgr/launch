@@ -215,6 +215,21 @@ const Submit = () => {
         return;
       }
 
+      // Check if there's an existing order (for rescheduling scheduled products)
+      const { data: order } = await supabase
+        .from('orders')
+        .select('plan')
+        .eq('product_id', id)
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .maybeSingle();
+
+      // If product is scheduled and has an order, treat it as rescheduling
+      if (product.status === 'scheduled' && order) {
+        setExistingPlan(order.plan as 'join' | 'skip' | 'relaunch');
+        setIsRescheduling(true);
+      }
+
       // Store product status
       setProductStatus(product.status);
 
@@ -233,12 +248,12 @@ const Submit = () => {
         slug: product.slug || '',
         couponCode: product.coupon_code || '',
         couponDescription: product.coupon_description || '',
-        plan: 'join',
-        selectedDate: null,
+        plan: order?.plan || 'join',
+        selectedDate: product.launch_date || null,
       });
       
       setUploadedMedia(media);
-      toast.success('Draft loaded successfully');
+      toast.success(product.status === 'scheduled' && order ? 'Product loaded for rescheduling' : 'Draft loaded successfully');
     } catch (error) {
       console.error('Error loading draft:', error);
       toast.error('Failed to load draft');
