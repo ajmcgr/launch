@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { UserPlus, UserMinus, Globe } from 'lucide-react';
 import { LaunchCard } from '@/components/LaunchCard';
+import { FollowersDialog } from '@/components/FollowersDialog';
 
 const UserProfile = () => {
   const { username: rawUsername } = useParams();
@@ -22,6 +23,8 @@ const UserProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [showFollowersDialog, setShowFollowersDialog] = useState(false);
+  const [followersDialogTab, setFollowersDialogTab] = useState<'followers' | 'following'>('followers');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -401,30 +404,42 @@ const UserProfile = () => {
               </div>
 
               <div className="flex gap-6 mb-4">
-                <div>
+                <button
+                  onClick={() => {
+                    setFollowersDialogTab('followers');
+                    setShowFollowersDialog(true);
+                  }}
+                  className="hover:underline cursor-pointer"
+                >
                   <span className="font-bold">{followerCount}</span>
                   <span className="text-muted-foreground ml-1">Followers</span>
-                </div>
-                <div>
+                </button>
+                <button
+                  onClick={() => {
+                    setFollowersDialogTab('following');
+                    setShowFollowersDialog(true);
+                  }}
+                  className="hover:underline cursor-pointer"
+                >
                   <span className="font-bold">{followingCount}</span>
                   <span className="text-muted-foreground ml-1">Following</span>
-                </div>
+                </button>
                 <div>
                   <span className="font-bold">{products.length}</span>
                   <span className="text-muted-foreground ml-1">Products</span>
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 {profile.website && (
                   <a
                     href={profile.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline flex items-center gap-1"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    title="Website"
                   >
-                    <Globe className="h-4 w-4" />
-                    Website
+                    <Globe className="h-5 w-5" />
                   </a>
                 )}
                 {profile.twitter && (
@@ -432,12 +447,12 @@ const UserProfile = () => {
                     href={`https://x.com/${profile.twitter.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline flex items-center gap-1"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    title="X (Twitter)"
                   >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
-                    X
                   </a>
                 )}
               </div>
@@ -528,6 +543,13 @@ const UserProfile = () => {
           </div>
         )}
       </div>
+
+      <FollowersDialog
+        open={showFollowersDialog}
+        onOpenChange={setShowFollowersDialog}
+        userId={profile.id}
+        defaultTab={followersDialogTab}
+      />
     </div>
   );
 };
