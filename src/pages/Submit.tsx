@@ -508,19 +508,16 @@ const Submit = () => {
           
           console.log('Order created successfully:', orderData);
 
-          // Find next available date for free launch (after paid launches)
-          // Free launches get scheduled 3+ days out to prioritize paid launches
+          // Find next available date for free launch starting from today
           const today = new Date();
           today.setHours(0, 0, 0, 0);
-          const startDate = new Date(today);
-          startDate.setDate(startDate.getDate() + 3);
           
-          let launchDate = new Date(startDate);
+          let launchDate = new Date(today);
           let foundSlot = false;
           
-          // Try to find an available slot for next 30 days
+          // Try to find an available slot starting from today
           for (let i = 0; i < 30; i++) {
-            const checkDate = new Date(startDate);
+            const checkDate = new Date(today);
             checkDate.setDate(checkDate.getDate() + i);
             checkDate.setHours(0, 0, 0, 0);
             
@@ -569,12 +566,11 @@ const Submit = () => {
           localStorage.removeItem('submitMedia');
           localStorage.removeItem('submitStep');
           
-          const formattedDate = launchDate.toLocaleDateString('en-US', { 
-            month: 'long', 
-            day: 'numeric', 
-            year: 'numeric' 
-          });
-          toast.success(`Product scheduled for free launch on ${formattedDate}!`);
+          const isToday = launchDate.toDateString() === new Date().toDateString();
+          const message = isToday 
+            ? 'Product scheduled for launch today!' 
+            : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}!`;
+          toast.success(message);
           navigate('/my-products');
           return;
         } catch (error: any) {
