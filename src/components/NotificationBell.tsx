@@ -6,6 +6,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -117,6 +118,21 @@ export const NotificationBell = () => {
                 </DropdownMenuItem>
               ))}
             </div>
+          )}
+          {notifications && notifications.length > 0 && (
+            <>
+              <DropdownMenuSeparator className="my-2" />
+              <Button
+                variant="ghost"
+                className="w-full justify-center text-sm"
+                onClick={() => {
+                  setOpen(false);
+                  navigate('/notifications');
+                }}
+              >
+                View all notifications
+              </Button>
+            </>
           )}
         </div>
       </DropdownMenuContent>
