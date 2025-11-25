@@ -19,10 +19,17 @@ const Submit = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const draftId = searchParams.get('draft');
+  const productIdParam = searchParams.get('productId');
   const [user, setUser] = useState<any>(null);
-  const [productId, setProductId] = useState<string | null>(draftId);
+  const [productId, setProductId] = useState<string | null>(draftId || productIdParam);
   const [productStatus, setProductStatus] = useState<string | null>(null);
+  const [isRescheduling, setIsRescheduling] = useState(false);
+  const [existingPlan, setExistingPlan] = useState<'join' | 'skip' | 'relaunch' | null>(null);
   const [step, setStep] = useState(() => {
+    // If productId is present, we're rescheduling, go to step 4
+    if (productIdParam) {
+      return 4;
+    }
     // Check URL parameter first
     const urlStep = searchParams.get('step');
     if (urlStep) {
@@ -90,14 +97,80 @@ const Submit = () => {
       console.log('User authenticated:', session.user.id);
       setUser(session.user);
       
-      // Load draft if draftId is present
-      if (draftId) {
+      // Load product for rescheduling if productId is present
+      if (productIdParam) {
+        await loadProductForReschedule(productIdParam, session.user.id);
+      } else if (draftId) {
+        // Load draft if draftId is present
         await loadDraft(draftId);
       }
     };
     
     checkAuth();
-  }, [navigate, draftId]);
+  }, [navigate, draftId, productIdParam]);
+
+  const loadProductForReschedule = async (id: string, userId: string) => {
+    try {
+      const { data: product, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_media(url, type),
+          product_category_map(
+            product_categories(name)
+          )
+        `)
+        .eq('id', id)
+        .eq('owner_id', userId)
+        .single();
+
+      if (error) throw error;
+
+      // Get the order to determine the plan
+      const { data: order } = await supabase
+        .from('orders')
+        .select('plan')
+        .eq('product_id', id)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .maybeSingle();
+
+      if (order) {
+        setExistingPlan(order.plan as 'join' | 'skip' | 'relaunch');
+      }
+
+      setIsRescheduling(true);
+      setProductStatus(product.status);
+
+      const media = {
+        icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
+        thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
+        screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
+      };
+
+      const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
+
+      setFormData({
+        name: product.name || '',
+        tagline: product.tagline || '',
+        url: product.domain_url || '',
+        description: product.description || '',
+        categories,
+        slug: product.slug || '',
+        couponCode: product.coupon_code || '',
+        couponDescription: product.coupon_description || '',
+        plan: order?.plan || 'join',
+        selectedDate: product.launch_date || null,
+      });
+
+      setUploadedMedia(media);
+      toast.success('Product loaded for rescheduling');
+    } catch (error) {
+      console.error('Error loading product:', error);
+      toast.error('Failed to load product');
+      navigate('/my-products');
+    }
+  };
 
   const loadDraft = async (id: string) => {
     try {
@@ -464,6 +537,49 @@ const Submit = () => {
         return;
       }
 
+      // Handle rescheduling existing product
+      if (isRescheduling && productId && formData.selectedDate) {
+        try {
+          const selectedDate = new Date(formData.selectedDate);
+          const now = new Date();
+          const daysOut = Math.ceil((selectedDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+          // Validate based on plan type
+          if (existingPlan === 'join' && daysOut < 7) {
+            toast.error('Join The Line requires scheduling at least 7 days in advance');
+            return;
+          }
+
+          if (existingPlan === 'relaunch' && daysOut < 30) {
+            toast.error('Relaunch requires scheduling at least 30 days in advance');
+            return;
+          }
+
+          if (selectedDate <= now && existingPlan !== 'skip') {
+            toast.error('Launch date must be in the future');
+            return;
+          }
+
+          const { error } = await supabase
+            .from('products')
+            .update({
+              status: 'scheduled',
+              launch_date: selectedDate.toISOString(),
+            })
+            .eq('id', productId);
+
+          if (error) throw error;
+
+          toast.success('Launch rescheduled successfully');
+          navigate('/my-products');
+          return;
+        } catch (error) {
+          console.error('Reschedule error:', error);
+          toast.error('Failed to reschedule launch');
+          return;
+        }
+      }
+
       // Save product as draft first
       toast.info('Saving product...');
       const savedProductId = await handleSaveDraft(true);
@@ -693,8 +809,12 @@ const Submit = () => {
     <div className="min-h-screen bg-background py-12">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Submit Your Product</h1>
-          <p className="text-muted-foreground">Launch your product to thousands of founders</p>
+          <h1 className="text-4xl font-bold mb-2">
+            {isRescheduling ? 'Reschedule Launch' : 'Submit Your Product'}
+          </h1>
+          <p className="text-muted-foreground">
+            {isRescheduling ? 'Update your launch date' : 'Launch your product to thousands of founders'}
+          </p>
         </div>
 
         <div className="mb-8">
@@ -1102,7 +1222,12 @@ const Submit = () => {
             )}
             {step === 5 && (
               <Button onClick={handleSubmit}>
-                {formData.plan === 'free' ? 'Submit Launch' : 'Proceed to Payment'}
+                {isRescheduling 
+                  ? 'Reschedule Launch' 
+                  : formData.plan === 'free' 
+                    ? 'Submit Launch' 
+                    : 'Proceed to Payment'
+                }
               </Button>
             )}
           </div>
