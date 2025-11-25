@@ -22,7 +22,7 @@ export const CATEGORIES = [
 export const PRICING_PLANS = [
   {
     id: 'free',
-    name: 'Free Launch',
+    name: 'Free',
     price: 0,
     description: 'Only scheduled after paid launch queue',
   },

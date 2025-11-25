@@ -191,6 +191,48 @@ const MyProducts = () => {
     }
   };
 
+  const handleFreeLaunch = async (product: any) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error('Please log in again');
+        navigate('/auth?mode=signin');
+        return;
+      }
+
+      // Create a free order entry (no Stripe session)
+      const { error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: session.user.id,
+          product_id: product.id,
+          plan: 'free',
+          stripe_session_id: 'free_launch', // Special identifier for free launches
+        });
+
+      if (orderError) throw orderError;
+
+      // Update product status to scheduled with a placeholder date
+      // The launch-scheduler will assign the actual date
+      const { error: updateError } = await supabase
+        .from('products')
+        .update({
+          status: 'scheduled',
+          launch_date: null, // Will be assigned by scheduler
+        })
+        .eq('id', product.id);
+
+      if (updateError) throw updateError;
+
+      toast.success('Product queued for free launch! It will be scheduled after paid launches.');
+      fetchProducts(session.user.id);
+    } catch (error) {
+      console.error('Free launch error:', error);
+      toast.error('Failed to queue free launch. Please try again.');
+    }
+  };
+
   const handleLaunch = async (product: any) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -572,6 +614,13 @@ const MyProducts = () => {
                             })}
                           </span>
                         </div>
+                        {product.orderPlan && (
+                          <div className="mt-2">
+                            <Badge variant="outline" className="capitalize">
+                              {product.orderPlan === 'free' ? 'Free' : product.orderPlan === 'join' ? 'Join the Line' : product.orderPlan === 'skip' ? 'Launch' : product.orderPlan === 'relaunch' ? 'Relaunch' : product.orderPlan}
+                            </Badge>
+                          </div>
+                        )}
                         {product.launch_date && product.status === 'launched' && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                             <Calendar className="h-4 w-4" />
@@ -679,15 +728,48 @@ const MyProducts = () => {
                     {product.status === 'draft' && (
                       <>
                         <Button 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleFreeLaunch(product);
+                          }}
+                        >
+                          Free Launch
+                        </Button>
+                        <Button 
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             handleLaunch(product);
                           }}
                         >
-                          Schedule Launch
+                          Paid Launch
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleScheduleLine(product);
+                          }}
+                        >
+                          Join the Line
                         </Button>
                       </>
+                    )}
+                    {canDelete(product) && (
+                      <Button 
+                        variant="outline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDelete(product.id);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
                     )}
                   </div>
                   {product.status === 'launched' && product.slug && (
