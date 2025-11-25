@@ -49,11 +49,6 @@ export const LaunchListItem = ({
     <Card className="overflow-hidden hover:shadow-md transition-shadow">
       <Link to={`/launch/${slug}`} className="block">
         <div className="flex gap-3 p-3">
-          {rank && (
-            <div className="flex items-start justify-center text-lg font-bold text-muted-foreground w-6 flex-shrink-0 pt-0.5">
-              {rank}
-            </div>
-          )}
           <div className="flex-shrink-0">
             <div className="w-12 h-12 overflow-hidden bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
               {iconUrl ? (
@@ -67,6 +62,11 @@ export const LaunchListItem = ({
               ) : null}
             </div>
           </div>
+          {rank && (
+            <div className="flex items-start justify-center text-lg font-bold text-muted-foreground w-6 flex-shrink-0 pt-0.5">
+              {rank}
+            </div>
+          )}
 
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-base mb-0.5 hover:text-primary transition-colors">
