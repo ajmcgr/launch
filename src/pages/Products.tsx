@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { ViewToggle } from '@/components/ViewToggle';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CATEGORIES } from '@/lib/constants';
 import { Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,7 +15,9 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState('votes');
+  const [topPeriod, setTopPeriod] = useState<'today' | 'week' | 'month' | 'year'>('today');
+  const [selectedArchiveYear, setSelectedArchiveYear] = useState<number | null>(null);
+  const [archiveYears, setArchiveYears] = useState<number[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [view, setView] = useState<'list' | 'grid'>(() => {
     const saved = localStorage.getItem('productView');
@@ -44,11 +45,59 @@ const Products = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [selectedCategories, sortBy]);
+    fetchArchiveYears();
+  }, []);
 
-  const fetchProducts = async () => {
+  useEffect(() => {
+    if (selectedArchiveYear) {
+      fetchArchivedProducts();
+    } else {
+      fetchTopProducts();
+    }
+  }, [selectedCategories, topPeriod, selectedArchiveYear]);
+
+  const fetchArchiveYears = async () => {
     try {
+      const { data, error } = await supabase
+        .from('product_archives')
+        .select('year')
+        .order('year', { ascending: false });
+
+      if (error) throw error;
+
+      const uniqueYears = [...new Set(data?.map(d => d.year) || [])];
+      setArchiveYears(uniqueYears);
+    } catch (error) {
+      console.error('Error fetching archive years:', error);
+    }
+  };
+
+  const getDateRange = (period: 'today' | 'week' | 'month' | 'year') => {
+    const now = new Date();
+    const start = new Date();
+
+    switch (period) {
+      case 'today':
+        start.setHours(0, 0, 0, 0);
+        break;
+      case 'week':
+        start.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        start.setMonth(now.getMonth() - 1);
+        break;
+      case 'year':
+        start.setFullYear(now.getFullYear(), 0, 1);
+        break;
+    }
+
+    return { start: start.toISOString(), end: now.toISOString() };
+  };
+
+  const fetchTopProducts = async () => {
+    try {
+      const dateRange = getDateRange(topPeriod);
+
       let query = supabase
         .from('products')
         .select(`
@@ -56,11 +105,14 @@ const Products = () => {
           slug,
           name,
           tagline,
+          launch_date,
           product_media(url, type),
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
         `)
-        .eq('status', 'launched');
+        .eq('status', 'launched')
+        .gte('launch_date', dateRange.start)
+        .lte('launch_date', dateRange.end);
 
       const { data: allProducts, error } = await query;
       if (error) throw error;
@@ -98,12 +150,78 @@ const Products = () => {
         );
       }
 
-      if (sortBy === 'votes') {
-        formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
-      } else if (sortBy === 'newest') {
-        formattedProducts.sort((a: any, b: any) => b.id.localeCompare(a.id));
-      } else if (sortBy === 'oldest') {
-        formattedProducts.sort((a: any, b: any) => a.id.localeCompare(b.id));
+      formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
+      formattedProducts = formattedProducts.slice(0, 100);
+
+      if (searchQuery) {
+        formattedProducts = formattedProducts.filter((p: any) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      setProducts(formattedProducts);
+    } catch (error) {
+      console.error('Error fetching top products:', error);
+    }
+  };
+
+  const fetchArchivedProducts = async () => {
+    if (!selectedArchiveYear) return;
+
+    try {
+      const { data: archives, error } = await supabase
+        .from('product_archives')
+        .select(`
+          product_id,
+          rank,
+          net_votes,
+          products (
+            id,
+            slug,
+            name,
+            tagline,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          )
+        `)
+        .eq('year', selectedArchiveYear)
+        .eq('period', topPeriod)
+        .order('rank', { ascending: true });
+
+      if (error) throw error;
+
+      const { data: categories } = await supabase
+        .from('product_categories')
+        .select('id, name');
+
+      const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
+
+      let formattedProducts = (archives || [])
+        .filter((a: any) => a.products)
+        .map((a: any) => {
+          const p = a.products;
+          return {
+            id: p.id,
+            slug: p.slug,
+            name: p.name,
+            tagline: p.tagline,
+            thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+            iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+            categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+            netVotes: a.net_votes,
+            makers: p.product_makers?.map((m: any) => ({
+              username: m.users?.username || 'Anonymous',
+              avatar_url: m.users?.avatar_url || ''
+            })) || []
+          };
+        });
+
+      if (selectedCategories.length > 0) {
+        formattedProducts = formattedProducts.filter((p: any) => 
+          p.categories.some((c: string) => selectedCategories.includes(c))
+        );
       }
 
       if (searchQuery) {
@@ -115,14 +233,16 @@ const Products = () => {
 
       setProducts(formattedProducts);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching archived products:', error);
     }
   };
 
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-8">Product Archive</h1>
+        <h1 className="text-4xl font-bold mb-8">
+          {selectedArchiveYear ? `Top Products ${selectedArchiveYear}` : 'Top Products'}
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <aside className="lg:col-span-1 space-y-6">
@@ -145,18 +265,68 @@ const Products = () => {
             </div>
 
             <div>
-              <h3 className="font-semibold mb-3">Sort By</h3>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="votes">Most Upvoted</SelectItem>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="oldest">Oldest</SelectItem>
-                </SelectContent>
-              </Select>
+              <h3 className="font-semibold mb-3">Top Products</h3>
+              <div className="space-y-2">
+                <Button
+                  variant={topPeriod === 'today' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('today');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  Today
+                </Button>
+                <Button
+                  variant={topPeriod === 'week' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('week');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  This Week
+                </Button>
+                <Button
+                  variant={topPeriod === 'month' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('month');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  This Month
+                </Button>
+                <Button
+                  variant={topPeriod === 'year' && !selectedArchiveYear ? 'default' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setTopPeriod('year');
+                    setSelectedArchiveYear(null);
+                  }}
+                >
+                  This Year
+                </Button>
+              </div>
             </div>
+
+            {archiveYears.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-3">Archived</h3>
+                <div className="space-y-2">
+                  {archiveYears.map((year) => (
+                    <Button
+                      key={year}
+                      variant={selectedArchiveYear === year ? 'default' : 'ghost'}
+                      className="w-full justify-start"
+                      onClick={() => setSelectedArchiveYear(year)}
+                    >
+                      {year}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
           </aside>
 
           <div className="lg:col-span-3 space-y-6">
