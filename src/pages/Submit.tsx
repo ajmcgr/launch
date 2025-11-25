@@ -753,7 +753,7 @@ const Submit = () => {
                           <CardDescription>
                             {plan.description}
                             {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
-                            {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any date within next 7 days</span>}
+                            {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
                             {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
                           </CardDescription>
                         </div>
@@ -803,8 +803,8 @@ const Submit = () => {
                           disabled={(date) => {
                             const today = new Date();
                             today.setHours(0, 0, 0, 0);
-                            const maxDate = addDays(today, 7);
-                            return date < today || date > maxDate;
+                            const endOfYear = new Date(today.getFullYear(), 11, 31);
+                            return date < today || date > endOfYear;
                           }}
                           initialFocus
                           className="pointer-events-auto"
@@ -858,7 +858,7 @@ const Submit = () => {
                       </PopoverContent>
                     </Popover>
                     <p className="text-sm text-muted-foreground">
-                      Select any date within the next 7 days
+                      Select any available date within the calendar year
                     </p>
                   </div>
                 )}
