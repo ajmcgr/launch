@@ -21,7 +21,7 @@ To automatically archive products on January 1st of each year, set up a Supabase
 
 ### 1. Enable Required Extensions
 
-In your Supabase SQL Editor, run:
+In your Supabase SQL Editor, copy and run these commands (without the ```sql markers):
 
 ```sql
 -- Enable pg_cron extension for scheduled jobs
@@ -30,6 +30,8 @@ CREATE EXTENSION IF NOT EXISTS pg_cron;
 -- Enable pg_net extension for HTTP requests
 CREATE EXTENSION IF NOT EXISTS pg_net;
 ```
+
+**Note:** Only copy the SQL commands (lines starting with `CREATE EXTENSION`), NOT the markdown code fence markers (```sql and ```).
 
 ### 2. Create the Cron Job
 
