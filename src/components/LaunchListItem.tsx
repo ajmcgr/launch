@@ -50,7 +50,7 @@ export const LaunchListItem = ({
       <Link to={`/launch/${slug}`} className="block">
         <div className="flex gap-3 p-3">
           {rank && (
-            <div className="flex items-center justify-center text-lg font-bold text-muted-foreground w-6 flex-shrink-0">
+            <div className="flex items-start justify-center text-lg font-bold text-muted-foreground w-6 flex-shrink-0 pt-0.5">
               {rank}
             </div>
           )}
