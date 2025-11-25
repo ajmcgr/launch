@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowUp, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LaunchListItemProps {
   id: string;
@@ -41,6 +42,7 @@ export const LaunchListItem = ({
   icon: IconComponent,
   onVote,
 }: LaunchListItemProps) => {
+  const isMobile = useIsMobile();
   const handleVote = () => {
     onVote(id);
   };
@@ -79,7 +81,7 @@ export const LaunchListItem = ({
             
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex flex-wrap gap-1.5">
-                {categories.slice(0, 3).map((category) => (
+                {categories.slice(0, isMobile ? 1 : 3).map((category) => (
                   <span
                     key={category}
                     onClick={(e) => {
