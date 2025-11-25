@@ -108,8 +108,12 @@ const MyProducts = () => {
     }
   };
 
-  const handleDelete = async (productId: string) => {
-    if (!confirm('Are you sure you want to delete this draft? This action cannot be undone.')) {
+  const handleDelete = async (productId: string, productStatus: string) => {
+    const confirmMessage = productStatus === 'launched' 
+      ? 'Are you sure you want to delete this launched product? All votes and comments will be permanently removed. This action cannot be undone.'
+      : 'Are you sure you want to delete this product? This action cannot be undone.';
+    
+    if (!confirm(confirmMessage)) {
       return;
     }
 
@@ -120,16 +124,25 @@ const MyProducts = () => {
       // Delete category mappings
       await supabase.from('product_category_map').delete().eq('product_id', productId);
       
+      // Delete votes
+      await supabase.from('votes').delete().eq('product_id', productId);
+      
+      // Delete comments
+      await supabase.from('comments').delete().eq('product_id', productId);
+      
+      // Delete product follows
+      await supabase.from('product_follows').delete().eq('product_id', productId);
+      
       // Delete the product
       const { error } = await supabase.from('products').delete().eq('id', productId);
       
       if (error) throw error;
       
-      toast.success('Draft deleted successfully');
+      toast.success('Product deleted successfully');
       if (user) fetchProducts(user.id);
     } catch (error) {
       console.error('Delete error:', error);
-      toast.error('Failed to delete draft');
+      toast.error('Failed to delete product');
     }
   };
 
@@ -387,6 +400,9 @@ const MyProducts = () => {
       const daysUntilLaunch = Math.ceil((launchDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       return daysUntilLaunch >= 7;
     }
+    
+    // Launched products can be deleted
+    if (product.status === 'launched') return true;
     
     return false;
   };
@@ -654,7 +670,7 @@ const MyProducts = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          handleDelete(product.id);
+                          handleDelete(product.id, product.status);
                         }}
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
