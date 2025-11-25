@@ -305,8 +305,8 @@ const Products = () => {
               <h3 className="font-semibold mb-3">Top Products</h3>
               <div className="space-y-2">
                 <Button
-                  variant={topPeriod === 'today' && !selectedArchiveYear ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
+                  variant="ghost"
+                  className={`w-full justify-start ${topPeriod === 'today' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
                   onClick={() => {
                     setTopPeriod('today');
                     setSelectedArchiveYear(null);
@@ -315,8 +315,8 @@ const Products = () => {
                   Today
                 </Button>
                 <Button
-                  variant={topPeriod === 'week' && !selectedArchiveYear ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
+                  variant="ghost"
+                  className={`w-full justify-start ${topPeriod === 'week' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
                   onClick={() => {
                     setTopPeriod('week');
                     setSelectedArchiveYear(null);
@@ -325,8 +325,8 @@ const Products = () => {
                   This Week
                 </Button>
                 <Button
-                  variant={topPeriod === 'month' && !selectedArchiveYear ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
+                  variant="ghost"
+                  className={`w-full justify-start ${topPeriod === 'month' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
                   onClick={() => {
                     setTopPeriod('month');
                     setSelectedArchiveYear(null);
@@ -335,8 +335,8 @@ const Products = () => {
                   This Month
                 </Button>
                 <Button
-                  variant={topPeriod === 'year' && !selectedArchiveYear ? 'secondary' : 'ghost'}
-                  className="w-full justify-start"
+                  variant="ghost"
+                  className={`w-full justify-start ${topPeriod === 'year' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
                   onClick={() => {
                     setTopPeriod('year');
                     setSelectedArchiveYear(null);
@@ -372,8 +372,8 @@ const Products = () => {
                   {archiveYears.map((year) => (
                     <Button
                       key={year}
-                      variant={selectedArchiveYear === year ? 'secondary' : 'ghost'}
-                      className="w-full justify-start"
+                      variant="ghost"
+                      className={`w-full justify-start ${selectedArchiveYear === year ? 'bg-muted text-foreground' : ''}`}
                       onClick={() => setSelectedArchiveYear(year)}
                     >
                       {year}
