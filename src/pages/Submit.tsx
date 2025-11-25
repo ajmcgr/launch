@@ -464,6 +464,49 @@ const Submit = () => {
         return;
       }
       
+      // Handle free plan separately
+      if (formData.plan === 'free') {
+        try {
+          // Create a free order entry (no Stripe session)
+          const { error: orderError } = await supabase
+            .from('orders')
+            .insert({
+              user_id: session.user.id,
+              product_id: savedProductId,
+              plan: 'free',
+              stripe_session_id: 'free_launch', // Special identifier for free launches
+            });
+
+          if (orderError) throw orderError;
+
+          // Update product status to scheduled with a placeholder date
+          // The launch-scheduler will assign the actual date
+          const { error: updateError } = await supabase
+            .from('products')
+            .update({
+              status: 'scheduled',
+              launch_date: null, // Will be assigned by scheduler
+            })
+            .eq('id', savedProductId);
+
+          if (updateError) throw updateError;
+
+          // Clear form data
+          localStorage.removeItem('submitFormData');
+          localStorage.removeItem('submitMedia');
+          localStorage.removeItem('submitStep');
+          
+          toast.success('Product queued for free launch! It will be scheduled after paid launches.');
+          navigate('/myproducts');
+          return;
+        } catch (error) {
+          console.error('Free launch error:', error);
+          toast.error('Failed to queue free launch. Please try again.');
+          return;
+        }
+      }
+      
+      // Handle paid plans with Stripe checkout
       toast.info('Redirecting to payment...');
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
@@ -889,8 +932,9 @@ const Submit = () => {
                   })()}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  By clicking submit, you'll be redirected to complete payment. After successful payment,
-                  your product will be scheduled for launch.
+                  {formData.plan === 'free' 
+                    ? 'By clicking submit, your product will be queued for free launch. It will be scheduled after paid launches.'
+                    : 'By clicking submit, you\'ll be redirected to complete payment. After successful payment, your product will be scheduled for launch.'}
                 </p>
               </div>
             )}
@@ -916,7 +960,7 @@ const Submit = () => {
             )}
             {step === 5 && (
               <Button onClick={handleSubmit}>
-                Proceed to Payment
+                {formData.plan === 'free' ? 'Submit for Free Launch' : 'Proceed to Payment'}
               </Button>
             )}
           </div>
