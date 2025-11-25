@@ -647,13 +647,13 @@ const Submit = () => {
             // Find first available slot at least 7 days out in PST
             const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
             nowPST.setDate(nowPST.getDate() + 7);
-            nowPST.setHours(9, 0, 0, 0);
+            nowPST.setHours(0, 1, 0, 0);
             launchDate = fromZonedTime(nowPST, PST_TIMEZONE);
           } else if (existingPlan === 'relaunch') {
             // Find first available slot at least 30 days out in PST
             const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
             nowPST.setDate(nowPST.getDate() + 30);
-            nowPST.setHours(9, 0, 0, 0);
+            nowPST.setHours(0, 1, 0, 0);
             launchDate = fromZonedTime(nowPST, PST_TIMEZONE);
           } else if (existingPlan === 'skip' && formData.selectedDate) {
             // User selected date for 'skip' plan - already in PST from the picker
@@ -776,7 +776,7 @@ const Submit = () => {
               
               if ((count || 0) < 100) {
                 launchDate = new Date(checkDate);
-                launchDate.setHours(9, 0, 0, 0);
+                launchDate.setHours(0, 1, 0, 0);
                 productStatus = 'scheduled';
                 foundSlot = true;
                 break;
@@ -845,12 +845,12 @@ const Submit = () => {
             // Auto-assign at least 7 days out
             launchDate = new Date();
             launchDate.setDate(launchDate.getDate() + 7);
-            launchDate.setHours(9, 0, 0, 0);
+            launchDate.setHours(0, 1, 0, 0);
           } else if (planType === 'relaunch') {
             // Auto-assign at least 30 days out
             launchDate = new Date();
             launchDate.setDate(launchDate.getDate() + 30);
-            launchDate.setHours(9, 0, 0, 0);
+            launchDate.setHours(0, 1, 0, 0);
           } else if (planType === 'skip' && formData.selectedDate) {
             // Use user-selected date
             launchDate = new Date(formData.selectedDate);
@@ -1251,9 +1251,9 @@ const Submit = () => {
                                   </CardTitle>
                                   <CardDescription>
                                     {plan.description}
-                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out (9 AM PST)</span>}
+                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out (12:01 AM PST)</span>}
                                     {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date and time within the calendar year (Pacific Time)</span>}
-                                    {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out (9 AM PST)</span>}
+                                    {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out (12:01 AM PST)</span>}
                                   </CardDescription>
                                 </div>
                                 <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
@@ -1296,9 +1296,9 @@ const Submit = () => {
                           selected={formData.selectedDate ? toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE) : undefined}
                           onSelect={(date) => {
                             if (date) {
-                              // Set default time to 9 AM PST
+                              // Set default time to 12:01 AM PST
                               const pstDate = toZonedTime(date, PST_TIMEZONE);
-                              pstDate.setHours(9, 0, 0, 0);
+                              pstDate.setHours(0, 1, 0, 0);
                               const utcDate = fromZonedTime(pstDate, PST_TIMEZONE);
                               handleInputChange('selectedDate', utcDate.toISOString());
                             }
@@ -1322,12 +1322,12 @@ const Submit = () => {
                                 ? (() => {
                                     try {
                                       const pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
-                                      return isNaN(pstDate.getTime()) ? '09:00' : format(pstDate, 'HH:mm');
+                                      return isNaN(pstDate.getTime()) ? '00:01' : format(pstDate, 'HH:mm');
                                     } catch {
-                                      return '09:00';
+                                      return '00:01';
                                     }
                                   })()
-                                : '09:00'
+                                : '00:01'
                             }
                             onChange={(e) => {
                               const [hours, minutes] = e.target.value.split(':');
