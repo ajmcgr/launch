@@ -463,6 +463,17 @@ const Submit = () => {
         toast.error('Failed to save product');
         return;
       }
+
+      // Check if user has an existing paid order
+      const { data: existingOrders } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .in('plan', ['join', 'skip', 'relaunch'])
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const hasExistingPlan = existingOrders && existingOrders.length > 0;
       
       // Handle free plan separately
       if (formData.plan === 'free') {
@@ -506,7 +517,52 @@ const Submit = () => {
         }
       }
       
-      // Handle paid plans with Stripe checkout
+      // Handle paid plans
+      // If user already has a paid plan, use it without requiring another payment
+      if (hasExistingPlan && formData.plan !== 'free') {
+        try {
+          // Reuse existing order for this launch
+          const existingOrder = existingOrders[0];
+          
+          // Create a new order entry referencing the same plan
+          const { error: orderError } = await supabase
+            .from('orders')
+            .insert({
+              user_id: session.user.id,
+              product_id: savedProductId,
+              plan: existingOrder.plan, // Use their existing plan
+              stripe_session_id: existingOrder.stripe_session_id, // Reference original payment
+            });
+
+          if (orderError) throw orderError;
+
+          // Update product status to scheduled
+          const { error: updateError } = await supabase
+            .from('products')
+            .update({
+              status: 'scheduled',
+              launch_date: formData.selectedDate,
+            })
+            .eq('id', savedProductId);
+
+          if (updateError) throw updateError;
+
+          // Clear form data
+          localStorage.removeItem('submitFormData');
+          localStorage.removeItem('submitMedia');
+          localStorage.removeItem('submitStep');
+          
+          toast.success('Product scheduled using your existing plan!');
+          navigate('/my-products');
+          return;
+        } catch (error) {
+          console.error('Error using existing plan:', error);
+          toast.error('Failed to schedule launch. Please try again.');
+          return;
+        }
+      }
+      
+      // Handle new paid plans with Stripe checkout
       toast.info('Redirecting to payment...');
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
