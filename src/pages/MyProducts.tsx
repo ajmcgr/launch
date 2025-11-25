@@ -630,7 +630,7 @@ const MyProducts = () => {
                           </div>
                         )}
                         {product.orderPlan && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                             <span>Plan:</span>
                             <Badge variant="outline" className="capitalize">
                               {product.orderPlan === 'free' ? 'Free' : product.orderPlan === 'join' ? 'Join the Line' : product.orderPlan === 'skip' ? 'Launch' : product.orderPlan === 'relaunch' ? 'Relaunch' : product.orderPlan}
@@ -725,39 +725,6 @@ const MyProducts = () => {
                           Edit
                         </Link>
                       </Button>
-                    )}
-                    {product.status === 'draft' && (
-                      <>
-                        <Button 
-                          variant="outline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleFreeLaunch(product);
-                          }}
-                        >
-                          Free Launch
-                        </Button>
-                        <Button 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleLaunch(product);
-                          }}
-                        >
-                          Paid Launch
-                        </Button>
-                        <Button 
-                          variant="outline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleScheduleLine(product);
-                          }}
-                        >
-                          Join the Line
-                        </Button>
-                      </>
                     )}
                     {canDelete(product) && (
                       <Button 
