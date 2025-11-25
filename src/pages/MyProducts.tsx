@@ -202,15 +202,16 @@ const MyProducts = () => {
       }
 
       // Check if product already has an order (already paid)
-      const { data: existingOrder } = await supabase
+      const { data: existingOrders } = await supabase
         .from('orders')
         .select('id, plan')
         .eq('product_id', product.id)
         .eq('user_id', session.user.id)
-        .maybeSingle();
+        .order('created_at', { ascending: false });
 
-      if (existingOrder) {
+      if (existingOrders && existingOrders.length > 0) {
         // Already paid, open date picker with the correct plan type
+        const existingOrder = existingOrders[0];
         const planType = existingOrder.plan === 'join' ? 'join' : existingOrder.plan === 'relaunch' ? 'relaunch' : 'skip';
         openRescheduleDialog(product, planType);
         return;
