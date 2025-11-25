@@ -13,7 +13,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS } from '@/lib/constants';
 import { toast } from 'sonner';
 import { format, addDays } from 'date-fns';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
+
+const PST_TIMEZONE = 'America/Los_Angeles';
 
 const Submit = () => {
   const navigate = useNavigate();
@@ -639,27 +642,28 @@ const Submit = () => {
 
           let launchDate: Date;
           
-          // Auto-assign date for 'join' and 'relaunch' plans
+          // Auto-assign date for 'join' and 'relaunch' plans (all in PST)
           if (existingPlan === 'join') {
-            // Find first available slot at least 7 days out
-            const minDate = new Date();
-            minDate.setDate(minDate.getDate() + 7);
-            minDate.setHours(9, 0, 0, 0);
-            launchDate = minDate;
+            // Find first available slot at least 7 days out in PST
+            const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
+            nowPST.setDate(nowPST.getDate() + 7);
+            nowPST.setHours(9, 0, 0, 0);
+            launchDate = fromZonedTime(nowPST, PST_TIMEZONE);
           } else if (existingPlan === 'relaunch') {
-            // Find first available slot at least 30 days out
-            const minDate = new Date();
-            minDate.setDate(minDate.getDate() + 30);
-            minDate.setHours(9, 0, 0, 0);
-            launchDate = minDate;
+            // Find first available slot at least 30 days out in PST
+            const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
+            nowPST.setDate(nowPST.getDate() + 30);
+            nowPST.setHours(9, 0, 0, 0);
+            launchDate = fromZonedTime(nowPST, PST_TIMEZONE);
           } else if (existingPlan === 'skip' && formData.selectedDate) {
-            // User selected date for 'skip' plan
-            launchDate = new Date(formData.selectedDate);
-            const now = new Date();
-            if (launchDate <= now) {
-              toast.error('Launch date must be in the future');
+            // User selected date for 'skip' plan - already in PST from the picker
+            const selectedPST = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
+            const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
+            if (selectedPST <= nowPST) {
+              toast.error('Launch date must be in the future (PST)');
               return;
             }
+            launchDate = fromZonedTime(selectedPST, PST_TIMEZONE);
           } else {
             toast.error('Please select a launch date');
             return;
@@ -1230,9 +1234,9 @@ const Submit = () => {
                                   </CardTitle>
                                   <CardDescription>
                                     {plan.description}
-                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
-                                    {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date within the calendar year</span>}
-                                    {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out</span>}
+                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out (9 AM PST)</span>}
+                                    {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date and time within the calendar year (Pacific Time)</span>}
+                                    {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out (9 AM PST)</span>}
                                   </CardDescription>
                                 </div>
                                 <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
@@ -1259,9 +1263,9 @@ const Submit = () => {
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {formData.selectedDate && (() => {
                             try {
-                              const d = new Date(formData.selectedDate);
-                              return !isNaN(d.getTime()) 
-                                ? format(d, "PPP 'at' h:mm a")
+                              const pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
+                              return !isNaN(pstDate.getTime()) 
+                                ? format(pstDate, "PPP 'at' h:mm a") + ' PST'
                                 : "Pick your launch date and time";
                             } catch {
                               return "Pick your launch date and time";
@@ -1272,34 +1276,36 @@ const Submit = () => {
                        <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={formData.selectedDate ? new Date(formData.selectedDate) : undefined}
+                          selected={formData.selectedDate ? toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE) : undefined}
                           onSelect={(date) => {
                             if (date) {
                               // Set default time to 9 AM PST
-                              const newDate = new Date(date);
-                              newDate.setHours(9, 0, 0, 0);
-                              handleInputChange('selectedDate', newDate.toISOString());
+                              const pstDate = toZonedTime(date, PST_TIMEZONE);
+                              pstDate.setHours(9, 0, 0, 0);
+                              const utcDate = fromZonedTime(pstDate, PST_TIMEZONE);
+                              handleInputChange('selectedDate', utcDate.toISOString());
                             }
                           }}
                           disabled={(date) => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            const endOfYear = new Date(today.getFullYear(), 11, 31);
-                            return date < today || date > endOfYear;
+                            const todayPST = toZonedTime(new Date(), PST_TIMEZONE);
+                            todayPST.setHours(0, 0, 0, 0);
+                            const endOfYearPST = toZonedTime(new Date(todayPST.getFullYear(), 11, 31), PST_TIMEZONE);
+                            const datePST = toZonedTime(date, PST_TIMEZONE);
+                            return datePST < todayPST || datePST > endOfYearPST;
                           }}
                           initialFocus
                           className="pointer-events-auto"
                         />
                         <div className="p-3 border-t">
-                          <Label className="text-sm mb-2 block">Launch Time (PST)</Label>
+                          <Label className="text-sm mb-2 block">Launch Time (PST/PDT)</Label>
                           <Input
                             type="time"
                             value={
                               formData.selectedDate 
                                 ? (() => {
                                     try {
-                                      const d = new Date(formData.selectedDate);
-                                      return isNaN(d.getTime()) ? '09:00' : format(d, 'HH:mm');
+                                      const pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
+                                      return isNaN(pstDate.getTime()) ? '09:00' : format(pstDate, 'HH:mm');
                                     } catch {
                                       return '09:00';
                                     }
@@ -1308,32 +1314,35 @@ const Submit = () => {
                             }
                             onChange={(e) => {
                               const [hours, minutes] = e.target.value.split(':');
-                              let date: Date;
+                              let pstDate: Date;
                               
                               if (formData.selectedDate) {
                                 try {
-                                  date = new Date(formData.selectedDate);
-                                  if (isNaN(date.getTime())) {
-                                    date = new Date();
+                                  pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
+                                  if (isNaN(pstDate.getTime())) {
+                                    pstDate = toZonedTime(new Date(), PST_TIMEZONE);
                                   }
                                 } catch {
-                                  date = new Date();
+                                  pstDate = toZonedTime(new Date(), PST_TIMEZONE);
                                 }
                               } else {
-                                date = new Date();
+                                pstDate = toZonedTime(new Date(), PST_TIMEZONE);
                               }
                               
-                              date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                              pstDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                              
+                              // Convert PST to UTC for storage
+                              const utcDate = fromZonedTime(pstDate, PST_TIMEZONE);
                               
                               // Validate the date before saving
-                              if (!isNaN(date.getTime())) {
-                                handleInputChange('selectedDate', date.toISOString());
+                              if (!isNaN(utcDate.getTime())) {
+                                handleInputChange('selectedDate', utcDate.toISOString());
                               }
                             }}
                             className="w-full"
                           />
                           <p className="text-xs text-muted-foreground mt-1">
-                            Choose the exact time your product goes live
+                            Choose the exact time your product goes live (Pacific Time)
                           </p>
                         </div>
                       </PopoverContent>
