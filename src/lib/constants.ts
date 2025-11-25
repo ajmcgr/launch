@@ -29,13 +29,13 @@ export const PRICING_PLANS = [
   {
     id: 'skip',
     name: 'Launch',
-    price: 19,
+    price: 39,
     description: 'Choose any available launch date and time',
   },
   {
     id: 'relaunch',
     name: 'Relaunch',
-    price: 12,
+    price: 19,
     description: 'Relaunch existing product into spotlight',
   },
 ] as const;
