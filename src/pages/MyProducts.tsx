@@ -600,15 +600,22 @@ const MyProducts = () => {
                             <Calendar className="h-4 w-4 text-primary" />
                             <span className="font-medium">Scheduled to launch:</span>
                             <span className="text-primary">
-                              {new Date(product.launch_date).toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })} at {new Date(product.launch_date).toLocaleTimeString('en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                timeZoneName: 'short',
-                              })}
+                              {product.launch_date && (() => {
+                                const date = new Date(product.launch_date);
+                                return !isNaN(date.getTime()) ? (
+                                  <>
+                                    {date.toLocaleDateString('en-US', {
+                                      month: 'long',
+                                      day: 'numeric',
+                                      year: 'numeric',
+                                    })} at {date.toLocaleTimeString('en-US', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                      timeZoneName: 'short',
+                                    })}
+                                  </>
+                                ) : 'Processing...';
+                              })() || 'Processing...'}
                             </span>
                           </div>
                         </div>
