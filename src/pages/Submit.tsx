@@ -268,10 +268,14 @@ const Submit = () => {
         .order('created_at', { ascending: false })
         .maybeSingle();
 
+      console.log('Order found:', order);
+
       // If product is scheduled and has an order, treat it as rescheduling
-      if (product.status === 'scheduled' && order) {
-        setExistingPlan(order.plan as 'join' | 'skip' | 'relaunch');
+      if (product.status === 'scheduled' && order && order.plan) {
+        const planValue = order.plan as 'join' | 'skip' | 'relaunch';
+        setExistingPlan(planValue);
         setIsRescheduling(true);
+        console.log('Setting up reschedule mode - plan:', planValue);
       }
 
       // Store product status
@@ -283,6 +287,9 @@ const Submit = () => {
         screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
       };
 
+      // Set form data with the paid plan pre-selected
+      const paidPlan = (order?.plan as 'join' | 'skip' | 'relaunch') || 'join';
+      
       setFormData({
         name: product.name || '',
         tagline: product.tagline || '',
@@ -292,9 +299,11 @@ const Submit = () => {
         slug: product.slug || '',
         couponCode: product.coupon_code || '',
         couponDescription: product.coupon_description || '',
-        plan: order?.plan || 'join',
+        plan: paidPlan,
         selectedDate: product.launch_date || null,
       });
+      
+      console.log('Form data set with plan:', paidPlan);
       
       setUploadedMedia(media);
       toast.success(product.status === 'scheduled' && order ? 'Product loaded for rescheduling' : 'Draft loaded successfully');
@@ -1141,11 +1150,14 @@ const Submit = () => {
                       )}
                       {filteredPlans.map((plan) => {
                         const isPaidPlan = isRescheduling && plan.id === existingPlan;
+                        const isSelected = formData.plan === plan.id;
                         return (
                           <Card
                             key={plan.id}
                             className={`transition-all ${
-                              isPaidPlan ? 'border-primary ring-2 ring-primary bg-primary/5' : 'cursor-pointer'
+                              isPaidPlan || isSelected
+                                ? 'border-primary ring-2 ring-primary bg-primary/5' 
+                                : 'cursor-pointer hover:border-primary/50'
                             }`}
                             onClick={() => !isRescheduling && handleInputChange('plan', plan.id)}
                           >
@@ -1157,6 +1169,11 @@ const Submit = () => {
                                     {isPaidPlan && (
                                       <span className="text-xs font-normal px-2 py-1 rounded-full bg-primary text-primary-foreground">
                                         Your Plan
+                                      </span>
+                                    )}
+                                    {!isRescheduling && isSelected && (
+                                      <span className="text-xs font-normal px-2 py-1 rounded-full bg-secondary text-secondary-foreground">
+                                        Selected
                                       </span>
                                     )}
                                   </CardTitle>
