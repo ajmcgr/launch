@@ -336,10 +336,10 @@ const Home = () => {
         <Accordion type="single" collapsible className="w-full space-y-4">
           <AccordionItem value="what-is" className="border rounded-lg px-6">
             <AccordionTrigger className="text-left text-sm">
-              Launch?
+              What is Launch?
             </AccordionTrigger>
             <AccordionContent>
-              TryLaunch.ai is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
+              Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
             </AccordionContent>
           </AccordionItem>
 

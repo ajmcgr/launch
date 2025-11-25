@@ -17,10 +17,10 @@ const FAQ = () => {
         <Accordion type="multiple" defaultValue={["what-is-trylaunch", "how-to-submit", "voting-system", "top-products", "archives", "categories", "notifications", "following", "comments", "badge", "pricing", "scheduled-launches", "profile", "winners", "search", "support"]} className="w-full space-y-4">
           <AccordionItem value="what-is-trylaunch" className="border rounded-lg px-6">
             <AccordionTrigger className="text-left">
-              Launch?
+              What is Launch?
             </AccordionTrigger>
             <AccordionContent>
-              TryLaunch.ai is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings. Users can discover innovative AI tools, vote for their favorites, and stay updated with the latest launches.
+              Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings. Users can discover innovative AI tools, vote for their favorites, and stay updated with the latest launches.
             </AccordionContent>
           </AccordionItem>
 
