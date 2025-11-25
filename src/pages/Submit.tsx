@@ -525,10 +525,10 @@ const Submit = () => {
           let productStatus: string;
           let foundSlot = false;
           
-          // If there's capacity today (less than 5 launches), go live immediately
+          // If there's capacity today (less than 5 launches), launch immediately
           if ((todayCount || 0) < 5) {
             launchDate = new Date(); // Current time
-            productStatus = 'live';
+            productStatus = 'launched';
             foundSlot = true;
           } else {
             // Otherwise, find next available slot
@@ -584,7 +584,7 @@ const Submit = () => {
           localStorage.removeItem('submitMedia');
           localStorage.removeItem('submitStep');
           
-          const message = productStatus === 'live'
+          const message = productStatus === 'launched'
             ? 'Product launched successfully!'
             : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${launchDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
           toast.success(message);
