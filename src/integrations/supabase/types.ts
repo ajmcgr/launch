@@ -195,6 +195,44 @@ export type Database = {
           },
         ]
       }
+      product_archives: {
+        Row: {
+          created_at: string | null
+          id: string
+          net_votes: number
+          period: string
+          product_id: string
+          rank: number
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          net_votes: number
+          period: string
+          product_id: string
+          rank: number
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          net_votes?: number
+          period?: string
+          product_id?: string
+          rank?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_archives_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_categories: {
         Row: {
           id: number

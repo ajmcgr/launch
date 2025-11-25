@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.detect-winners]
 verify_jwt = false
+
+[functions.archive-year-products]
+verify_jwt = false
