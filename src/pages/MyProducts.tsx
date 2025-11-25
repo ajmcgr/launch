@@ -160,20 +160,8 @@ const MyProducts = () => {
         .maybeSingle();
 
       if (existingOrder) {
-        // Relaunch plan auto-schedules to 30+ days out
-        // Update product to scheduled status (date will be auto-assigned)
-        const { error: updateError } = await supabase
-          .from('products')
-          .update({
-            status: 'scheduled',
-            launch_date: null, // Will be auto-assigned by scheduler to 30+ days
-          })
-          .eq('id', product.id);
-
-        if (updateError) throw updateError;
-
-        toast.success('Product scheduled for relaunch (30+ days out)');
-        fetchProducts(session.user.id);
+        // Already paid, open date picker with relaunch validation (30+ days)
+        openRescheduleDialog(product, 'relaunch');
         return;
       }
       
@@ -264,16 +252,10 @@ const MyProducts = () => {
         .order('created_at', { ascending: false });
 
       if (existingOrders && existingOrders.length > 0) {
-        // Already paid for this product
+        // Already paid, open date picker with the correct plan type
         const existingOrder = existingOrders[0];
-        
-        // Only 'skip' plan allows manual date selection
-        // 'join' and 'relaunch' are auto-scheduled
-        if (existingOrder.plan === 'skip') {
-          openRescheduleDialog(product, 'skip');
-        } else {
-          toast.info('This product will be auto-scheduled based on your plan');
-        }
+        const planType = existingOrder.plan === 'join' ? 'join' : existingOrder.plan === 'relaunch' ? 'relaunch' : 'skip';
+        openRescheduleDialog(product, planType);
         return;
       }
       
@@ -322,20 +304,8 @@ const MyProducts = () => {
         .maybeSingle();
 
       if (existingOrder) {
-        // Join the Line plan auto-schedules to 7+ days out
-        // Update product to scheduled status (date will be auto-assigned)
-        const { error: updateError } = await supabase
-          .from('products')
-          .update({
-            status: 'scheduled',
-            launch_date: null, // Will be auto-assigned by scheduler to 7+ days
-          })
-          .eq('id', product.id);
-
-        if (updateError) throw updateError;
-
-        toast.success('Product scheduled for launch (7+ days out)');
-        fetchProducts(session.user.id);
+        // Already paid, open date picker with join validation (7+ days)
+        openRescheduleDialog(product, 'join');
         return;
       }
       
@@ -796,9 +766,9 @@ const MyProducts = () => {
               {rescheduleDialog.product?.status === 'scheduled' ? 'Reschedule Launch' : 'Schedule Launch'}
             </DialogTitle>
             <DialogDescription>
-              {rescheduleDialog.planType === 'skip' 
-                ? `Choose any date in the current calendar year for ${rescheduleDialog.product?.name}` 
-                : `Choose a date and time for ${rescheduleDialog.product?.name}`}
+              {rescheduleDialog.planType === 'join' && 'Select a date at least 7 days in advance'}
+              {rescheduleDialog.planType === 'relaunch' && 'Select a date at least 30 days in advance'}
+              {rescheduleDialog.planType === 'skip' && 'Choose any date in the current calendar year'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
