@@ -365,7 +365,7 @@ const MyProducts = () => {
   };
 
   const canDelete = (product: any) => {
-    // Drafts can always be deleted
+    // Only allow deletion for products that haven't launched yet
     if (product.status === 'draft') return true;
     
     // Scheduled products can be deleted if launch date is more than 7 days away
@@ -375,9 +375,6 @@ const MyProducts = () => {
       const daysUntilLaunch = Math.ceil((launchDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       return daysUntilLaunch >= 7;
     }
-    
-    // Launched products can be deleted
-    if (product.status === 'launched') return true;
     
     return false;
   };
@@ -623,7 +620,7 @@ const MyProducts = () => {
                         asChild
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <Link to={`/submit?draft=${product.id}&step=1`}>
+                        <Link to={product.status === 'scheduled' && product.orderPlan ? `/submit?productId=${product.id}` : `/submit?draft=${product.id}&step=1`}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </Link>
