@@ -335,7 +335,7 @@ const Home = () => {
         
         <Accordion type="single" collapsible className="w-full space-y-4">
           <AccordionItem value="what-is" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left">
+            <AccordionTrigger className="text-left text-sm">
               What is TryLaunch.ai?
             </AccordionTrigger>
             <AccordionContent>
@@ -344,7 +344,7 @@ const Home = () => {
           </AccordionItem>
 
           <AccordionItem value="how-submit" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left">
+            <AccordionTrigger className="text-left text-sm">
               How do I submit my product?
             </AccordionTrigger>
             <AccordionContent>
@@ -353,7 +353,7 @@ const Home = () => {
           </AccordionItem>
 
           <AccordionItem value="voting" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left">
+            <AccordionTrigger className="text-left text-sm">
               How does voting work?
             </AccordionTrigger>
             <AccordionContent>
@@ -362,7 +362,7 @@ const Home = () => {
           </AccordionItem>
 
           <AccordionItem value="top-products" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left">
+            <AccordionTrigger className="text-left text-sm">
               What are Top Products and Archives?
             </AccordionTrigger>
             <AccordionContent>
@@ -371,7 +371,7 @@ const Home = () => {
           </AccordionItem>
 
           <AccordionItem value="notifications" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left">
+            <AccordionTrigger className="text-left text-sm">
               How do notifications work?
             </AccordionTrigger>
             <AccordionContent>
