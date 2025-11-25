@@ -16,6 +16,7 @@ const Settings = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
+    name: '',
     username: '',
     bio: '',
     twitter: '',
@@ -213,6 +214,15 @@ const Settings = () => {
                       id="username"
                       value={profile.username}
                       onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      value={profile.name || ''}
+                      onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                      placeholder="Your full name"
                     />
                   </div>
                   <div className="space-y-2">
