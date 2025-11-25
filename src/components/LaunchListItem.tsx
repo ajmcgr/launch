@@ -75,7 +75,7 @@ export const LaunchListItem = ({
               {name}
             </h3>
             
-            <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
               {tagline}
             </p>
             
