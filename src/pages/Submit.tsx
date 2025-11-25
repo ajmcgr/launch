@@ -48,6 +48,21 @@ const Submit = () => {
     return saved ? JSON.parse(saved) : { screenshots: [] };
   });
   const [formData, setFormData] = useState(() => {
+    // Don't load from localStorage if we're rescheduling (productIdParam is present)
+    if (productIdParam) {
+      return {
+        name: '',
+        tagline: '',
+        url: '',
+        description: '',
+        categories: [] as string[],
+        slug: '',
+        couponCode: '',
+        couponDescription: '',
+        plan: 'join' as 'join' | 'skip' | 'relaunch',
+        selectedDate: null as string | null,
+      };
+    }
     const saved = localStorage.getItem('submitFormData');
     return saved ? JSON.parse(saved) : {
       name: '',
@@ -147,8 +162,6 @@ const Submit = () => {
         const planValue = order.plan as 'join' | 'skip' | 'relaunch';
         console.log('Setting existingPlan to:', planValue);
         console.log('Setting isRescheduling to: true');
-        setExistingPlan(planValue);
-        setIsRescheduling(true);
         
         // Force formData.plan to match the paid plan
         const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
@@ -158,6 +171,7 @@ const Submit = () => {
           screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
         };
 
+        // Set the form data with the paid plan FIRST
         setFormData({
           name: product.name || '',
           tagline: product.tagline || '',
@@ -171,11 +185,14 @@ const Submit = () => {
           selectedDate: product.launch_date || null,
         });
 
+        // Then set the reschedule state AFTER formData is set
+        setExistingPlan(planValue);
+        setIsRescheduling(true);
         setUploadedMedia(media);
         setProductStatus(product.status);
         
         console.log('=== RESCHEDULE SETUP COMPLETE ===');
-        console.log('Final state - existingPlan:', planValue, 'isRescheduling: true');
+        console.log('Final formData.plan:', planValue, 'existingPlan:', planValue, 'isRescheduling: true');
         
         toast.success(`Product loaded - ${PRICING_PLANS.find(p => p.id === planValue)?.name} plan`);
       } else {
