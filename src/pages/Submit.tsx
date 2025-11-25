@@ -111,6 +111,7 @@ const Submit = () => {
   }, [navigate, draftId, productIdParam]);
 
   const loadProductForReschedule = async (id: string, userId: string) => {
+    setIsLoadingProduct(true);
     try {
       const { data: product, error } = await supabase
         .from('products')
@@ -170,6 +171,8 @@ const Submit = () => {
       console.error('Error loading product:', error);
       toast.error('Failed to load product');
       navigate('/my-products');
+    } finally {
+      setIsLoadingProduct(false);
     }
   };
 
