@@ -669,7 +669,7 @@ const MyProducts = () => {
                         asChild
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <Link to={`/submit?draft=${product.id}`}>
+                        <Link to={`/submit?draft=${product.id}&step=1`}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </Link>
@@ -751,7 +751,20 @@ const MyProducts = () => {
                         return date < minDate;
                       }
                       
-                      // For other plans, just prevent past dates
+                      // For 'relaunch' plan, enforce 30+ days minimum
+                      if (rescheduleDialog.planType === 'relaunch') {
+                        const minDate = new Date(today);
+                        minDate.setDate(minDate.getDate() + 30);
+                        return date < minDate;
+                      }
+                      
+                      // For 'skip' (Launch) plan, allow any date in current calendar year
+                      if (rescheduleDialog.planType === 'skip') {
+                        const endOfYear = new Date(today.getFullYear(), 11, 31);
+                        return date < today || date > endOfYear;
+                      }
+                      
+                      // Default: prevent past dates
                       return date < today;
                     }}
                     initialFocus
