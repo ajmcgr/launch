@@ -9,6 +9,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Link } from 'react-router-dom';
 
 interface Product {
   id: string;
@@ -322,6 +329,63 @@ const Home = () => {
       </div>
 
       <CategoryCloud />
+
+      <div className="container mx-auto px-4 py-12 max-w-3xl">
+        <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+        
+        <Accordion type="single" collapsible className="w-full space-y-4">
+          <AccordionItem value="what-is" className="border rounded-lg px-6">
+            <AccordionTrigger className="text-left">
+              What is TryLaunch.ai?
+            </AccordionTrigger>
+            <AccordionContent>
+              TryLaunch.ai is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="how-submit" className="border rounded-lg px-6">
+            <AccordionTrigger className="text-left">
+              How do I submit my product?
+            </AccordionTrigger>
+            <AccordionContent>
+              Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="voting" className="border rounded-lg px-6">
+            <AccordionTrigger className="text-left">
+              How does voting work?
+            </AccordionTrigger>
+            <AccordionContent>
+              Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="top-products" className="border rounded-lg px-6">
+            <AccordionTrigger className="text-left">
+              What are Top Products and Archives?
+            </AccordionTrigger>
+            <AccordionContent>
+              Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners. Visit the Products page to see current rankings and archives.
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="notifications" className="border rounded-lg px-6">
+            <AccordionTrigger className="text-left">
+              How do notifications work?
+            </AccordionTrigger>
+            <AccordionContent>
+              Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        <div className="text-center mt-8">
+          <Link to="/faq">
+            <Button variant="outline">View All FAQs</Button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
