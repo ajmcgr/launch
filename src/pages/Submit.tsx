@@ -141,10 +141,17 @@ const Submit = () => {
       console.log('Order plan:', order?.plan);
       
       if (order) {
-        setExistingPlan(order.plan as 'join' | 'skip' | 'relaunch');
+        const planValue = order.plan as 'join' | 'skip' | 'relaunch';
+        setExistingPlan(planValue);
         setIsRescheduling(true);
-        console.log('Set existingPlan to:', order.plan);
+        console.log('Set existingPlan to:', planValue);
         console.log('Set isRescheduling to: true');
+        
+        // Force the plan to be set correctly
+        setFormData(prev => ({
+          ...prev,
+          plan: planValue
+        }));
       } else {
         console.log('No order found for this product');
       }
@@ -1085,26 +1092,37 @@ const Submit = () => {
                   <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
                 ) : (
                   <>
-                    {console.log('Rendering plans. isRescheduling:', isRescheduling, 'existingPlan:', existingPlan)}
-                    {PRICING_PLANS.map((plan) => {
-                      const isDisabled = isRescheduling && existingPlan && plan.id !== existingPlan;
-                      console.log(`Plan ${plan.id}: isDisabled=${isDisabled}, isRescheduling=${isRescheduling}, existingPlan=${existingPlan}, plan.id=${plan.id}`);
+                    {isRescheduling && existingPlan && (
+                      <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+                        <p className="text-sm font-medium">
+                          You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan for this product. 
+                          {existingPlan === 'skip' && ' You can choose any available date and time below.'}
+                          {existingPlan === 'join' && ' Your launch date will be automatically assigned.'}
+                          {existingPlan === 'relaunch' && ' Your relaunch date will be automatically assigned.'}
+                        </p>
+                      </div>
+                    )}
+                    {PRICING_PLANS.filter(plan => !isRescheduling || plan.id === existingPlan).map((plan) => {
+                      const isPaidPlan = isRescheduling && plan.id === existingPlan;
                       return (
                         <Card
                           key={plan.id}
                           className={`transition-all ${
-                            isDisabled 
-                              ? 'opacity-50 cursor-not-allowed' 
-                              : 'cursor-pointer'
-                          } ${
-                            formData.plan === plan.id ? 'border-primary ring-2 ring-primary' : ''
+                            isPaidPlan ? 'border-primary ring-2 ring-primary bg-primary/5' : 'cursor-pointer'
                           }`}
-                          onClick={() => !isDisabled && handleInputChange('plan', plan.id)}
+                          onClick={() => !isRescheduling && handleInputChange('plan', plan.id)}
                         >
                           <CardHeader>
                             <div className="flex justify-between items-start">
                               <div>
-                                <CardTitle>{plan.name}</CardTitle>
+                                <CardTitle className="flex items-center gap-2">
+                                  {plan.name}
+                                  {isPaidPlan && (
+                                    <span className="text-xs font-normal px-2 py-1 rounded-full bg-primary text-primary-foreground">
+                                      Your Plan
+                                    </span>
+                                  )}
+                                </CardTitle>
                                 <CardDescription>
                                   {plan.description}
                                   {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out</span>}
