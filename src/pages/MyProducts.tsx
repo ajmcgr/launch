@@ -614,13 +614,6 @@ const MyProducts = () => {
                             })}
                           </span>
                         </div>
-                        {product.orderPlan && (
-                          <div className="mt-2">
-                            <Badge variant="outline" className="capitalize">
-                              {product.orderPlan === 'free' ? 'Free' : product.orderPlan === 'join' ? 'Join the Line' : product.orderPlan === 'skip' ? 'Launch' : product.orderPlan === 'relaunch' ? 'Relaunch' : product.orderPlan}
-                            </Badge>
-                          </div>
-                        )}
                         {product.launch_date && product.status === 'launched' && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                             <Calendar className="h-4 w-4" />
@@ -634,6 +627,13 @@ const MyProducts = () => {
                                 minute: '2-digit',
                               })}
                             </span>
+                          </div>
+                        )}
+                        {product.orderPlan && (
+                          <div className="mt-2">
+                            <Badge variant="outline" className="capitalize">
+                              {product.orderPlan === 'free' ? 'Free' : product.orderPlan === 'join' ? 'Join the Line' : product.orderPlan === 'skip' ? 'Launch' : product.orderPlan === 'relaunch' ? 'Relaunch' : product.orderPlan}
+                            </Badge>
                           </div>
                         )}
                         {product.status === 'launched' && (
