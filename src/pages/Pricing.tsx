@@ -57,7 +57,7 @@ const Pricing = () => {
                       <p className="font-semibold">Launch</p>
                     </div>
                     <p className="text-muted-foreground">
-                      Pick any date in next 7 days
+                      Pick any date in current calendar year
                     </p>
                   </div>
                 )}
