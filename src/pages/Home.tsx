@@ -331,7 +331,7 @@ const Home = () => {
       <CategoryCloud />
 
       <div className="container mx-auto px-4 py-12 max-w-3xl">
-        <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+        <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
         
         <Accordion type="single" collapsible className="w-full space-y-4">
           <AccordionItem value="what-is" className="border rounded-lg px-6">
