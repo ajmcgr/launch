@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { UserPlus, UserMinus, Globe } from 'lucide-react';
 import { LaunchCard } from '@/components/LaunchCard';
-import { FollowersDialog } from '@/components/FollowersDialog';
 
 const UserProfile = () => {
   const { username: rawUsername } = useParams();
@@ -23,8 +22,6 @@ const UserProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-  const [showFollowersDialog, setShowFollowersDialog] = useState(false);
-  const [followersDialogTab, setFollowersDialogTab] = useState<'followers' | 'following'>('followers');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -407,26 +404,20 @@ const UserProfile = () => {
               </div>
 
               <div className="flex gap-6 mb-4">
-                <button
-                  onClick={() => {
-                    setFollowersDialogTab('followers');
-                    setShowFollowersDialog(true);
-                  }}
-                  className="hover:underline cursor-pointer"
+                <Link
+                  to={`/@${profile.username}/followers`}
+                  className="hover:underline"
                 >
                   <span className="font-bold">{followerCount}</span>
                   <span className="text-muted-foreground ml-1">Followers</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setFollowersDialogTab('following');
-                    setShowFollowersDialog(true);
-                  }}
-                  className="hover:underline cursor-pointer"
+                </Link>
+                <Link
+                  to={`/@${profile.username}/following`}
+                  className="hover:underline"
                 >
                   <span className="font-bold">{followingCount}</span>
                   <span className="text-muted-foreground ml-1">Following</span>
-                </button>
+                </Link>
                 <div>
                   <span className="font-bold">{products.length}</span>
                   <span className="text-muted-foreground ml-1">Products</span>
@@ -546,13 +537,6 @@ const UserProfile = () => {
           </div>
         )}
       </div>
-
-      <FollowersDialog
-        open={showFollowersDialog}
-        onOpenChange={setShowFollowersDialog}
-        userId={profile.id}
-        defaultTab={followersDialogTab}
-      />
     </div>
   );
 };

@@ -21,6 +21,8 @@ import Privacy from "./pages/Privacy";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import Followers from "./pages/Followers";
+import Following from "./pages/Following";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +49,8 @@ const AppContent = () => {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/newsletter" element={<Blog />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/:username/followers" element={<Followers />} />
+          <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
