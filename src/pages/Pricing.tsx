@@ -42,7 +42,7 @@ const Pricing = () => {
                   <div className="bg-muted/50 rounded-lg p-4 text-sm border">
                     <div className="flex items-center gap-2 mb-2">
                       <Rocket className="h-5 w-5 text-primary" />
-                      <p className="font-semibold">Free Launch</p>
+                      <p className="font-semibold">Free</p>
                     </div>
                     <p className="text-muted-foreground">
                       Scheduled after paid launches
