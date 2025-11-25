@@ -327,12 +327,15 @@ export type Database = {
       }
       products: {
         Row: {
+          badge_embedded: boolean | null
+          badge_verified_at: string | null
           coupon_code: string | null
           coupon_description: string | null
           created_at: string | null
           description: string | null
           domain_url: string | null
           id: string
+          last_badge_check: string | null
           launch_date: string | null
           name: string | null
           owner_id: string
@@ -344,12 +347,15 @@ export type Database = {
           won_weekly: boolean | null
         }
         Insert: {
+          badge_embedded?: boolean | null
+          badge_verified_at?: string | null
           coupon_code?: string | null
           coupon_description?: string | null
           created_at?: string | null
           description?: string | null
           domain_url?: string | null
           id?: string
+          last_badge_check?: string | null
           launch_date?: string | null
           name?: string | null
           owner_id: string
@@ -361,12 +367,15 @@ export type Database = {
           won_weekly?: boolean | null
         }
         Update: {
+          badge_embedded?: boolean | null
+          badge_verified_at?: string | null
           coupon_code?: string | null
           coupon_description?: string | null
           created_at?: string | null
           description?: string | null
           domain_url?: string | null
           id?: string
+          last_badge_check?: string | null
           launch_date?: string | null
           name?: string | null
           owner_id?: string
