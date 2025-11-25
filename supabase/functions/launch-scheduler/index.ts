@@ -1,9 +1,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { toZonedTime } from 'https://esm.sh/date-fns-tz@3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const PST_TIMEZONE = 'America/Los_Angeles';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -18,7 +21,11 @@ Deno.serve(async (req) => {
 
     console.log('Starting launch scheduler check...');
 
-    // Find all products scheduled to launch that are past their launch date
+    // Get current time in PST for comparison
+    const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
+    console.log('Current PST time:', nowPST.toISOString());
+
+    // Find all products scheduled to launch that are past their launch date (comparing in UTC)
     const { data: productsToLaunch, error: fetchError } = await supabaseAdmin
       .from('products')
       .select('id, name, slug, owner_id, launch_date')
