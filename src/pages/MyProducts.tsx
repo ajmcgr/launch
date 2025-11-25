@@ -204,14 +204,15 @@ const MyProducts = () => {
       // Check if product already has an order (already paid)
       const { data: existingOrder } = await supabase
         .from('orders')
-        .select('id')
+        .select('id, plan')
         .eq('product_id', product.id)
         .eq('user_id', session.user.id)
         .maybeSingle();
 
       if (existingOrder) {
-        // Already paid, open date picker
-        openRescheduleDialog(product, 'skip');
+        // Already paid, open date picker with the correct plan type
+        const planType = existingOrder.plan === 'join' ? 'join' : existingOrder.plan === 'relaunch' ? 'relaunch' : 'skip';
+        openRescheduleDialog(product, planType);
         return;
       }
       
@@ -660,19 +661,6 @@ const MyProducts = () => {
                         >
                           Revert to Draft
                         </Button>
-                        {canDelete(product) && (
-                          <Button 
-                            variant="destructive" 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleDelete(product.id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </Button>
-                        )}
                       </>
                     )}
                     {canEdit(product) && (
@@ -697,29 +685,6 @@ const MyProducts = () => {
                           }}
                         >
                           Schedule Launch
-                        </Button>
-                        {product.orderPlan !== 'skip' && (
-                          <Button 
-                            className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleScheduleLine(product);
-                            }}
-                          >
-                            Join The Line
-                          </Button>
-                        )}
-                        <Button 
-                          variant="destructive" 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleDelete(product.id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
                         </Button>
                       </>
                     )}
@@ -778,6 +743,15 @@ const MyProducts = () => {
                     disabled={(date) => {
                       const today = new Date();
                       today.setHours(0, 0, 0, 0);
+                      
+                      // For 'join' plan, enforce 7+ days minimum
+                      if (rescheduleDialog.planType === 'join') {
+                        const minDate = new Date(today);
+                        minDate.setDate(minDate.getDate() + 7);
+                        return date < minDate;
+                      }
+                      
+                      // For other plans, just prevent past dates
                       return date < today;
                     }}
                     initialFocus
