@@ -60,11 +60,53 @@ serve(async (req) => {
       throw new Error('Invalid plan');
     }
 
+    // Get or create Stripe customer
+    let customerId: string;
+    
+    // Check if user already has a Stripe customer ID
+    const { data: userData, error: fetchError } = await supabaseAdmin
+      .from('users')
+      .select('stripe_customer_id')
+      .eq('id', user.id)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching user data:', fetchError);
+      throw new Error('Failed to fetch user data');
+    }
+
+    if (userData?.stripe_customer_id) {
+      customerId = userData.stripe_customer_id;
+      console.log('Using existing Stripe customer:', customerId);
+    } else {
+      // Create new Stripe customer
+      const customer = await stripe.customers.create({
+        email: user.email,
+        metadata: {
+          supabase_user_id: user.id,
+        },
+      });
+      customerId = customer.id;
+      console.log('Created new Stripe customer:', customerId);
+
+      // Update user with Stripe customer ID
+      const { error: updateError } = await supabaseAdmin
+        .from('users')
+        .update({ stripe_customer_id: customerId })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Failed to update user with customer ID:', updateError);
+        // Don't fail the checkout if we can't update the DB
+      }
+    }
+
     // Create Stripe checkout session
     const productionUrl = (Deno.env.get('PRODUCTION_URL') || req.headers.get('origin') || '').replace(/\/$/, '');
     console.log('Using production URL:', productionUrl);
     
     const session = await stripe.checkout.sessions.create({
+      customer: customerId,
       payment_method_types: ['card'],
       line_items: [
         {

@@ -729,6 +729,20 @@ const Submit = () => {
       // Handle free plan separately
       if (formData.plan === 'free') {
         try {
+          // Create Stripe customer for free plan users
+          toast.info('Setting up your account...');
+          const { data: customerData, error: customerError } = await supabase.functions.invoke('create-stripe-customer', {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          });
+
+          if (customerError) {
+            console.error('Customer creation error:', customerError);
+            // Don't block the submission if customer creation fails
+          } else {
+            console.log('Stripe customer created:', customerData?.customerId);
+          }
           
           // Create a free order entry (no Stripe session)
           const { data: orderData, error: orderError } = await supabase
