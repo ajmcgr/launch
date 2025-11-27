@@ -316,7 +316,7 @@ const Home = () => {
               <TabsTrigger value="month">This Month</TabsTrigger>
               <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+            <div className="flex items-center gap-3 w-full md:w-auto justify-start md:justify-end">
               <SortToggle sort={sort} onSortChange={setSort} />
               <ViewToggle view={view} onViewChange={handleViewChange} />
             </div>
