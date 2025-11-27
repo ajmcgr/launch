@@ -4,6 +4,7 @@ import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
+import { SortToggle } from '@/components/SortToggle';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +30,7 @@ interface Product {
   userVote?: 1 | null;
   commentCount: number;
   makers: Array<{ username: string; avatar_url?: string }>;
+  launch_date?: string;
 }
 
 const Home = () => {
@@ -40,6 +42,7 @@ const Home = () => {
     return (saved as 'list' | 'grid') || 'list';
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState<'popular' | 'latest'>('popular');
   const ITEMS_PER_PAGE = 25;
   const MAX_ITEMS = 100;
 
@@ -146,9 +149,9 @@ const Home = () => {
           makers: p.product_makers?.map((m: any) => ({
             username: m.users?.username || 'Anonymous',
             avatar_url: m.users?.avatar_url || ''
-          })) || []
+          })) || [],
+          launch_date: p.launch_date
         }))
-        .sort((a, b) => b.netVotes - a.netVotes)
         .slice(0, MAX_ITEMS);
 
       setProducts(formattedProducts);
@@ -220,10 +223,18 @@ const Home = () => {
     }
   };
 
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const sortedProducts = [...products].sort((a, b) => {
+    if (sort === 'popular') {
+      return b.netVotes - a.netVotes;
+    } else {
+      return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
+    }
+  });
+
+  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentProducts = products.slice(startIndex, endIndex);
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
   const renderProductList = (productList: Product[]) => {
     if (loading) {
@@ -305,7 +316,8 @@ const Home = () => {
               <TabsTrigger value="month">This Month</TabsTrigger>
               <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
-            <div className="hidden md:block">
+            <div className="hidden md:flex items-center gap-3">
+              <SortToggle sort={sort} onSortChange={setSort} />
               <ViewToggle view={view} onViewChange={handleViewChange} />
             </div>
           </div>
