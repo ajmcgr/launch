@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { ViewToggle } from '@/components/ViewToggle';
+import { SortToggle } from '@/components/SortToggle';
 import { CATEGORIES } from '@/lib/constants';
 import { Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,6 +24,7 @@ const Products = () => {
     const saved = localStorage.getItem('productView');
     return (saved as 'list' | 'grid') || 'list';
   });
+  const [sort, setSort] = useState<'popular' | 'latest'>('popular');
 
   const handleViewChange = (newView: 'list' | 'grid') => {
     setView(newView);
@@ -54,7 +56,7 @@ const Products = () => {
     } else {
       fetchTopProducts();
     }
-  }, [selectedCategories, topPeriod, selectedArchiveYear]);
+  }, [selectedCategories, topPeriod, selectedArchiveYear, sort]);
 
   const fetchArchiveYears = async () => {
     try {
@@ -134,6 +136,7 @@ const Products = () => {
         slug: p.slug,
         name: p.name,
         tagline: p.tagline,
+        launch_date: p.launch_date,
         thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
         iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
@@ -150,7 +153,14 @@ const Products = () => {
         );
       }
 
-      formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
+      if (sort === 'popular') {
+        formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
+      } else {
+        formattedProducts.sort((a: any, b: any) => 
+          new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime()
+        );
+      }
+      
       formattedProducts = formattedProducts.slice(0, 100);
 
       if (searchQuery) {
@@ -176,11 +186,12 @@ const Products = () => {
           product_id,
           rank,
           net_votes,
-          products (
+            products (
             id,
             slug,
             name,
             tagline,
+            launch_date,
             product_media(url, type),
             product_category_map(category_id),
             product_makers(user_id, users(username, avatar_url))
@@ -207,6 +218,7 @@ const Products = () => {
             slug: p.slug,
             name: p.name,
             tagline: p.tagline,
+            launch_date: p.launch_date,
             thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
             iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
             categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
@@ -259,7 +271,10 @@ const Products = () => {
                 </div>
                 <Button variant="outline">Search</Button>
               </div>
-              <ViewToggle view={view} onViewChange={handleViewChange} />
+              <div className="flex items-center gap-3">
+                <SortToggle sort={sort} onSortChange={setSort} />
+                <ViewToggle view={view} onViewChange={handleViewChange} />
+              </div>
             </div>
 
             {selectedCategories.length > 0 && (

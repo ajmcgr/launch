@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Rocket } from 'lucide-react';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
+import { SortToggle } from '@/components/SortToggle';
 import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
 import { HomeLaunchCard } from '@/components/HomeLaunchCard';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +17,7 @@ interface Launch {
   votes: number;
   thumbnail?: string;
   slug: string;
+  launch_date?: string;
 }
 
 const Index = () => {
@@ -26,6 +28,7 @@ const Index = () => {
     const savedView = localStorage.getItem('homeViewPreference');
     return (savedView === 'grid' || savedView === 'list') ? savedView : 'list';
   });
+  const [sort, setSort] = useState<'popular' | 'latest'>('popular');
 
   useEffect(() => {
     localStorage.setItem('homeViewPreference', view);
@@ -45,6 +48,20 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (launches.length === 0) return;
+    
+    const sorted = [...launches].sort((a, b) => {
+      if (sort === 'popular') {
+        return b.votes - a.votes;
+      } else {
+        return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
+      }
+    }).map((p, index) => ({ ...p, rank: index + 1 }));
+    
+    setLaunches(sorted);
+  }, [sort]);
+
   const fetchLaunches = async () => {
     setLoading(true);
     try {
@@ -58,6 +75,7 @@ const Index = () => {
           name,
           tagline,
           slug,
+          launch_date,
           product_media(url, type)
         `)
         .eq('status', 'published')
@@ -72,7 +90,7 @@ const Index = () => {
 
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
 
-      const launches: Launch[] = (products || [])
+      let launches: Launch[] = (products || [])
         .map((p, index) => ({
           id: p.id,
           rank: index + 1,
@@ -81,10 +99,9 @@ const Index = () => {
           icon: Rocket,
           votes: voteMap.get(p.id) || 0,
           thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
-          slug: p.slug
-        }))
-        .sort((a, b) => b.votes - a.votes)
-        .map((p, index) => ({ ...p, rank: index + 1 }));
+          slug: p.slug,
+          launch_date: p.launch_date
+        }));
 
       setLaunches(launches);
     } catch (error) {
@@ -144,8 +161,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="flex items-center justify-between mb-8">
-          <div className="text-center flex-1">
+        <div className="mb-8">
+          <div className="text-center mb-6">
             <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
               Today's Top Launches
             </h1>
@@ -153,7 +170,10 @@ const Index = () => {
               Discover the best new products launching today
             </p>
           </div>
-          <ViewToggle view={view} onViewChange={setView} />
+          <div className="flex items-center justify-end gap-3">
+            <SortToggle sort={sort} onSortChange={setSort} />
+            <ViewToggle view={view} onViewChange={setView} />
+          </div>
         </div>
 
         {loading ? (
