@@ -309,14 +309,14 @@ const Home = () => {
         </div>
         
         <Tabs defaultValue="year" onValueChange={(v) => { fetchProducts(v as any); setCurrentPage(1); }}>
-          <div className="flex flex-row items-center justify-between gap-4 mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="week">This Week</TabsTrigger>
               <TabsTrigger value="month">This Month</TabsTrigger>
               <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full md:w-auto justify-end">
               <SortToggle sort={sort} onSortChange={setSort} />
               <ViewToggle view={view} onViewChange={handleViewChange} />
             </div>
