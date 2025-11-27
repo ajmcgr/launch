@@ -72,6 +72,15 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Promotional Banner */}
+      <div className="bg-black text-white py-2">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <p className="text-center text-sm font-medium">
+            Get 50% off all plans with code <span className="font-bold">LAUNCH50</span>
+          </p>
+        </div>
+      </div>
+      
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center">
