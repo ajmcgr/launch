@@ -73,7 +73,7 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner */}
-      <Link to="/pricing" className="block bg-black text-white py-2 hover:bg-black/90 transition-colors">
+      <Link to="/pricing" className="block text-white py-2 hover:opacity-90 transition-opacity" style={{ backgroundColor: '#545454' }}>
         <div className="container mx-auto px-4 max-w-5xl">
           <p className="text-center text-sm font-medium">
             Get 50% off all plans with code <span className="font-bold">LAUNCH50</span> at checkout
