@@ -11,8 +11,10 @@ import { Search } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Products = () => {
+  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -25,6 +27,9 @@ const Products = () => {
     return (saved as 'list' | 'grid') || 'list';
   });
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
+  
+  // Force list view on mobile
+  const effectiveView = isMobile ? 'list' : view;
 
   const handleViewChange = (newView: 'list' | 'grid') => {
     setView(newView);
@@ -273,7 +278,7 @@ const Products = () => {
               </div>
               <div className="flex items-center gap-3">
                 <SortToggle sort={sort} onSortChange={setSort} />
-                <ViewToggle view={view} onViewChange={handleViewChange} />
+                {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
               </div>
             </div>
 
@@ -292,7 +297,7 @@ const Products = () => {
               </div>
             )}
 
-            {view === 'list' ? (
+            {effectiveView === 'list' ? (
               <div className="space-y-4">
                 {products.map((product) => (
                   <LaunchListItem

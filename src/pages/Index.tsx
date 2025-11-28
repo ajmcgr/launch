@@ -7,6 +7,7 @@ import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
 import { HomeLaunchCard } from '@/components/HomeLaunchCard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Launch {
   id: string;
@@ -21,6 +22,7 @@ interface Launch {
 }
 
 const Index = () => {
+  const isMobile = useIsMobile();
   const [launches, setLaunches] = useState<Launch[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -29,6 +31,9 @@ const Index = () => {
     return (savedView === 'grid' || savedView === 'list') ? savedView : 'list';
   });
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
+  
+  // Force list view on mobile
+  const effectiveView = isMobile ? 'list' : view;
 
   useEffect(() => {
     localStorage.setItem('homeViewPreference', view);
@@ -172,7 +177,7 @@ const Index = () => {
           </div>
           <div className="flex items-center justify-end gap-3">
             <SortToggle sort={sort} onSortChange={setSort} />
-            <ViewToggle view={view} onViewChange={setView} />
+            {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
           </div>
         </div>
 
@@ -184,7 +189,7 @@ const Index = () => {
           <div className="text-center py-12">
             <p className="text-muted-foreground">No launches today. Check back soon!</p>
           </div>
-        ) : view === 'list' ? (
+        ) : effectiveView === 'list' ? (
           <div className="space-y-4 mb-16">
             {launches.map((launch) => (
               <HomeLaunchListItem
