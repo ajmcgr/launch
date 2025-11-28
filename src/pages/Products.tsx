@@ -251,7 +251,7 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-7xl">
         <h1 className="text-4xl font-bold mb-8">
           {selectedArchiveYear ? `Products ${selectedArchiveYear}` : 'Products'}
         </h1>
