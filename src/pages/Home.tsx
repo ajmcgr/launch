@@ -130,14 +130,19 @@ const Home = () => {
       const userVoteMap = new Map(userVotes?.map(v => [v.product_id, 1 as const]) || []);
 
       const productIds = allProducts?.map(p => p.id) || [];
-      const commentCounts = await Promise.all(
-        productIds.map(async (id) => {
-          const { data } = await supabase.rpc('get_comment_count', { product_uuid: id });
-          return { product_id: id, count: data || 0 };
-        })
-      );
+      
+      // Fetch all comments in a single query
+      const { data: allComments } = await supabase
+        .from('comments')
+        .select('product_id')
+        .in('product_id', productIds);
 
-      const commentMap = new Map(commentCounts.map(c => [c.product_id, c.count]));
+      // Count comments per product
+      const commentMap = new Map<string, number>();
+      allComments?.forEach(comment => {
+        const currentCount = commentMap.get(comment.product_id) || 0;
+        commentMap.set(comment.product_id, currentCount + 1);
+      });
 
       const formattedProducts: Product[] = (allProducts || [])
         .map((p: any) => ({
