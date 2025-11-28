@@ -109,7 +109,7 @@ export const CommentList = ({ productId, refreshTrigger }: CommentListProps) => 
             </span>
           </div>
           <p className="text-sm text-foreground whitespace-pre-wrap mb-2">{comment.content}</p>
-          {user && !isReply && (
+          {user && (
             <Button
               variant="ghost"
               size="sm"
