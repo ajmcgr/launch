@@ -10,6 +10,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Accordion,
   AccordionContent,
@@ -34,6 +35,7 @@ interface Product {
 }
 
 const Home = () => {
+  const isMobile = useIsMobile();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -45,6 +47,9 @@ const Home = () => {
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
   const ITEMS_PER_PAGE = 25;
   const MAX_ITEMS = 100;
+  
+  // Force list view on mobile
+  const effectiveView = isMobile ? 'list' : view;
 
   const handleViewChange = (newView: 'list' | 'grid') => {
     setView(newView);
@@ -245,7 +250,7 @@ const Home = () => {
       return <div className="text-center py-12 text-muted-foreground">No products found for this period.</div>;
     }
 
-    const productsToRender = view === 'list' ? (
+    const productsToRender = effectiveView === 'list' ? (
       <div className="space-y-4">
         {productList.map((product, index) => (
           <LaunchListItem
@@ -318,7 +323,7 @@ const Home = () => {
             </TabsList>
             <div className="flex items-center gap-3 w-full md:w-auto justify-start md:justify-end">
               <SortToggle sort={sort} onSortChange={setSort} />
-              <ViewToggle view={view} onViewChange={handleViewChange} />
+              {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
             </div>
           </div>
 
