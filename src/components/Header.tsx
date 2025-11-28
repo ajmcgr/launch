@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -22,9 +22,12 @@ import { NotificationBell } from '@/components/NotificationBell';
 
 export const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     // Get initial session
@@ -74,14 +77,14 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner */}
       <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity" style={{ backgroundColor: '#f5f5f5', color: '#383838' }}>
-        <div className="container mx-auto px-4 max-w-7xl">
+        <div className={`container mx-auto px-4 ${isHomePage ? 'max-w-4xl' : 'max-w-7xl'}`}>
           <p className="text-center text-sm font-medium">
             Save 50% on any plan. Use code <span className="font-bold">LAUNCH50</span>
           </p>
         </div>
       </Link>
       
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className={`container mx-auto px-4 ${isHomePage ? 'max-w-4xl' : 'max-w-7xl'}`}>
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center">
             <img src={logo} alt="Launch" className="h-10" />
