@@ -322,7 +322,7 @@ const Products = () => {
           </div>
 
           <aside className="lg:col-span-2 space-y-6">
-            <Card className="p-6">
+            <Card className="p-6 max-w-xs">
               <h3 className="font-semibold mb-3">Top Products</h3>
               <div className="space-y-2">
                 <Button
@@ -368,7 +368,7 @@ const Products = () => {
               </div>
             </Card>
 
-            <Card className="p-6">
+            <Card className="p-6 max-w-xs">
               <h3 className="font-semibold mb-3">Categories</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {CATEGORIES.map((category) => (
@@ -387,7 +387,7 @@ const Products = () => {
             </Card>
 
             {archiveYears.length > 0 && (
-              <Card className="p-6">
+              <Card className="p-6 max-w-xs">
                 <h3 className="font-semibold mb-3">Archived</h3>
                 <div className="space-y-2">
                   {archiveYears.map((year) => (
