@@ -264,8 +264,8 @@ const Products = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mx-auto">
           <div className="lg:col-span-3 space-y-6 max-w-3xl mx-auto w-full">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex gap-4 flex-1">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex gap-4 flex-1 max-w-2xl">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
@@ -277,7 +277,7 @@ const Products = () => {
                 </div>
                 <Button variant="outline">Search</Button>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <SortToggle sort={sort} onSortChange={setSort} />
                 {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
               </div>
