@@ -322,7 +322,7 @@ const Products = () => {
             )}
           </div>
 
-          <aside className="lg:col-span-1 space-y-6">
+          <aside className="lg:col-span-2 space-y-6">
             <Card className="p-6 w-full">
               <h3 className="font-semibold mb-3">Top Products</h3>
               <div className="space-y-2">
