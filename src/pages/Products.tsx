@@ -262,7 +262,7 @@ const Products = () => {
           {selectedArchiveYear ? `Products ${selectedArchiveYear}` : 'Products'}
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mx-auto">
           <div className="lg:col-span-3 space-y-6 max-w-3xl mx-auto w-full">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex gap-4 flex-1">
