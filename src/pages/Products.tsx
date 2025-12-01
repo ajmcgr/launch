@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { ViewToggle } from '@/components/ViewToggle';
@@ -321,7 +322,7 @@ const Products = () => {
           </div>
 
           <aside className="lg:col-span-1 space-y-6">
-            <div>
+            <Card className="p-6">
               <h3 className="font-semibold mb-3">Top Products</h3>
               <div className="space-y-2">
                 <Button
@@ -365,9 +366,9 @@ const Products = () => {
                   This Year
                 </Button>
               </div>
-            </div>
+            </Card>
 
-            <div>
+            <Card className="p-6">
               <h3 className="font-semibold mb-3">Categories</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {CATEGORIES.map((category) => (
@@ -383,10 +384,10 @@ const Products = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
 
             {archiveYears.length > 0 && (
-              <div>
+              <Card className="p-6">
                 <h3 className="font-semibold mb-3">Archived</h3>
                 <div className="space-y-2">
                   {archiveYears.map((year) => (
@@ -400,7 +401,7 @@ const Products = () => {
                     </Button>
                   ))}
                 </div>
-              </div>
+              </Card>
             )}
           </aside>
         </div>
