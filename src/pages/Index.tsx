@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Rocket } from 'lucide-react';
+import { Rocket, Clock } from 'lucide-react';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
@@ -32,6 +32,7 @@ const Index = () => {
   });
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
   const [displayCount, setDisplayCount] = useState(25);
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   
   // Force list view on mobile
   const effectiveView = isMobile ? 'list' : view;
@@ -39,6 +40,32 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem('homeViewPreference', view);
   }, [view]);
+
+  useEffect(() => {
+    const targetDate = new Date('2026-01-01T00:00:00').getTime();
+    
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+      
+      if (distance < 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      
+      setCountdown({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+    };
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -176,6 +203,38 @@ const Index = () => {
               Discover the best new products launching today
             </p>
           </div>
+          
+          {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
+            <div className="mb-6 p-6 bg-primary/10 border border-primary/20 rounded-lg">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Clock className="w-5 h-5 text-primary" />
+                <p className="text-lg font-semibold text-foreground">
+                  Save 50% on any plan. Use code <span className="text-primary">LAUNCH50</span>
+                </p>
+              </div>
+              <div className="flex items-center justify-center gap-4 text-center">
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-primary">{countdown.days}</span>
+                  <span className="text-sm text-muted-foreground">days</span>
+                </div>
+                <span className="text-2xl text-muted-foreground">:</span>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-primary">{countdown.hours}</span>
+                  <span className="text-sm text-muted-foreground">hours</span>
+                </div>
+                <span className="text-2xl text-muted-foreground">:</span>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-primary">{countdown.minutes}</span>
+                  <span className="text-sm text-muted-foreground">min</span>
+                </div>
+                <span className="text-2xl text-muted-foreground">:</span>
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-primary">{countdown.seconds}</span>
+                  <span className="text-sm text-muted-foreground">sec</span>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex items-center justify-end gap-3">
             <SortToggle sort={sort} onSortChange={setSort} />
             {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
