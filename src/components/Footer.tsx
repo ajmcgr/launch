@@ -23,16 +23,6 @@ export const Footer = () => {
                   Newsletter
                 </Link>
               </li>
-              <li>
-                <a 
-                  href="https://discord.gg/uTgwQsJWdS" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Community
-                </a>
-              </li>
             </ul>
           </div>
 
