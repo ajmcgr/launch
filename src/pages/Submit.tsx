@@ -58,9 +58,9 @@ const Submit = () => {
     const saved = localStorage.getItem('submitStep');
     return saved ? parseInt(saved) : 1;
   });
-  const [uploadedMedia, setUploadedMedia] = useState<{ icon?: string; thumbnail?: string; screenshots: string[] }>(() => {
+  const [uploadedMedia, setUploadedMedia] = useState<{ icon?: string; thumbnail?: string; screenshots: string[]; videoUrl?: string }>(() => {
     const saved = localStorage.getItem('submitMedia');
-    return saved ? JSON.parse(saved) : { screenshots: [] };
+    return saved ? JSON.parse(saved) : { screenshots: [], videoUrl: '' };
   });
   const [formData, setFormData] = useState(() => {
     // Don't load from localStorage if we're rescheduling (productIdParam is present)
@@ -177,6 +177,7 @@ const Submit = () => {
           icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
           thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
           screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
+          videoUrl: product.product_media?.find((m: any) => m.type === 'video')?.url || '',
         };
 
         // Set the form data with the paid plan FIRST
@@ -207,6 +208,7 @@ const Submit = () => {
           icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
           thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
           screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
+          videoUrl: product.product_media?.find((m: any) => m.type === 'video')?.url || '',
         };
 
         setFormData({
@@ -303,6 +305,7 @@ const Submit = () => {
         icon: product.product_media?.find((m: any) => m.type === 'icon')?.url,
         thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
         screenshots: product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [],
+        videoUrl: product.product_media?.find((m: any) => m.type === 'video')?.url || '',
       };
 
       // Set form data with the paid plan pre-selected
@@ -554,7 +557,7 @@ const Submit = () => {
       }
 
       // Save media
-      if (uploadedMedia.icon || uploadedMedia.thumbnail || uploadedMedia.screenshots.length > 0) {
+      if (uploadedMedia.icon || uploadedMedia.thumbnail || uploadedMedia.screenshots.length > 0 || uploadedMedia.videoUrl) {
         // Delete existing media
         await supabase
           .from('product_media')
@@ -572,6 +575,9 @@ const Submit = () => {
         uploadedMedia.screenshots.forEach(url => {
           mediaInserts.push({ product_id: currentProductId, type: 'screenshot', url });
         });
+        if (uploadedMedia.videoUrl) {
+          mediaInserts.push({ product_id: currentProductId, type: 'video', url: uploadedMedia.videoUrl });
+        }
 
         if (mediaInserts.length > 0) {
           await supabase.from('product_media').insert(mediaInserts);
@@ -1125,7 +1131,12 @@ const Submit = () => {
                   <Input
                     type="url"
                     placeholder="https://youtube.com/watch?v=..."
+                    value={uploadedMedia.videoUrl || ''}
+                    onChange={(e) => setUploadedMedia(prev => ({ ...prev, videoUrl: e.target.value }))}
                   />
+                  <p className="text-sm text-muted-foreground">
+                    Paste a YouTube video URL to showcase your product
+                  </p>
                 </div>
               </>
             )}
