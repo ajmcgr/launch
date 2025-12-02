@@ -106,7 +106,7 @@ export const Header = () => {
             Save 50% on any plan. Use code <span className="font-bold">LAUNCH50</span>
             {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
               <span className="ml-2">
-                · {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
+                · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
               </span>
             )}
           </p>
