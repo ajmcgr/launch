@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ExternalLink } from 'lucide-react';
 
 interface HomeLaunchCardProps {
   rank: number;
@@ -9,6 +10,7 @@ interface HomeLaunchCardProps {
   icon: any;
   votes: number;
   slug: string;
+  domainUrl?: string;
   onVote: () => void;
 }
 
@@ -19,6 +21,7 @@ export const HomeLaunchCard = ({
   icon: IconComponent,
   votes,
   slug,
+  domainUrl,
   onVote,
 }: HomeLaunchCardProps) => {
   return (
@@ -47,9 +50,22 @@ export const HomeLaunchCard = ({
           <IconComponent className="w-8 h-8 text-primary" />
         </div>
         
-        <h3 className="font-reckless font-semibold text-lg text-foreground text-center mb-2">
-          {name}
-        </h3>
+        <div className="flex items-center justify-center gap-1.5 mb-2">
+          <h3 className="font-reckless font-semibold text-lg text-foreground text-center">
+            {name}
+          </h3>
+          {domainUrl && (
+            <a
+              href={domainUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground text-center line-clamp-2">
           {tagline}
         </p>

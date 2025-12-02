@@ -25,6 +25,7 @@ interface Product {
   tagline: string;
   thumbnail: string;
   iconUrl?: string;
+  domainUrl?: string;
   categories: string[];
   netVotes: number;
   userVote?: 1 | null;
@@ -107,6 +108,7 @@ const Home = () => {
           name,
           tagline,
           launch_date,
+          domain_url,
           product_media(url, type),
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
@@ -159,6 +161,7 @@ const Home = () => {
           tagline: p.tagline,
           thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
           iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+          domainUrl: p.domain_url || '',
           categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
           netVotes: voteMap.get(p.id) || 0,
           userVote: userVoteMap.get(p.id) || null,
