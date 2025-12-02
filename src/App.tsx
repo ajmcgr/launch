@@ -26,6 +26,8 @@ import Following from "./pages/Following";
 import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
 
+import DiscourseSso from "./pages/DiscourseSso";
+
 const queryClient = new QueryClient();
 
 const AppContent = () => {
@@ -52,6 +54,7 @@ const AppContent = () => {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/newsletter" element={<Blog />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/discourse-sso" element={<DiscourseSso />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />

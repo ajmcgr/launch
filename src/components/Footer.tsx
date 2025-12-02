@@ -82,6 +82,16 @@ export const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a 
+                  href="https://forums.trylaunch.ai/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Forum
+                </a>
+              </li>
+              <li>
+                <a 
                   href="https://x.com/trylaunchai" 
                   target="_blank" 
                   rel="noopener noreferrer"
