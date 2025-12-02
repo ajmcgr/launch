@@ -31,6 +31,7 @@ const Index = () => {
     return (savedView === 'grid' || savedView === 'list') ? savedView : 'list';
   });
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
+  const [displayCount, setDisplayCount] = useState(25);
   
   // Force list view on mobile
   const effectiveView = isMobile ? 'list' : view;
@@ -190,8 +191,8 @@ const Index = () => {
             <p className="text-muted-foreground">No launches today. Check back soon!</p>
           </div>
         ) : effectiveView === 'list' ? (
-          <div className="space-y-4 mb-16">
-            {launches.map((launch) => (
+          <div className="space-y-4 mb-8">
+            {launches.slice(0, displayCount).map((launch) => (
               <HomeLaunchListItem
                 key={launch.id}
                 rank={launch.rank}
@@ -205,8 +206,8 @@ const Index = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {launches.map((launch) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {launches.slice(0, displayCount).map((launch) => (
               <HomeLaunchCard
                 key={launch.id}
                 rank={launch.rank}
@@ -218,6 +219,17 @@ const Index = () => {
                 onVote={() => handleVote(launch.id)}
               />
             ))}
+          </div>
+        )}
+
+        {launches.length > displayCount && (
+          <div className="flex justify-center mb-16">
+            <button
+              onClick={() => setDisplayCount(prev => prev + 25)}
+              className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
+            >
+              Load More
+            </button>
           </div>
         )}
 
