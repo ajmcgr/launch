@@ -28,21 +28,31 @@ const Auth = () => {
   }, [searchParams]);
 
   useEffect(() => {
+    const returnTo = searchParams.get('returnTo');
+    
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate(isSignUp ? '/submit' : '/');
+        if (returnTo) {
+          navigate(decodeURIComponent(returnTo));
+        } else {
+          navigate(isSignUp ? '/submit' : '/');
+        }
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && event === 'SIGNED_IN') {
-        navigate(isSignUp ? '/submit' : '/');
+        if (returnTo) {
+          navigate(decodeURIComponent(returnTo));
+        } else {
+          navigate(isSignUp ? '/submit' : '/');
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, isSignUp]);
+  }, [navigate, isSignUp, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
