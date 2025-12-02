@@ -96,7 +96,12 @@ export const Header = () => {
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
-              <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              <a 
+                href={user ? "https://forums.trylaunch.ai/session/sso_login" : "https://forums.trylaunch.ai/"} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-sm font-medium text-nav-text hover:text-primary transition-colors"
+              >
                 Forums
               </a>
               <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
@@ -184,7 +189,7 @@ export const Header = () => {
                     Products
                   </Link>
                   <a 
-                    href="https://forums.trylaunch.ai/" 
+                    href={user ? "https://forums.trylaunch.ai/session/sso_login" : "https://forums.trylaunch.ai/"} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
