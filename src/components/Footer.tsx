@@ -19,9 +19,14 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/newsletter" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <a 
+                  href="https://newsletter.trylaunch.ai/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Newsletter
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
