@@ -44,7 +44,7 @@ const Home = () => {
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
-  const MAX_ITEMS = 10;
+  const MAX_ITEMS = 25;
   
   // Force list view on mobile
   const effectiveView = isMobile ? 'list' : view;
