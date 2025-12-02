@@ -194,6 +194,38 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
+        {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
+          <div className="mb-8 p-6 bg-primary/10 border border-primary/20 rounded-lg">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Clock className="w-5 h-5 text-primary" />
+              <p className="text-lg font-semibold text-foreground">
+                Save 50% on any plan. Use code <span className="text-primary">LAUNCH50</span>
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-4 text-center">
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.days}</span>
+                <span className="text-sm text-muted-foreground">days</span>
+              </div>
+              <span className="text-2xl text-muted-foreground">:</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.hours}</span>
+                <span className="text-sm text-muted-foreground">hours</span>
+              </div>
+              <span className="text-2xl text-muted-foreground">:</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.minutes}</span>
+                <span className="text-sm text-muted-foreground">min</span>
+              </div>
+              <span className="text-2xl text-muted-foreground">:</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.seconds}</span>
+                <span className="text-sm text-muted-foreground">sec</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="mb-8">
           <div className="text-center mb-6">
             <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
@@ -203,38 +235,6 @@ const Index = () => {
               Discover the best new products launching today
             </p>
           </div>
-          
-          {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
-            <div className="mb-6 p-6 bg-primary/10 border border-primary/20 rounded-lg">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <Clock className="w-5 h-5 text-primary" />
-                <p className="text-lg font-semibold text-foreground">
-                  Save 50% on any plan. Use code <span className="text-primary">LAUNCH50</span>
-                </p>
-              </div>
-              <div className="flex items-center justify-center gap-4 text-center">
-                <div className="flex flex-col">
-                  <span className="text-3xl font-bold text-primary">{countdown.days}</span>
-                  <span className="text-sm text-muted-foreground">days</span>
-                </div>
-                <span className="text-2xl text-muted-foreground">:</span>
-                <div className="flex flex-col">
-                  <span className="text-3xl font-bold text-primary">{countdown.hours}</span>
-                  <span className="text-sm text-muted-foreground">hours</span>
-                </div>
-                <span className="text-2xl text-muted-foreground">:</span>
-                <div className="flex flex-col">
-                  <span className="text-3xl font-bold text-primary">{countdown.minutes}</span>
-                  <span className="text-sm text-muted-foreground">min</span>
-                </div>
-                <span className="text-2xl text-muted-foreground">:</span>
-                <div className="flex flex-col">
-                  <span className="text-3xl font-bold text-primary">{countdown.seconds}</span>
-                  <span className="text-sm text-muted-foreground">sec</span>
-                </div>
-              </div>
-            </div>
-          )}
           <div className="flex items-center justify-end gap-3">
             <SortToggle sort={sort} onSortChange={setSort} />
             {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
