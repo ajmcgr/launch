@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { ExternalLink } from 'lucide-react';
 
 interface HomeLaunchListItemProps {
   rank: number;
@@ -8,6 +9,7 @@ interface HomeLaunchListItemProps {
   icon: any;
   votes: number;
   slug: string;
+  domainUrl?: string;
   onVote: () => void;
 }
 
@@ -18,6 +20,7 @@ export const HomeLaunchListItem = ({
   icon: IconComponent,
   votes,
   slug,
+  domainUrl,
   onVote,
 }: HomeLaunchListItemProps) => {
   return (
@@ -33,9 +36,22 @@ export const HomeLaunchListItem = ({
           <IconComponent className="w-6 h-6 text-primary" />
         </div>
         <div className="flex-1">
-          <h3 className="font-reckless font-semibold text-lg text-foreground">
-            {name}
-          </h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-reckless font-semibold text-lg text-foreground">
+              {name}
+            </h3>
+            {domainUrl && (
+              <a
+                href={domainUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">{tagline}</p>
         </div>
       </div>

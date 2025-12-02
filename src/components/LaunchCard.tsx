@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, MessageSquare, Star } from 'lucide-react';
+import { ArrowUp, MessageSquare, Star, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -12,6 +12,7 @@ interface LaunchCardProps {
   tagline: string;
   thumbnail: string;
   iconUrl?: string;
+  domainUrl?: string;
   categories: string[];
   netVotes: number;
   userVote?: 1 | null;
@@ -35,6 +36,7 @@ export const LaunchCard = ({
   tagline,
   thumbnail,
   iconUrl,
+  domainUrl,
   categories,
   netVotes,
   userVote,
@@ -86,9 +88,22 @@ export const LaunchCard = ({
         </div>
       
       <div className="p-3">
-          <h3 className="font-semibold text-base mb-0.5 hover:text-primary transition-colors">
-            {name}
-          </h3>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <h3 className="font-semibold text-base hover:text-primary transition-colors">
+              {name}
+            </h3>
+            {domainUrl && (
+              <a
+                href={domainUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            )}
+          </div>
         
         <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
           {tagline}
