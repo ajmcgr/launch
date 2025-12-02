@@ -6,7 +6,6 @@ import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
@@ -43,10 +42,9 @@ const Home = () => {
     const saved = localStorage.getItem('productView');
     return (saved as 'list' | 'grid') || 'list';
   });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
-  const ITEMS_PER_PAGE = 25;
-  const MAX_ITEMS = 100;
+  const MAX_ITEMS = 10;
   
   // Force list view on mobile
   const effectiveView = isMobile ? 'list' : view;
@@ -69,6 +67,15 @@ const Home = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const getPeriodLabel = () => {
+    switch (currentPeriod) {
+      case 'today': return "today's";
+      case 'week': return "this week's";
+      case 'month': return "this month's";
+      case 'year': return "this year's";
+    }
+  };
 
   const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year') => {
     setLoading(true);
@@ -165,7 +172,6 @@ const Home = () => {
         .slice(0, MAX_ITEMS);
 
       setProducts(formattedProducts);
-      setCurrentPage(1);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products');
@@ -241,10 +247,7 @@ const Home = () => {
     }
   });
 
-  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentProducts = sortedProducts.slice(startIndex, endIndex);
+  const currentProducts = sortedProducts.slice(0, MAX_ITEMS);
 
   const renderProductList = (productList: Product[]) => {
     if (loading) {
@@ -261,7 +264,7 @@ const Home = () => {
           <LaunchListItem
             key={product.id}
             {...product}
-            rank={startIndex + index + 1}
+            rank={index + 1}
             onVote={handleVote}
           />
         ))}
@@ -272,7 +275,7 @@ const Home = () => {
           <LaunchCard
             key={product.id}
             {...product}
-            rank={startIndex + index + 1}
+            rank={index + 1}
             onVote={handleVote}
           />
         ))}
@@ -282,32 +285,9 @@ const Home = () => {
     return (
       <>
         {productsToRender}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-8">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
         <div className="flex justify-center mt-8">
-          <Link to="/products">
-            <Button variant="outline">View All Products</Button>
+          <Link to={`/products?period=${currentPeriod}`}>
+            <Button variant="outline">View all {getPeriodLabel()} products</Button>
           </Link>
         </div>
       </>
@@ -323,7 +303,7 @@ const Home = () => {
           </h1>
         </div>
         
-        <Tabs defaultValue="year" onValueChange={(v) => { fetchProducts(v as any); setCurrentPage(1); }}>
+        <Tabs defaultValue="year" onValueChange={(v) => { setCurrentPeriod(v as any); fetchProducts(v as any); }}>
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
