@@ -30,9 +30,12 @@ const DiscourseSso = () => {
           return;
         }
 
-        // User is authenticated, call the edge function
+        // User is authenticated, call the edge function with session token
         const { data, error } = await supabase.functions.invoke('discourse-sso', {
           body: { sso, sig },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
         });
 
         if (error) {
