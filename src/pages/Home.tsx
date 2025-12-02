@@ -6,7 +6,7 @@ import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
@@ -45,6 +45,7 @@ const Home = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState<'popular' | 'latest'>('popular');
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const ITEMS_PER_PAGE = 25;
   const MAX_ITEMS = 100;
   
@@ -55,6 +56,32 @@ const Home = () => {
     setView(newView);
     localStorage.setItem('productView', newView);
   };
+
+  useEffect(() => {
+    const targetDate = new Date('2026-01-01T00:00:00').getTime();
+    
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+      
+      if (distance < 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      
+      setCountdown({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+    };
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -317,6 +344,38 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
+        {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
+          <div className="mb-8 p-6 bg-primary/10 border border-primary/20 rounded-lg">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Clock className="w-5 h-5 text-primary" />
+              <p className="text-lg font-semibold text-foreground">
+                Save 50% on any plan. Use code <span className="text-primary">LAUNCH50</span>
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-4 text-center">
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.days}</span>
+                <span className="text-sm text-muted-foreground">days</span>
+              </div>
+              <span className="text-2xl text-muted-foreground">:</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.hours}</span>
+                <span className="text-sm text-muted-foreground">hours</span>
+              </div>
+              <span className="text-2xl text-muted-foreground">:</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.minutes}</span>
+                <span className="text-sm text-muted-foreground">min</span>
+              </div>
+              <span className="text-2xl text-muted-foreground">:</span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold text-primary">{countdown.seconds}</span>
+                <span className="text-sm text-muted-foreground">sec</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-reckless font-bold text-foreground mb-2">
             The best new AI products. Every day.
