@@ -5,6 +5,7 @@ import { ArrowUp, MessageSquare, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import defaultProductIcon from '@/assets/default-product-icon.png';
 
 interface LaunchListItemProps {
   id: string;
@@ -63,7 +64,13 @@ export const LaunchListItem = ({
                 />
               ) : IconComponent ? (
                 <IconComponent className="w-8 h-8 text-primary" />
-              ) : null}
+              ) : (
+                <img 
+                  src={defaultProductIcon} 
+                  alt={name} 
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              )}
             </div>
           </div>
           {rank && (
