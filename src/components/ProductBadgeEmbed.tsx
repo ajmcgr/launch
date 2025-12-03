@@ -56,45 +56,33 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
   const generateBasicBadgeHTML = (theme: BadgeTheme) => {
     const styles = getThemeStyles(theme);
     const iconUrl = theme === 'dark' 
-      ? 'https://trylaunch.ai/src/assets/launch-icon-light.png' 
-      : 'https://trylaunch.ai/src/assets/launch-icon-dark.png';
+      ? 'https://trylaunch.ai/launch-icon-light.png' 
+      : 'https://trylaunch.ai/launch-icon-dark.png';
     const badgeText = theme === 'gold' ? '#1 Product on Launch' : 'Live on Launch';
-    const trylaunchUrl = `https://trylaunch.ai?ref=${productSlug}`;
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<div style="display: inline-flex; flex-direction: column; gap: 8px; align-items: flex-start;">
-  <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-    <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
-    <span>${badgeText}</span>
-  </a>
-  <a href="${trylaunchUrl}" target="_blank" rel="dofollow" style="font-size: 11px; color: #666; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-    Powered by <span style="font-weight: 600;">Launch</span>
-  </a>
-</div>`;
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
+  <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
+  <span>${badgeText}</span>
+</a>`;
   };
 
   const generateCategoryBadgeHTML = (theme: BadgeTheme) => {
     const styles = getThemeStyles(theme);
     const iconUrl = theme === 'dark' 
-      ? 'https://trylaunch.ai/src/assets/launch-icon-light.png' 
-      : 'https://trylaunch.ai/src/assets/launch-icon-dark.png';
+      ? 'https://trylaunch.ai/launch-icon-light.png' 
+      : 'https://trylaunch.ai/launch-icon-dark.png';
     const badgeText = theme === 'gold' ? '#1 Product on Launch' : 'Live on Launch';
     const categoryBorder = theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
     const categoriesText = categories.slice(0, 2).join(' · ');
-    const trylaunchUrl = `https://trylaunch.ai?ref=${productSlug}`;
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<div style="display: inline-flex; flex-direction: column; gap: 8px; align-items: flex-start;">
-  <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
-      <span style="white-space: nowrap;">${badgeText}</span>
-    </div>
-    ${categoriesText ? `<span style="padding: 2px 10px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 12px; font-weight: 500; opacity: 0.9; white-space: nowrap;">${categoriesText}</span>` : ''}
-  </a>
-  <a href="${trylaunchUrl}" target="_blank" rel="dofollow" style="font-size: 11px; color: #666; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-    Powered by <span style="font-weight: 600;">Launch</span>
-  </a>
-</div>`;
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <img src="${iconUrl}" alt="Launch" width="20" height="20" style="display: block;" />
+    <span style="white-space: nowrap;">${badgeText}</span>
+  </div>
+  ${categoriesText ? `<span style="padding: 2px 10px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 12px; font-weight: 500; opacity: 0.9; white-space: nowrap;">${categoriesText}</span>` : ''}
+</a>`;
   };
 
   const copyToClipboard = (html: string, type: 'basic' | 'category', theme: BadgeTheme) => {
