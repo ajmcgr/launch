@@ -104,17 +104,9 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Reset all winner flags first
-    const { error: resetError } = await supabaseClient
-      .from('products')
-      .update({ won_daily: false, won_weekly: false, won_monthly: false })
-      .neq('id', '00000000-0000-0000-0000-000000000000'); // Update all rows
-
-    if (resetError) {
-      console.error('Error resetting winner flags:', resetError);
-    } else {
-      console.log('Reset all winner flags');
-    }
+    // NOTE: We do NOT reset winner flags - once a product wins, it keeps that badge permanently
+    // Winners are cumulative - new winners are added without removing past winners
+    console.log('Setting new winners (preserving past winners)...');
 
     // Set new winners
     const updates = [];
