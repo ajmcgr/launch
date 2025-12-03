@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowUp, MessageSquare, Star, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import defaultProductIcon from '@/assets/default-product-icon.png';
 
 interface LaunchCardProps {
   id: string;
@@ -84,7 +85,13 @@ export const LaunchCard = ({
             />
           ) : IconComponent ? (
             <IconComponent className="w-16 h-16 text-primary" />
-          ) : null}
+          ) : (
+            <img 
+              src={defaultProductIcon} 
+              alt={name} 
+              className="w-16 h-16 object-contain"
+            />
+          )}
         </div>
       
       <div className="p-3">
