@@ -24,7 +24,6 @@ const LaunchDetail = () => {
   const [userVote, setUserVote] = useState<1 | -1 | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
-  const [verifyingBadge, setVerifyingBadge] = useState(false);
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
@@ -250,55 +249,6 @@ const LaunchDetail = () => {
     }
   };
 
-  const handleVerifyBadge = async () => {
-    if (!user) {
-      toast.error('Please login to verify your badge');
-      return;
-    }
-
-    setVerifyingBadge(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('verify-badge', {
-        body: { productId: product.id },
-      });
-
-      if (error) throw error;
-
-      if (data.verified) {
-        toast.success(data.message);
-        // Refresh product data to show updated badge status
-        const { data: updatedProduct, error: refreshError } = await supabase
-          .from('products')
-          .select(`
-            *,
-            product_media(url, type),
-            product_category_map(category_id),
-            product_makers(user_id, users(username, avatar_url, bio))
-          `)
-          .eq('slug', slug)
-          .single();
-
-        if (!refreshError && updatedProduct) {
-          setProduct({
-            ...updatedProduct,
-            netVotes: product.netVotes,
-            makers: updatedProduct.product_makers?.map((pm: any) => ({
-              username: pm.users.username,
-              avatar_url: pm.users.avatar_url,
-              bio: pm.users.bio,
-            })) || [],
-          });
-        }
-      } else {
-        toast.error(data.message || 'Badge verification failed');
-      }
-    } catch (error) {
-      console.error('Error verifying badge:', error);
-      toast.error('Failed to verify badge. Please try again.');
-    } finally {
-      setVerifyingBadge(false);
-    }
-  };
 
   if (!product) {
     return null;
@@ -530,55 +480,6 @@ const LaunchDetail = () => {
                   </Button>
                 </div>
 
-                {/* Badge Verification - Only for Product Owner */}
-                {user && user.id === product.owner_id && (
-                  <div className="pt-4 border-t">
-                    <h3 className="font-semibold mb-3">Badge Verification</h3>
-                    {product.badge_embedded ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                          <span className="font-medium">✓ Badge Verified</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Last verified: {product.badge_verified_at 
-                            ? new Date(product.badge_verified_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                            : 'Never'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Your product has a dofollow backlink on Launch!
-                        </p>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="w-full mt-2"
-                          onClick={handleVerifyBadge}
-                          disabled={verifyingBadge}
-                        >
-                          {verifyingBadge ? 'Checking...' : 'Re-verify Badge'}
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground">
-                          Embed the Launch badge on your website to get a dofollow backlink. Scroll down to the "Embeddable Launch Badges" section to get the code.
-                        </p>
-                        <Button 
-                          size="sm" 
-                          className="w-full"
-                          onClick={handleVerifyBadge}
-                          disabled={verifyingBadge}
-                        >
-                          {verifyingBadge ? 'Verifying...' : 'Verify Badge'}
-                        </Button>
-                        {product.last_badge_check && (
-                          <p className="text-xs text-muted-foreground">
-                            Last checked: {new Date(product.last_badge_check).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
 
                 {/* Launch Date */}
                 {product.launch_date && (
