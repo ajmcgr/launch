@@ -418,22 +418,22 @@ const LaunchDetail = () => {
                   <div className="flex items-center gap-2 border rounded-lg p-2 w-full justify-center">
                     <Button
                       size="sm"
-                      variant={userVote === 1 ? 'default' : 'outline'}
-                      className="h-10 w-10 p-0"
+                      variant="outline"
+                      className="h-10 w-10 p-0 hover:border-primary"
                       onClick={() => handleVote(1)}
                     >
-                      <ArrowUp className="h-5 w-5" />
+                      <ArrowUp className={`h-5 w-5 ${userVote === 1 ? 'text-primary' : ''}`} />
                     </Button>
                     <span className="font-bold text-lg min-w-[3rem] text-center">
                       {product.netVotes}
                     </span>
                     <Button
                       size="sm"
-                      variant={userVote === -1 ? 'destructive' : 'outline'}
-                      className="h-10 w-10 p-0"
+                      variant="outline"
+                      className="h-10 w-10 p-0 hover:border-destructive"
                       onClick={() => handleVote(-1)}
                     >
-                      <ArrowDown className="h-5 w-5" />
+                      <ArrowDown className={`h-5 w-5 ${userVote === -1 ? 'text-destructive' : ''}`} />
                     </Button>
                   </div>
                 </div>
