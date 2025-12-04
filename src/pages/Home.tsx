@@ -44,7 +44,7 @@ const Home = () => {
     return (saved as 'list' | 'grid') || 'list';
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
-  const [sort, setSort] = useState<'popular' | 'latest'>('popular');
+  const [sort, setSort] = useState<'popular' | 'latest'>('latest');
   const MAX_ITEMS = 25;
   
   // Force list view on mobile
