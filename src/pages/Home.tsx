@@ -299,15 +299,15 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-3xl">
-        <div className="text-center mb-12">
+      <div className="container mx-auto px-4 py-6 md:py-10 max-w-3xl">
+        <div className="text-center mb-4 md:mb-8">
           <h1 className="text-xl md:text-4xl font-reckless font-bold text-foreground mb-2">
             The best new AI products. Every day.
           </h1>
         </div>
         
         <Tabs defaultValue="year" onValueChange={(v) => { setCurrentPeriod(v as any); fetchProducts(v as any); }}>
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 md:mb-8">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="week">This Week</TabsTrigger>
