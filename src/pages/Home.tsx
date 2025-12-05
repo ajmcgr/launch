@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import {
   Accordion,
   AccordionContent,
@@ -17,6 +18,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -34,10 +36,15 @@ interface Product {
   launch_date?: string;
 }
 
+const ITEMS_PER_PAGE = 15;
+
 const Home = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [view, setView] = useState<'list' | 'grid'>(() => {
     const saved = localStorage.getItem('productView');
@@ -45,7 +52,6 @@ const Home = () => {
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
   const [sort, setSort] = useState<'popular' | 'latest'>('latest');
-  const MAX_ITEMS = 25;
   
   // Force list view on mobile
   const effectiveView = isMobile ? 'list' : view;
@@ -64,22 +70,18 @@ const Home = () => {
       setUser(session?.user ?? null);
     });
 
-    fetchProducts('year');
+    fetchProducts('year', 0, true);
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const getPeriodLabel = () => {
-    switch (currentPeriod) {
-      case 'today': return "today's";
-      case 'week': return "this week's";
-      case 'month': return "this month's";
-      case 'year': return "this year's";
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', pageNum: number, reset: boolean = false) => {
+    if (reset) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
     }
-  };
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year') => {
-    setLoading(true);
     try {
       // Calculate date range based on period
       const now = new Date();
@@ -100,6 +102,9 @@ const Home = () => {
           break;
       }
 
+      const from = pageNum * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data: allProducts, error } = await supabase
         .from('products')
         .select(`
@@ -114,9 +119,16 @@ const Home = () => {
           product_makers(user_id, users(username, avatar_url))
         `)
         .eq('status', 'launched')
-        .gte('launch_date', startDate.toISOString());
+        .gte('launch_date', startDate.toISOString())
+        .order('launch_date', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
+
+      // Check if there are more products
+      setHasMore((allProducts?.length || 0) === ITEMS_PER_PAGE);
+
+      const productIds = allProducts?.map(p => p.id) || [];
 
       const { data: voteCounts } = await supabase
         .from('product_vote_counts')
@@ -138,8 +150,6 @@ const Home = () => {
 
       const userVoteMap = new Map(userVotes?.map(v => [v.product_id, 1 as const]) || []);
 
-      const productIds = allProducts?.map(p => p.id) || [];
-      
       // Fetch all comments in a single query
       const { data: allComments } = await supabase
         .from('comments')
@@ -171,16 +181,42 @@ const Home = () => {
             avatar_url: m.users?.avatar_url || ''
           })) || [],
           launch_date: p.launch_date
-        }))
-        .slice(0, MAX_ITEMS);
+        }));
 
-      setProducts(formattedProducts);
+      if (reset) {
+        setProducts(formattedProducts);
+      } else {
+        setProducts(prev => [...prev, ...formattedProducts]);
+      }
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
+  };
+
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchProducts(currentPeriod, nextPage, false);
+    }
+  }, [loadingMore, hasMore, page, currentPeriod]);
+
+  const { loadMoreRef } = useInfiniteScroll({
+    onLoadMore: loadMore,
+    hasMore,
+    loading: loadingMore,
+  });
+
+  const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year') => {
+    setCurrentPeriod(period);
+    setPage(0);
+    setProducts([]);
+    setHasMore(true);
+    fetchProducts(period, 0, true);
   };
 
   const handleVote = async (productId: string) => {
@@ -209,7 +245,7 @@ const Home = () => {
         return { ...p, netVotes: newNetVotes, userVote: newUserVote };
       }
       return p;
-    }).sort((a, b) => b.netVotes - a.netVotes));
+    }));
 
     try {
       const { data: existingVote } = await supabase
@@ -250,8 +286,6 @@ const Home = () => {
     }
   });
 
-  const currentProducts = sortedProducts.slice(0, MAX_ITEMS);
-
   const renderProductList = (productList: Product[]) => {
     if (loading) {
       return <div className="text-center py-12">Loading...</div>;
@@ -261,38 +295,46 @@ const Home = () => {
       return <div className="text-center py-12 text-muted-foreground">No products found for this period.</div>;
     }
 
-    const productsToRender = effectiveView === 'list' ? (
-      <div className="space-y-4">
-        {productList.map((product, index) => (
-          <LaunchListItem
-            key={product.id}
-            {...product}
-            rank={index + 1}
-            onVote={handleVote}
-          />
-        ))}
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {productList.map((product, index) => (
-          <LaunchCard
-            key={product.id}
-            {...product}
-            rank={index + 1}
-            onVote={handleVote}
-          />
-        ))}
-      </div>
-    );
-
     return (
       <>
-        {productsToRender}
-        <div className="flex justify-center mt-8">
-          <Link to={`/products?period=${currentPeriod}`}>
-            <Button variant="outline">View all {getPeriodLabel()} products</Button>
-          </Link>
-        </div>
+        {effectiveView === 'list' ? (
+          <div className="space-y-4">
+            {productList.map((product, index) => (
+              <LaunchListItem
+                key={product.id}
+                {...product}
+                rank={index + 1}
+                onVote={handleVote}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {productList.map((product, index) => (
+              <LaunchCard
+                key={product.id}
+                {...product}
+                rank={index + 1}
+                onVote={handleVote}
+              />
+            ))}
+          </div>
+        )}
+        
+        {/* Infinite scroll trigger */}
+        <div ref={loadMoreRef} className="h-4" />
+        
+        {loadingMore && (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        )}
+        
+        {!hasMore && productList.length > 0 && (
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            You've reached the end
+          </div>
+        )}
       </>
     );
   };
@@ -306,7 +348,7 @@ const Home = () => {
           </h1>
         </div>
         
-        <Tabs defaultValue="year" onValueChange={(v) => { setCurrentPeriod(v as any); fetchProducts(v as any); }}>
+        <Tabs defaultValue="year" onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 md:mb-8">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
@@ -321,19 +363,19 @@ const Home = () => {
           </div>
 
           <TabsContent value="today" className="space-y-6">
-            {renderProductList(currentProducts)}
+            {renderProductList(sortedProducts)}
           </TabsContent>
 
           <TabsContent value="week" className="space-y-6">
-            {renderProductList(currentProducts)}
+            {renderProductList(sortedProducts)}
           </TabsContent>
 
           <TabsContent value="month" className="space-y-6">
-            {renderProductList(currentProducts)}
+            {renderProductList(sortedProducts)}
           </TabsContent>
 
           <TabsContent value="year" className="space-y-6">
-            {renderProductList(currentProducts)}
+            {renderProductList(sortedProducts)}
           </TabsContent>
         </Tabs>
       </div>
