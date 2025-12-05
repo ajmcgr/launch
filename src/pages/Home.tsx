@@ -344,8 +344,8 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 md:py-10 max-w-3xl">
-        <div className="text-center mb-4 md:mb-8">
-          <h1 className="text-xl md:text-4xl font-reckless font-bold text-foreground mb-2">
+        <div className="hidden md:block text-center mb-8">
+          <h1 className="text-4xl font-reckless font-bold text-foreground mb-2">
             The best new AI products. Every day.
           </h1>
         </div>
