@@ -331,8 +331,11 @@ const Home = () => {
         )}
         
         {!hasMore && productList.length > 0 && (
-          <div className="text-center py-8 text-muted-foreground text-sm">
-            You've reached the end
+          <div className="flex flex-col items-center gap-4 py-8">
+            <p className="text-muted-foreground text-sm">You've reached the end</p>
+            <Link to={`/products?period=${currentPeriod}`}>
+              <Button variant="outline">View all {currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} products</Button>
+            </Link>
           </div>
         )}
       </>
