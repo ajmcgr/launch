@@ -112,16 +112,6 @@ export const Footer = () => {
               </li>
               <li>
                 <a 
-                  href="https://discord.gg/uTgwQsJWdS" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Discord
-                </a>
-              </li>
-              <li>
-                <a 
                   href="https://www.reddit.com/r/TryLaunch/" 
                   target="_blank" 
                   rel="noopener noreferrer"
