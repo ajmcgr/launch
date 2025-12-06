@@ -30,7 +30,7 @@ export const PRICING_PLANS = [
     id: 'join',
     name: 'Join the Line',
     price: 9,
-    description: 'Automatic next available launch date',
+    description: 'Scheduled before free but not before paid launches',
   },
   {
     id: 'skip',
