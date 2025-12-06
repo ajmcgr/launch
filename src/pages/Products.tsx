@@ -39,8 +39,12 @@ const Products = () => {
 
   useEffect(() => {
     const category = searchParams.get('category');
+    const search = searchParams.get('search');
     if (category) {
       setSelectedCategories([category]);
+    }
+    if (search) {
+      setSearchQuery(search);
     }
   }, [searchParams]);
 
