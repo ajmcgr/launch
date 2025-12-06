@@ -1332,12 +1332,15 @@ const Submit = () => {
                               handleInputChange('selectedDate', utcDate.toISOString());
                             }
                           }}
-                          disabled={(date) => {
+                        disabled={(date) => {
                             const todayPST = toZonedTime(new Date(), PST_TIMEZONE);
                             todayPST.setHours(0, 0, 0, 0);
+                            // Minimum date is tomorrow (prevent same-day or past dates)
+                            const tomorrowPST = new Date(todayPST);
+                            tomorrowPST.setDate(tomorrowPST.getDate() + 1);
                             const endOfYearPST = toZonedTime(new Date(todayPST.getFullYear(), 11, 31), PST_TIMEZONE);
                             const datePST = toZonedTime(date, PST_TIMEZONE);
-                            return datePST < todayPST || datePST > endOfYearPST;
+                            return datePST < tomorrowPST || datePST > endOfYearPST;
                           }}
                           initialFocus
                           className="pointer-events-auto"
