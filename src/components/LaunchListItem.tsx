@@ -162,7 +162,7 @@ export const LaunchListItem = ({
                 e.stopPropagation();
                 handleVote();
               }}
-              className="flex items-center gap-1 h-8 px-3 hover:border-primary transition-all hover:scale-105"
+              className="flex items-center gap-1.5 h-10 px-4 hover:border-primary transition-all hover:scale-105"
             >
               <ArrowUp className={`h-4 w-4 ${userVote === 1 ? 'text-primary' : ''}`} />
               <span className="font-semibold text-sm">{netVotes}</span>
