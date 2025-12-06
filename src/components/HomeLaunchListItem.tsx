@@ -63,10 +63,10 @@ export const HomeLaunchListItem = ({
             e.preventDefault();
             onVote();
           }}
-          className="flex items-center gap-1.5 h-10 px-4 hover:border-primary transition-all hover:scale-105"
+          className="group flex items-center gap-1.5 h-10 px-4 hover:border-primary hover:bg-primary transition-all hover:scale-105"
         >
-          <span className="text-sm">▲</span>
-          <span className="font-semibold text-sm">{votes}</span>
+          <span className="text-sm group-hover:text-primary-foreground">▲</span>
+          <span className="font-semibold text-sm group-hover:text-primary-foreground">{votes}</span>
         </Button>
       </div>
       </div>
