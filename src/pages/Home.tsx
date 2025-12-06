@@ -351,15 +351,15 @@ const Home = () => {
         </div>
         
         <Tabs defaultValue="year" onValueChange={(v) => handlePeriodChange(v as any)}>
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 md:mb-8">
+          <div className="flex flex-row items-center justify-between gap-2 md:gap-4 mb-6 md:mb-8">
             <TabsList>
               <TabsTrigger value="today">Today</TabsTrigger>
               <TabsTrigger value="week">This Week</TabsTrigger>
               <TabsTrigger value="month">This Month</TabsTrigger>
               <TabsTrigger value="year">This Year</TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-3 w-full md:w-auto justify-start md:justify-end">
-              <SortToggle sort={sort} onSortChange={setSort} />
+            <div className="flex items-center gap-3">
+              <SortToggle sort={sort} onSortChange={setSort} iconOnly={isMobile} />
               {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
             </div>
           </div>
