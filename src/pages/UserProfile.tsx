@@ -24,16 +24,19 @@ const UserProfile = () => {
   const [followingCount, setFollowingCount] = useState(0);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setCurrentUser(session?.user ?? null);
-    });
-
-    if (username) {
-      fetchProfile();
-    }
+      
+      if (username) {
+        fetchProfile(session?.user ?? null);
+      }
+    };
+    init();
   }, [username]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (user?: any) => {
+    const activeUser = user ?? currentUser;
     setLoading(true);
     try {
       // Fetch user profile
@@ -101,13 +104,13 @@ const UserProfile = () => {
       }
 
       // Check if current user follows this profile
-      if (currentUser) {
+      if (activeUser) {
         const { data: followData } = await supabase
           .from('follows')
           .select('*')
-          .eq('follower_id', currentUser.id)
+          .eq('follower_id', activeUser.id)
           .eq('followed_id', profileData.id)
-          .single();
+          .maybeSingle();
 
         setIsFollowing(!!followData);
       }
@@ -239,13 +242,13 @@ const UserProfile = () => {
       }
 
       // If current user is viewing, also get their follow status for all products on this page
-      if (currentUser && currentUser.id === profileData.id) {
+      if (activeUser && activeUser.id === profileData.id) {
         const allProductIds = [...products.map(p => p.id), ...upvotedProducts.map(p => p.id)];
         if (allProductIds.length > 0) {
           const { data: userFollowsData } = await supabase
             .from('product_follows')
             .select('product_id')
-            .eq('follower_id', currentUser.id)
+            .eq('follower_id', activeUser.id)
             .in('product_id', allProductIds);
           
           if (userFollowsData) {
