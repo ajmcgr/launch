@@ -83,8 +83,28 @@ Deno.serve(async (req) => {
                 .lte('launch_date', dayEnd.toISOString());
               count = skipCount;
             }
+          } else if (planType === 'relaunch') {
+            // For Relaunch plan, only count 'skip' and 'relaunch' plan products
+            // This allows Relaunch to bump Free and Join plans, but not Launch
+            const { data: priorityProducts } = await supabaseClient
+              .from('orders')
+              .select('product_id')
+              .in('plan', ['skip', 'relaunch']);
+            
+            const priorityProductIds = priorityProducts?.map(o => o.product_id).filter(Boolean) || [];
+            
+            if (priorityProductIds.length > 0) {
+              const { count: priorityCount } = await supabaseClient
+                .from('products')
+                .select('*', { count: 'exact', head: true })
+                .in('id', priorityProductIds)
+                .in('status', ['scheduled', 'launched'])
+                .gte('launch_date', dayStart.toISOString())
+                .lte('launch_date', dayEnd.toISOString());
+              count = priorityCount;
+            }
           } else {
-            // For other plans, count all products
+            // For Free and Join plans, count all products
             const { count: totalCount } = await supabaseClient
               .from('products')
               .select('*', { count: 'exact', head: true })
@@ -166,8 +186,8 @@ Deno.serve(async (req) => {
         // Join the Line: First available date >7 days out
         launchDate = await findNextAvailableDate(8);
       } else if (plan === 'relaunch') {
-        // Relaunch: First available date >30 days out
-        launchDate = await findNextAvailableDate(31);
+        // Relaunch: First available date >30 days out (only counting Launch + Relaunch plans)
+        launchDate = await findNextAvailableDate(31, 'relaunch');
       } else {
         // Default fallback (free plan)
         launchDate = await findNextAvailableDate(1);
