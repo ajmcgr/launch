@@ -124,20 +124,22 @@ export const Header = () => {
       
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="Launch" className="h-10" />
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/" className="flex items-center">
+              <img src={logo} alt="Launch" className="h-10" />
+            </Link>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex relative flex-1 max-w-xs mx-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearch}
-              className="pl-10 h-9"
-            />
+            {/* Search Bar - Desktop */}
+            <div className="hidden md:flex relative w-64">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                className="pl-10 h-9"
+              />
+            </div>
           </div>
           
           <div className="flex items-center gap-4">

@@ -140,45 +140,41 @@ const Auth = () => {
     }
   };
 
-  // Subscribe user to newsletter after successful auth
+  // Subscribe user to newsletter after successful signup
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Only handle SIGNED_IN event with email
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Track signup intent in localStorage when user initiates signup
+      if (isSignUp && !session) {
+        localStorage.setItem('pendingNewsletterSignup', 'true');
+      }
+      
+      // Handle newsletter subscription for new users
       if (event === 'SIGNED_IN' && session?.user?.email) {
-        // Defer async operations using setTimeout
-        setTimeout(async () => {
+        const isPendingSignup = localStorage.getItem('pendingNewsletterSignup') === 'true';
+        
+        if (isPendingSignup) {
+          localStorage.removeItem('pendingNewsletterSignup');
+          
           try {
-            // Check if user was just created (within last 30 seconds)
-            const { data: userData } = await supabase
-              .from('users')
-              .select('created_at')
-              .eq('id', session.user.id)
-              .single();
+            console.log('Subscribing new user to newsletter:', session.user.email);
+            const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
+              body: { email: session.user.email },
+            });
             
-            if (userData?.created_at) {
-              const createdAt = new Date(userData.created_at).getTime();
-              const now = new Date().getTime();
-              const isNewUser = (now - createdAt) < 30000; // 30 seconds window
-              
-              if (isNewUser && session.user.email) {
-                const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
-                  body: { email: session.user.email },
-                });
-                
-                if (error) {
-                  console.error('Newsletter subscription failed');
-                }
-              }
+            if (error) {
+              console.error('Newsletter subscription failed:', error);
+            } else {
+              console.log('Newsletter subscription successful');
             }
           } catch (error) {
-            console.error('Error checking user creation time:', error);
+            console.error('Error subscribing to newsletter:', error);
           }
-        }, 0);
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [isSignUp]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4">
