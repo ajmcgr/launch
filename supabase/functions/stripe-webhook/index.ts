@@ -1,5 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import Stripe from 'https://esm.sh/stripe@12.18.0?target=deno';
+import { Resend } from 'https://esm.sh/resend@2.0.0';
+
+const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -241,6 +244,86 @@ Deno.serve(async (req) => {
         });
 
       console.log('Order and product created successfully');
+
+      // Send confirmation email to product owner
+      try {
+        const { data: authUser } = await supabaseClient.auth.admin.getUserById(metadata.user_id);
+        const { data: productData } = await supabaseClient
+          .from('products')
+          .select('name')
+          .eq('id', product.id)
+          .single();
+        
+        if (authUser?.user?.email && productData?.name) {
+          const launchDateFormatted = new Date(launchDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZone: 'America/Los_Angeles'
+          });
+
+          const productUrl = `${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/launch/${product.slug}`;
+
+          const emailHtml = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                  .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                  .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
+                  .highlight { background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
+                  .date { font-size: 18px; font-weight: bold; color: #667eea; }
+                  .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+                  .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h1>🚀 Launch Scheduled!</h1>
+                  </div>
+                  <div class="content">
+                    <p>Great news! Your product <strong>${productData.name}</strong> has been scheduled for launch.</p>
+                    <div class="highlight">
+                      <p>Launch Date (PST):</p>
+                      <p class="date">${launchDateFormatted}</p>
+                    </div>
+                    <p>Here's what happens next:</p>
+                    <ul>
+                      <li>We'll send you a reminder 24 hours before launch</li>
+                      <li>On launch day, your product will go live automatically</li>
+                      <li>You'll receive an email confirmation when it's live</li>
+                    </ul>
+                    <p style="text-align: center;">
+                      <a href="${productUrl}" class="button">View Your Product</a>
+                    </p>
+                  </div>
+                  <div class="footer">
+                    <p>You're receiving this because you scheduled a launch on Launch.</p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `;
+
+          await resend.emails.send({
+            from: 'Launch <notifications@trylaunch.ai>',
+            to: [authUser.user.email],
+            subject: `🚀 Launch Scheduled: ${productData.name}`,
+            html: emailHtml,
+          });
+
+          console.log('Launch confirmation email sent to owner');
+        }
+      } catch (emailError) {
+        console.error('Error sending confirmation email:', emailError);
+        // Don't fail the webhook if email fails
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), {
