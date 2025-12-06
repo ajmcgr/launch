@@ -15,9 +15,9 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false }: SortToggleP
         onPressedChange={() => onSortChange('popular')}
         aria-label="Sort by popular"
         size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
       >
-        <TrendingUp className={`h-4 w-4 ${iconOnly ? '' : 'mr-1'}`} />
+        <TrendingUp className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
         {!iconOnly && <span className="text-xs">Popular</span>}
       </Toggle>
       <Toggle
@@ -25,9 +25,9 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false }: SortToggleP
         onPressedChange={() => onSortChange('latest')}
         aria-label="Sort by latest"
         size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
       >
-        <Clock className={`h-4 w-4 ${iconOnly ? '' : 'mr-1'}`} />
+        <Clock className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
         {!iconOnly && <span className="text-xs">Latest</span>}
       </Toggle>
     </div>
