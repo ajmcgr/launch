@@ -39,50 +39,26 @@ const Pricing = () => {
                 </div>
 
                 {plan.id === 'free' && (
-                  <div className="bg-muted/50 rounded-lg p-4 text-sm border">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Rocket className="h-5 w-5 text-primary" />
-                      <p className="font-semibold">Free</p>
-                    </div>
-                    <p className="text-muted-foreground">
-                      Scheduled after paid launches
-                    </p>
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm border flex items-center justify-center">
+                    <Rocket className="h-8 w-8 text-primary" />
                   </div>
                 )}
 
                 {plan.id === 'join' && (
-                  <div className="bg-muted/50 rounded-lg p-4 text-sm border">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      <p className="font-semibold">Join the Line</p>
-                    </div>
-                    <p className="text-muted-foreground">
-                      Scheduled 7+ days out
-                    </p>
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm border flex items-center justify-center">
+                    <Calendar className="h-8 w-8 text-primary" />
                   </div>
                 )}
 
                 {plan.id === 'skip' && (
-                  <div className="bg-primary/10 rounded-lg p-4 text-sm border border-primary/20">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Zap className="h-5 w-5 text-primary" />
-                      <p className="font-semibold">Launch</p>
-                    </div>
-                    <p className="text-muted-foreground">
-                      Pick any date in current calendar year
-                    </p>
+                  <div className="bg-primary/10 rounded-lg p-4 text-sm border border-primary/20 flex items-center justify-center">
+                    <Zap className="h-8 w-8 text-primary" />
                   </div>
                 )}
 
                 {plan.id === 'relaunch' && (
-                  <div className="bg-muted/50 rounded-lg p-4 text-sm border">
-                    <div className="flex items-center gap-2 mb-2">
-                      <RefreshCw className="h-5 w-5 text-primary" />
-                      <p className="font-semibold">Relaunch</p>
-                    </div>
-                    <p className="text-muted-foreground">
-                      Scheduled 30+ days out
-                    </p>
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm border flex items-center justify-center">
+                    <RefreshCw className="h-8 w-8 text-primary" />
                   </div>
                 )}
 
