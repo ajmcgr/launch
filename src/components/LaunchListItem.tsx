@@ -153,7 +153,7 @@ export const LaunchListItem = ({
             </div>
           </div>
 
-          <div className="flex items-center self-center">
+          <div className="flex items-start self-start">
             <Button
               size="sm"
               variant="outline"

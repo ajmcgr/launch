@@ -55,7 +55,7 @@ export const HomeLaunchListItem = ({
           <p className="text-sm text-muted-foreground">{tagline}</p>
         </div>
       </div>
-      <div className="flex items-center self-center">
+      <div className="flex items-start self-start">
         <Button
           variant="outline"
           size="sm"
