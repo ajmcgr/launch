@@ -42,7 +42,9 @@ Deno.serve(async (req) => {
       );
 
       // Helper function to find next available date with capacity
-      const findNextAvailableDate = async (startDaysFromNow: number): Promise<string> => {
+      // For Launch (skip) plan, only count other 'skip' plan products
+      // For other plans, count all products
+      const findNextAvailableDate = async (startDaysFromNow: number, planType?: string): Promise<string> => {
         const MAX_DAILY_CAPACITY = 100; // Cap at 100 launches per day
         let daysToCheck = startDaysFromNow;
         const maxAttempts = 365; // Don't check more than a year ahead
@@ -59,15 +61,40 @@ Deno.serve(async (req) => {
           const dayEnd = new Date(checkDate);
           dayEnd.setHours(23, 59, 59, 999);
           
-          // Count products scheduled for this day (both scheduled and launched)
-          const { count } = await supabaseClient
-            .from('products')
-            .select('*', { count: 'exact', head: true })
-            .in('status', ['scheduled', 'launched'])
-            .gte('launch_date', dayStart.toISOString())
-            .lte('launch_date', dayEnd.toISOString());
+          let count: number | null = 0;
           
-          console.log(`Checking day ${checkDate.toDateString()}: ${count}/${MAX_DAILY_CAPACITY} launches`);
+          if (planType === 'skip') {
+            // For Launch (skip) plan, only count other 'skip' plan products
+            // This allows Launch plan to bump Free, Join, and Relaunch plans
+            const { data: skipProducts } = await supabaseClient
+              .from('orders')
+              .select('product_id')
+              .eq('plan', 'skip');
+            
+            const skipProductIds = skipProducts?.map(o => o.product_id).filter(Boolean) || [];
+            
+            if (skipProductIds.length > 0) {
+              const { count: skipCount } = await supabaseClient
+                .from('products')
+                .select('*', { count: 'exact', head: true })
+                .in('id', skipProductIds)
+                .in('status', ['scheduled', 'launched'])
+                .gte('launch_date', dayStart.toISOString())
+                .lte('launch_date', dayEnd.toISOString());
+              count = skipCount;
+            }
+          } else {
+            // For other plans, count all products
+            const { count: totalCount } = await supabaseClient
+              .from('products')
+              .select('*', { count: 'exact', head: true })
+              .in('status', ['scheduled', 'launched'])
+              .gte('launch_date', dayStart.toISOString())
+              .lte('launch_date', dayEnd.toISOString());
+            count = totalCount;
+          }
+          
+          console.log(`Checking day ${checkDate.toDateString()} for ${planType || 'default'}: ${count}/${MAX_DAILY_CAPACITY} launches`);
           
           if ((count ?? 0) < MAX_DAILY_CAPACITY) {
             return checkDate.toISOString();
@@ -84,13 +111,57 @@ Deno.serve(async (req) => {
         return fallbackDate.toISOString();
       };
 
+      // Helper function to check if a specific date has capacity for Launch (skip) plan
+      const checkLaunchPlanCapacity = async (dateStr: string): Promise<boolean> => {
+        const MAX_DAILY_CAPACITY = 100;
+        const checkDate = new Date(dateStr);
+        
+        const dayStart = new Date(checkDate);
+        dayStart.setHours(0, 0, 0, 0);
+        
+        const dayEnd = new Date(checkDate);
+        dayEnd.setHours(23, 59, 59, 999);
+        
+        // Only count other 'skip' plan products
+        const { data: skipProducts } = await supabaseClient
+          .from('orders')
+          .select('product_id')
+          .eq('plan', 'skip');
+        
+        const skipProductIds = skipProducts?.map(o => o.product_id).filter(Boolean) || [];
+        
+        if (skipProductIds.length === 0) return true;
+        
+        const { count } = await supabaseClient
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .in('id', skipProductIds)
+          .in('status', ['scheduled', 'launched'])
+          .gte('launch_date', dayStart.toISOString())
+          .lte('launch_date', dayEnd.toISOString());
+        
+        console.log(`Launch plan capacity check for ${checkDate.toDateString()}: ${count}/${MAX_DAILY_CAPACITY}`);
+        return (count ?? 0) < MAX_DAILY_CAPACITY;
+      };
+
       // Determine launch date based on plan
       let launchDate: string;
       const plan = metadata.plan;
       
       if (plan === 'skip') {
-        // Skip the Line: Use the selected date from metadata
-        launchDate = metadata.selected_date || await findNextAvailableDate(1);
+        // Launch plan: Use the selected date, but validate capacity
+        if (metadata.selected_date) {
+          const hasCapacity = await checkLaunchPlanCapacity(metadata.selected_date);
+          if (hasCapacity) {
+            launchDate = metadata.selected_date;
+          } else {
+            // If selected date is full of Launch plans, find next available
+            console.log('Selected date full of Launch plans, finding next available...');
+            launchDate = await findNextAvailableDate(1, 'skip');
+          }
+        } else {
+          launchDate = await findNextAvailableDate(1, 'skip');
+        }
       } else if (plan === 'join') {
         // Join the Line: First available date >7 days out
         launchDate = await findNextAvailableDate(8);
@@ -98,7 +169,7 @@ Deno.serve(async (req) => {
         // Relaunch: First available date >30 days out
         launchDate = await findNextAvailableDate(31);
       } else {
-        // Default fallback
+        // Default fallback (free plan)
         launchDate = await findNextAvailableDate(1);
       }
 
