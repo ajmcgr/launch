@@ -28,16 +28,19 @@ const Followers = () => {
   const [productsCount, setProductsCount] = useState(0);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setCurrentUser(session?.user ?? null);
-    });
-
-    if (username) {
-      fetchData();
-    }
+      
+      if (username) {
+        fetchData(session?.user ?? null);
+      }
+    };
+    init();
   }, [username]);
 
-  const fetchData = async () => {
+  const fetchData = async (user?: any) => {
+    const activeUser = user ?? currentUser;
     setLoading(true);
     try {
       // Get the user profile
@@ -55,13 +58,13 @@ const Followers = () => {
       setProfile(profileData);
 
       // Check if current user follows this profile
-      if (currentUser) {
+      if (activeUser) {
         const { data: followData } = await supabase
           .from('follows')
           .select('*')
-          .eq('follower_id', currentUser.id)
+          .eq('follower_id', activeUser.id)
           .eq('followed_id', profileData.id)
-          .single();
+          .maybeSingle();
 
         setIsFollowing(!!followData);
       }
