@@ -55,18 +55,20 @@ export const HomeLaunchListItem = ({
           <p className="text-sm text-muted-foreground">{tagline}</p>
         </div>
       </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={(e) => {
-          e.preventDefault();
-          onVote();
-        }}
-        className="flex flex-col h-auto py-1.5 px-3 min-w-[50px] hover:border-primary transition-all hover:scale-105"
-      >
-        <span className="text-xs">▲</span>
-        <span className="font-semibold text-sm">{votes}</span>
-      </Button>
+      <div className="flex items-center self-center">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={(e) => {
+            e.preventDefault();
+            onVote();
+          }}
+          className="flex items-center gap-1 h-8 px-3 hover:border-primary transition-all hover:scale-105"
+        >
+          <span className="text-xs">▲</span>
+          <span className="font-semibold text-sm">{votes}</span>
+        </Button>
+      </div>
       </div>
     </Link>
   );
