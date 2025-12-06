@@ -62,7 +62,7 @@ const Products = () => {
     } else {
       fetchTopProducts();
     }
-  }, [selectedCategories, topPeriod, selectedArchiveYear, sort]);
+  }, [selectedCategories, topPeriod, selectedArchiveYear, sort, searchQuery]);
 
   const fetchArchiveYears = async () => {
     try {
