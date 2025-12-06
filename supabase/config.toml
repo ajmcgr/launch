@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.archive-year-products]
 verify_jwt = false
+
+[functions.subscribe-to-newsletter]
+verify_jwt = false
+
+[functions.sync-users-to-beehiiv]
+verify_jwt = true
