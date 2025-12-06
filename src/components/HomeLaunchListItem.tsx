@@ -62,10 +62,10 @@ export const HomeLaunchListItem = ({
           e.preventDefault();
           onVote();
         }}
-        className="flex flex-col h-auto py-2 px-4 min-w-[70px]"
+        className="flex flex-col h-auto py-1.5 px-3 min-w-[50px] hover:border-primary transition-all hover:scale-105"
       >
-        <span className="text-xs text-muted-foreground">▲</span>
-        <span className="font-bold">{votes}</span>
+        <span className="text-xs">▲</span>
+        <span className="font-semibold text-sm">{votes}</span>
       </Button>
       </div>
     </Link>

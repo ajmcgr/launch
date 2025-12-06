@@ -153,23 +153,19 @@ export const LaunchListItem = ({
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-0.5 pt-0.5">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleVote();
-              }}
-              className="h-9 w-9 p-0 hover:border-primary transition-all hover:scale-105"
-            >
-              <ArrowUp className={`h-4 w-4 ${userVote === 1 ? 'text-primary' : ''}`} />
-            </Button>
-            <span className="font-semibold text-sm min-w-[2rem] text-center">
-              {netVotes}
-            </span>
-          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleVote();
+            }}
+            className="flex flex-col h-auto py-1.5 px-3 min-w-[50px] hover:border-primary transition-all hover:scale-105"
+          >
+            <ArrowUp className={`h-4 w-4 ${userVote === 1 ? 'text-primary' : ''}`} />
+            <span className="font-semibold text-sm">{netVotes}</span>
+          </Button>
         </div>
       </Link>
     </Card>
