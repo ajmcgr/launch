@@ -39,10 +39,10 @@ export const HomeLaunchCard = ({
               e.preventDefault();
               onVote();
             }}
-            className="flex flex-col h-auto py-1.5 px-3 min-w-[50px] hover:border-primary transition-all hover:scale-105"
+            className="group flex flex-col items-center h-auto py-1.5 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105"
           >
-            <span className="text-xs">▲</span>
-            <span className="font-semibold text-sm">{votes}</span>
+            <span className="text-xs group-hover:text-primary-foreground">▲</span>
+            <span className="font-semibold text-sm group-hover:text-primary-foreground">{votes}</span>
           </Button>
         </div>
         

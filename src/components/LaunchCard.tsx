@@ -158,10 +158,10 @@ export const LaunchCard = ({
                 e.stopPropagation();
                 handleVote();
               }}
-              className="flex flex-col h-auto py-1.5 px-3 min-w-[50px] hover:border-primary transition-all hover:scale-105"
+              className="group flex flex-col items-center h-auto py-1.5 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105"
             >
-              <ArrowUp className={`h-4 w-4 ${userVote === 1 ? 'text-primary' : ''}`} />
-              <span className="font-semibold text-sm">{netVotes}</span>
+              <ArrowUp className={`h-4 w-4 group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} />
+              <span className="font-semibold text-sm group-hover:text-primary-foreground">{netVotes}</span>
             </Button>
             <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
               <MessageSquare className="h-3.5 w-3.5" />
