@@ -150,23 +150,19 @@ export const LaunchCard = ({
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-0.5">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleVote();
-                }}
-                className="h-9 w-9 p-0 hover:border-primary transition-all hover:scale-105"
-              >
-                <ArrowUp className={`h-4 w-4 ${userVote === 1 ? 'text-primary' : ''}`} />
-              </Button>
-              <span className="font-semibold text-sm min-w-[2rem] text-center">
-                {netVotes}
-              </span>
-            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleVote();
+              }}
+              className="flex flex-col h-auto py-1.5 px-3 min-w-[50px] hover:border-primary transition-all hover:scale-105"
+            >
+              <ArrowUp className={`h-4 w-4 ${userVote === 1 ? 'text-primary' : ''}`} />
+              <span className="font-semibold text-sm">{netVotes}</span>
+            </Button>
             <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
               <MessageSquare className="h-3.5 w-3.5" />
               <span className="text-xs">{commentCount}</span>
