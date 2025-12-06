@@ -1280,7 +1280,7 @@ const Submit = () => {
                                   </CardTitle>
                                   <CardDescription>
                                     {plan.description}
-                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;7 days out (12:01 AM PST)</span>}
+                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Scheduled before free but not before launch & relaunch</span>}
                                     {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date and time within the calendar year (Pacific Time)</span>}
                                     {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out (12:01 AM PST)</span>}
                                   </CardDescription>
