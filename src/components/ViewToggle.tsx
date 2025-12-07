@@ -14,18 +14,18 @@ export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
         onPressedChange={() => onViewChange('list')}
         aria-label="List view"
         size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
       >
-        <List className="h-4 w-4" />
+        <List className="h-3.5 w-3.5" />
       </Toggle>
       <Toggle
         pressed={view === 'grid'}
         onPressedChange={() => onViewChange('grid')}
         aria-label="Card view"
         size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
       >
-        <LayoutGrid className="h-4 w-4" />
+        <LayoutGrid className="h-3.5 w-3.5" />
       </Toggle>
     </div>
   );
