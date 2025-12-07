@@ -70,10 +70,13 @@ const Home = () => {
       setUser(session?.user ?? null);
     });
 
-    fetchProducts('year', 0, true);
-
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch products when user state is determined
+  useEffect(() => {
+    fetchProducts(currentPeriod, 0, true);
+  }, [user]);
 
   const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', pageNum: number, reset: boolean = false) => {
     if (reset) {
