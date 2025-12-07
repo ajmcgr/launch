@@ -162,7 +162,7 @@ export const LaunchListItem = ({
                 e.stopPropagation();
                 handleVote();
               }}
-              className="group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105"
+              className={`group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105 ${userVote === 1 ? 'border-primary' : ''}`}
             >
               <ArrowUp className={`h-4 w-4 group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} />
               <span className="font-semibold text-sm group-hover:text-primary-foreground">{netVotes}</span>
