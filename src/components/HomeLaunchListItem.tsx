@@ -10,6 +10,7 @@ interface HomeLaunchListItemProps {
   votes: number;
   slug: string;
   domainUrl?: string;
+  userVote?: 1 | null;
   onVote: () => void;
 }
 
@@ -21,6 +22,7 @@ export const HomeLaunchListItem = ({
   votes,
   slug,
   domainUrl,
+  userVote,
   onVote,
 }: HomeLaunchListItemProps) => {
   return (
@@ -63,7 +65,7 @@ export const HomeLaunchListItem = ({
             e.preventDefault();
             onVote();
           }}
-          className="group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105"
+          className={`group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105 ${userVote === 1 ? 'border-primary' : ''}`}
         >
           <span className="text-xs group-hover:text-primary-foreground">▲</span>
           <span className="font-semibold text-sm group-hover:text-primary-foreground">{votes}</span>
