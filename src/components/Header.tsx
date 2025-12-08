@@ -124,6 +124,7 @@ export const Header = () => {
       
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-16 items-center justify-between">
+          {/* Left: Logo and Search */}
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center">
               <img src={logo} alt="Launch" className="h-10" />
@@ -141,31 +142,33 @@ export const Header = () => {
               />
             </div>
           </div>
+
+          {/* Center: Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6 absolute left-1/2 transform -translate-x-1/2">
+            <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Launches
+            </Link>
+            <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Products
+            </Link>
+            <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              News
+            </a>
+            <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Forums
+            </a>
+            <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Pricing
+            </Link>
+            {!user && (
+              <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Login
+              </Link>
+            )}
+          </nav>
           
+          {/* Right: Actions */}
           <div className="flex items-center gap-4">
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Launches
-              </Link>
-              <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Products
-              </Link>
-              <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                News
-              </a>
-              <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Forums
-              </a>
-              <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Pricing
-              </Link>
-              {!user && (
-                <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                  Login
-                </Link>
-              )}
-            </nav>
 
             {/* Desktop User Menu */}
             {user ? (
