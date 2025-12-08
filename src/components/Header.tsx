@@ -151,6 +151,9 @@ export const Header = () => {
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
+              <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                News
+              </a>
               <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Forums
               </a>
@@ -238,6 +241,15 @@ export const Header = () => {
                   >
                     Products
                   </Link>
+                  <a 
+                    href="https://newsletter.trylaunch.ai/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    News
+                  </a>
                   <a 
                     href="https://forums.trylaunch.ai/" 
                     target="_blank" 
