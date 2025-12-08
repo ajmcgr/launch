@@ -460,7 +460,7 @@ const LaunchDetail = () => {
                       <a 
                         href={product.domain_url} 
                         target="_blank" 
-                        rel={product.badge_embedded ? 'dofollow' : 'noopener noreferrer'}
+                        rel="dofollow"
                       >
                         Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                       </a>
