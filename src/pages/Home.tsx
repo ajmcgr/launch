@@ -5,6 +5,7 @@ import { LaunchListItem } from '@/components/LaunchListItem';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
+import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -291,7 +292,7 @@ const Home = () => {
 
   const renderProductList = (productList: Product[]) => {
     if (loading) {
-      return <div className="text-center py-12">Loading...</div>;
+      return <ProductSkeleton view={effectiveView} count={5} />;
     }
 
     if (productList.length === 0) {
