@@ -160,11 +160,6 @@ export const Header = () => {
             <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Pricing
             </Link>
-            {!user && (
-              <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Login
-              </Link>
-            )}
           </nav>
           
           {/* Right: Actions */}
@@ -216,9 +211,14 @@ export const Header = () => {
                 </DropdownMenu>
               </div>
             ) : (
-              <Button onClick={handleSubmitClick} className="hidden md:flex">
-                Submit
-              </Button>
+              <div className="hidden md:flex items-center gap-4">
+                <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                  Login
+                </Link>
+                <Button onClick={handleSubmitClick}>
+                  Submit
+                </Button>
+              </div>
             )}
 
             {/* Mobile Hamburger Menu */}
