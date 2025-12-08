@@ -40,7 +40,7 @@ export const Newsletter = () => {
     <section className="bg-muted py-16">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4">Get the latest startups launched on Launch</h2>
+          <h2 className="text-2xl font-bold mb-4">Get the latest products launched on Launch</h2>
           <p className="text-muted-foreground mb-8">
             Subscribe for free. Weekly updates on launches, no filler.
           </p>
