@@ -127,7 +127,7 @@ export const Header = () => {
           {/* Left: Logo and Search */}
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center">
-              <img src={logo} alt="Launch" className="h-10" />
+              <img src={logo} alt="Launch" className="h-10 max-w-[125px]" />
             </Link>
 
             {/* Search Bar - Desktop */}
