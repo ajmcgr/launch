@@ -80,11 +80,11 @@ const Home = () => {
   // Fetch products only once when user state is first determined
   useEffect(() => {
     if (userLoaded) {
-      fetchProducts(currentPeriod, 0, true);
+      fetchProducts(currentPeriod, sort, 0, true);
     }
   }, [userLoaded]);
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', pageNum: number, reset: boolean = false) => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'popular' | 'latest', pageNum: number, reset: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -114,36 +114,70 @@ const Home = () => {
       const from = pageNum * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
-      const { data: allProducts, error } = await supabase
-        .from('products')
-        .select(`
-          id,
-          slug,
-          name,
-          tagline,
-          launch_date,
-          domain_url,
-          product_media(url, type),
-          product_category_map(category_id),
-          product_makers(user_id, users(username, avatar_url))
-        `)
-        .eq('status', 'launched')
-        .gte('launch_date', startDate.toISOString())
-        .order('launch_date', { ascending: false })
-        .range(from, to);
-
-      if (error) throw error;
-
-      // Check if there are more products
-      setHasMore((allProducts?.length || 0) === ITEMS_PER_PAGE);
-
-      const productIds = allProducts?.map(p => p.id) || [];
-
+      // Fetch vote counts first if sorting by popular
       const { data: voteCounts } = await supabase
         .from('product_vote_counts')
         .select('product_id, net_votes');
 
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+
+      let allProducts: any[] = [];
+
+      if (currentSort === 'popular') {
+        // For popular sorting, we need to fetch all products in the period and sort by votes
+        const { data: productsData, error } = await supabase
+          .from('products')
+          .select(`
+            id,
+            slug,
+            name,
+            tagline,
+            launch_date,
+            domain_url,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          `)
+          .eq('status', 'launched')
+          .gte('launch_date', startDate.toISOString());
+
+        if (error) throw error;
+
+        // Sort by votes client-side and then paginate
+        const sortedByVotes = (productsData || []).sort((a, b) => {
+          const votesA = voteMap.get(a.id) || 0;
+          const votesB = voteMap.get(b.id) || 0;
+          return votesB - votesA;
+        });
+
+        allProducts = sortedByVotes.slice(from, to + 1);
+        setHasMore(sortedByVotes.length > to + 1);
+      } else {
+        // For latest sorting, use database ordering with pagination
+        const { data: productsData, error } = await supabase
+          .from('products')
+          .select(`
+            id,
+            slug,
+            name,
+            tagline,
+            launch_date,
+            domain_url,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          `)
+          .eq('status', 'launched')
+          .gte('launch_date', startDate.toISOString())
+          .order('launch_date', { ascending: false })
+          .range(from, to);
+
+        if (error) throw error;
+        allProducts = productsData || [];
+        setHasMore(allProducts.length === ITEMS_PER_PAGE);
+      }
+
+      const productIds = allProducts.map(p => p.id);
 
       const { data: categories } = await supabase
         .from('product_categories')
@@ -172,25 +206,24 @@ const Home = () => {
         commentMap.set(comment.product_id, currentCount + 1);
       });
 
-      const formattedProducts: Product[] = (allProducts || [])
-        .map((p: any) => ({
-          id: p.id,
-          slug: p.slug,
-          name: p.name,
-          tagline: p.tagline,
-          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
-          iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
-          domainUrl: p.domain_url || '',
-          categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
-          netVotes: voteMap.get(p.id) || 0,
-          userVote: userVoteMap.get(p.id) || null,
-          commentCount: commentMap.get(p.id) || 0,
-          makers: p.product_makers?.map((m: any) => ({
-            username: m.users?.username || 'Anonymous',
-            avatar_url: m.users?.avatar_url || ''
-          })) || [],
-          launch_date: p.launch_date
-        }));
+      const formattedProducts: Product[] = allProducts.map((p: any) => ({
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        tagline: p.tagline,
+        thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+        iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+        domainUrl: p.domain_url || '',
+        categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+        netVotes: voteMap.get(p.id) || 0,
+        userVote: userVoteMap.get(p.id) || null,
+        commentCount: commentMap.get(p.id) || 0,
+        makers: p.product_makers?.map((m: any) => ({
+          username: m.users?.username || 'Anonymous',
+          avatar_url: m.users?.avatar_url || ''
+        })) || [],
+        launch_date: p.launch_date
+      }));
 
       if (reset) {
         setProducts(formattedProducts);
@@ -210,9 +243,9 @@ const Home = () => {
     if (!loadingMore && hasMore) {
       const nextPage = page + 1;
       setPage(nextPage);
-      fetchProducts(currentPeriod, nextPage, false);
+      fetchProducts(currentPeriod, sort, nextPage, false);
     }
-  }, [loadingMore, hasMore, page, currentPeriod]);
+  }, [loadingMore, hasMore, page, currentPeriod, sort]);
 
   const { loadMoreRef } = useInfiniteScroll({
     onLoadMore: loadMore,
@@ -225,7 +258,15 @@ const Home = () => {
     setPage(0);
     setProducts([]);
     setHasMore(true);
-    fetchProducts(period, 0, true);
+    fetchProducts(period, sort, 0, true);
+  };
+
+  const handleSortChange = (newSort: 'popular' | 'latest') => {
+    setSort(newSort);
+    setPage(0);
+    setProducts([]);
+    setHasMore(true);
+    fetchProducts(currentPeriod, newSort, 0, true);
   };
 
   const handleVote = async (productId: string) => {
@@ -287,13 +328,7 @@ const Home = () => {
     }
   };
 
-  const sortedProducts = [...products].sort((a, b) => {
-    if (sort === 'popular') {
-      return b.netVotes - a.netVotes;
-    } else {
-      return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
-    }
-  });
+  // Products are now sorted from the database/fetch, no need for client-side sorting
 
   const renderProductList = (productList: Product[]) => {
     if (loading) {
@@ -368,25 +403,25 @@ const Home = () => {
               <TabsTrigger value="year" className="text-xs px-2.5 h-7">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-3 flex-shrink-0">
-              <SortToggle sort={sort} onSortChange={setSort} iconOnly={isMobile} />
+              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} />
               {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
             </div>
           </div>
 
           <TabsContent value="today" className="space-y-6">
-            {renderProductList(sortedProducts)}
+            {renderProductList(products)}
           </TabsContent>
 
           <TabsContent value="week" className="space-y-6">
-            {renderProductList(sortedProducts)}
+            {renderProductList(products)}
           </TabsContent>
 
           <TabsContent value="month" className="space-y-6">
-            {renderProductList(sortedProducts)}
+            {renderProductList(products)}
           </TabsContent>
 
           <TabsContent value="year" className="space-y-6">
-            {renderProductList(sortedProducts)}
+            {renderProductList(products)}
           </TabsContent>
         </Tabs>
       </div>
