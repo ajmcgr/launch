@@ -12,7 +12,7 @@ const Pricing = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Launch Your Product</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Get your product in front of thousands of founders and tech enthusiasts
+            Get your product in front of thousands technologists, marketers and other founders
           </p>
         </div>
 
