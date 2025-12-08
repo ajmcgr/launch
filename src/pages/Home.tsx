@@ -62,9 +62,12 @@ const Home = () => {
     localStorage.setItem('productView', newView);
   };
 
+  const [userLoaded, setUserLoaded] = useState(false);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setUserLoaded(true);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -74,10 +77,12 @@ const Home = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch products when user state is determined
+  // Fetch products only once when user state is first determined
   useEffect(() => {
-    fetchProducts(currentPeriod, 0, true);
-  }, [user]);
+    if (userLoaded) {
+      fetchProducts(currentPeriod, 0, true);
+    }
+  }, [userLoaded]);
 
   const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', pageNum: number, reset: boolean = false) => {
     if (reset) {
