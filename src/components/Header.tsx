@@ -131,10 +131,10 @@ export const Header = () => {
             </Link>
 
             {/* Search Bar - Desktop */}
-            <div className="hidden md:flex relative w-64">
+            <div className="hidden md:flex relative w-40">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search products..."
+                placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
