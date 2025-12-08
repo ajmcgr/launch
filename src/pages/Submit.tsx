@@ -448,6 +448,13 @@ const Submit = () => {
       }
     }
     
+    if (step === 2) {
+      if (!uploadedMedia.icon) {
+        toast.error('Product icon is required');
+        return;
+      }
+    }
+    
     if (step === 3) {
       const validation = productSchema.pick({ description: true, categories: true, slug: true }).safeParse({
         description: formData.description,
