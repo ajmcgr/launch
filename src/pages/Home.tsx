@@ -390,7 +390,7 @@ const Home = () => {
       <div className="container mx-auto px-4 py-6 md:py-10 max-w-3xl">
         <div className="hidden md:block text-center mb-8">
           <h1 className="text-4xl font-reckless font-bold text-foreground mb-2">
-            The best new AI products. Every day.
+            The best new AI products. Daily.
           </h1>
         </div>
         
