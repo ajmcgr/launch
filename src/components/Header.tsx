@@ -123,7 +123,7 @@ export const Header = () => {
       </Link>
       
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex h-12 items-center justify-between">
+        <div className="flex h-14 items-center justify-between">
           {/* Left: Logo and Search */}
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center">
