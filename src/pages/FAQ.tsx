@@ -49,7 +49,7 @@ const FAQ = () => {
               How does the voting system work?
             </AccordionTrigger>
             <AccordionContent>
-              Users can upvote products they find interesting or valuable. Each product displays its net vote count (upvotes minus downvotes). Products are ranked based on their votes within specific time periods. You must be logged in to vote. You can change your vote at any time or remove it completely.
+              Users can upvote products they find interesting or valuable. Each product displays its vote count. Products are ranked based on their votes within specific time periods. You must be logged in to vote. You can remove your vote at any time.
             </AccordionContent>
           </AccordionItem>
 
