@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { ArrowUp, ArrowDown, ExternalLink, Calendar, Star } from 'lucide-react';
+import { ArrowUp, ExternalLink, Calendar, Star } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
@@ -427,14 +427,6 @@ const LaunchDetail = () => {
                     <span className="font-bold text-lg min-w-[3rem] text-center">
                       {product.netVotes}
                     </span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-10 w-10 p-0 hover:border-destructive"
-                      onClick={() => handleVote(-1)}
-                    >
-                      <ArrowDown className={`h-5 w-5 ${userVote === -1 ? 'text-destructive' : ''}`} />
-                    </Button>
                   </div>
                 </div>
 
