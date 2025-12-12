@@ -114,3 +114,23 @@ export const notifyProductVote = async (productId: string, voterUsername: string
     });
   }
 };
+
+// Helper function to notify user about new follower
+export const notifyUserFollow = async (followedUserId: string, followerUserId: string) => {
+  // Get the follower's username
+  const { data: follower } = await supabase
+    .from('users')
+    .select('username')
+    .eq('id', followerUserId)
+    .single();
+
+  if (follower) {
+    await sendNotification({
+      userId: followedUserId,
+      type: 'new_follower',
+      title: 'New follower',
+      message: `@${follower.username} is now following you`,
+      relatedUserId: followerUserId,
+    });
+  }
+};

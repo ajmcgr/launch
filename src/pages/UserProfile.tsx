@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { UserPlus, UserMinus, Globe } from 'lucide-react';
+import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 
 const UserProfile = () => {
@@ -332,6 +333,9 @@ const UserProfile = () => {
         setIsFollowing(true);
         setFollowerCount(prev => prev + 1);
         toast.success('Following successfully');
+        
+        // Send notification to the followed user
+        notifyUserFollow(profile.id, currentUser.id);
       }
     } catch (error: any) {
       console.error('Error following/unfollowing:', error);
