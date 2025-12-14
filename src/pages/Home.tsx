@@ -393,8 +393,6 @@ const Home = () => {
             The best new AI products. Daily.
           </h1>
         </div>
-
-        <CategoryCloud />
         
         <Tabs defaultValue="year" onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 md:gap-4 mb-6 md:mb-8">
@@ -427,6 +425,8 @@ const Home = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <CategoryCloud />
 
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
