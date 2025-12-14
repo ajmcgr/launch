@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+
 import {
   Accordion,
   AccordionContent,
@@ -37,7 +37,8 @@ interface Product {
   launch_date?: string;
 }
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 30;
+const MAX_HOMEPAGE_PRODUCTS = 100;
 
 const Home = () => {
   const isMobile = useIsMobile();
@@ -240,18 +241,15 @@ const Home = () => {
   };
 
   const loadMore = useCallback(() => {
-    if (!loadingMore && hasMore) {
+    if (!loadingMore && hasMore && products.length < MAX_HOMEPAGE_PRODUCTS) {
       const nextPage = page + 1;
       setPage(nextPage);
       fetchProducts(currentPeriod, sort, nextPage, false);
     }
-  }, [loadingMore, hasMore, page, currentPeriod, sort]);
+  }, [loadingMore, hasMore, page, currentPeriod, sort, products.length]);
 
-  const { loadMoreRef } = useInfiniteScroll({
-    onLoadMore: loadMore,
-    hasMore,
-    loading: loadingMore,
-  });
+  // Check if we've hit the homepage limit
+  const canLoadMore = hasMore && products.length < MAX_HOMEPAGE_PRODUCTS;
 
   const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year') => {
     setCurrentPeriod(period);
@@ -365,16 +363,28 @@ const Home = () => {
           </div>
         )}
         
-        {/* Infinite scroll trigger */}
-        <div ref={loadMoreRef} className="h-4" />
-        
-        {loadingMore && (
-          <div className="flex justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        {/* Load More button */}
+        {canLoadMore && (
+          <div className="flex justify-center pt-6">
+            <Button 
+              variant="outline" 
+              onClick={loadMore}
+              disabled={loadingMore}
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Loading...
+                </>
+              ) : (
+                'Load More'
+              )}
+            </Button>
           </div>
         )}
         
-        {!hasMore && productList.length > 0 && (
+        {/* View all link when limit reached or no more products */}
+        {(!canLoadMore && productList.length > 0) && (
           <div className="flex justify-center pt-4">
             <Link to={`/products?period=${currentPeriod}`}>
               <Button variant="outline">View all {currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} products</Button>
