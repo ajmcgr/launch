@@ -48,7 +48,7 @@ export const HomeLaunchCard = ({
           </Button>
         </div>
         
-        <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center mb-4 mx-auto">
+        <div className="w-16 h-16 rounded-lg bg-white flex items-center justify-center mb-4 mx-auto">
           <IconComponent className="w-8 h-8 text-primary" />
         </div>
         

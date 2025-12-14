@@ -55,7 +55,7 @@ export const LaunchListItem = ({
       <Link to={`/launch/${slug}`} className="block">
         <div className="flex gap-3 p-3">
           <div className="flex-shrink-0">
-            <div className="w-12 h-12 overflow-hidden bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
               {iconUrl ? (
                 <img 
                   src={iconUrl} 
