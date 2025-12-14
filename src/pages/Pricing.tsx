@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Calendar, Zap, RefreshCw, Rocket } from 'lucide-react';
+import { Check, Calendar, Zap, RefreshCw, Send } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 
 const Pricing = () => {
@@ -31,7 +31,7 @@ const Pricing = () => {
               )}
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                  {plan.id === 'free' && <Rocket className="h-6 w-6 text-primary" />}
+                  {plan.id === 'free' && <Send className="h-6 w-6 text-primary" />}
                   {plan.id === 'join' && <Calendar className="h-6 w-6 text-primary" />}
                   {plan.id === 'skip' && <Zap className="h-6 w-6 text-primary" />}
                   {plan.id === 'relaunch' && <RefreshCw className="h-6 w-6 text-primary" />}
