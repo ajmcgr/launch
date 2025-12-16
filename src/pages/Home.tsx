@@ -35,6 +35,8 @@ interface Product {
   netVotes: number;
   userVote?: 1 | null;
   commentCount: number;
+  verifiedMrr?: number | null;
+  mrrVerifiedAt?: string | null;
   makers: Array<{ username: string; avatar_url?: string }>;
   launch_date?: string;
 }
@@ -56,7 +58,7 @@ const Home = () => {
     return (saved as 'list' | 'grid') || 'list';
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
-  const [sort, setSort] = useState<'popular' | 'latest'>('latest');
+  const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
   
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -96,7 +98,7 @@ const Home = () => {
     }
   }, [userLoaded]);
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'popular' | 'latest', pageNum: number, reset: boolean = false) => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -146,6 +148,8 @@ const Home = () => {
             tagline,
             launch_date,
             domain_url,
+            verified_mrr,
+            mrr_verified_at,
             product_media(url, type),
             product_category_map(category_id),
             product_makers(user_id, users(username, avatar_url))
@@ -164,6 +168,36 @@ const Home = () => {
 
         allProducts = sortedByVotes.slice(from, to + 1);
         setHasMore(sortedByVotes.length > to + 1);
+      } else if (currentSort === 'revenue') {
+        // For revenue sorting, fetch all and sort by verified_mrr
+        const { data: productsData, error } = await supabase
+          .from('products')
+          .select(`
+            id,
+            slug,
+            name,
+            tagline,
+            launch_date,
+            domain_url,
+            verified_mrr,
+            mrr_verified_at,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          `)
+          .eq('status', 'launched')
+          .gte('launch_date', startDate.toISOString())
+          .not('verified_mrr', 'is', null);
+
+        if (error) throw error;
+
+        // Sort by verified_mrr descending
+        const sortedByRevenue = (productsData || []).sort((a, b) => {
+          return (b.verified_mrr || 0) - (a.verified_mrr || 0);
+        });
+
+        allProducts = sortedByRevenue.slice(from, to + 1);
+        setHasMore(sortedByRevenue.length > to + 1);
       } else {
         // For latest sorting, use database ordering with pagination
         const { data: productsData, error } = await supabase
@@ -175,6 +209,8 @@ const Home = () => {
             tagline,
             launch_date,
             domain_url,
+            verified_mrr,
+            mrr_verified_at,
             product_media(url, type),
             product_category_map(category_id),
             product_makers(user_id, users(username, avatar_url))
@@ -230,6 +266,8 @@ const Home = () => {
         netVotes: voteMap.get(p.id) || 0,
         userVote: userVoteMap.get(p.id) || null,
         commentCount: commentMap.get(p.id) || 0,
+        verifiedMrr: p.verified_mrr || null,
+        mrrVerifiedAt: p.mrr_verified_at || null,
         makers: p.product_makers?.map((m: any) => ({
           username: m.users?.username || 'Anonymous',
           avatar_url: m.users?.avatar_url || ''
@@ -270,7 +308,7 @@ const Home = () => {
     fetchProducts(period, sort, 0, true);
   };
 
-  const handleSortChange = (newSort: 'popular' | 'latest') => {
+  const handleSortChange = (newSort: 'popular' | 'latest' | 'revenue') => {
     setSort(newSort);
     setPage(0);
     setProducts([]);
@@ -434,7 +472,7 @@ const Home = () => {
                   className="pl-8 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
-              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} />
+              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
               {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
             </div>
           </div>

@@ -30,7 +30,7 @@ const Index = () => {
     const savedView = localStorage.getItem('homeViewPreference');
     return (savedView === 'grid' || savedView === 'list') ? savedView : 'list';
   });
-  const [sort, setSort] = useState<'popular' | 'latest'>('popular');
+  const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
   const [displayCount, setDisplayCount] = useState(25);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   
@@ -236,7 +236,7 @@ const Index = () => {
             </p>
           </div>
           <div className="flex items-center justify-end gap-3">
-            <SortToggle sort={sort} onSortChange={setSort} />
+            <SortToggle sort={sort} onSortChange={setSort} showRevenue={true} />
             {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
           </div>
         </div>

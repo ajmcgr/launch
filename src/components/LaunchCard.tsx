@@ -5,6 +5,7 @@ import { ArrowUp, MessageSquare, Star, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import defaultProductIcon from '@/assets/default-product-icon.png';
+import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 
 interface LaunchCardProps {
   id: string;
@@ -18,6 +19,8 @@ interface LaunchCardProps {
   netVotes: number;
   userVote?: 1 | null;
   commentCount?: number;
+  verifiedMrr?: number | null;
+  mrrVerifiedAt?: string | null;
   makers: Array<{
     username: string;
     avatar_url?: string;
@@ -42,6 +45,8 @@ export const LaunchCard = ({
   netVotes,
   userVote,
   commentCount = 0,
+  verifiedMrr,
+  mrrVerifiedAt,
   makers,
   rank,
   icon: IconComponent,
@@ -195,6 +200,8 @@ export const LaunchCard = ({
               <MessageSquare className="h-3.5 w-3.5" />
               <span className="text-xs">{commentCount}</span>
             </div>
+            
+            <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
           </div>
         </div>
       </div>

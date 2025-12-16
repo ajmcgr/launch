@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.sync-users-to-beehiiv]
 verify_jwt = true
+
+[functions.stripe-connect-oauth]
+verify_jwt = false
