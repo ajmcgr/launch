@@ -144,7 +144,7 @@ export const Header = () => {
           </div>
 
           {/* Center: Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6 absolute left-1/2 transform -translate-x-1/2">
+          <nav className="hidden md:flex items-center gap-4 absolute left-1/2 transform -translate-x-1/2">
             <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Launches
             </Link>
