@@ -115,7 +115,7 @@ export const Header = () => {
       </Link>
       
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="flex h-14 items-center justify-between md:justify-center md:gap-6">
+        <div className="flex h-14 items-center justify-between">
           {/* Left: Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
