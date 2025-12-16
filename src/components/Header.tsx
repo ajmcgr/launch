@@ -163,7 +163,7 @@ export const Header = () => {
           </nav>
           
           {/* Right: Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ml-2">
 
             {/* Desktop User Menu */}
             {user ? (
