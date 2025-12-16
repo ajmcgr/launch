@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,13 +9,17 @@ import { toast } from 'sonner';
 import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
+import ShareLaunchModal from '@/components/ShareLaunchModal';
 
 const MyProducts = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [recentProduct, setRecentProduct] = useState<{ name: string; slug: string; tagline?: string } | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -30,16 +34,39 @@ const MyProducts = () => {
   }, [navigate]);
 
   useEffect(() => {
-    // Check for successful payment and refresh once
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true' && user) {
+    // Check for successful payment and show share modal
+    if (searchParams.get('success') === 'true' && user) {
       toast.success('Payment successful! Your product has been scheduled.');
-      window.history.replaceState({}, '', '/my-products');
-      setTimeout(() => {
-        fetchProducts(user.id);
+      
+      // Clear the success param from URL
+      searchParams.delete('success');
+      setSearchParams(searchParams, { replace: true });
+      
+      // Fetch fresh products and show share modal for the most recent one
+      setTimeout(async () => {
+        await fetchProducts(user.id);
+        
+        // Get the most recently scheduled/launched product
+        const { data: latestProduct } = await supabase
+          .from('products')
+          .select('name, slug, tagline')
+          .eq('owner_id', user.id)
+          .in('status', ['scheduled', 'launched'])
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        
+        if (latestProduct && latestProduct.slug) {
+          setRecentProduct({
+            name: latestProduct.name || 'Your Product',
+            slug: latestProduct.slug,
+            tagline: latestProduct.tagline || undefined
+          });
+          setShowShareModal(true);
+        }
       }, 1000);
     }
-  }, []);
+  }, [searchParams, user]);
 
   const fetchProducts = async (userId: string) => {
     setLoading(true);
@@ -666,6 +693,16 @@ const MyProducts = () => {
         )}
       </div>
 
+      {/* Share Launch Modal */}
+      {recentProduct && (
+        <ShareLaunchModal
+          open={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          productName={recentProduct.name}
+          productSlug={recentProduct.slug}
+          productTagline={recentProduct.tagline}
+        />
+      )}
     </div>
   );
 };
