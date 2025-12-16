@@ -38,7 +38,7 @@ export const Newsletter = () => {
 
   return (
     <section className="py-16 px-4">
-      <div className="bg-muted rounded-lg py-12 px-8 max-w-7xl mx-auto">
+      <div className="bg-muted rounded-lg py-12 px-8 max-w-4xl mx-auto">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-4">Get the latest products launched on Launch</h2>
           <p className="text-muted-foreground mb-8">
