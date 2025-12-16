@@ -87,7 +87,7 @@ export const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Forum
+                  Forums
                 </a>
               </li>
               <li>
