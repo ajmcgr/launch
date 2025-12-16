@@ -170,32 +170,31 @@ export const LaunchCard = ({
               <ArrowUp className={`h-4 w-4 group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} />
               <span className="font-semibold text-sm group-hover:text-primary-foreground">{netVotes}</span>
             </Button>
+            <div className="flex -space-x-2">
+              {makers.slice(0, 3).map((maker) => (
+                <span
+                  key={maker.username}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  <Link 
+                    to={`/@${maker.username}`}
+                    className="hover:z-10"
+                  >
+                    <Avatar className="h-6 w-6 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                      <AvatarFallback className="text-xs">{maker.username[0].toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </Link>
+                </span>
+              ))}
+            </div>
             <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
               <MessageSquare className="h-3.5 w-3.5" />
               <span className="text-xs">{commentCount}</span>
             </div>
-          </div>
-          
-          <div className="flex -space-x-2">
-            {makers.slice(0, 3).map((maker) => (
-              <span
-                key={maker.username}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                <Link 
-                  to={`/@${maker.username}`}
-                  className="hover:z-10"
-                >
-                  <Avatar className="h-6 w-6 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
-                    <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                    <AvatarFallback className="text-xs">{maker.username[0].toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                </Link>
-              </span>
-            ))}
           </div>
         </div>
       </div>
