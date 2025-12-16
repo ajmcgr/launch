@@ -126,11 +126,6 @@ export const LaunchListItem = ({
               </div>
               
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  <span className="text-xs">{commentCount}</span>
-                </div>
-                
                 <div className="flex -space-x-1.5">
                   {makers.slice(0, 3).map((maker) => (
                     <span
@@ -151,6 +146,11 @@ export const LaunchListItem = ({
                       </Link>
                     </span>
                   ))}
+                </div>
+                
+                <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  <span className="text-xs">{commentCount}</span>
                 </div>
               </div>
             </div>
