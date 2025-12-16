@@ -7,10 +7,12 @@ import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Accordion,
@@ -19,7 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -42,6 +44,7 @@ const MAX_HOMEPAGE_PRODUCTS = 100;
 
 const Home = () => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -54,6 +57,14 @@ const Home = () => {
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
   const [sort, setSort] = useState<'popular' | 'latest'>('latest');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
   
   // Force list view on mobile
   const effectiveView = isMobile ? 'list' : view;
@@ -412,7 +423,17 @@ const Home = () => {
               <TabsTrigger value="month" className="text-xs px-2.5 h-7">Month</TabsTrigger>
               <TabsTrigger value="year" className="text-xs px-2.5 h-7">Year</TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="relative w-28 md:w-36">
+                <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
+                <Input
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearch}
+                  className="pl-8 h-7 text-xs"
+                />
+              </div>
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} />
               {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
             </div>
