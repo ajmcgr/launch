@@ -855,7 +855,7 @@ const Submit = () => {
             ? 'Product launched successfully!'
             : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${launchDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
           toast.success(message);
-          navigate('/my-products');
+          navigate('/my-products?success=true');
           return;
         } catch (error: any) {
           console.error('Free launch error details:', {
