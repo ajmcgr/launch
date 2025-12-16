@@ -10,7 +10,7 @@ export const CategoryCloud = () => {
 
   return (
     <section className="py-6 bg-background">
-      <div className="container mx-auto px-4 max-w-3xl">
+      <div className="container mx-auto px-4 max-w-4xl">
         <h2 className="text-2xl font-bold text-center mb-8">Browse by Category</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {CATEGORIES.map((category, index) => (

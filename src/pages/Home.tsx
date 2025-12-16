@@ -408,7 +408,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-4 md:py-6 max-w-3xl">
+      <div className="container mx-auto px-4 py-4 md:py-6 max-w-4xl">
         <div className="hidden md:block text-center mb-8">
           <h1 className="text-4xl font-reckless font-bold text-foreground mb-2">
             The best new AI products. Daily.
@@ -459,7 +459,7 @@ const Home = () => {
 
       <CategoryCloud />
 
-      <div className="container mx-auto px-4 pt-6 pb-4 max-w-3xl">
+      <div className="container mx-auto px-4 pt-6 pb-4 max-w-4xl">
         <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
         
         <Accordion type="single" collapsible className="w-full space-y-4">
