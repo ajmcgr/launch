@@ -417,11 +417,11 @@ const Home = () => {
         
         <Tabs defaultValue="year" onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 md:gap-4 mb-6 md:mb-8">
-            <TabsList className="flex-shrink overflow-x-auto h-9">
-              <TabsTrigger value="today" className="text-xs px-2.5 h-7">Today</TabsTrigger>
-              <TabsTrigger value="week" className="text-xs px-2.5 h-7">Week</TabsTrigger>
-              <TabsTrigger value="month" className="text-xs px-2.5 h-7">Month</TabsTrigger>
-              <TabsTrigger value="year" className="text-xs px-2.5 h-7">Year</TabsTrigger>
+            <TabsList className="flex-shrink overflow-x-auto h-auto bg-transparent border rounded-md p-1 gap-1">
+              <TabsTrigger value="today" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none">Today</TabsTrigger>
+              <TabsTrigger value="week" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none">Week</TabsTrigger>
+              <TabsTrigger value="month" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none">Month</TabsTrigger>
+              <TabsTrigger value="year" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-2 flex-shrink-0">
               <div className="hidden md:block relative w-36 border rounded-md">
