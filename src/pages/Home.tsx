@@ -424,14 +424,14 @@ const Home = () => {
               <TabsTrigger value="year" className="text-xs px-2.5 h-7">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="relative w-28 md:w-36">
+              <div className="relative w-28 md:w-36 border rounded-md">
                 <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
                 <Input
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleSearch}
-                  className="pl-8 h-7 text-xs"
+                  className="pl-8 h-9 text-xs border-0"
                 />
               </div>
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} />
