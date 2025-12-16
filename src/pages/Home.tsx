@@ -424,14 +424,14 @@ const Home = () => {
               <TabsTrigger value="year" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="hidden md:block relative w-36 border rounded-md">
-                <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
+              <div className="hidden md:flex items-center relative w-36 h-9 border rounded-md bg-background">
+                <Search className="absolute left-2.5 text-muted-foreground h-3.5 w-3.5" />
                 <Input
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleSearch}
-                  className="pl-8 h-9 text-xs border-0"
+                  className="pl-8 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} />
