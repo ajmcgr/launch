@@ -76,12 +76,19 @@ export const LaunchCard = ({
               src={thumbnail} 
               alt={name} 
               className="w-full h-full object-cover rounded-lg"
+              onError={(e) => {
+                e.currentTarget.src = defaultProductIcon;
+                e.currentTarget.className = "w-16 h-16 object-contain";
+              }}
             />
           ) : iconUrl ? (
             <img 
               src={iconUrl} 
               alt={name} 
               className="w-16 h-16 object-contain"
+              onError={(e) => {
+                e.currentTarget.src = defaultProductIcon;
+              }}
             />
           ) : IconComponent ? (
             <IconComponent className="w-16 h-16 text-primary" />

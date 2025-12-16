@@ -61,6 +61,9 @@ export const LaunchListItem = ({
                   src={iconUrl} 
                   alt={name} 
                   className="w-full h-full object-cover rounded-lg"
+                  onError={(e) => {
+                    e.currentTarget.src = defaultProductIcon;
+                  }}
                 />
               ) : IconComponent ? (
                 <IconComponent className="w-8 h-8 text-primary" />
