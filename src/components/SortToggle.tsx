@@ -11,6 +11,18 @@ interface SortToggleProps {
 export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue = false }: SortToggleProps) => {
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
+      {showRevenue && (
+        <Toggle
+          pressed={sort === 'revenue'}
+          onPressedChange={() => onSortChange('revenue')}
+          aria-label="Sort by revenue"
+          size="sm"
+          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+        >
+          <DollarSign className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
+          {!iconOnly && <span className="text-xs">Revenue</span>}
+        </Toggle>
+      )}
       <Toggle
         pressed={sort === 'popular'}
         onPressedChange={() => onSortChange('popular')}
@@ -31,18 +43,6 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
         <Clock className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
         {!iconOnly && <span className="text-xs">Latest</span>}
       </Toggle>
-      {showRevenue && (
-        <Toggle
-          pressed={sort === 'revenue'}
-          onPressedChange={() => onSortChange('revenue')}
-          aria-label="Sort by revenue"
-          size="sm"
-          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
-        >
-          <DollarSign className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
-          {!iconOnly && <span className="text-xs">Revenue</span>}
-        </Toggle>
-      )}
     </div>
   );
 };

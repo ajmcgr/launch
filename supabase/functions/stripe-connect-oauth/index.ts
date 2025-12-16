@@ -55,7 +55,9 @@ Deno.serve(async (req) => {
       const stateData = JSON.stringify({ productId, userId });
       const encodedState = btoa(stateData);
       
-      const connectUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${Deno.env.get('STRIPE_CONNECT_CLIENT_ID')}&scope=read_only&redirect_uri=${encodeURIComponent(productionUrl + '/api/stripe-connect-callback')}&state=${encodedState}`;
+      // Redirect to settings page which will handle the callback
+      const redirectUri = `${productionUrl}/settings?stripe_callback=true`;
+      const connectUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${Deno.env.get('STRIPE_CONNECT_CLIENT_ID')}&scope=read_only&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodedState}`;
 
       return new Response(
         JSON.stringify({ url: connectUrl }),
