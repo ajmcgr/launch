@@ -27,7 +27,7 @@ const Products = () => {
     const saved = localStorage.getItem('productView');
     return (saved as 'list' | 'grid') || 'list';
   });
-  const [sort, setSort] = useState<'popular' | 'latest'>('popular');
+  const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
   
   // Force list view on mobile
   const effectiveView = isMobile ? 'list' : view;
@@ -287,7 +287,7 @@ const Products = () => {
                 <Button variant="outline" className="h-9">Search</Button>
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
-                <SortToggle sort={sort} onSortChange={setSort} />
+                <SortToggle sort={sort} onSortChange={setSort} showRevenue={true} />
                 {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
               </div>
             </div>

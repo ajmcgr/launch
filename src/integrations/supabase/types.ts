@@ -375,11 +375,14 @@ export type Database = {
           id: string
           last_badge_check: string | null
           launch_date: string | null
+          mrr_verified_at: string | null
           name: string | null
           owner_id: string
           slug: string | null
           status: string | null
+          stripe_connect_account_id: string | null
           tagline: string | null
+          verified_mrr: number | null
           won_daily: boolean | null
           won_monthly: boolean | null
           won_weekly: boolean | null
@@ -395,11 +398,14 @@ export type Database = {
           id?: string
           last_badge_check?: string | null
           launch_date?: string | null
+          mrr_verified_at?: string | null
           name?: string | null
           owner_id: string
           slug?: string | null
           status?: string | null
+          stripe_connect_account_id?: string | null
           tagline?: string | null
+          verified_mrr?: number | null
           won_daily?: boolean | null
           won_monthly?: boolean | null
           won_weekly?: boolean | null
@@ -415,11 +421,14 @@ export type Database = {
           id?: string
           last_badge_check?: string | null
           launch_date?: string | null
+          mrr_verified_at?: string | null
           name?: string | null
           owner_id?: string
           slug?: string | null
           status?: string | null
+          stripe_connect_account_id?: string | null
           tagline?: string | null
+          verified_mrr?: number | null
           won_daily?: boolean | null
           won_monthly?: boolean | null
           won_weekly?: boolean | null
