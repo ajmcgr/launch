@@ -424,7 +424,7 @@ const Home = () => {
               <TabsTrigger value="year" className="text-xs px-2.5 h-7">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="relative w-28 md:w-36 border rounded-md">
+              <div className="hidden md:block relative w-36 border rounded-md">
                 <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
                 <Input
                   placeholder="Search"
