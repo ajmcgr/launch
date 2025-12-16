@@ -37,27 +37,29 @@ export const Newsletter = () => {
   };
 
   return (
-    <section className="bg-muted py-16">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4">Get the latest products launched on Launch</h2>
-          <p className="text-muted-foreground mb-8">
-            Subscribe for free. Weekly updates on launches, no filler.
-          </p>
-          
-          <form onSubmit={handleSubscribe} className="flex gap-4 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1"
-              disabled={loading}
-            />
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Subscribing...' : 'Subscribe'}
-            </Button>
-          </form>
+    <section className="py-16">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="bg-muted rounded-lg py-12 px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl font-bold mb-4">Get the latest products launched on Launch</h2>
+            <p className="text-muted-foreground mb-8">
+              Subscribe for free. Weekly updates on launches, no filler.
+            </p>
+            
+            <form onSubmit={handleSubscribe} className="flex gap-4 max-w-md mx-auto">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1"
+                disabled={loading}
+              />
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Subscribing...' : 'Subscribe'}
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
     </section>
