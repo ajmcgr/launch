@@ -275,16 +275,16 @@ const Products = () => {
           <div className="lg:col-span-3 space-y-6 max-w-3xl mx-auto w-full">
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <div className="flex gap-4 flex-1 max-w-2xl">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <div className="relative flex-1 flex items-center h-9 border rounded-md bg-background">
+                  <Search className="absolute left-3 text-muted-foreground h-4 w-4" />
                   <Input
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
-                <Button variant="outline">Search</Button>
+                <Button variant="outline" className="h-9">Search</Button>
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <SortToggle sort={sort} onSortChange={setSort} />
