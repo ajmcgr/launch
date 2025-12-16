@@ -9,7 +9,7 @@ interface SortToggleProps {
 
 export const SortToggle = ({ sort, onSortChange, iconOnly = false }: SortToggleProps) => {
   return (
-    <div className="flex items-center gap-1 border rounded-md p-1">
+    <div className="flex items-center gap-1 border rounded-md p-1 h-9">
       <Toggle
         pressed={sort === 'popular'}
         onPressedChange={() => onSortChange('popular')}
