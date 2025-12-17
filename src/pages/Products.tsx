@@ -287,7 +287,7 @@ const Products = () => {
                 <Button variant="outline" className="h-9">Search</Button>
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
-                <SortToggle sort={sort} onSortChange={setSort} showRevenue={true} />
+                <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
                 {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
               </div>
             </div>

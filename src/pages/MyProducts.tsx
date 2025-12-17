@@ -648,6 +648,7 @@ const MyProducts = () => {
                             View Launch
                           </Link>
                         </Button>
+                        {/* Revenue verification temporarily disabled - awaiting Stripe read_only scope approval
                         {product.stripe_connect_account_id ? (
                           <Button
                             variant="outline"
@@ -676,6 +677,7 @@ const MyProducts = () => {
                             {stripeActionLoading === product.id ? 'Connecting...' : 'Verify Revenue'}
                           </Button>
                         )}
+                        */}
                         <Button 
                           onClick={(e) => {
                             e.preventDefault();
