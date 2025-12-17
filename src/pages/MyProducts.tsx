@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
@@ -659,7 +660,6 @@ const MyProducts = () => {
                         {product.stripe_connect_account_id ? (
                           <Button
                             variant="outline"
-                            size="sm"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -667,14 +667,13 @@ const MyProducts = () => {
                             }}
                             disabled={stripeActionLoading === product.id}
                           >
-                            <CheckCircle className="h-4 w-4 mr-1 text-green-500" />
+                            <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
                             {product.verified_mrr !== null ? formatMRRRange(product.verified_mrr) : 'Verified'}
                             <RefreshCw className={`h-3 w-3 ml-1 ${stripeActionLoading === product.id ? 'animate-spin' : ''}`} />
                           </Button>
                         ) : (
                           <Button
                             variant="outline"
-                            size="sm"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -682,7 +681,7 @@ const MyProducts = () => {
                             }}
                             disabled={stripeActionLoading === product.id}
                           >
-                            <DollarSign className="h-4 w-4 mr-1" />
+                            <DollarSign className="h-4 w-4 mr-2" />
                             {stripeActionLoading === product.id ? 'Connecting...' : 'Verify Revenue'}
                           </Button>
                         )}
@@ -743,14 +742,24 @@ const MyProducts = () => {
                     )}
                   </div>
                   {product.status === 'launched' && product.slug && (
-                    <ProductBadgeEmbed 
-                      productSlug={product.slug}
-                      productName={product.name}
-                      categories={product.categories}
-                      wonDaily={product.won_daily}
-                      wonWeekly={product.won_weekly}
-                      wonMonthly={product.won_monthly}
-                    />
+                    <Collapsible className="mt-4">
+                      <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm" className="w-full justify-between">
+                          <span className="text-sm text-muted-foreground">Embed Badge</span>
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <ProductBadgeEmbed 
+                          productSlug={product.slug}
+                          productName={product.name}
+                          categories={product.categories}
+                          wonDaily={product.won_daily}
+                          wonWeekly={product.won_weekly}
+                          wonMonthly={product.won_monthly}
+                        />
+                      </CollapsibleContent>
+                    </Collapsible>
                   )}
                 </CardContent>
               </Card>
