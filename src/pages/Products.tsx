@@ -23,6 +23,7 @@ const Products = () => {
   const [selectedArchiveYear, setSelectedArchiveYear] = useState<number | null>(null);
   const [archiveYears, setArchiveYears] = useState<number[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [displayCount, setDisplayCount] = useState(30);
   const [view, setView] = useState<'list' | 'grid'>(() => {
     const saved = localStorage.getItem('productView');
     return (saved as 'list' | 'grid') || 'list';
@@ -61,6 +62,7 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
+    setDisplayCount(30); // Reset display count when filters change
     if (selectedArchiveYear) {
       fetchArchivedProducts();
     } else {
@@ -309,7 +311,7 @@ const Products = () => {
 
             {effectiveView === 'list' ? (
               <div className="divide-y">
-                {products.map((product) => (
+                {products.slice(0, displayCount).map((product) => (
                   <LaunchListItem
                     key={product.id}
                     {...product}
@@ -319,13 +321,24 @@ const Products = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
+                {products.slice(0, displayCount).map((product) => (
                   <LaunchCard
                     key={product.id}
                     {...product}
                     onVote={() => {}}
                   />
                 ))}
+              </div>
+            )}
+
+            {displayCount < products.length && (
+              <div className="flex justify-center pt-6">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setDisplayCount(prev => Math.min(prev + 30, products.length))}
+                >
+                  Load More
+                </Button>
               </div>
             )}
           </div>
