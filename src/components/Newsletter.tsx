@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -38,7 +39,7 @@ export const Newsletter = () => {
 
   return (
     <section className="px-4">
-      <div className="bg-muted/30 rounded-lg py-8 px-8 max-w-4xl mx-auto">
+      <Card className="p-8 bg-muted/30 border-0 max-w-4xl mx-auto">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-4">Get the latest products launched on Launch</h2>
           <p className="text-muted-foreground mb-8">
@@ -59,7 +60,7 @@ export const Newsletter = () => {
             </Button>
           </form>
         </div>
-      </div>
+      </Card>
     </section>
   );
 };
