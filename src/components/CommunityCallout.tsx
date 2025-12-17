@@ -5,7 +5,7 @@ import { Mail, MessageSquare } from 'lucide-react';
 export const CommunityCallout = () => {
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
-      <Card className="p-6 bg-muted/30 border-dashed">
+      <Card className="p-6 bg-muted/30 border-0">
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
           <div className="flex-1 text-center md:text-left">
             <h3 className="text-lg font-semibold mb-1">Join the Community</h3>
