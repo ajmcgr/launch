@@ -55,7 +55,7 @@ export const LaunchListItem = ({
   };
 
   return (
-    <div className="hover:bg-muted/30 transition-colors">
+    <div className="group/card hover:bg-muted/30 transition-colors">
       <Link to={`/launch/${slug}`} className="block">
         <div className="flex items-start gap-3 py-3 px-2">
           <div className="flex-shrink-0">
@@ -97,7 +97,7 @@ export const LaunchListItem = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>

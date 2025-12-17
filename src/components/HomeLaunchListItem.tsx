@@ -28,7 +28,7 @@ export const HomeLaunchListItem = ({
   return (
     <Link to={`/launch/${slug}`} className="block">
       <div 
-        className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+        className="group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
       >
       <div className="flex items-start gap-3 flex-1">
         <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
@@ -48,7 +48,7 @@ export const HomeLaunchListItem = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>

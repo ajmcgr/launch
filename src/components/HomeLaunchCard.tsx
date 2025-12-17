@@ -28,7 +28,7 @@ export const HomeLaunchCard = ({
 }: HomeLaunchCardProps) => {
   return (
     <Link to={`/launch/${slug}`} className="block">
-      <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+      <Card className="group/card overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
         <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <span className="text-xl font-bold text-muted-foreground">
@@ -62,7 +62,7 @@ export const HomeLaunchCard = ({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-muted-foreground hover:text-primary transition-colors"
+              className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
             >
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
