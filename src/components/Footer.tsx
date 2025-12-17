@@ -129,6 +129,14 @@ export const Footer = () => {
               className="hover:text-primary transition-colors"
             >
               Alex
+            </a>{' '}and{' '}
+            <a 
+              href="https://works.xyz/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
+              Works
             </a>.
           </p>
         </div>
