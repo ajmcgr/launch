@@ -121,7 +121,7 @@ export const Footer = () => {
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
           <p>
-            Copyright © {new Date().getFullYear()} Works App, Inc. Built with ♥️ by{' '}
+            Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
             <a 
               href="https://works.xyz/" 
               target="_blank" 
