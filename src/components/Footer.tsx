@@ -28,6 +28,11 @@ export const Footer = () => {
                   Newsletter
                 </a>
               </li>
+              <li>
+                <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Pricing
+                </Link>
+              </li>
             </ul>
           </div>
 
