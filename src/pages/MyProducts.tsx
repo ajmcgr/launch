@@ -744,9 +744,9 @@ const MyProducts = () => {
                   {product.status === 'launched' && product.slug && (
                     <Collapsible className="mt-4">
                       <CollapsibleTrigger asChild>
-                        <Button variant="outline" size="sm" className="w-full justify-between border-dashed">
-                          <span className="text-sm flex items-center gap-2">
-                            <Link2 className="h-3.5 w-3.5" />
+                        <Button variant="outline" className="w-full justify-between">
+                          <span className="flex items-center gap-2">
+                            <Link2 className="h-4 w-4" />
                             Embed Badge on Your Website
                           </span>
                           <ChevronDown className="h-4 w-4" />
