@@ -116,28 +116,26 @@ export const Header = () => {
       
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="flex h-14 items-center justify-between">
-          {/* Left: Logo */}
-          <div className="flex items-center">
+          {/* Left: Logo + Navigation */}
+          <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center">
               <img src={logo} alt="Launch" className="h-10 w-auto object-contain" />
             </Link>
+            <nav className="hidden md:flex items-center gap-4">
+              <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Launches
+              </Link>
+              <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Products
+              </Link>
+              <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Newsletter
+              </a>
+              <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Forums
+              </a>
+            </nav>
           </div>
-
-          {/* Center: Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-4">
-            <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-              Launches
-            </Link>
-            <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-              Products
-            </Link>
-            <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-              Newsletter
-            </a>
-            <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-              Forums
-            </a>
-          </nav>
           
           {/* Right: Actions */}
           <div className="flex items-center gap-4 ml-2">
