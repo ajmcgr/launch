@@ -123,12 +123,12 @@ export const Footer = () => {
           <p>
             Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
             <a 
-              href="https://works.xyz/" 
+              href="https://x.com/alexmacgregor__" 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
             >
-              Works
+              Alex
             </a>.
           </p>
         </div>
