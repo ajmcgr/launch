@@ -648,15 +648,6 @@ const MyProducts = () => {
                             View Launch
                           </Link>
                         </Button>
-                        <Button 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleRelaunch(product);
-                          }}
-                        >
-                          Relaunch
-                        </Button>
                         {product.stripe_connect_account_id ? (
                           <Button
                             variant="outline"
@@ -685,6 +676,15 @@ const MyProducts = () => {
                             {stripeActionLoading === product.id ? 'Connecting...' : 'Verify Revenue'}
                           </Button>
                         )}
+                        <Button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleRelaunch(product);
+                          }}
+                        >
+                          Relaunch
+                        </Button>
                       </>
                     )}
                     {product.status === 'scheduled' && (
@@ -744,8 +744,11 @@ const MyProducts = () => {
                   {product.status === 'launched' && product.slug && (
                     <Collapsible className="mt-4">
                       <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="w-full justify-between">
-                          <span className="text-sm text-muted-foreground">Embed Badge</span>
+                        <Button variant="outline" size="sm" className="w-full justify-between border-dashed">
+                          <span className="text-sm flex items-center gap-2">
+                            <Link2 className="h-3.5 w-3.5" />
+                            Embed Badge on Your Website
+                          </span>
                           <ChevronDown className="h-4 w-4" />
                         </Button>
                       </CollapsibleTrigger>
