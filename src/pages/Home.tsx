@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion";
 import { Link } from 'react-router-dom';
 import { Loader2, Search } from 'lucide-react';
+import { CommunityCallout } from '@/components/CommunityCallout';
 
 interface Product {
   id: string;
@@ -494,6 +495,8 @@ const Home = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <CommunityCallout />
 
       <CategoryCloud />
 

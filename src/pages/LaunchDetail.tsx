@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { ArrowUp, ExternalLink, Calendar, Star } from 'lucide-react';
+import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
@@ -443,6 +443,20 @@ const LaunchDetail = () => {
                   <p className="text-sm text-center text-muted-foreground mt-2">
                     {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
                   </p>
+                </div>
+
+                {/* Discuss on Forums */}
+                <div>
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    asChild
+                  >
+                    <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
+                      <MessageSquare className="h-4 w-4" />
+                      Discuss on Forums
+                    </a>
+                  </Button>
                 </div>
 
                 {/* Visit Website & Share */}
