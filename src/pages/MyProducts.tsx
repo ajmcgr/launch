@@ -6,10 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2 } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
+import { formatMRRRange } from '@/lib/revenue';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const MyProducts = () => {
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
   const [showShareModal, setShowShareModal] = useState(false);
   const [recentProduct, setRecentProduct] = useState<{ name: string; slug: string; tagline?: string } | null>(null);
+  const [stripeActionLoading, setStripeActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -432,6 +434,42 @@ const MyProducts = () => {
 
   const filteredProducts = filterProductsByPeriod(products, timePeriod);
 
+  const handleStripeConnect = async (productId: string) => {
+    setStripeActionLoading(productId);
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-connect-oauth', {
+        body: { action: 'connect', productId }
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error: any) {
+      console.error('Connect error:', error);
+      toast.error(error.message || 'Failed to initiate Stripe Connect');
+      setStripeActionLoading(null);
+    }
+  };
+
+  const handleStripeRefresh = async (productId: string) => {
+    setStripeActionLoading(productId);
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-connect-oauth', {
+        body: { action: 'refresh', productId }
+      });
+
+      if (error) throw error;
+      toast.success('Revenue data refreshed!');
+      if (user) fetchProducts(user.id);
+    } catch (error: any) {
+      console.error('Refresh error:', error);
+      toast.error(error.message || 'Failed to refresh revenue');
+    } finally {
+      setStripeActionLoading(null);
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -618,6 +656,36 @@ const MyProducts = () => {
                         >
                           Relaunch
                         </Button>
+                        {product.stripe_connect_account_id ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleStripeRefresh(product.id);
+                            }}
+                            disabled={stripeActionLoading === product.id}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1 text-green-500" />
+                            {product.verified_mrr !== null ? formatMRRRange(product.verified_mrr) : 'Verified'}
+                            <RefreshCw className={`h-3 w-3 ml-1 ${stripeActionLoading === product.id ? 'animate-spin' : ''}`} />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleStripeConnect(product.id);
+                            }}
+                            disabled={stripeActionLoading === product.id}
+                          >
+                            <DollarSign className="h-4 w-4 mr-1" />
+                            {stripeActionLoading === product.id ? 'Connecting...' : 'Verify Revenue'}
+                          </Button>
+                        )}
                       </>
                     )}
                     {product.status === 'scheduled' && (
