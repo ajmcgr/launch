@@ -6,7 +6,7 @@ interface ProductSkeletonProps {
 }
 
 const ListItemSkeleton = () => (
-  <div className="flex items-start gap-3 py-3 px-2 border-b last:border-b-0">
+  <div className="flex items-start gap-3 py-3 px-2">
     {/* Icon */}
     <Skeleton className="h-10 w-10 rounded-lg flex-shrink-0" />
     
@@ -53,7 +53,7 @@ export const ProductSkeleton = ({ view, count = 5 }: ProductSkeletonProps) => {
 
   if (view === 'list') {
     return (
-      <div className="border rounded-lg">
+      <div className="divide-y">
         {skeletons.map((i) => (
           <ListItemSkeleton key={i} />
         ))}

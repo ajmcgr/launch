@@ -55,7 +55,7 @@ export const LaunchListItem = ({
   };
 
   return (
-    <div className="border-b last:border-b-0 hover:bg-muted/30 transition-colors">
+    <div className="hover:bg-muted/30 transition-colors">
       <Link to={`/launch/${slug}`} className="block">
         <div className="flex gap-3 py-3 px-2">
           <div className="flex-shrink-0">
