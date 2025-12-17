@@ -78,36 +78,46 @@ Deno.serve(async (req) => {
             <html>
               <head>
                 <style>
-                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }
-                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                  .header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-                  .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
-                  .button { display: inline-block; background: #22c55e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                  .tips { background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; }
-                  .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; }
+                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                  .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                  .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                  .logo { height: 32px; }
+                  .content { padding: 30px; }
+                  .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                  .content p { margin: 0 0 16px 0; color: #4b5563; }
+                  .button { display: inline-block; background: #111; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
+                  .tips { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e5e7eb; }
+                  .tips p { margin: 0 0 12px 0; }
+                  ul { color: #4b5563; padding-left: 20px; margin: 0; }
+                  li { margin-bottom: 8px; }
+                  .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
                 </style>
               </head>
               <body>
                 <div class="container">
-                  <div class="header">
-                    <h1>🎉 ${product.name} is LIVE!</h1>
-                  </div>
-                  <div class="content">
-                    <p>Congratulations! Your product <strong>${product.name}</strong> is now live on Launch!</p>
-                    <p style="text-align: center;">
-                      <a href="${productUrl}" class="button">View Your Launch</a>
-                    </p>
-                    <div class="tips">
-                      <p><strong>Tips to maximize your launch:</strong></p>
-                      <ul>
-                        <li>Share your launch link on social media</li>
-                        <li>Engage with comments and feedback</li>
-                        <li>Respond to early users quickly</li>
-                      </ul>
+                  <div class="card">
+                    <div class="header">
+                      <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
                     </div>
-                  </div>
-                  <div class="footer">
-                    <p>Good luck with your launch! 🚀</p>
+                    <div class="content">
+                      <h1>${product.name} is Live!</h1>
+                      <p>Congratulations! Your product is now live on Launch.</p>
+                      <p style="text-align: center; margin: 24px 0;">
+                        <a href="${productUrl}" class="button">View Your Launch</a>
+                      </p>
+                      <div class="tips">
+                        <p><strong>Tips to maximize your launch:</strong></p>
+                        <ul>
+                          <li>Share your launch link on social media</li>
+                          <li>Engage with comments and feedback</li>
+                          <li>Respond to early users quickly</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="footer">
+                      <p>Good luck with your launch!</p>
+                    </div>
                   </div>
                 </div>
               </body>
@@ -204,45 +214,55 @@ Deno.serve(async (req) => {
             <html>
               <head>
                 <style>
-                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }
-                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                  .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-                  .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
-                  .highlight { background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #f59e0b; }
-                  .date { font-size: 18px; font-weight: bold; color: #d97706; }
-                  .button { display: inline-block; background: #f59e0b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 5px; }
+                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                  .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                  .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                  .logo { height: 32px; }
+                  .content { padding: 30px; }
+                  .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                  .content p { margin: 0 0 16px 0; color: #4b5563; }
+                  .highlight { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #e5e7eb; }
+                  .date { font-size: 18px; font-weight: 600; color: #111; margin: 8px 0 0 0; }
+                  .button { display: inline-block; background: #111; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; margin: 0 5px; }
                   .button-secondary { background: #6b7280; }
-                  .checklist { background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; }
-                  .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; }
+                  .checklist { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e5e7eb; }
+                  .checklist p { margin: 0 0 12px 0; }
+                  ul { color: #4b5563; padding-left: 20px; margin: 0; }
+                  li { margin-bottom: 8px; }
+                  .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
                 </style>
               </head>
               <body>
                 <div class="container">
-                  <div class="header">
-                    <h1>⏰ Launching Tomorrow!</h1>
-                  </div>
-                  <div class="content">
-                    <p>Your product <strong>${product.name}</strong> launches in less than 24 hours!</p>
-                    <div class="highlight">
-                      <p>Launch Time (PST):</p>
-                      <p class="date">${launchDateFormatted}</p>
+                  <div class="card">
+                    <div class="header">
+                      <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
                     </div>
-                    <div class="checklist">
-                      <p><strong>Pre-launch checklist:</strong></p>
-                      <ul>
-                        <li>✅ Review your product description</li>
-                        <li>✅ Check your screenshots and media</li>
-                        <li>✅ Prepare social media announcements</li>
-                        <li>✅ Alert your team and supporters</li>
-                      </ul>
+                    <div class="content">
+                      <h1>Launching Tomorrow!</h1>
+                      <p>Your product <strong>${product.name}</strong> launches in less than 24 hours.</p>
+                      <div class="highlight">
+                        <p style="margin: 0; color: #6b7280; font-size: 14px;">Launch Time (PST)</p>
+                        <p class="date">${launchDateFormatted}</p>
+                      </div>
+                      <div class="checklist">
+                        <p><strong>Pre-launch checklist:</strong></p>
+                        <ul>
+                          <li>Review your product description</li>
+                          <li>Check your screenshots and media</li>
+                          <li>Prepare social media announcements</li>
+                          <li>Alert your team and supporters</li>
+                        </ul>
+                      </div>
+                      <p style="text-align: center; margin-top: 24px;">
+                        <a href="${productUrl}" class="button">Preview Launch</a>
+                        <a href="${editUrl}" class="button button-secondary">Edit Product</a>
+                      </p>
                     </div>
-                    <p style="text-align: center;">
-                      <a href="${productUrl}" class="button">Preview Launch</a>
-                      <a href="${editUrl}" class="button button-secondary">Edit Product</a>
-                    </p>
-                  </div>
-                  <div class="footer">
-                    <p>Get ready for an amazing launch! 🚀</p>
+                    <div class="footer">
+                      <p>Get ready for your launch!</p>
+                    </div>
                   </div>
                 </div>
               </body>
