@@ -6,30 +6,22 @@ interface ProductSkeletonProps {
 }
 
 const ListItemSkeleton = () => (
-  <div className="flex items-start gap-4 p-4 bg-card rounded-lg border border-border">
-    {/* Rank */}
-    <Skeleton className="h-6 w-6 rounded-full flex-shrink-0" />
-    
+  <div className="flex items-start gap-3 py-3 px-2 border-b last:border-b-0">
     {/* Icon */}
-    <Skeleton className="h-12 w-12 rounded-lg flex-shrink-0" />
+    <Skeleton className="h-10 w-10 rounded-lg flex-shrink-0" />
     
     {/* Content */}
-    <div className="flex-1 min-w-0 space-y-2">
+    <div className="flex-1 min-w-0 space-y-1.5">
+      <Skeleton className="h-4 w-32" />
+      <Skeleton className="h-3 w-48" />
       <div className="flex items-center gap-2">
-        <Skeleton className="h-5 w-32" />
-        <Skeleton className="h-4 w-4 rounded-full" />
-      </div>
-      <Skeleton className="h-4 w-48" />
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-5 w-16 rounded-full" />
-        <Skeleton className="h-5 w-16 rounded-full" />
+        <Skeleton className="h-4 w-14 rounded-full" />
+        <Skeleton className="h-4 w-14 rounded-full" />
       </div>
     </div>
     
     {/* Upvote button */}
-    <div className="flex flex-col items-center gap-1">
-      <Skeleton className="h-10 w-12 rounded-md" />
-    </div>
+    <Skeleton className="h-9 w-10 rounded-md" />
   </div>
 );
 
@@ -61,7 +53,7 @@ export const ProductSkeleton = ({ view, count = 5 }: ProductSkeletonProps) => {
 
   if (view === 'list') {
     return (
-      <div className="space-y-4">
+      <div className="border rounded-lg">
         {skeletons.map((i) => (
           <ListItemSkeleton key={i} />
         ))}
