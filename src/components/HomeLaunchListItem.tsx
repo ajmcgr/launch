@@ -39,7 +39,7 @@ export const HomeLaunchListItem = ({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <h3 className="font-semibold text-sm text-foreground">
+            <h3 className="font-semibold text-base text-foreground">
               {name}
             </h3>
             {domainUrl && (
@@ -50,11 +50,11 @@ export const HomeLaunchListItem = ({
                 onClick={(e) => e.stopPropagation()}
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                <ExternalLink className="h-3 w-3" />
+                <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
           </div>
-          <p className="text-xs text-muted-foreground line-clamp-1">{tagline}</p>
+          <p className="text-sm text-muted-foreground line-clamp-1">{tagline}</p>
         </div>
       </div>
       <div className="flex items-start self-start">
