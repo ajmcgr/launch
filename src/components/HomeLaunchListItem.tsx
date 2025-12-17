@@ -31,7 +31,7 @@ export const HomeLaunchListItem = ({
         className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
       >
       <div className="flex items-center gap-3 flex-1">
-        <span className="text-sm font-bold text-muted-foreground w-5">
+        <span className="text-sm font-bold text-muted-foreground w-5 pt-0.5">
           {rank}.
         </span>
         <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
