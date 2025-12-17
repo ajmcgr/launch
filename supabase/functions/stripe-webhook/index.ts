@@ -272,39 +272,48 @@ Deno.serve(async (req) => {
             <html>
               <head>
                 <style>
-                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }
-                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                  .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-                  .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
-                  .highlight { background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
-                  .date { font-size: 18px; font-weight: bold; color: #667eea; }
-                  .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                  .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; }
+                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                  .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                  .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                  .logo { height: 32px; }
+                  .content { padding: 30px; }
+                  .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                  .content p { margin: 0 0 16px 0; color: #4b5563; }
+                  .highlight { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #e5e7eb; }
+                  .date { font-size: 18px; font-weight: 600; color: #111; margin: 8px 0 0 0; }
+                  .button { display: inline-block; background: #111; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
+                  ul { color: #4b5563; padding-left: 20px; }
+                  li { margin-bottom: 8px; }
+                  .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
                 </style>
               </head>
               <body>
                 <div class="container">
-                  <div class="header">
-                    <h1>🚀 Launch Scheduled!</h1>
-                  </div>
-                  <div class="content">
-                    <p>Great news! Your product <strong>${productData.name}</strong> has been scheduled for launch.</p>
-                    <div class="highlight">
-                      <p>Launch Date (PST):</p>
-                      <p class="date">${launchDateFormatted}</p>
+                  <div class="card">
+                    <div class="header">
+                      <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
                     </div>
-                    <p>Here's what happens next:</p>
-                    <ul>
-                      <li>We'll send you a reminder 24 hours before launch</li>
-                      <li>On launch day, your product will go live automatically</li>
-                      <li>You'll receive an email confirmation when it's live</li>
-                    </ul>
-                    <p style="text-align: center;">
-                      <a href="${productUrl}" class="button">View Your Product</a>
-                    </p>
-                  </div>
-                  <div class="footer">
-                    <p>You're receiving this because you scheduled a launch on Launch.</p>
+                    <div class="content">
+                      <h1>Launch Scheduled</h1>
+                      <p>Your product <strong>${productData.name}</strong> has been scheduled for launch.</p>
+                      <div class="highlight">
+                        <p style="margin: 0; color: #6b7280; font-size: 14px;">Launch Date (PST)</p>
+                        <p class="date">${launchDateFormatted}</p>
+                      </div>
+                      <p><strong>What happens next:</strong></p>
+                      <ul>
+                        <li>We'll send you a reminder 24 hours before launch</li>
+                        <li>On launch day, your product will go live automatically</li>
+                        <li>You'll receive an email confirmation when it's live</li>
+                      </ul>
+                      <p style="text-align: center; margin-top: 24px;">
+                        <a href="${productUrl}" class="button">View Your Product</a>
+                      </p>
+                    </div>
+                    <div class="footer">
+                      <p>You scheduled a launch on Launch.</p>
+                    </div>
                   </div>
                 </div>
               </body>

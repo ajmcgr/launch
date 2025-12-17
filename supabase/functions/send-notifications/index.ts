@@ -72,26 +72,34 @@ Deno.serve(async (req) => {
           <html>
             <head>
               <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-                .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
-                .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; }
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                .logo { height: 32px; }
+                .content { padding: 30px; }
+                .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                .content p { margin: 0 0 20px 0; color: #4b5563; }
+                .button { display: inline-block; background: #111; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
+                .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
+                .footer a { color: #6b7280; }
               </style>
             </head>
             <body>
               <div class="container">
-                <div class="header">
-                  <h1>${title}</h1>
-                </div>
-                <div class="content">
-                  <p>${message}</p>
-                  ${relatedProductId ? `<a href="${productUrl}" class="button">View Product</a>` : ''}
-                </div>
-                <div class="footer">
-                  <p>You're receiving this because you're a member of Launch. <br/>
-                  Visit your <a href="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/settings">settings</a> to manage notifications.</p>
+                <div class="card">
+                  <div class="header">
+                    <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
+                  </div>
+                  <div class="content">
+                    <h1>${title}</h1>
+                    <p>${message}</p>
+                    ${relatedProductId ? `<p><a href="${productUrl}" class="button">View Product</a></p>` : ''}
+                  </div>
+                  <div class="footer">
+                    <p>You're receiving this because you're a member of Launch.<br/>
+                    <a href="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/settings">Manage notifications</a></p>
+                  </div>
                 </div>
               </div>
             </body>
