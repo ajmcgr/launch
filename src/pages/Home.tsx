@@ -472,7 +472,7 @@ const Home = () => {
                   className="pl-8 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
-              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
+              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={false} />
               {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
             </div>
           </div>

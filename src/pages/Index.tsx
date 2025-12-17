@@ -236,7 +236,7 @@ const Index = () => {
             </p>
           </div>
           <div className="flex items-center justify-end gap-3">
-            <SortToggle sort={sort} onSortChange={setSort} showRevenue={true} />
+            <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
             {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
           </div>
         </div>
