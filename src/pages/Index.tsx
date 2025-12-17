@@ -250,7 +250,7 @@ const Index = () => {
             <p className="text-muted-foreground">No launches today. Check back soon!</p>
           </div>
         ) : effectiveView === 'list' ? (
-          <div className="space-y-4 mb-8">
+          <div className="divide-y mb-8">
             {launches.slice(0, displayCount).map((launch) => (
               <HomeLaunchListItem
                 key={launch.id}

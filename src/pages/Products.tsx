@@ -308,7 +308,7 @@ const Products = () => {
             )}
 
             {effectiveView === 'list' ? (
-              <div className="space-y-4">
+              <div className="divide-y">
                 {products.map((product) => (
                   <LaunchListItem
                     key={product.id}
