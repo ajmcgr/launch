@@ -390,7 +390,7 @@ const Home = () => {
     return (
       <>
         {effectiveView === 'list' ? (
-          <div className="border rounded-lg divide-y">
+          <div className="divide-y">
             {productList.map((product, index) => (
               <LaunchListItem
                 key={product.id}
