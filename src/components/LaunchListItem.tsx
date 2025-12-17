@@ -80,14 +80,14 @@ export const LaunchListItem = ({
               )}
             </div>
           </div>
-          {rank && (
-            <div className="text-sm font-bold text-muted-foreground w-5 flex-shrink-0 -mr-1">
-              {rank}.
-            </div>
-          )}
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
+              {rank && (
+                <span className="text-sm font-bold text-muted-foreground">
+                  {rank}.
+                </span>
+              )}
               <h3 className="font-semibold text-base hover:text-primary transition-colors">
                 {name}
               </h3>
