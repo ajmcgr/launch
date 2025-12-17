@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, MessageSquare, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -56,11 +55,11 @@ export const LaunchListItem = ({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow min-h-[110px]">
+    <div className="border-b last:border-b-0 hover:bg-muted/30 transition-colors">
       <Link to={`/launch/${slug}`} className="block">
-        <div className="flex gap-3 p-3">
+        <div className="flex gap-3 py-3 px-2">
           <div className="flex-shrink-0">
-            <div className="w-12 h-12 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
               {iconUrl ? (
                 <img 
                   src={iconUrl} 
@@ -71,7 +70,7 @@ export const LaunchListItem = ({
                   }}
                 />
               ) : IconComponent ? (
-                <IconComponent className="w-8 h-8 text-primary" />
+                <IconComponent className="w-6 h-6 text-primary" />
               ) : (
                 <img 
                   src={defaultProductIcon} 
@@ -82,14 +81,14 @@ export const LaunchListItem = ({
             </div>
           </div>
           {rank && (
-            <div className="flex items-start justify-center text-base font-bold text-foreground w-6 flex-shrink-0 -mr-1 leading-[1.5]">
+            <div className="flex items-start justify-center text-sm font-bold text-muted-foreground w-5 flex-shrink-0 -mr-1 leading-[1.5]">
               {rank}.
             </div>
           )}
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <h3 className="font-semibold text-base hover:text-primary transition-colors">
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-semibold text-sm hover:text-primary transition-colors">
                 {name}
               </h3>
               {domainUrl && (
@@ -100,12 +99,12 @@ export const LaunchListItem = ({
                   onClick={(e) => e.stopPropagation()}
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  <ExternalLink className="h-3.5 w-3.5" />
+                  <ExternalLink className="h-3 w-3" />
                 </a>
               )}
             </div>
             
-            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+            <p className="text-xs text-muted-foreground mb-1.5 line-clamp-1">
               {tagline}
             </p>
             
@@ -144,9 +143,9 @@ export const LaunchListItem = ({
                         to={`/@${maker.username}`}
                         className="hover:z-10"
                       >
-                        <Avatar className="h-6 w-6 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                        <Avatar className="h-5 w-5 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
                           <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                          <AvatarFallback className="text-xs">{maker.username[0].toUpperCase()}</AvatarFallback>
+                          <AvatarFallback className="text-[10px]">{maker.username[0].toUpperCase()}</AvatarFallback>
                         </Avatar>
                       </Link>
                     </span>
@@ -172,14 +171,14 @@ export const LaunchListItem = ({
                 e.stopPropagation();
                 handleVote();
               }}
-              className={`group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105 ${userVote === 1 ? 'border-primary' : ''}`}
+              className={`group flex flex-col items-center gap-0 h-auto py-0.5 px-2 min-w-[40px] hover:border-primary hover:bg-primary transition-all ${userVote === 1 ? 'border-primary' : ''}`}
             >
-              <ArrowUp className={`h-4 w-4 group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} />
-              <span className="font-semibold text-sm group-hover:text-primary-foreground">{netVotes}</span>
+              <ArrowUp className={`h-3.5 w-3.5 group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} />
+              <span className="font-semibold text-xs group-hover:text-primary-foreground">{netVotes}</span>
             </Button>
           </div>
         </div>
       </Link>
-    </Card>
+    </div>
   );
 };

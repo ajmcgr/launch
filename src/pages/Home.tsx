@@ -390,7 +390,7 @@ const Home = () => {
     return (
       <>
         {effectiveView === 'list' ? (
-          <div className="space-y-4">
+          <div className="border rounded-lg divide-y">
             {productList.map((product, index) => (
               <LaunchListItem
                 key={product.id}
@@ -447,30 +447,24 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-4 md:py-6 max-w-4xl">
-        <div className="hidden md:block text-center mb-8">
-          <h1 className="text-4xl font-reckless font-bold text-foreground mb-2">
-            The best new AI products. Daily.
-          </h1>
-        </div>
-        
+      <div className="container mx-auto px-4 py-3 md:py-4 max-w-4xl">
         <Tabs defaultValue="year" onValueChange={(v) => handlePeriodChange(v as any)}>
-          <div className="flex flex-row items-center justify-between gap-2 md:gap-4 mb-6 md:mb-8">
-            <TabsList className="flex-shrink h-9 bg-transparent border rounded-md p-1 gap-1 overflow-hidden">
-              <TabsTrigger value="today" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Today</TabsTrigger>
-              <TabsTrigger value="week" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Week</TabsTrigger>
-              <TabsTrigger value="month" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Month</TabsTrigger>
-              <TabsTrigger value="year" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Year</TabsTrigger>
+          <div className="flex flex-row items-center justify-between gap-2 mb-4">
+            <TabsList className="flex-shrink h-8 bg-transparent border rounded-md p-0.5 gap-0.5 overflow-hidden">
+              <TabsTrigger value="today" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Today</TabsTrigger>
+              <TabsTrigger value="week" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Week</TabsTrigger>
+              <TabsTrigger value="month" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Month</TabsTrigger>
+              <TabsTrigger value="year" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Year</TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="hidden md:flex items-center relative w-36 h-9 border rounded-md bg-background">
-                <Search className="absolute left-2.5 text-muted-foreground h-3.5 w-3.5" />
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <div className="hidden md:flex items-center relative w-32 h-8 border rounded-md bg-background">
+                <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5" />
                 <Input
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleSearch}
-                  className="pl-8 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="pl-7 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={false} />
