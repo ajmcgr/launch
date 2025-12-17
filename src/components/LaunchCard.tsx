@@ -68,7 +68,7 @@ export const LaunchCard = ({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card className="group/card overflow-hidden hover:shadow-md transition-shadow">
       <Link to={`/launch/${slug}`} className="block">
         {rank && (
           <div className="absolute top-2 left-2 z-10 bg-background/90 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center">
@@ -117,7 +117,7 @@ export const LaunchCard = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
