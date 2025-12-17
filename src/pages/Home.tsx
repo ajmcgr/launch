@@ -457,7 +457,7 @@ const Home = () => {
               <TabsTrigger value="year" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-1.5 flex-shrink-0">
-              <div className="hidden md:flex items-center relative w-32 h-8 border rounded-md bg-background">
+              <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
                 <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5" />
                 <Input
                   placeholder="Search"
