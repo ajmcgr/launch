@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Link2, Unlink, RefreshCw, DollarSign, CheckCircle } from 'lucide-react';
+import { Link2, Unlink, RefreshCw, DollarSign, CheckCircle, ShieldCheck } from 'lucide-react';
 import { formatMRRRange } from '@/lib/revenue';
 
 interface Product {
@@ -146,9 +146,15 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
             <DollarSign className="h-5 w-5" />
             Verified Revenue
           </CardTitle>
-          <CardDescription>
-            Connect your Stripe account to display verified revenue on your product pages
-          </CardDescription>
+        <CardDescription>
+          Connect your Stripe account to display verified revenue on your product pages
+        </CardDescription>
+        <div className="flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+          <ShieldCheck className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600" />
+          <p>
+            <strong>Privacy note:</strong> We only read your subscription data to calculate MRR. We never create charges, access customer details, or modify your Stripe account.
+          </p>
+        </div>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
@@ -169,6 +175,12 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
         <CardDescription>
           Connect your Stripe account to display verified MRR on your product pages. This increases trust and helps buyers understand your product's traction.
         </CardDescription>
+        <div className="flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+          <ShieldCheck className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600" />
+          <p>
+            <strong>Privacy note:</strong> We only read your subscription data to calculate MRR. We never create charges, access customer details, or modify your Stripe account in any way.
+          </p>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {products.map((product) => (
