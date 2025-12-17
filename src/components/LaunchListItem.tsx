@@ -81,7 +81,7 @@ export const LaunchListItem = ({
             </div>
           </div>
           {rank && (
-            <div className="flex items-start justify-center text-sm font-bold text-muted-foreground w-5 flex-shrink-0 -mr-1 leading-[1.5]">
+            <div className="flex items-center justify-center text-sm font-bold text-muted-foreground w-5 flex-shrink-0 -mr-1 pt-0.5">
               {rank}.
             </div>
           )}
