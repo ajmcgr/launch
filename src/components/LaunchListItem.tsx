@@ -57,7 +57,7 @@ export const LaunchListItem = ({
   return (
     <div className="hover:bg-muted/30 transition-colors">
       <Link to={`/launch/${slug}`} className="block">
-        <div className="flex gap-3 py-3 px-2">
+        <div className="flex items-start gap-3 py-3 px-2">
           <div className="flex-shrink-0">
             <div className="w-10 h-10 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
               {iconUrl ? (
@@ -81,7 +81,7 @@ export const LaunchListItem = ({
             </div>
           </div>
           {rank && (
-            <div className="flex items-center justify-center text-sm font-bold text-muted-foreground w-5 flex-shrink-0 -mr-1 pt-0.5">
+            <div className="text-sm font-bold text-muted-foreground w-5 flex-shrink-0 -mr-1">
               {rank}.
             </div>
           )}
