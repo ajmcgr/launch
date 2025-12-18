@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
@@ -23,6 +23,7 @@ const MyProducts = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [recentProduct, setRecentProduct] = useState<{ name: string; slug: string; tagline?: string } | null>(null);
   const [stripeActionLoading, setStripeActionLoading] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -130,6 +131,31 @@ const MyProducts = () => {
       })) || [];
 
       setProducts(formattedProducts);
+
+      // Fetch analytics for launched products
+      const launchedProductIds = formattedProducts
+        .filter(p => p.status === 'launched')
+        .map(p => p.id);
+      
+      if (launchedProductIds.length > 0) {
+        const { data: analyticsData } = await supabase
+          .from('product_analytics')
+          .select('product_id, event_type')
+          .in('product_id', launchedProductIds);
+        
+        const analyticsMap: Record<string, { page_views: number; website_clicks: number }> = {};
+        analyticsData?.forEach(event => {
+          if (!analyticsMap[event.product_id]) {
+            analyticsMap[event.product_id] = { page_views: 0, website_clicks: 0 };
+          }
+          if (event.event_type === 'page_view') {
+            analyticsMap[event.product_id].page_views++;
+          } else if (event.event_type === 'website_click') {
+            analyticsMap[event.product_id].website_clicks++;
+          }
+        });
+        setAnalytics(analyticsMap);
+      }
     } catch (error: any) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products');
@@ -625,9 +651,21 @@ const MyProducts = () => {
                           </div>
                         )}
                         {product.status === 'launched' && (
-                          <div className="mt-2">
-                            <span className="font-semibold">{product.netVotes}</span>
-                            <span className="text-muted-foreground ml-1">votes</span>
+                          <div className="mt-3 flex items-center gap-4">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold">{product.netVotes}</span>
+                              <span className="text-muted-foreground">votes</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <Eye className="h-4 w-4" />
+                              <span className="font-semibold text-foreground">{analytics[product.id]?.page_views || 0}</span>
+                              <span>views</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <MousePointer className="h-4 w-4" />
+                              <span className="font-semibold text-foreground">{analytics[product.id]?.website_clicks || 0}</span>
+                              <span>clicks</span>
+                            </div>
                           </div>
                         )}
                       </div>

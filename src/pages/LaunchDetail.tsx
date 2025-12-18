@@ -46,6 +46,29 @@ const LaunchDetail = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Track page view
+  useEffect(() => {
+    const trackPageView = async (productId: string) => {
+      try {
+        await supabase.from('product_analytics').insert({
+          product_id: productId,
+          event_type: 'page_view',
+          visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+        });
+        // Store visitor ID for consistency
+        if (!localStorage.getItem('visitor_id')) {
+          localStorage.setItem('visitor_id', crypto.randomUUID());
+        }
+      } catch (error) {
+        console.error('Failed to track page view:', error);
+      }
+    };
+
+    if (product?.id) {
+      trackPageView(product.id);
+    }
+  }, [product?.id]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       if (!slug) return;
@@ -462,14 +485,24 @@ const LaunchDetail = () => {
                 {/* Visit Website & Share */}
                 <div className="flex gap-3">
                   {product.domain_url && (
-                    <Button size="lg" className="flex-1" asChild>
-                      <a 
-                        href={product.domain_url} 
-                        target="_blank" 
-                        rel="dofollow"
-                      >
-                        Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
+                    <Button 
+                      size="lg" 
+                      className="flex-1" 
+                      onClick={async () => {
+                        // Track website click
+                        try {
+                          await supabase.from('product_analytics').insert({
+                            product_id: product.id,
+                            event_type: 'website_click',
+                            visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+                          });
+                        } catch (error) {
+                          console.error('Failed to track click:', error);
+                        }
+                        window.open(product.domain_url, '_blank', 'noopener');
+                      }}
+                    >
+                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                     </Button>
                   )}
                   <Button
