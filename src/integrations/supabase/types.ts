@@ -230,6 +230,38 @@ export type Database = {
           },
         ]
       }
+      product_analytics: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          product_id: string
+          visitor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          product_id: string
+          visitor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          product_id?: string
+          visitor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_analytics_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_archives: {
         Row: {
           created_at: string | null
@@ -627,6 +659,22 @@ export type Database = {
       }
     }
     Views: {
+      product_analytics_summary: {
+        Row: {
+          product_id: string | null
+          total_page_views: number | null
+          total_website_clicks: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_analytics_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_vote_counts: {
         Row: {
           net_votes: number | null
