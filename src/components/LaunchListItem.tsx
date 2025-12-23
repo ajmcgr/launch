@@ -171,10 +171,10 @@ export const LaunchListItem = ({
                 e.stopPropagation();
                 handleVote();
               }}
-              className={`group flex flex-col items-center gap-0 h-auto py-0.5 px-2 min-w-[40px] hover:border-primary hover:bg-primary transition-all ${userVote === 1 ? 'border-primary' : ''}`}
+              className={`group flex flex-col items-center gap-0 h-auto py-0.5 px-2 min-w-[40px] transition-all touch-manipulation active:scale-95 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary ${userVote === 1 ? 'border-primary' : ''}`}
             >
-              <ArrowUp className={`h-3.5 w-3.5 group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} />
-              <span className="font-semibold text-xs group-hover:text-primary-foreground">{netVotes}</span>
+              <ArrowUp className={`h-3.5 w-3.5 [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} />
+              <span className="font-semibold text-xs [@media(hover:hover)]:group-hover:text-primary-foreground">{netVotes}</span>
             </Button>
           </div>
         </div>
