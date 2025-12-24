@@ -182,8 +182,10 @@ async function fetchMRR(stripe: Stripe, accountId: string): Promise<number> {
     );
 
     let totalMRR = 0;
+    console.log('Total active subscriptions found:', subscriptions.data.length);
 
     for (const sub of subscriptions.data) {
+      let subMRR = 0;
       for (const item of sub.items.data) {
         const price = item.price;
         const quantity = item.quantity || 1;
@@ -191,28 +193,29 @@ async function fetchMRR(stripe: Stripe, accountId: string): Promise<number> {
         if (price.recurring) {
           let monthlyAmount = price.unit_amount || 0;
           const intervalCount = price.recurring.interval_count || 1;
+          const interval = price.recurring.interval;
           
           // Convert to monthly based on interval and interval_count
-          if (price.recurring.interval === 'year') {
-            // Yearly: divide by (12 * interval_count) - e.g., every 2 years = divide by 24
+          if (interval === 'year') {
             monthlyAmount = Math.round(monthlyAmount / (12 * intervalCount));
-          } else if (price.recurring.interval === 'month') {
-            // Monthly: divide by interval_count - e.g., every 3 months (quarterly) = divide by 3
+          } else if (interval === 'month') {
             monthlyAmount = Math.round(monthlyAmount / intervalCount);
-          } else if (price.recurring.interval === 'week') {
-            // Weekly: multiply by 4.33 and divide by interval_count
+          } else if (interval === 'week') {
             monthlyAmount = Math.round((monthlyAmount * 4.33) / intervalCount);
-          } else if (price.recurring.interval === 'day') {
-            // Daily: multiply by 30 and divide by interval_count
+          } else if (interval === 'day') {
             monthlyAmount = Math.round((monthlyAmount * 30) / intervalCount);
           }
           
-          totalMRR += monthlyAmount * quantity;
+          const itemMRR = monthlyAmount * quantity;
+          subMRR += itemMRR;
+          
+          console.log(`Sub ${sub.id}: price=${price.unit_amount} cents, interval=${interval}, interval_count=${intervalCount}, qty=${quantity}, monthly=${monthlyAmount}, itemMRR=${itemMRR}`);
         }
       }
+      totalMRR += subMRR;
     }
 
-    console.log('Calculated MRR breakdown - total subscriptions:', subscriptions.data.length, 'totalMRR cents:', totalMRR);
+    console.log('Final calculated MRR cents:', totalMRR, '= $' + (totalMRR / 100).toFixed(2));
     return totalMRR;
   } catch (error) {
     console.error('Error fetching MRR:', error);
