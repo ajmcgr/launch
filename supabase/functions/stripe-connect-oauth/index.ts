@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
       
       // Redirect to settings page which will handle the callback
       const redirectUri = `${productionUrl}/settings?stripe_callback=true`;
-      const connectUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${Deno.env.get('STRIPE_CONNECT_CLIENT_ID')}&scope=read_only&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodedState}`;
+      const connectUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${Deno.env.get('STRIPE_CONNECT_CLIENT_ID')}&scope=read_write&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodedState}`;
 
       return new Response(
         JSON.stringify({ url: connectUrl }),
