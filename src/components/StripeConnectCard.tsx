@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,6 +40,7 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
   const [showProductModal, setShowProductModal] = useState(false);
   const [pendingProductId, setPendingProductId] = useState<string | null>(null);
   const [pendingStripeProducts, setPendingStripeProducts] = useState<StripeProduct[]>([]);
+  const [selectedStripeProducts, setSelectedStripeProducts] = useState<string[]>([]);
   const [selectedStripeProduct, setSelectedStripeProduct] = useState<string>('');
 
   useEffect(() => {
@@ -119,8 +121,9 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
       if (stripeProds.length > 0) {
         setPendingProductId(productId);
         setPendingStripeProducts(stripeProds);
-        // Auto-select the product with most subscriptions
-        setSelectedStripeProduct(stripeProds[0].id);
+        // Auto-select all products with subscriptions
+        const prodsWithSubs = stripeProds.filter(p => p.subscriptionCount > 0).map(p => p.id);
+        setSelectedStripeProducts(prodsWithSubs.length > 0 ? prodsWithSubs : [stripeProds[0].id]);
         setShowProductModal(true);
       }
     } catch (error: any) {
@@ -190,38 +193,29 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
     }
   };
 
-  const handleProductSelect = async (productId: string, stripeProductId: string) => {
-    setActionLoading(productId);
-    try {
-      const { data, error } = await supabase.functions.invoke('stripe-connect-oauth', {
-        body: { 
-          action: 'set-stripe-product', 
-          productId, 
-          stripeProductId: stripeProductId === 'all' ? null : stripeProductId 
-        }
-      });
+  // Removed handleProductSelect - now handled via modal only
 
-      if (error) throw error;
-      toast.success('Product updated and MRR refreshed!');
-      fetchProducts();
-    } catch (error: any) {
-      console.error('Set product error:', error);
-      toast.error(error.message || 'Failed to update product');
-    } finally {
-      setActionLoading(null);
-    }
+  const toggleStripeProduct = (productId: string) => {
+    setSelectedStripeProducts(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
   };
 
   const handleModalConfirm = async () => {
-    if (!pendingProductId || !selectedStripeProduct) return;
+    if (!pendingProductId || selectedStripeProducts.length === 0) return;
     
     setActionLoading(pendingProductId);
     try {
+      // Join selected products as comma-separated string
+      const stripeProductId = selectedStripeProducts.join(',');
+      
       const { data, error } = await supabase.functions.invoke('stripe-connect-oauth', {
         body: { 
           action: 'set-stripe-product', 
           productId: pendingProductId, 
-          stripeProductId: selectedStripeProduct === 'all' ? null : selectedStripeProduct 
+          stripeProductId
         }
       });
 
@@ -230,7 +224,7 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
       setShowProductModal(false);
       setPendingProductId(null);
       setPendingStripeProducts([]);
-      setSelectedStripeProduct('');
+      setSelectedStripeProducts([]);
       fetchProducts();
     } catch (error: any) {
       console.error('Set product error:', error);
@@ -289,22 +283,27 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <Select value={selectedStripeProduct} onValueChange={setSelectedStripeProduct}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a product" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All products (entire account)</SelectItem>
-                {pendingStripeProducts.map((sp) => (
-                  <SelectItem key={sp.id} value={sp.id}>
-                    {sp.name} ({sp.subscriptionCount} active subs)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <p className="text-sm text-muted-foreground">Select the Stripe products to include in MRR calculation:</p>
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {pendingStripeProducts.map((sp) => (
+                <label 
+                  key={sp.id} 
+                  className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <Checkbox 
+                    checked={selectedStripeProducts.includes(sp.id)}
+                    onCheckedChange={() => toggleStripeProduct(sp.id)}
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium">{sp.name}</p>
+                    <p className="text-sm text-muted-foreground">{sp.subscriptionCount} active subscriptions</p>
+                  </div>
+                </label>
+              ))}
+            </div>
             <Button 
               onClick={handleModalConfirm} 
-              disabled={!selectedStripeProduct || actionLoading === pendingProductId}
+              disabled={selectedStripeProducts.length === 0 || actionLoading === pendingProductId}
               className="w-full"
             >
               {actionLoading === pendingProductId ? (
@@ -313,7 +312,7 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
                   Verifying...
                 </>
               ) : (
-                'Confirm & Verify Revenue'
+                `Confirm & Verify Revenue (${selectedStripeProducts.length} selected)`
               )}
             </Button>
           </div>
@@ -399,34 +398,11 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
                 </div>
               </div>
 
-              {/* Stripe Product Selector - shown when connected */}
-              {product.stripe_connect_account_id && (
+              {/* Stripe Product Info - shown when connected */}
+              {product.stripe_connect_account_id && product.stripe_product_id && (
                 <div className="pt-3 border-t">
-                  <div className="flex items-center gap-3">
-                    <label className="text-sm text-muted-foreground whitespace-nowrap">Tracking:</label>
-                    {loadingStripeProducts === product.id ? (
-                      <span className="text-sm text-muted-foreground">Loading...</span>
-                    ) : stripeProducts[product.id]?.length > 0 ? (
-                      <Select
-                        value={product.stripe_product_id || 'all'}
-                        onValueChange={(value) => handleProductSelect(product.id, value)}
-                        disabled={actionLoading === product.id}
-                      >
-                        <SelectTrigger className="w-[280px]">
-                          <SelectValue placeholder="Select a product" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All products</SelectItem>
-                          {stripeProducts[product.id].map((sp) => (
-                            <SelectItem key={sp.id} value={sp.id}>
-                              {sp.name} ({sp.subscriptionCount} subs)
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">No products found</span>
-                    )}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>Tracking: {product.stripe_product_id.split(',').length} product(s)</span>
                   </div>
                 </div>
               )}

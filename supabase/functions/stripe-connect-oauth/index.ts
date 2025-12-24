@@ -275,7 +275,7 @@ Deno.serve(async (req) => {
   }
 });
 
-async function fetchMRR(stripe: Stripe, accountId: string, stripeProductId?: string | null): Promise<number> {
+async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: string | null): Promise<number> {
   try {
     // Fetch active subscriptions from the connected account
     const subscriptions = await stripe.subscriptions.list(
@@ -283,10 +283,13 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductId?: str
       { stripeAccount: accountId }
     );
 
+    // Parse comma-separated product IDs into array
+    const productIdFilter = stripeProductIds ? stripeProductIds.split(',').map(id => id.trim()) : null;
+
     let totalMRR = 0;
     let matchingSubsCount = 0;
     console.log('Total active subscriptions found:', subscriptions.data.length);
-    console.log('Filtering by Stripe Product ID:', stripeProductId || 'NONE (all products)');
+    console.log('Filtering by Stripe Product IDs:', productIdFilter ? productIdFilter.join(', ') : 'NONE (all products)');
 
     for (const sub of subscriptions.data) {
       let subMRR = 0;
@@ -295,12 +298,11 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductId?: str
       for (const item of sub.items.data) {
         const price = item.price;
         const quantity = item.quantity || 1;
+        const itemProductId = typeof price.product === 'string' ? price.product : price.product?.id;
         
-        // If stripeProductId is set, only count items matching that product
-        if (stripeProductId) {
-          const itemProductId = typeof price.product === 'string' ? price.product : price.product?.id;
-          if (itemProductId !== stripeProductId) {
-            console.log(`Skipping item - product ${itemProductId} doesn't match filter ${stripeProductId}`);
+        // If filter is set, only count items matching one of the product IDs
+        if (productIdFilter) {
+          if (!itemProductId || !productIdFilter.includes(itemProductId)) {
             continue;
           }
           hasMatchingProduct = true;
@@ -325,12 +327,12 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductId?: str
           const itemMRR = monthlyAmount * quantity;
           subMRR += itemMRR;
           
-          console.log(`Sub ${sub.id}: product=${typeof price.product === 'string' ? price.product : price.product?.id}, price=${price.unit_amount} cents, interval=${interval}, qty=${quantity}, itemMRR=${itemMRR}`);
+          console.log(`Sub ${sub.id}: product=${itemProductId}, price=${price.unit_amount} cents, interval=${interval}, qty=${quantity}, itemMRR=${itemMRR}`);
         }
       }
       
       // Only add to total if we're not filtering, or if this subscription has a matching product
-      if (!stripeProductId || hasMatchingProduct) {
+      if (!productIdFilter || hasMatchingProduct) {
         if (subMRR > 0) {
           matchingSubsCount++;
           totalMRR += subMRR;
