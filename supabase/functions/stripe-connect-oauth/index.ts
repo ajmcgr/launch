@@ -212,6 +212,59 @@ Deno.serve(async (req) => {
       );
     }
 
+    if (action === 'list-stripe-products') {
+      // List products from the connected Stripe account
+      const { data: product, error } = await supabaseAdmin
+        .from('products')
+        .select('stripe_connect_account_id, owner_id')
+        .eq('id', productId)
+        .single();
+
+      if (error || !product || product.owner_id !== userId) {
+        throw new Error('Product not found or unauthorized');
+      }
+
+      if (!product.stripe_connect_account_id) {
+        throw new Error('No Stripe account connected');
+      }
+
+      // Fetch products from the connected account
+      const stripeProducts = await stripe.products.list(
+        { active: true, limit: 100 },
+        { stripeAccount: product.stripe_connect_account_id }
+      );
+
+      // Get subscription counts per product for context
+      const subscriptions = await stripe.subscriptions.list(
+        { status: 'active', limit: 100 },
+        { stripeAccount: product.stripe_connect_account_id }
+      );
+
+      const productSubCounts: Record<string, number> = {};
+      for (const sub of subscriptions.data) {
+        for (const item of sub.items.data) {
+          const prodId = typeof item.price.product === 'string' ? item.price.product : item.price.product?.id;
+          if (prodId) {
+            productSubCounts[prodId] = (productSubCounts[prodId] || 0) + 1;
+          }
+        }
+      }
+
+      const productList: Array<{ id: string; name: string; subscriptionCount: number }> = stripeProducts.data.map((p: { id: string; name: string }) => ({
+        id: p.id,
+        name: p.name,
+        subscriptionCount: productSubCounts[p.id] || 0,
+      }));
+
+      // Sort by subscription count descending
+      productList.sort((a: { subscriptionCount: number }, b: { subscriptionCount: number }) => b.subscriptionCount - a.subscriptionCount);
+
+      return new Response(
+        JSON.stringify({ products: productList }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     throw new Error('Invalid action');
   } catch (error) {
     console.error('Stripe Connect error:', error);

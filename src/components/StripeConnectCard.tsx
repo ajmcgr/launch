@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Link2, Unlink, RefreshCw, DollarSign, CheckCircle, ShieldCheck, Settings2 } from 'lucide-react';
+import { Link2, Unlink, RefreshCw, DollarSign, CheckCircle, ShieldCheck } from 'lucide-react';
 import { formatMRRRange } from '@/lib/revenue';
 
 interface Product {
@@ -17,6 +17,12 @@ interface Product {
   mrr_verified_at: string | null;
 }
 
+interface StripeProduct {
+  id: string;
+  name: string;
+  subscriptionCount: number;
+}
+
 interface StripeConnectCardProps {
   userId: string;
 }
@@ -25,8 +31,8 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [editingProductId, setEditingProductId] = useState<string | null>(null);
-  const [stripeProductIdInput, setStripeProductIdInput] = useState('');
+  const [stripeProducts, setStripeProducts] = useState<Record<string, StripeProduct[]>>({});
+  const [loadingStripeProducts, setLoadingStripeProducts] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -41,7 +47,6 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
 
     if (isCallback && code && state) {
       handleOAuthCallback(code, state);
-      // Clean up URL
       window.history.replaceState({}, '', '/settings');
     }
   }, []);
@@ -56,8 +61,30 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
       console.error('Error fetching products:', error);
     } else {
       setProducts(data || []);
+      // Auto-fetch Stripe products for connected accounts
+      for (const product of data || []) {
+        if (product.stripe_connect_account_id && !stripeProducts[product.id]) {
+          fetchStripeProducts(product.id);
+        }
+      }
     }
     setLoading(false);
+  };
+
+  const fetchStripeProducts = async (productId: string) => {
+    setLoadingStripeProducts(productId);
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-connect-oauth', {
+        body: { action: 'list-stripe-products', productId }
+      });
+
+      if (error) throw error;
+      setStripeProducts(prev => ({ ...prev, [productId]: data.products || [] }));
+    } catch (error: any) {
+      console.error('Error fetching Stripe products:', error);
+    } finally {
+      setLoadingStripeProducts(null);
+    }
   };
 
   const handleOAuthCallback = async (code: string, state: string) => {
@@ -105,6 +132,11 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
 
       if (error) throw error;
       toast.success('Stripe account disconnected');
+      setStripeProducts(prev => {
+        const next = { ...prev };
+        delete next[productId];
+        return next;
+      });
       fetchProducts();
     } catch (error: any) {
       console.error('Disconnect error:', error);
@@ -132,29 +164,26 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
     }
   };
 
-  const handleSetStripeProductId = async (productId: string) => {
+  const handleProductSelect = async (productId: string, stripeProductId: string) => {
     setActionLoading(productId);
     try {
       const { data, error } = await supabase.functions.invoke('stripe-connect-oauth', {
-        body: { action: 'set-stripe-product', productId, stripeProductId: stripeProductIdInput.trim() || null }
+        body: { 
+          action: 'set-stripe-product', 
+          productId, 
+          stripeProductId: stripeProductId === 'all' ? null : stripeProductId 
+        }
       });
 
       if (error) throw error;
-      toast.success('Stripe Product ID updated and MRR refreshed!');
-      setEditingProductId(null);
-      setStripeProductIdInput('');
+      toast.success('Product updated and MRR refreshed!');
       fetchProducts();
     } catch (error: any) {
-      console.error('Set Stripe Product ID error:', error);
-      toast.error(error.message || 'Failed to update Stripe Product ID');
+      console.error('Set product error:', error);
+      toast.error(error.message || 'Failed to update product');
     } finally {
       setActionLoading(null);
     }
-  };
-
-  const startEditingProductId = (product: Product) => {
-    setEditingProductId(product.id);
-    setStripeProductIdInput(product.stripe_product_id || '');
   };
 
   if (loading) {
@@ -175,15 +204,15 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
             <DollarSign className="h-5 w-5" />
             Verified Revenue
           </CardTitle>
-        <CardDescription>
-          Connect your Stripe account to display verified revenue on your product pages
-        </CardDescription>
-        <div className="flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
-          <ShieldCheck className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600" />
-          <p>
-            <strong>Privacy note:</strong> We only read your subscription data to calculate MRR. We never create charges, access customer details, or modify your Stripe account.
-          </p>
-        </div>
+          <CardDescription>
+            Connect your Stripe account to display verified revenue on your product pages
+          </CardDescription>
+          <div className="flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+            <ShieldCheck className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600" />
+            <p>
+              <strong>Privacy note:</strong> We only read your subscription data to calculate MRR. We never create charges, access customer details, or modify your Stripe account.
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
@@ -202,21 +231,18 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
           Verified Revenue
         </CardTitle>
         <CardDescription>
-          Connect your Stripe account to display verified MRR on your product pages. This increases trust and helps buyers understand your product's traction.
+          Connect your Stripe account to display verified MRR on your product pages.
         </CardDescription>
         <div className="flex items-start gap-2 mt-3 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
           <ShieldCheck className="h-4 w-4 mt-0.5 flex-shrink-0 text-green-600" />
           <p>
-            <strong>Privacy note:</strong> We only read your subscription data to calculate MRR. We never create charges, access customer details, or modify your Stripe account in any way.
+            <strong>Privacy note:</strong> We only read your subscription data to calculate MRR. We never create charges, access customer details, or modify your Stripe account.
           </p>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="p-4 border rounded-lg space-y-3"
-          >
+          <div key={product.id} className="p-4 border rounded-lg space-y-3">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="font-medium">{product.name || 'Unnamed Product'}</p>
@@ -238,23 +264,12 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Not connected
-                  </p>
+                  <p className="text-sm text-muted-foreground">Not connected</p>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 {product.stripe_connect_account_id ? (
                   <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startEditingProductId(product)}
-                      disabled={actionLoading === product.id}
-                      title="Configure which Stripe product to track"
-                    >
-                      <Settings2 className="h-4 w-4" />
-                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -288,60 +303,36 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
               </div>
             </div>
 
-            {/* Stripe Product ID configuration */}
-            {product.stripe_connect_account_id && editingProductId === product.id && (
-              <div className="pt-3 border-t space-y-2">
-                <label className="text-sm font-medium">Stripe Product ID (optional)</label>
-                <p className="text-xs text-muted-foreground">
-                  Filter MRR to only count subscriptions for a specific Stripe product. Find your Product ID in{' '}
-                  <a 
-                    href="https://dashboard.stripe.com/products" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="underline hover:text-foreground"
-                  >
-                    Stripe Dashboard → Products
-                  </a>{' '}
-                  (starts with "prod_"). Leave empty to count all subscriptions.
-                </p>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="prod_xxxxxxxxxxxxx"
-                    value={stripeProductIdInput}
-                    onChange={(e) => setStripeProductIdInput(e.target.value)}
-                    className="font-mono text-sm"
-                  />
-                  <Button
-                    size="sm"
-                    onClick={() => handleSetStripeProductId(product.id)}
-                    disabled={actionLoading === product.id}
-                  >
-                    {actionLoading === product.id ? 'Saving...' : 'Save'}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingProductId(null);
-                      setStripeProductIdInput('');
-                    }}
-                  >
-                    Cancel
-                  </Button>
+            {/* Stripe Product Selector - shown when connected */}
+            {product.stripe_connect_account_id && (
+              <div className="pt-3 border-t">
+                <div className="flex items-center gap-3">
+                  <label className="text-sm text-muted-foreground whitespace-nowrap">Track MRR for:</label>
+                  {loadingStripeProducts === product.id ? (
+                    <span className="text-sm text-muted-foreground">Loading products...</span>
+                  ) : stripeProducts[product.id]?.length > 0 ? (
+                    <Select
+                      value={product.stripe_product_id || 'all'}
+                      onValueChange={(value) => handleProductSelect(product.id, value)}
+                      disabled={actionLoading === product.id}
+                    >
+                      <SelectTrigger className="w-[280px]">
+                        <SelectValue placeholder="Select a product" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All products (entire account)</SelectItem>
+                        {stripeProducts[product.id].map((sp) => (
+                          <SelectItem key={sp.id} value={sp.id}>
+                            {sp.name} ({sp.subscriptionCount} active subs)
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">No products found in Stripe</span>
+                  )}
                 </div>
-                {product.stripe_product_id && (
-                  <p className="text-xs text-muted-foreground">
-                    Currently filtering by: <code className="bg-muted px-1 rounded">{product.stripe_product_id}</code>
-                  </p>
-                )}
               </div>
-            )}
-
-            {/* Show current filter if set but not editing */}
-            {product.stripe_connect_account_id && product.stripe_product_id && editingProductId !== product.id && (
-              <p className="text-xs text-muted-foreground pt-2 border-t">
-                Filtering by Stripe Product: <code className="bg-muted px-1 rounded">{product.stripe_product_id}</code>
-              </p>
             )}
           </div>
         ))}
