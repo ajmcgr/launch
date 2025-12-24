@@ -54,7 +54,7 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
 
     if (isCallback && code && state) {
       handleOAuthCallback(code, state);
-      window.history.replaceState({}, '', '/settings');
+      window.history.replaceState({}, '', '/settings?tab=integrations');
     }
   }, []);
 
