@@ -277,116 +277,134 @@ Deno.serve(async (req) => {
 
 async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: string | null): Promise<number> {
   try {
-    // Fetch active subscriptions with expanded latest_invoice to check payment status
-    const subscriptions = await stripe.subscriptions.list(
-      { status: 'active', limit: 100, expand: ['data.items.data.price', 'data.latest_invoice'] },
+    // Use invoice-based MRR calculation to match Stripe's dashboard
+    // Fetch paid subscription invoices from the last 60 days
+    const now = Math.floor(Date.now() / 1000);
+    const sixtyDaysAgo = now - (60 * 24 * 60 * 60);
+    
+    console.log('Fetching invoices from last 60 days...');
+    console.log('Current timestamp:', now, '=', new Date(now * 1000).toISOString());
+    
+    // Fetch recent paid invoices
+    const invoices = await stripe.invoices.list(
+      { 
+        status: 'paid',
+        created: { gte: sixtyDaysAgo },
+        limit: 100,
+        expand: ['data.subscription', 'data.lines.data']
+      },
       { stripeAccount: accountId }
     );
 
+    console.log('Total paid invoices in last 60 days:', invoices.data.length);
+
     // Parse comma-separated product IDs into array
     const productIdFilter = stripeProductIds ? stripeProductIds.split(',').map(id => id.trim()) : null;
-    const now = Math.floor(Date.now() / 1000);
-
-    let totalMRR = 0;
-    let matchingSubsCount = 0;
-    let skippedCancelled = 0;
-    let skippedTrials = 0;
-    let skippedExpired = 0;
-    let skippedUnpaid = 0;
-    
-    console.log('Subscriptions with status=active:', subscriptions.data.length);
-    console.log('Current timestamp:', now, '=', new Date(now * 1000).toISOString());
     console.log('Filtering by Stripe Product IDs:', productIdFilter ? productIdFilter.join(', ') : 'NONE (all products)');
 
-    for (const sub of subscriptions.data) {
-      // Get latest invoice status
-      const latestInvoice = sub.latest_invoice;
-      const invoiceStatus = typeof latestInvoice === 'object' && latestInvoice ? latestInvoice.status : 'unknown';
+    // Track unique active subscriptions and their MRR
+    const subscriptionMRR: Map<string, { mrr: number; customerId: string; periodEnd: number }> = new Map();
+    
+    for (const invoice of invoices.data) {
+      // Only count subscription invoices
+      if (!invoice.subscription) {
+        console.log(`Skipping invoice ${invoice.id} - not a subscription invoice`);
+        continue;
+      }
+
+      const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+      const subscription = typeof invoice.subscription === 'object' ? invoice.subscription : null;
       
-      console.log(`Checking sub ${sub.id}: invoice_status=${invoiceStatus}, current_period_end=${new Date(sub.current_period_end * 1000).toISOString()}, cancel_at_period_end=${sub.cancel_at_period_end}`);
-      
-      // Skip subscriptions that are in trial period
-      if (sub.trial_end && sub.trial_end > now) {
-        console.log(`Skipping sub ${sub.id} - in trial`);
-        skippedTrials++;
-        continue;
+      // Skip if subscription is cancelled or set to cancel
+      if (subscription) {
+        if (subscription.cancel_at_period_end) {
+          console.log(`Skipping sub ${subId} - cancel_at_period_end=true`);
+          continue;
+        }
+        if (subscription.canceled_at) {
+          console.log(`Skipping sub ${subId} - canceled_at is set`);
+          continue;
+        }
+        if (subscription.status !== 'active' && subscription.status !== 'trialing') {
+          console.log(`Skipping sub ${subId} - status=${subscription.status}`);
+          continue;
+        }
+        // Skip trials that haven't started paying
+        if (subscription.status === 'trialing') {
+          console.log(`Skipping sub ${subId} - still in trial`);
+          continue;
+        }
       }
 
-      // Skip subscriptions that are set to cancel (churned but period not ended yet)
-      if (sub.cancel_at_period_end || sub.canceled_at) {
-        console.log(`Skipping sub ${sub.id} - cancelled`);
-        skippedCancelled++;
-        continue;
-      }
-
-      // Skip subscriptions whose current_period_end is in the past (expired/churned)
-      if (sub.current_period_end < now) {
-        console.log(`Skipping sub ${sub.id} - period ended`);
-        skippedExpired++;
-        continue;
-      }
-
-      // Skip subscriptions where the latest invoice is not paid
-      // Only count subscriptions with paid invoices (matching Stripe's MRR calculation)
-      if (typeof latestInvoice === 'object' && latestInvoice && latestInvoice.status !== 'paid') {
-        console.log(`Skipping sub ${sub.id} - invoice not paid (status: ${latestInvoice.status})`);
-        skippedUnpaid++;
-        continue;
-      }
-
-      let subMRR = 0;
+      // Calculate MRR from invoice lines
+      let invoiceMRR = 0;
       let hasMatchingProduct = false;
       
-      for (const item of sub.items.data) {
-        const price = item.price;
-        const quantity = item.quantity || 1;
-        const itemProductId = typeof price.product === 'string' ? price.product : price.product?.id;
+      for (const line of invoice.lines.data) {
+        // Only count subscription line items
+        if (line.type !== 'subscription') continue;
         
-        // If filter is set, only count items matching one of the product IDs
-        if (productIdFilter) {
-          if (!itemProductId || !productIdFilter.includes(itemProductId)) {
-            continue;
-          }
+        const productId = typeof line.price?.product === 'string' 
+          ? line.price.product 
+          : line.price?.product?.id;
+        
+        // Apply product filter if set
+        if (productIdFilter && productId) {
+          if (!productIdFilter.includes(productId)) continue;
           hasMatchingProduct = true;
         }
         
-        if (price.recurring) {
-          let monthlyAmount = price.unit_amount || 0;
-          const intervalCount = price.recurring.interval_count || 1;
-          const interval = price.recurring.interval;
+        if (line.price?.recurring) {
+          let monthlyAmount = line.amount || 0;
+          const interval = line.price.recurring.interval;
+          const intervalCount = line.price.recurring.interval_count || 1;
           
-          // Convert to monthly based on interval and interval_count
+          // Convert to monthly
           if (interval === 'year') {
             monthlyAmount = Math.round(monthlyAmount / (12 * intervalCount));
-          } else if (interval === 'month') {
-            monthlyAmount = Math.round(monthlyAmount / intervalCount);
           } else if (interval === 'week') {
             monthlyAmount = Math.round((monthlyAmount * 4.33) / intervalCount);
           } else if (interval === 'day') {
             monthlyAmount = Math.round((monthlyAmount * 30) / intervalCount);
+          } else if (interval === 'month') {
+            monthlyAmount = Math.round(monthlyAmount / intervalCount);
           }
           
-          const itemMRR = monthlyAmount * quantity;
-          subMRR += itemMRR;
-          
-          console.log(`Sub ${sub.id}: product=${itemProductId}, price=${price.unit_amount} cents, interval=${interval}, qty=${quantity}, itemMRR=${itemMRR}`);
+          invoiceMRR += monthlyAmount;
         }
       }
       
-      // Only add to total if we're not filtering, or if this subscription has a matching product
-      if (!productIdFilter || hasMatchingProduct) {
-        if (subMRR > 0) {
-          matchingSubsCount++;
-          totalMRR += subMRR;
+      // Only add if we're not filtering, or if this invoice has a matching product
+      if (!productIdFilter || hasMatchingProduct || !productIdFilter) {
+        if (invoiceMRR > 0) {
+          const periodEnd = subscription?.current_period_end || invoice.period_end || 0;
+          
+          // Only keep the most recent invoice for each subscription
+          // and only if the subscription period is still active
+          if (periodEnd > now) {
+            const existing = subscriptionMRR.get(subId);
+            if (!existing || periodEnd > existing.periodEnd) {
+              subscriptionMRR.set(subId, {
+                mrr: invoiceMRR,
+                customerId: invoice.customer as string,
+                periodEnd: periodEnd
+              });
+              console.log(`Sub ${subId}: customer=${invoice.customer}, MRR=${invoiceMRR} cents ($${(invoiceMRR/100).toFixed(2)}), period_end=${new Date(periodEnd * 1000).toISOString()}`);
+            }
+          } else {
+            console.log(`Skipping sub ${subId} - period_end in past: ${new Date(periodEnd * 1000).toISOString()}`);
+          }
         }
       }
     }
 
-    console.log('Skipped trials:', skippedTrials);
-    console.log('Skipped cancelled:', skippedCancelled);
-    console.log('Skipped expired (period_end in past):', skippedExpired);
-    console.log('Skipped unpaid invoices:', skippedUnpaid);
-    console.log('Paying subscriptions counted:', matchingSubsCount);
+    // Sum up MRR from all active subscriptions
+    let totalMRR = 0;
+    for (const [subId, data] of subscriptionMRR) {
+      totalMRR += data.mrr;
+    }
+
+    console.log('Active subscriptions with future period_end:', subscriptionMRR.size);
     console.log('Final calculated MRR cents:', totalMRR, '= $' + (totalMRR / 100).toFixed(2));
     return totalMRR;
   } catch (error) {
