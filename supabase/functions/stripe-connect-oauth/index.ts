@@ -285,13 +285,22 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
 
     // Parse comma-separated product IDs into array
     const productIdFilter = stripeProductIds ? stripeProductIds.split(',').map(id => id.trim()) : null;
+    const now = Math.floor(Date.now() / 1000);
 
     let totalMRR = 0;
     let matchingSubsCount = 0;
+    let skippedTrials = 0;
     console.log('Total active subscriptions found:', subscriptions.data.length);
     console.log('Filtering by Stripe Product IDs:', productIdFilter ? productIdFilter.join(', ') : 'NONE (all products)');
 
     for (const sub of subscriptions.data) {
+      // Skip subscriptions that are in trial period
+      if (sub.trial_end && sub.trial_end > now) {
+        console.log(`Skipping sub ${sub.id} - in trial until ${new Date(sub.trial_end * 1000).toISOString()}`);
+        skippedTrials++;
+        continue;
+      }
+
       let subMRR = 0;
       let hasMatchingProduct = false;
       
@@ -340,7 +349,8 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
       }
     }
 
-    console.log('Matching subscriptions:', matchingSubsCount);
+    console.log('Skipped trials:', skippedTrials);
+    console.log('Paying subscriptions:', matchingSubsCount);
     console.log('Final calculated MRR cents:', totalMRR, '= $' + (totalMRR / 100).toFixed(2));
     return totalMRR;
   } catch (error) {
