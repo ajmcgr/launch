@@ -334,20 +334,26 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
       let subMRR = 0;
       let hasMatchingProduct = false;
       let billingInterval = 'unknown';
+      let matchedProductId = 'none';
       
       for (const item of sub.items.data) {
         const price = item.price;
         const quantity = item.quantity || 1;
         const productId = typeof price.product === 'string' ? price.product : (price.product as any)?.id;
         
+        console.log(`  Item check: productId=${productId}, inFilter=${productIdFilter ? productIdFilter.includes(productId) : 'no filter'}`);
+        
         // Apply product filter
         if (productIdFilter && productId) {
           if (!productIdFilter.includes(productId)) {
+            console.log(`  -> Skipping item, product not in filter`);
             continue;
           }
           hasMatchingProduct = true;
+          matchedProductId = productId;
         } else if (!productIdFilter) {
           hasMatchingProduct = true;
+          matchedProductId = productId || 'unknown';
         }
         
         if (price.recurring) {
