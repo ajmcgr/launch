@@ -329,11 +329,12 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductId?: str
         }
       }
       
-      if (subMRR > 0) {
-        if (!stripeProductId || hasMatchingProduct) {
+      // Only add to total if we're not filtering, or if this subscription has a matching product
+      if (!stripeProductId || hasMatchingProduct) {
+        if (subMRR > 0) {
           matchingSubsCount++;
+          totalMRR += subMRR;
         }
-        totalMRR += subMRR;
       }
     }
 
