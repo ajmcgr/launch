@@ -277,9 +277,9 @@ Deno.serve(async (req) => {
 
 async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: string | null): Promise<number> {
   try {
-    // Fetch active subscriptions from the connected account
+    // Fetch active subscriptions from the connected account with expanded price data
     const subscriptions = await stripe.subscriptions.list(
-      { status: 'active', limit: 100 },
+      { status: 'active', limit: 100, expand: ['data.items.data.price'] },
       { stripeAccount: accountId }
     );
 
@@ -291,11 +291,15 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
     let matchingSubsCount = 0;
     let skippedCancelled = 0;
     let skippedTrials = 0;
+    let skippedExpired = 0;
     
     console.log('Subscriptions with status=active:', subscriptions.data.length);
+    console.log('Current timestamp:', now, '=', new Date(now * 1000).toISOString());
     console.log('Filtering by Stripe Product IDs:', productIdFilter ? productIdFilter.join(', ') : 'NONE (all products)');
 
     for (const sub of subscriptions.data) {
+      console.log(`Checking sub ${sub.id}: current_period_end=${sub.current_period_end} (${new Date(sub.current_period_end * 1000).toISOString()}), cancel_at_period_end=${sub.cancel_at_period_end}, canceled_at=${sub.canceled_at}, status=${sub.status}`);
+      
       // Skip subscriptions that are in trial period
       if (sub.trial_end && sub.trial_end > now) {
         console.log(`Skipping sub ${sub.id} - in trial until ${new Date(sub.trial_end * 1000).toISOString()}`);
@@ -305,8 +309,15 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
 
       // Skip subscriptions that are set to cancel (churned but period not ended yet)
       if (sub.cancel_at_period_end || sub.canceled_at) {
-        console.log(`Skipping sub ${sub.id} - cancelled (cancel_at_period_end=${sub.cancel_at_period_end}, canceled_at=${sub.canceled_at})`);
+        console.log(`Skipping sub ${sub.id} - cancelled`);
         skippedCancelled++;
+        continue;
+      }
+
+      // Skip subscriptions whose current_period_end is in the past (expired/churned)
+      if (sub.current_period_end < now) {
+        console.log(`Skipping sub ${sub.id} - period ended ${new Date(sub.current_period_end * 1000).toISOString()}`);
+        skippedExpired++;
         continue;
       }
 
@@ -360,6 +371,7 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
 
     console.log('Skipped trials:', skippedTrials);
     console.log('Skipped cancelled:', skippedCancelled);
+    console.log('Skipped expired (period_end in past):', skippedExpired);
     console.log('Paying subscriptions counted:', matchingSubsCount);
     console.log('Final calculated MRR cents:', totalMRR, '= $' + (totalMRR / 100).toFixed(2));
     return totalMRR;
