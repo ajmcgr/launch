@@ -277,9 +277,15 @@ Deno.serve(async (req) => {
 
 async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: string | null): Promise<number> {
   try {
-    // Fetch active subscriptions from the connected account
+    // Fetch active subscriptions from the connected account (excludes trialing by default)
     const subscriptions = await stripe.subscriptions.list(
-      { status: 'active', limit: 100 },
+      { status: 'active', limit: 100, expand: ['data.items.data.price'] },
+      { stripeAccount: accountId }
+    );
+
+    // Also fetch trialing subscriptions to log them
+    const trialingSubscriptions = await stripe.subscriptions.list(
+      { status: 'trialing', limit: 100 },
       { stripeAccount: accountId }
     );
 
@@ -290,11 +296,13 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
     let totalMRR = 0;
     let matchingSubsCount = 0;
     let skippedTrials = 0;
-    console.log('Total active subscriptions found:', subscriptions.data.length);
+    
+    console.log('Subscriptions with status=active:', subscriptions.data.length);
+    console.log('Subscriptions with status=trialing:', trialingSubscriptions.data.length);
     console.log('Filtering by Stripe Product IDs:', productIdFilter ? productIdFilter.join(', ') : 'NONE (all products)');
 
     for (const sub of subscriptions.data) {
-      // Skip subscriptions that are in trial period
+      // Skip subscriptions that are in trial period (have trial_end in the future)
       if (sub.trial_end && sub.trial_end > now) {
         console.log(`Skipping sub ${sub.id} - in trial until ${new Date(sub.trial_end * 1000).toISOString()}`);
         skippedTrials++;
@@ -349,8 +357,8 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
       }
     }
 
-    console.log('Skipped trials:', skippedTrials);
-    console.log('Paying subscriptions:', matchingSubsCount);
+    console.log('Skipped trials (trial_end in future):', skippedTrials);
+    console.log('Paying subscriptions counted:', matchingSubsCount);
     console.log('Final calculated MRR cents:', totalMRR, '= $' + (totalMRR / 100).toFixed(2));
     return totalMRR;
   } catch (error) {
