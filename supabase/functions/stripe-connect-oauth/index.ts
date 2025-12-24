@@ -277,15 +277,9 @@ Deno.serve(async (req) => {
 
 async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: string | null): Promise<number> {
   try {
-    // Fetch active subscriptions from the connected account (excludes trialing by default)
+    // Fetch active subscriptions from the connected account
     const subscriptions = await stripe.subscriptions.list(
-      { status: 'active', limit: 100, expand: ['data.items.data.price'] },
-      { stripeAccount: accountId }
-    );
-
-    // Also fetch trialing subscriptions to log them
-    const trialingSubscriptions = await stripe.subscriptions.list(
-      { status: 'trialing', limit: 100 },
+      { status: 'active', limit: 100 },
       { stripeAccount: accountId }
     );
 
@@ -295,17 +289,24 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
 
     let totalMRR = 0;
     let matchingSubsCount = 0;
+    let skippedCancelled = 0;
     let skippedTrials = 0;
     
     console.log('Subscriptions with status=active:', subscriptions.data.length);
-    console.log('Subscriptions with status=trialing:', trialingSubscriptions.data.length);
     console.log('Filtering by Stripe Product IDs:', productIdFilter ? productIdFilter.join(', ') : 'NONE (all products)');
 
     for (const sub of subscriptions.data) {
-      // Skip subscriptions that are in trial period (have trial_end in the future)
+      // Skip subscriptions that are in trial period
       if (sub.trial_end && sub.trial_end > now) {
         console.log(`Skipping sub ${sub.id} - in trial until ${new Date(sub.trial_end * 1000).toISOString()}`);
         skippedTrials++;
+        continue;
+      }
+
+      // Skip subscriptions that are set to cancel (churned but period not ended yet)
+      if (sub.cancel_at_period_end || sub.canceled_at) {
+        console.log(`Skipping sub ${sub.id} - cancelled (cancel_at_period_end=${sub.cancel_at_period_end}, canceled_at=${sub.canceled_at})`);
+        skippedCancelled++;
         continue;
       }
 
@@ -357,7 +358,8 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
       }
     }
 
-    console.log('Skipped trials (trial_end in future):', skippedTrials);
+    console.log('Skipped trials:', skippedTrials);
+    console.log('Skipped cancelled:', skippedCancelled);
     console.log('Paying subscriptions counted:', matchingSubsCount);
     console.log('Final calculated MRR cents:', totalMRR, '= $' + (totalMRR / 100).toFixed(2));
     return totalMRR;
