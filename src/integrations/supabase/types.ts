@@ -455,6 +455,7 @@ export type Database = {
           slug: string | null
           status: string | null
           stripe_connect_account_id: string | null
+          stripe_product_id: string | null
           tagline: string | null
           verified_mrr: number | null
           won_daily: boolean | null
@@ -478,6 +479,7 @@ export type Database = {
           slug?: string | null
           status?: string | null
           stripe_connect_account_id?: string | null
+          stripe_product_id?: string | null
           tagline?: string | null
           verified_mrr?: number | null
           won_daily?: boolean | null
@@ -501,6 +503,7 @@ export type Database = {
           slug?: string | null
           status?: string | null
           stripe_connect_account_id?: string | null
+          stripe_product_id?: string | null
           tagline?: string | null
           verified_mrr?: number | null
           won_daily?: boolean | null

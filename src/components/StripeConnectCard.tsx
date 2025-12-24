@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Link2, Unlink, RefreshCw, DollarSign, CheckCircle, ShieldCheck } from 'lucide-react';
+import { Link2, Unlink, RefreshCw, DollarSign, CheckCircle, ShieldCheck, Settings2 } from 'lucide-react';
 import { formatMRRRange } from '@/lib/revenue';
 
 interface Product {
   id: string;
   name: string | null;
   stripe_connect_account_id: string | null;
+  stripe_product_id: string | null;
   verified_mrr: number | null;
   mrr_verified_at: string | null;
 }
@@ -23,6 +25,8 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [stripeProductIdInput, setStripeProductIdInput] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -45,7 +49,7 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('products')
-      .select('id, name, stripe_connect_account_id, verified_mrr, mrr_verified_at')
+      .select('id, name, stripe_connect_account_id, stripe_product_id, verified_mrr, mrr_verified_at')
       .eq('owner_id', userId);
 
     if (error) {
@@ -128,6 +132,31 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
     }
   };
 
+  const handleSetStripeProductId = async (productId: string) => {
+    setActionLoading(productId);
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-connect-oauth', {
+        body: { action: 'set-stripe-product', productId, stripeProductId: stripeProductIdInput.trim() || null }
+      });
+
+      if (error) throw error;
+      toast.success('Stripe Product ID updated and MRR refreshed!');
+      setEditingProductId(null);
+      setStripeProductIdInput('');
+      fetchProducts();
+    } catch (error: any) {
+      console.error('Set Stripe Product ID error:', error);
+      toast.error(error.message || 'Failed to update Stripe Product ID');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const startEditingProductId = (product: Product) => {
+    setEditingProductId(product.id);
+    setStripeProductIdInput(product.stripe_product_id || '');
+  };
+
   if (loading) {
     return (
       <Card>
@@ -186,67 +215,134 @@ export const StripeConnectCard = ({ userId }: StripeConnectCardProps) => {
         {products.map((product) => (
           <div
             key={product.id}
-            className="flex items-center justify-between p-4 border rounded-lg"
+            className="p-4 border rounded-lg space-y-3"
           >
-            <div className="space-y-1">
-              <p className="font-medium">{product.name || 'Unnamed Product'}</p>
-              {product.stripe_connect_account_id ? (
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    <CheckCircle className="h-3 w-3 text-green-500" />
-                    Connected
-                  </Badge>
-                  {product.verified_mrr !== null && (
-                    <Badge variant="outline">
-                      MRR: {formatMRRRange(product.verified_mrr)}
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="font-medium">{product.name || 'Unnamed Product'}</p>
+                {product.stripe_connect_account_id ? (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3 text-green-500" />
+                      Connected
                     </Badge>
-                  )}
-                  {product.mrr_verified_at && (
-                    <span className="text-xs text-muted-foreground">
-                      Updated {new Date(product.mrr_verified_at).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Not connected
+                    {product.verified_mrr !== null && (
+                      <Badge variant="outline">
+                        MRR: {formatMRRRange(product.verified_mrr)}
+                      </Badge>
+                    )}
+                    {product.mrr_verified_at && (
+                      <span className="text-xs text-muted-foreground">
+                        Updated {new Date(product.mrr_verified_at).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Not connected
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {product.stripe_connect_account_id ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => startEditingProductId(product)}
+                      disabled={actionLoading === product.id}
+                      title="Configure which Stripe product to track"
+                    >
+                      <Settings2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRefresh(product.id)}
+                      disabled={actionLoading === product.id}
+                    >
+                      <RefreshCw className={`h-4 w-4 mr-1 ${actionLoading === product.id ? 'animate-spin' : ''}`} />
+                      Refresh
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDisconnect(product.id)}
+                      disabled={actionLoading === product.id}
+                    >
+                      <Unlink className="h-4 w-4 mr-1" />
+                      Disconnect
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleConnect(product.id)}
+                    disabled={actionLoading === product.id}
+                  >
+                    <Link2 className="h-4 w-4 mr-1" />
+                    {actionLoading === product.id ? 'Connecting...' : 'Connect Stripe'}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Stripe Product ID configuration */}
+            {product.stripe_connect_account_id && editingProductId === product.id && (
+              <div className="pt-3 border-t space-y-2">
+                <label className="text-sm font-medium">Stripe Product ID (optional)</label>
+                <p className="text-xs text-muted-foreground">
+                  Filter MRR to only count subscriptions for a specific Stripe product. Find your Product ID in{' '}
+                  <a 
+                    href="https://dashboard.stripe.com/products" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline hover:text-foreground"
+                  >
+                    Stripe Dashboard → Products
+                  </a>{' '}
+                  (starts with "prod_"). Leave empty to count all subscriptions.
                 </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {product.stripe_connect_account_id ? (
-                <>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="prod_xxxxxxxxxxxxx"
+                    value={stripeProductIdInput}
+                    onChange={(e) => setStripeProductIdInput(e.target.value)}
+                    className="font-mono text-sm"
+                  />
                   <Button
-                    variant="outline"
                     size="sm"
-                    onClick={() => handleRefresh(product.id)}
+                    onClick={() => handleSetStripeProductId(product.id)}
                     disabled={actionLoading === product.id}
                   >
-                    <RefreshCw className={`h-4 w-4 mr-1 ${actionLoading === product.id ? 'animate-spin' : ''}`} />
-                    Refresh
+                    {actionLoading === product.id ? 'Saving...' : 'Save'}
                   </Button>
                   <Button
-                    variant="outline"
                     size="sm"
-                    onClick={() => handleDisconnect(product.id)}
-                    disabled={actionLoading === product.id}
+                    variant="outline"
+                    onClick={() => {
+                      setEditingProductId(null);
+                      setStripeProductIdInput('');
+                    }}
                   >
-                    <Unlink className="h-4 w-4 mr-1" />
-                    Disconnect
+                    Cancel
                   </Button>
-                </>
-              ) : (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => handleConnect(product.id)}
-                  disabled={actionLoading === product.id}
-                >
-                  <Link2 className="h-4 w-4 mr-1" />
-                  {actionLoading === product.id ? 'Connecting...' : 'Connect Stripe'}
-                </Button>
-              )}
-            </div>
+                </div>
+                {product.stripe_product_id && (
+                  <p className="text-xs text-muted-foreground">
+                    Currently filtering by: <code className="bg-muted px-1 rounded">{product.stripe_product_id}</code>
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Show current filter if set but not editing */}
+            {product.stripe_connect_account_id && product.stripe_product_id && editingProductId !== product.id && (
+              <p className="text-xs text-muted-foreground pt-2 border-t">
+                Filtering by Stripe Product: <code className="bg-muted px-1 rounded">{product.stripe_product_id}</code>
+              </p>
+            )}
           </div>
         ))}
       </CardContent>

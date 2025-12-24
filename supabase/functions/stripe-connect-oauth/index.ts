@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    const { action, productId, code, state } = await req.json();
+    const { action, productId, code, state, stripeProductId } = await req.json();
     const productionUrl = (Deno.env.get('PRODUCTION_URL') || '').replace(/\/$/, '');
 
     // Get user from auth header
@@ -83,8 +83,15 @@ Deno.serve(async (req) => {
       const connectedAccountId = response.stripe_user_id;
       console.log('Connected Stripe account:', connectedAccountId);
 
-      // Fetch MRR from the connected account
-      const mrr = await fetchMRR(stripe, connectedAccountId);
+      // Get existing stripe_product_id if set
+      const { data: existingProduct } = await supabaseAdmin
+        .from('products')
+        .select('stripe_product_id')
+        .eq('id', pId)
+        .single();
+
+      // Fetch MRR from the connected account, filtered by product if set
+      const mrr = await fetchMRR(stripe, connectedAccountId, existingProduct?.stripe_product_id);
       console.log('Fetched MRR:', mrr);
 
       // Update product with Stripe Connect info
@@ -133,7 +140,7 @@ Deno.serve(async (req) => {
       // Refresh MRR for a product
       const { data: product, error } = await supabaseAdmin
         .from('products')
-        .select('stripe_connect_account_id, owner_id')
+        .select('stripe_connect_account_id, stripe_product_id, owner_id')
         .eq('id', productId)
         .single();
 
@@ -145,7 +152,7 @@ Deno.serve(async (req) => {
         throw new Error('No Stripe account connected');
       }
 
-      const mrr = await fetchMRR(stripe, product.stripe_connect_account_id);
+      const mrr = await fetchMRR(stripe, product.stripe_connect_account_id, product.stripe_product_id);
 
       const { error: updateError } = await supabaseAdmin
         .from('products')
@@ -163,6 +170,48 @@ Deno.serve(async (req) => {
       );
     }
 
+    if (action === 'set-stripe-product') {
+      // Set the Stripe Product ID for filtering
+      const { data: product, error } = await supabaseAdmin
+        .from('products')
+        .select('owner_id, stripe_connect_account_id')
+        .eq('id', productId)
+        .single();
+
+      if (error || !product || product.owner_id !== userId) {
+        throw new Error('Product not found or unauthorized');
+      }
+
+      const { error: updateError } = await supabaseAdmin
+        .from('products')
+        .update({ stripe_product_id: stripeProductId || null })
+        .eq('id', productId);
+
+      if (updateError) throw new Error('Failed to update Stripe Product ID');
+
+      // If connected, also refresh the MRR with the new filter
+      if (product.stripe_connect_account_id) {
+        const mrr = await fetchMRR(stripe, product.stripe_connect_account_id, stripeProductId);
+        await supabaseAdmin
+          .from('products')
+          .update({
+            verified_mrr: mrr,
+            mrr_verified_at: new Date().toISOString(),
+          })
+          .eq('id', productId);
+
+        return new Response(
+          JSON.stringify({ success: true, mrr }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     throw new Error('Invalid action');
   } catch (error) {
     console.error('Stripe Connect error:', error);
@@ -173,7 +222,7 @@ Deno.serve(async (req) => {
   }
 });
 
-async function fetchMRR(stripe: Stripe, accountId: string): Promise<number> {
+async function fetchMRR(stripe: Stripe, accountId: string, stripeProductId?: string | null): Promise<number> {
   try {
     // Fetch active subscriptions from the connected account
     const subscriptions = await stripe.subscriptions.list(
@@ -182,13 +231,27 @@ async function fetchMRR(stripe: Stripe, accountId: string): Promise<number> {
     );
 
     let totalMRR = 0;
+    let matchingSubsCount = 0;
     console.log('Total active subscriptions found:', subscriptions.data.length);
+    console.log('Filtering by Stripe Product ID:', stripeProductId || 'NONE (all products)');
 
     for (const sub of subscriptions.data) {
       let subMRR = 0;
+      let hasMatchingProduct = false;
+      
       for (const item of sub.items.data) {
         const price = item.price;
         const quantity = item.quantity || 1;
+        
+        // If stripeProductId is set, only count items matching that product
+        if (stripeProductId) {
+          const itemProductId = typeof price.product === 'string' ? price.product : price.product?.id;
+          if (itemProductId !== stripeProductId) {
+            console.log(`Skipping item - product ${itemProductId} doesn't match filter ${stripeProductId}`);
+            continue;
+          }
+          hasMatchingProduct = true;
+        }
         
         if (price.recurring) {
           let monthlyAmount = price.unit_amount || 0;
@@ -209,12 +272,19 @@ async function fetchMRR(stripe: Stripe, accountId: string): Promise<number> {
           const itemMRR = monthlyAmount * quantity;
           subMRR += itemMRR;
           
-          console.log(`Sub ${sub.id}: price=${price.unit_amount} cents, interval=${interval}, interval_count=${intervalCount}, qty=${quantity}, monthly=${monthlyAmount}, itemMRR=${itemMRR}`);
+          console.log(`Sub ${sub.id}: product=${typeof price.product === 'string' ? price.product : price.product?.id}, price=${price.unit_amount} cents, interval=${interval}, qty=${quantity}, itemMRR=${itemMRR}`);
         }
       }
-      totalMRR += subMRR;
+      
+      if (subMRR > 0) {
+        if (!stripeProductId || hasMatchingProduct) {
+          matchingSubsCount++;
+        }
+        totalMRR += subMRR;
+      }
     }
 
+    console.log('Matching subscriptions:', matchingSubsCount);
     console.log('Final calculated MRR cents:', totalMRR, '= $' + (totalMRR / 100).toFixed(2));
     return totalMRR;
   } catch (error) {
