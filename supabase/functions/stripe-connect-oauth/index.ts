@@ -377,19 +377,14 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
         }
       }
       
-      // CRITICAL: Stripe's MRR only counts subscriptions that will renew within the next billing cycle
-      // For yearly subscriptions that were paid upfront, they don't count toward current MRR
-      // unless they're about to renew
-      const willRenewSoon = sub.current_period_end <= thirtyDaysFromNow;
-      
       if (hasMatchingProduct && subMRR > 0) {
-        // Only count monthly subscriptions OR yearly subscriptions renewing within 30 days
-        if (billingInterval === 'month' || willRenewSoon) {
+        // Only count monthly subscriptions - exclude yearly/weekly/daily
+        if (billingInterval === 'month') {
           totalMRR += subMRR;
           countedSubs++;
-          console.log(`COUNT ${sub.id}: ${customerEmail}, interval=${billingInterval}, MRR=$${(subMRR/100).toFixed(2)}, renews=${new Date(sub.current_period_end * 1000).toISOString()}`);
+          console.log(`COUNT ${sub.id}: ${customerEmail}, interval=${billingInterval}, MRR=$${(subMRR/100).toFixed(2)}`);
         } else {
-          console.log(`SKIP ${sub.id} (${customerEmail}) - yearly sub not renewing soon (renews ${new Date(sub.current_period_end * 1000).toISOString()})`);
+          console.log(`SKIP ${sub.id} (${customerEmail}) - non-monthly subscription (interval=${billingInterval})`);
         }
       }
     }
