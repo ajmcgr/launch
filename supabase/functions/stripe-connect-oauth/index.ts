@@ -190,22 +190,29 @@ async function fetchMRR(stripe: Stripe, accountId: string): Promise<number> {
         
         if (price.recurring) {
           let monthlyAmount = price.unit_amount || 0;
+          const intervalCount = price.recurring.interval_count || 1;
           
-          // Convert to monthly
+          // Convert to monthly based on interval and interval_count
           if (price.recurring.interval === 'year') {
-            monthlyAmount = Math.round(monthlyAmount / 12);
+            // Yearly: divide by (12 * interval_count) - e.g., every 2 years = divide by 24
+            monthlyAmount = Math.round(monthlyAmount / (12 * intervalCount));
+          } else if (price.recurring.interval === 'month') {
+            // Monthly: divide by interval_count - e.g., every 3 months (quarterly) = divide by 3
+            monthlyAmount = Math.round(monthlyAmount / intervalCount);
           } else if (price.recurring.interval === 'week') {
-            monthlyAmount = Math.round(monthlyAmount * 4.33);
+            // Weekly: multiply by 4.33 and divide by interval_count
+            monthlyAmount = Math.round((monthlyAmount * 4.33) / intervalCount);
           } else if (price.recurring.interval === 'day') {
-            monthlyAmount = Math.round(monthlyAmount * 30);
+            // Daily: multiply by 30 and divide by interval_count
+            monthlyAmount = Math.round((monthlyAmount * 30) / intervalCount);
           }
-          // 'month' stays as is
           
           totalMRR += monthlyAmount * quantity;
         }
       }
     }
 
+    console.log('Calculated MRR breakdown - total subscriptions:', subscriptions.data.length, 'totalMRR cents:', totalMRR);
     return totalMRR;
   } catch (error) {
     console.error('Error fetching MRR:', error);
