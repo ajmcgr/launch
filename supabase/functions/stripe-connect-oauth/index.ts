@@ -378,15 +378,11 @@ async function fetchMRR(stripe: Stripe, accountId: string, stripeProductIds?: st
       }
       
       if (hasMatchingProduct && subMRR > 0) {
-        // Only count monthly subscriptions that will actually renew (Stripe's MRR definition)
-        const willCancel = sub.cancel_at_period_end === true;
-        
-        if (billingInterval === 'month' && !willCancel) {
+        // Only count monthly subscriptions for MRR
+        if (billingInterval === 'month') {
           totalMRR += subMRR;
           countedSubs++;
           console.log(`COUNT ${sub.id}: ${customerEmail}, interval=${billingInterval}, MRR=$${(subMRR/100).toFixed(2)}`);
-        } else if (willCancel) {
-          console.log(`SKIP ${sub.id} (${customerEmail}) - set to cancel at period end`);
         } else {
           console.log(`SKIP ${sub.id} (${customerEmail}) - non-monthly subscription (interval=${billingInterval})`);
         }
