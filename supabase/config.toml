@@ -20,3 +20,6 @@ verify_jwt = true
 
 [functions.stripe-connect-oauth]
 verify_jwt = false
+
+[functions.create-advertising-invoice]
+verify_jwt = false
