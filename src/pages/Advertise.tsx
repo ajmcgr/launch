@@ -287,33 +287,25 @@ const Advertise = () => {
                   <div className="text-4xl font-bold">
                     $750<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Sponsored listing on homepage for 1 month</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Position 1: Top of leaderboard</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Positions 2-4: Interspersed in feed</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">2,000+ monthly visitors</span>
-                    </li>
-                  </ul>
-                  <Button 
-                    className="w-full" 
-                    size="lg" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedType('website');
-                      setStep(2);
-                    }}
-                  >
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Sponsored listing on homepage for 1 month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">2,000+ monthly visitors</span>
+                  </li>
+                </ul>
+                <Button 
+                  className="w-full" 
+                  size="lg" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedType('website');
+                    setStep(2);
+                  }}
+                >
                     Get Started
                   </Button>
                 </CardContent>
@@ -333,29 +325,25 @@ const Advertise = () => {
                   <div className="text-4xl font-bold">
                     $500<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Sponsored section of newsletter for 1 month</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">2,000+ subscribers</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Only 4 sponsors per month</span>
-                    </li>
-                  </ul>
-                  <Button 
-                    className="w-full" 
-                    size="lg" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedType('newsletter');
-                      setStep(2);
-                    }}
-                  >
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">2,000+ subscribers</span>
+                  </li>
+                </ul>
+                <Button 
+                  className="w-full" 
+                  size="lg" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedType('newsletter');
+                    setStep(2);
+                  }}
+                >
                     Get Started
                   </Button>
                 </CardContent>
