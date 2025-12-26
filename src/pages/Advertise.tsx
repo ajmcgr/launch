@@ -181,13 +181,13 @@ const Advertise = () => {
                   <Button 
                     className="w-full" 
                     size="lg" 
-                    variant={selectedType === 'website' ? 'default' : 'outline'}
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedType('website');
+                      setStep(2);
                     }}
                   >
-                    {selectedType === 'website' ? 'Selected' : 'Select'}
+                    Get Started
                   </Button>
                 </CardContent>
               </Card>
@@ -223,13 +223,13 @@ const Advertise = () => {
                   <Button 
                     className="w-full" 
                     size="lg" 
-                    variant={selectedType === 'newsletter' ? 'default' : 'outline'}
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedType('newsletter');
+                      setStep(2);
                     }}
                   >
-                    {selectedType === 'newsletter' ? 'Selected' : 'Select'}
+                    Get Started
                   </Button>
                 </CardContent>
               </Card>
@@ -268,29 +268,18 @@ const Advertise = () => {
                   <Button 
                     className="w-full" 
                     size="lg"
-                    variant={selectedType === 'combined' ? 'default' : 'outline'}
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedType('combined');
+                      setStep(2);
                     }}
                   >
-                    {selectedType === 'combined' ? 'Selected' : 'Select'}
+                    Get Started
                   </Button>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Continue Button */}
-            <div className="flex justify-center">
-              <Button 
-                size="lg" 
-                onClick={handleContinue}
-                disabled={!selectedType}
-                className="gap-2"
-              >
-                Continue <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
           </>
         )}
 
