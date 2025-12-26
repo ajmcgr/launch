@@ -6,7 +6,6 @@ import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
-import { SponsoredListing } from '@/components/SponsoredListing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -50,6 +49,7 @@ const Home = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
+  const [sponsoredProduct, setSponsoredProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -97,8 +97,83 @@ const Home = () => {
   useEffect(() => {
     if (userLoaded) {
       fetchProducts(currentPeriod, sort, 0, true);
+      fetchSponsoredProduct();
     }
   }, [userLoaded]);
+
+  const fetchSponsoredProduct = async () => {
+    try {
+      const { data: product } = await supabase
+        .from('products')
+        .select(`
+          id,
+          slug,
+          name,
+          tagline,
+          domain_url,
+          verified_mrr,
+          mrr_verified_at,
+          product_media(url, type),
+          product_category_map(category_id),
+          product_makers(user_id, users(username, avatar_url))
+        `)
+        .eq('slug', 'media')
+        .single();
+
+      if (product) {
+        const { data: categories } = await supabase
+          .from('product_categories')
+          .select('id, name');
+        const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
+
+        const { data: voteCounts } = await supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes')
+          .eq('product_id', product.id);
+
+        const netVotes = voteCounts?.[0]?.net_votes || 0;
+
+        let userVote: 1 | null = null;
+        if (user) {
+          const { data: vote } = await supabase
+            .from('votes')
+            .select('value')
+            .eq('product_id', product.id)
+            .eq('user_id', user.id)
+            .eq('value', 1)
+            .maybeSingle();
+          if (vote) userVote = 1;
+        }
+
+        const { data: comments } = await supabase
+          .from('comments')
+          .select('id')
+          .eq('product_id', product.id);
+
+        setSponsoredProduct({
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          tagline: product.tagline,
+          thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+          iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+          domainUrl: product.domain_url || '',
+          categories: product.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+          netVotes,
+          userVote,
+          commentCount: comments?.length || 0,
+          verifiedMrr: product.verified_mrr || null,
+          mrrVerifiedAt: product.mrr_verified_at || null,
+          makers: product.product_makers?.map((m: any) => ({
+            username: m.users?.username || 'Anonymous',
+            avatar_url: m.users?.avatar_url || ''
+          })) || [],
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching sponsored product:', error);
+    }
+  };
 
   const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
     if (reset) {
@@ -392,13 +467,13 @@ const Home = () => {
       <>
         {effectiveView === 'list' ? (
           <div className="divide-y">
-            <SponsoredListing
-              name="Media"
-              tagline="Find Any Journalist or Creator Email. Instantly."
-              slug="media"
-              iconUrl="https://gzpypxgdkxdynovploxn.supabase.co/storage/v1/object/public/product-media/5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc/thumbnail/0.22158311710994627.png"
-              domainUrl="https://trymedia.ai/"
-            />
+            {sponsoredProduct && (
+              <LaunchListItem
+                {...sponsoredProduct}
+                sponsored
+                onVote={handleVote}
+              />
+            )}
             {productList.map((product, index) => (
               <LaunchListItem
                 key={product.id}
@@ -410,13 +485,13 @@ const Home = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <SponsoredListing
-              name="Media"
-              tagline="Find Any Journalist or Creator Email. Instantly."
-              slug="media"
-              iconUrl="https://gzpypxgdkxdynovploxn.supabase.co/storage/v1/object/public/product-media/5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc/thumbnail/0.22158311710994627.png"
-              domainUrl="https://trymedia.ai/"
-            />
+            {sponsoredProduct && (
+              <LaunchListItem
+                {...sponsoredProduct}
+                sponsored
+                onVote={handleVote}
+              />
+            )}
             {productList.map((product, index) => (
               <LaunchCard
                 key={product.id}

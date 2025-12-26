@@ -27,6 +27,7 @@ interface LaunchListItemProps {
   }>;
   rank?: number;
   icon?: any;
+  sponsored?: boolean;
   onVote: (productId: string) => void;
 }
 
@@ -47,6 +48,7 @@ export const LaunchListItem = ({
   makers,
   rank,
   icon: IconComponent,
+  sponsored,
   onVote,
 }: LaunchListItemProps) => {
   const isMobile = useIsMobile();
@@ -83,7 +85,16 @@ export const LaunchListItem = ({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-              {rank && (
+              {sponsored && (
+                <Link 
+                  to="/advertise" 
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded hover:bg-muted/80 transition-colors"
+                >
+                  Sponsored
+                </Link>
+              )}
+              {rank && !sponsored && (
                 <span className="text-sm font-bold text-muted-foreground">
                   {rank}.
                 </span>
