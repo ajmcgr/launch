@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     const monthsLabel = selectedMonths?.length > 0 ? ` (${selectedMonths.join(', ')})` : '';
 
     if (sponsorshipType === 'combined') {
-      unitAmount = 120000; // $1,200 in cents
+      unitAmount = 100000; // $1,000 in cents
       productName = 'Combined Sponsorship Package';
       description = `Website + Newsletter sponsorship${monthsLabel}`;
     } else if (sponsorshipType === 'website') {
