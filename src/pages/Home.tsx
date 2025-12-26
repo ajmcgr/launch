@@ -49,7 +49,7 @@ const Home = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
-  const [sponsoredProduct, setSponsoredProduct] = useState<Product | null>(null);
+  const [sponsoredProducts, setSponsoredProducts] = useState<Map<number, Product>>(new Map());
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -97,81 +97,103 @@ const Home = () => {
   useEffect(() => {
     if (userLoaded) {
       fetchProducts(currentPeriod, sort, 0, true);
-      fetchSponsoredProduct();
+      fetchSponsoredProducts();
     }
   }, [userLoaded]);
 
-  const fetchSponsoredProduct = async () => {
+  const fetchSponsoredProducts = async () => {
     try {
-      const { data: product } = await supabase
-        .from('products')
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Fetch active sponsored products from the sponsored_products table
+      const { data: sponsoredData } = await supabase
+        .from('sponsored_products')
         .select(`
-          id,
-          slug,
-          name,
-          tagline,
-          domain_url,
-          verified_mrr,
-          mrr_verified_at,
-          product_media(url, type),
-          product_category_map(category_id),
-          product_makers(user_id, users(username, avatar_url))
+          position,
+          product_id,
+          products!inner(
+            id,
+            slug,
+            name,
+            tagline,
+            domain_url,
+            verified_mrr,
+            mrr_verified_at,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          )
         `)
-        .eq('slug', 'media')
-        .single();
+        .lte('start_date', today)
+        .gte('end_date', today)
+        .in('sponsorship_type', ['website', 'combined'])
+        .order('position', { ascending: true });
 
-      if (product) {
+      if (sponsoredData && sponsoredData.length > 0) {
         const { data: categories } = await supabase
           .from('product_categories')
           .select('id, name');
         const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
 
+        const productIds = sponsoredData.map(s => (s.products as any).id);
+        
         const { data: voteCounts } = await supabase
           .from('product_vote_counts')
           .select('product_id, net_votes')
-          .eq('product_id', product.id);
+          .in('product_id', productIds);
+        
+        const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes]) || []);
 
-        const netVotes = voteCounts?.[0]?.net_votes || 0;
-
-        let userVote: 1 | null = null;
+        let userVotes = new Map<string, 1>();
         if (user) {
-          const { data: vote } = await supabase
+          const { data: votes } = await supabase
             .from('votes')
-            .select('value')
-            .eq('product_id', product.id)
+            .select('product_id, value')
+            .in('product_id', productIds)
             .eq('user_id', user.id)
-            .eq('value', 1)
-            .maybeSingle();
-          if (vote) userVote = 1;
+            .eq('value', 1);
+          votes?.forEach(v => userVotes.set(v.product_id, 1));
         }
 
-        const { data: comments } = await supabase
+        const { data: commentCounts } = await supabase
           .from('comments')
-          .select('id')
-          .eq('product_id', product.id);
-
-        setSponsoredProduct({
-          id: product.id,
-          slug: product.slug,
-          name: product.name,
-          tagline: product.tagline,
-          thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
-          iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
-          domainUrl: product.domain_url || '',
-          categories: product.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
-          netVotes,
-          userVote,
-          commentCount: comments?.length || 0,
-          verifiedMrr: product.verified_mrr || null,
-          mrrVerifiedAt: product.mrr_verified_at || null,
-          makers: product.product_makers?.map((m: any) => ({
-            username: m.users?.username || 'Anonymous',
-            avatar_url: m.users?.avatar_url || ''
-          })) || [],
+          .select('product_id')
+          .in('product_id', productIds);
+        
+        const commentMap = new Map<string, number>();
+        commentCounts?.forEach(c => {
+          commentMap.set(c.product_id, (commentMap.get(c.product_id) || 0) + 1);
         });
+
+        const sponsoredMap = new Map<number, Product>();
+        
+        sponsoredData.forEach(sponsored => {
+          const product = sponsored.products as any;
+          sponsoredMap.set(sponsored.position, {
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            tagline: product.tagline,
+            thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+            iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+            domainUrl: product.domain_url || '',
+            categories: product.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+            netVotes: voteMap.get(product.id) || 0,
+            userVote: userVotes.get(product.id) || null,
+            commentCount: commentMap.get(product.id) || 0,
+            verifiedMrr: product.verified_mrr || null,
+            mrrVerifiedAt: product.mrr_verified_at || null,
+            makers: product.product_makers?.map((m: any) => ({
+              username: m.users?.username || 'Anonymous',
+              avatar_url: m.users?.avatar_url || ''
+            })) || [],
+          });
+        });
+
+        setSponsoredProducts(sponsoredMap);
       }
     } catch (error) {
-      console.error('Error fetching sponsored product:', error);
+      console.error('Error fetching sponsored products:', error);
     }
   };
 
@@ -463,43 +485,80 @@ const Home = () => {
       return <div className="text-center py-12 text-muted-foreground">No products found for this period.</div>;
     }
 
+    // Helper to render products with sponsored items at their positions
+    const renderProductsWithSponsored = (isListView: boolean) => {
+      const items: React.ReactNode[] = [];
+      let productIndex = 0;
+      
+      // Position 1 sponsored product goes at the top
+      const pos1Sponsor = sponsoredProducts.get(1);
+      if (pos1Sponsor) {
+        items.push(
+          <LaunchListItem
+            key={`sponsored-1`}
+            {...pos1Sponsor}
+            sponsored
+            onVote={handleVote}
+          />
+        );
+      }
+      
+      // Interleave products with sponsored items at positions 6, 11, etc.
+      productList.forEach((product, idx) => {
+        productIndex++;
+        const displayRank = productIndex;
+        
+        if (isListView) {
+          items.push(
+            <LaunchListItem
+              key={product.id}
+              {...product}
+              rank={displayRank}
+              onVote={handleVote}
+            />
+          );
+        } else {
+          items.push(
+            <LaunchCard
+              key={product.id}
+              {...product}
+              rank={displayRank}
+              onVote={handleVote}
+            />
+          );
+        }
+        
+        // Check if there's a sponsored product for the next position
+        // Position 2 = after 5 products, Position 3 = after 10 products, etc.
+        const sponsorPositionCheck = productIndex + 1;
+        const sponsorPosition = sponsorPositionCheck === 5 ? 2 : sponsorPositionCheck === 10 ? 3 : sponsorPositionCheck === 15 ? 4 : null;
+        if (sponsorPosition) {
+          const sponsor = sponsoredProducts.get(sponsorPosition);
+          if (sponsor) {
+            items.push(
+              <LaunchListItem
+                key={`sponsored-${sponsorPosition}`}
+                {...sponsor}
+                sponsored
+                onVote={handleVote}
+              />
+            );
+          }
+        }
+      });
+      
+      return items;
+    };
+
     return (
       <>
         {effectiveView === 'list' ? (
           <div className="divide-y">
-            {sponsoredProduct && (
-              <LaunchListItem
-                {...sponsoredProduct}
-                sponsored
-                onVote={handleVote}
-              />
-            )}
-            {productList.map((product, index) => (
-              <LaunchListItem
-                key={product.id}
-                {...product}
-                rank={index + 1}
-                onVote={handleVote}
-              />
-            ))}
+            {renderProductsWithSponsored(true)}
           </div>
         ) : (
           <div className="space-y-4">
-            {sponsoredProduct && (
-              <LaunchListItem
-                {...sponsoredProduct}
-                sponsored
-                onVote={handleVote}
-              />
-            )}
-            {productList.map((product, index) => (
-              <LaunchCard
-                key={product.id}
-                {...product}
-                rank={index + 1}
-                onVote={handleVote}
-              />
-            ))}
+            {renderProductsWithSponsored(false)}
           </div>
         )}
         
