@@ -117,7 +117,100 @@ const Pricing = () => {
           <p className="text-muted-foreground">
             Maximum 1 launch per week across all plans
           </p>
-          <p className="text-muted-foreground mt-4">
+        </div>
+
+        {/* Advertising Section */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Advertising</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Reach a highly engaged audience of builders and AI early adopters
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-xl">Website Placement</CardTitle>
+                <CardDescription>Prominent display directly above leaderboard</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-4xl font-bold">
+                  $1,000<span className="text-base font-normal text-muted-foreground"> / month</span>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Sponsored listing at top of homepage</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Only 1 sponsor per month</span>
+                  </li>
+                </ul>
+                <Button asChild className="w-full" size="lg" variant="outline">
+                  <Link to="/advertise">Get Started</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="text-xl">Newsletter Sponsorship</CardTitle>
+                <CardDescription>Featured placement in our weekly newsletter</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-4xl font-bold">
+                  $500<span className="text-base font-normal text-muted-foreground"> / month</span>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">2,000+ subscribers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Only 4 sponsors per month</span>
+                  </li>
+                </ul>
+                <Button asChild className="w-full" size="lg" variant="outline">
+                  <Link to="/advertise">Get Started</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="relative hover:shadow-lg transition-shadow border-primary shadow-md">
+              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
+                Best Value
+              </Badge>
+              <CardHeader>
+                <CardTitle className="text-xl">Combined Package</CardTitle>
+                <CardDescription>Website + Newsletter bundle</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="text-4xl font-bold">
+                  $1,250<span className="text-base font-normal text-muted-foreground"> / month</span>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Save $250/month with bundle</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Maximum exposure across both channels</span>
+                  </li>
+                </ul>
+                <Button asChild className="w-full" size="lg">
+                  <Link to="/advertise">Get Started</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <div className="mt-16 text-center">
+          <p className="text-muted-foreground">
             All plans include support from our team. Questions?{' '}
             <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
               Contact us
