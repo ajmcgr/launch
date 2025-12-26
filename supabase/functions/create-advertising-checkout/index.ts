@@ -24,13 +24,14 @@ Deno.serve(async (req) => {
 
     const { 
       launchUrl, 
+      productId,
       sponsorshipType,
       months,
       selectedMonths,
       message 
     } = await req.json();
 
-    console.log('Creating checkout for:', { sponsorshipType, months, launchUrl });
+    console.log('Creating checkout for:', { sponsorshipType, months, launchUrl, productId });
 
     if (!sponsorshipType) {
       throw new Error('Sponsorship type is required');
@@ -100,6 +101,7 @@ Deno.serve(async (req) => {
         type: 'advertising',
         sponsorship_type: sponsorshipType,
         launch_url: launchUrl || '',
+        product_id: productId || '',
         product_slug: productSlug,
         months: months,
         selected_months: selectedMonths?.join(', ') || '',

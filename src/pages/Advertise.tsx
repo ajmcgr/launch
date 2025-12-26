@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +9,13 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { format, startOfMonth } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+interface LaunchedProduct {
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string | null;
+}
 
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
 
@@ -29,13 +35,44 @@ const Advertise = () => {
   const [selectedMonths, setSelectedMonths] = useState<Date[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>('');
   const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [formData, setFormData] = useState({
-    launchUrl: '',
     message: '',
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availability, setAvailability] = useState<Record<string, MonthAvailability>>({});
+  const [launchedProducts, setLaunchedProducts] = useState<LaunchedProduct[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+
+  // Fetch user's launched products
+  useEffect(() => {
+    const fetchLaunchedProducts = async () => {
+      setIsLoadingProducts(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        setIsLoadingProducts(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, slug, tagline')
+        .eq('owner_id', user.id)
+        .eq('status', 'launched')
+        .order('name');
+
+      if (error) {
+        console.error('Error fetching launched products:', error);
+      } else {
+        setLaunchedProducts(data || []);
+      }
+      setIsLoadingProducts(false);
+    };
+
+    fetchLaunchedProducts();
+  }, []);
 
   // Fetch existing sponsored products to check availability
   useEffect(() => {
@@ -184,16 +221,16 @@ const Advertise = () => {
       errors.months = 'Please select at least one month';
     }
 
-    // Launch URL is required for all sponsorship types
-    if (!formData.launchUrl.trim()) {
-      errors.launchUrl = 'Launch URL is required';
-    } else if (!formData.launchUrl.includes('trylaunch.ai/launch/')) {
-      errors.launchUrl = 'Please enter a valid Launch URL (e.g., https://trylaunch.ai/launch/your-product)';
+    // Product selection is required for all sponsorship types
+    if (!selectedProductId) {
+      errors.product = 'Please select a product';
     }
     
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
+  const getSelectedProduct = () => launchedProducts.find(p => p.id === selectedProductId);
 
   const handleBack = () => {
     setStep(1);
@@ -215,9 +252,13 @@ const Advertise = () => {
     setIsSubmitting(true);
 
     try {
+      const selectedProduct = getSelectedProduct();
+      const launchUrl = selectedProduct ? `https://trylaunch.ai/launch/${selectedProduct.slug}` : '';
+      
       const { data, error } = await supabase.functions.invoke('create-advertising-checkout', {
         body: {
-          launchUrl: formData.launchUrl,
+          launchUrl,
+          productId: selectedProductId,
           sponsorshipType: selectedType,
           months: selectedMonths.length.toString(),
           selectedMonths: selectedMonths.map(m => format(m, 'MMMM yyyy')),
@@ -522,27 +563,52 @@ const Advertise = () => {
 
                   <div className="space-y-2">
                     <Label 
-                      htmlFor="launchUrl"
-                      className={formErrors.launchUrl ? 'text-destructive' : ''}
+                      className={formErrors.product ? 'text-destructive' : ''}
                     >
-                      Launch URL *
+                      Select Product *
                     </Label>
-                    <Input
-                      id="launchUrl"
-                      type="url"
-                      value={formData.launchUrl}
-                      onChange={(e) => {
-                        setFormData({ ...formData, launchUrl: e.target.value });
-                        if (formErrors.launchUrl) setFormErrors(prev => ({ ...prev, launchUrl: '' }));
-                      }}
-                      placeholder="https://trylaunch.ai/launch/your-product"
-                      className={formErrors.launchUrl ? 'border-destructive' : ''}
-                    />
-                    {formErrors.launchUrl ? (
-                      <p className="text-sm text-destructive">{formErrors.launchUrl}</p>
+                    {launchedProducts.length === 0 && !isLoadingProducts ? (
+                      <div className="p-4 border rounded-md bg-muted/50">
+                        <p className="text-sm text-muted-foreground">
+                          You don't have any launched products yet.{' '}
+                          <a href="/submit" className="text-primary hover:underline">
+                            Submit a product
+                          </a>{' '}
+                          first to advertise it.
+                        </p>
+                      </div>
                     ) : (
+                      <Select 
+                        value={selectedProductId} 
+                        onValueChange={(value) => {
+                          setSelectedProductId(value);
+                          if (formErrors.product) setFormErrors(prev => ({ ...prev, product: '' }));
+                        }}
+                        disabled={isLoadingProducts}
+                      >
+                        <SelectTrigger className={formErrors.product ? 'border-destructive' : ''}>
+                          <SelectValue placeholder={isLoadingProducts ? "Loading products..." : "Select a product to sponsor"} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background">
+                          {launchedProducts.map((product) => (
+                            <SelectItem key={product.id} value={product.id}>
+                              <div className="flex flex-col">
+                                <span>{product.name}</span>
+                                {product.tagline && (
+                                  <span className="text-xs text-muted-foreground">{product.tagline}</span>
+                                )}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    {formErrors.product && (
+                      <p className="text-sm text-destructive">{formErrors.product}</p>
+                    )}
+                    {selectedProductId && (
                       <p className="text-sm text-muted-foreground">
-                        Your product listing on Launch that will be sponsored
+                        This product will be featured as a sponsored listing
                       </p>
                     )}
                   </div>
