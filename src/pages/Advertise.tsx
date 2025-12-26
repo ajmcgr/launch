@@ -305,7 +305,7 @@ const Advertise = () => {
         )}
 
         {step === 2 && (
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             {/* Back Button */}
             <Button 
               variant="ghost" 
@@ -315,32 +315,59 @@ const Advertise = () => {
               <ArrowLeft className="h-4 w-4" /> Back to options
             </Button>
 
-            {/* Selected Package Summary with Live Total */}
-            <div className="mb-8 p-4 bg-muted/30 rounded-lg border">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <p className="text-sm text-muted-foreground">Selected package:</p>
-                  <p className="text-lg font-semibold">
-                    {selectedType === 'website' && 'Website Placement - $1,000/month'}
-                    {selectedType === 'newsletter' && 'Newsletter Sponsorship - $500/month'}
-                    {selectedType === 'combined' && 'Combined Package - $1,250/month'}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+              {/* Selected Package Summary - Left Column */}
+              <div className="lg:col-span-2">
+                <div className="sticky top-6 p-6 bg-muted/30 rounded-lg border">
+                  <p className="text-sm text-muted-foreground mb-1">Selected package:</p>
+                  <p className="text-xl font-semibold mb-4">
+                    {selectedType === 'website' && 'Website Placement'}
+                    {selectedType === 'newsletter' && 'Newsletter Sponsorship'}
+                    {selectedType === 'combined' && 'Combined Package'}
                   </p>
-                </div>
-                {selectedMonths.length > 0 && (
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">{selectedMonths.length} month(s)</p>
-                    <p className="text-2xl font-bold text-primary">${calculateTotal().toLocaleString()}</p>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Price per month</span>
+                      <span className="font-medium">${getPrice().toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Months selected</span>
+                      <span className="font-medium">{selectedMonths.length}</span>
+                    </div>
+                    {selectedMonths.length > 0 && (
+                      <div className="pt-3 border-t">
+                        <p className="text-xs text-muted-foreground mb-2">Selected months:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedMonths.map((month) => (
+                            <Badge key={month.getTime()} variant="outline" className="text-xs">
+                              {format(month, 'MMM yyyy')}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                  
+                  <div className="pt-4 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Total</span>
+                      <span className="text-3xl font-bold text-primary">
+                        ${calculateTotal().toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Get Started</CardTitle>
-                <CardDescription>Select your months and fill in your details</CardDescription>
-              </CardHeader>
-              <CardContent>
+              {/* Form - Right Column */}
+              <div className="lg:col-span-3">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Get Started</CardTitle>
+                    <CardDescription>Select your months and fill in your details</CardDescription>
+                  </CardHeader>
+                  <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Month Selection */}
                   <div className="space-y-3">
@@ -498,6 +525,8 @@ const Advertise = () => {
                 </form>
               </CardContent>
             </Card>
+              </div>
+            </div>
           </div>
         )}
 
