@@ -36,9 +36,9 @@ Deno.serve(async (req) => {
       throw new Error('Sponsorship type is required');
     }
 
-    // For website/combined, launch URL is required
-    if ((sponsorshipType === 'website' || sponsorshipType === 'combined') && !launchUrl) {
-      throw new Error('Launch URL is required for website sponsorship');
+    // Launch URL is required for all sponsorship types
+    if (!launchUrl) {
+      throw new Error('Launch URL is required');
     }
 
     // Calculate pricing
