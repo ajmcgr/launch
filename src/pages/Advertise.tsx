@@ -13,6 +13,7 @@ const Advertise = () => {
     email: '',
     company: '',
     website: '',
+    launchUrl: '',
     websiteSponsorship: false,
     newsletterSponsorship: false,
     months: '1',
@@ -53,6 +54,7 @@ const Advertise = () => {
 Email: ${formData.email}
 Company: ${formData.company}
 Website: ${formData.website}
+${formData.launchUrl ? `Existing Launch: ${formData.launchUrl}` : ''}
 
 Sponsorship Type: ${sponsorshipTypes.join(', ')}
 Duration: ${formData.months} month(s)
@@ -76,12 +78,6 @@ ${formData.message}`);
         </p>
 
         <div className="space-y-8">
-          <div className="prose dark:prose-invert max-w-none">
-            <p className="text-lg text-foreground">
-              As you know, Launch is a highly builder-focused and AI early adopter audience.
-            </p>
-          </div>
-
           <div className="space-y-6">
             <h2 className="text-2xl font-bold">Sponsorship Options</h2>
             
@@ -111,19 +107,6 @@ ${formData.message}`);
               <p className="text-2xl font-bold text-primary">$1,250 / month</p>
               <p className="text-sm text-muted-foreground">Save $250/month with the bundle</p>
             </div>
-          </div>
-
-          <div className="border rounded-lg p-6 bg-muted/30">
-            <p className="text-foreground">
-              Happy to share more details ie mockup placement, audience etc.
-            </p>
-            <p className="text-muted-foreground mt-4">
-              <strong>FYI</strong> - We only accept one sponsor per month on the website and 4 per month with newsletters. Keeping it pretty exclusive for both users and advertisers.
-            </p>
-            <p className="text-muted-foreground mt-4">
-              Thanks,<br />
-              Alex
-            </p>
           </div>
 
           <div className="border-t pt-8">
@@ -175,6 +158,20 @@ ${formData.message}`);
                     placeholder="https://yourcompany.com"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="launchUrl">Existing Launch URL (optional)</Label>
+                <Input
+                  id="launchUrl"
+                  type="url"
+                  value={formData.launchUrl}
+                  onChange={(e) => setFormData({ ...formData, launchUrl: e.target.value })}
+                  placeholder="https://trylaunch.ai/launch/your-product"
+                />
+                <p className="text-sm text-muted-foreground">
+                  If you already have a product on Launch, paste the link here
+                </p>
               </div>
 
               <div className="space-y-4">
