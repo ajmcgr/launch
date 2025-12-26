@@ -44,6 +44,146 @@ Deno.serve(async (req) => {
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       );
 
+      // Check if this is an advertising checkout
+      if (metadata.type === 'advertising') {
+        console.log('Processing advertising checkout:', {
+          sponsorship_type: metadata.sponsorship_type,
+          product_slug: metadata.product_slug,
+          months: metadata.months,
+          selected_months: metadata.selected_months,
+        });
+
+        // For website/combined sponsorships, we need to create sponsored_products entries
+        if ((metadata.sponsorship_type === 'website' || metadata.sponsorship_type === 'combined') && metadata.product_slug) {
+          // Find the product by slug
+          const { data: product, error: productError } = await supabaseClient
+            .from('products')
+            .select('id, name')
+            .eq('slug', metadata.product_slug)
+            .single();
+
+          if (productError || !product) {
+            console.error('Product not found for slug:', metadata.product_slug);
+            // Don't fail the webhook - we'll handle this manually
+          } else {
+            // Parse selected months and create sponsored_products entries
+            const selectedMonthsStr = metadata.selected_months || '';
+            const monthStrings = selectedMonthsStr.split(', ').filter(Boolean);
+            
+            for (const monthStr of monthStrings) {
+              // Parse "January 2025" format
+              const monthDate = new Date(monthStr);
+              if (!isNaN(monthDate.getTime())) {
+                const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+                const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+                
+                // Find the next available position for this month
+                const { data: existingSponsors } = await supabaseClient
+                  .from('sponsored_products')
+                  .select('position')
+                  .lte('start_date', endDate.toISOString().split('T')[0])
+                  .gte('end_date', startDate.toISOString().split('T')[0])
+                  .order('position', { ascending: false });
+
+                // Find next available position (1-4)
+                const usedPositions = existingSponsors?.map(s => s.position) || [];
+                let nextPosition = 1;
+                for (let i = 1; i <= 4; i++) {
+                  if (!usedPositions.includes(i)) {
+                    nextPosition = i;
+                    break;
+                  }
+                }
+
+                // Only create if position is available (max 4 sponsors)
+                if (nextPosition <= 4) {
+                  const { error: insertError } = await supabaseClient
+                    .from('sponsored_products')
+                    .insert({
+                      product_id: product.id,
+                      position: nextPosition,
+                      sponsorship_type: metadata.sponsorship_type,
+                      start_date: startDate.toISOString().split('T')[0],
+                      end_date: endDate.toISOString().split('T')[0],
+                    });
+
+                  if (insertError) {
+                    console.error('Error creating sponsored product:', insertError);
+                  } else {
+                    console.log(`Created sponsored product for ${product.name} at position ${nextPosition} for ${monthStr}`);
+                  }
+                } else {
+                  console.log(`No positions available for ${monthStr}, will need manual assignment`);
+                }
+              }
+            }
+          }
+        }
+
+        // Send confirmation email
+        try {
+          const emailHtml = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                  .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                  .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                  .logo { height: 32px; }
+                  .content { padding: 30px; }
+                  .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                  .content p { margin: 0 0 16px 0; color: #4b5563; }
+                  .highlight { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e5e7eb; }
+                  .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="card">
+                    <div class="header">
+                      <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
+                    </div>
+                    <div class="content">
+                      <h1>Sponsorship Payment Confirmed</h1>
+                      <p>Thank you for your sponsorship purchase, ${metadata.name}!</p>
+                      <div class="highlight">
+                        <p><strong>Package:</strong> ${metadata.sponsorship_type === 'combined' ? 'Combined Package' : metadata.sponsorship_type === 'website' ? 'Website Placement' : 'Newsletter Sponsorship'}</p>
+                        <p><strong>Company:</strong> ${metadata.company}</p>
+                        <p><strong>Months:</strong> ${metadata.selected_months || metadata.months + ' month(s)'}</p>
+                        ${metadata.launch_url ? `<p><strong>Product:</strong> ${metadata.launch_url}</p>` : ''}
+                      </div>
+                      <p>Your sponsorship has been activated. If you selected website placement, your product will appear in the sponsored section on our homepage during your selected months.</p>
+                      <p>If you have any questions, please reply to this email.</p>
+                    </div>
+                    <div class="footer">
+                      <p>Thank you for advertising with Launch.</p>
+                    </div>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `;
+
+          await resend.emails.send({
+            from: 'Launch <notifications@trylaunch.ai>',
+            to: [session.customer_email || ''],
+            subject: `Sponsorship Confirmed - ${metadata.company}`,
+            html: emailHtml,
+          });
+
+          console.log('Advertising confirmation email sent');
+        } catch (emailError) {
+          console.error('Error sending advertising confirmation email:', emailError);
+        }
+
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      }
+
       // Helper function to find next available date with capacity
       // For Launch (skip) plan, only count other 'skip' plan products
       // For other plans, count all products

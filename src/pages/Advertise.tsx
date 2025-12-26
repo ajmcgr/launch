@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -88,6 +88,11 @@ const Advertise = () => {
     if (selectedMonths.length === 0) {
       errors.months = 'Please select at least one month';
     }
+
+    // Launch URL is required for website/combined sponsorships
+    if ((selectedType === 'website' || selectedType === 'combined') && !formData.launchUrl.trim()) {
+      errors.launchUrl = 'Launch URL is required for website sponsorship';
+    }
     
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -113,15 +118,14 @@ const Advertise = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('create-advertising-invoice', {
+      const { data, error } = await supabase.functions.invoke('create-advertising-checkout', {
         body: {
           name: formData.name,
           email: formData.email,
           company: formData.company,
           website: formData.website,
           launchUrl: formData.launchUrl,
-          websiteSponsorship: selectedType === 'website' || selectedType === 'combined',
-          newsletterSponsorship: selectedType === 'newsletter' || selectedType === 'combined',
+          sponsorshipType: selectedType,
           months: selectedMonths.length.toString(),
           selectedMonths: selectedMonths.map(m => format(m, 'MMMM yyyy')),
           message: formData.message,
@@ -130,30 +134,31 @@ const Advertise = () => {
 
       if (error) throw error;
 
-      if (data?.success) {
-        toast.success('Invoice sent! Check your email for payment details.');
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          company: '',
-          website: '',
-          launchUrl: '',
-          message: '',
-        });
-        setSelectedType(null);
-        setSelectedMonths([]);
-        setStep(1);
+      if (data?.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
-        throw new Error(data?.error || 'Failed to create invoice');
+        throw new Error(data?.error || 'Failed to create checkout session');
       }
     } catch (error) {
-      console.error('Error creating invoice:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to create invoice. Please try again.');
-    } finally {
+      console.error('Error creating checkout:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to create checkout. Please try again.');
       setIsSubmitting(false);
     }
   };
+
+  // Handle success/cancel from Stripe redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      toast.success('Payment successful! Your sponsorship has been activated.');
+      // Clear URL params
+      window.history.replaceState({}, '', '/advertise');
+    } else if (urlParams.get('canceled') === 'true') {
+      toast.info('Payment was canceled.');
+      window.history.replaceState({}, '', '/advertise');
+    }
+  }, []);
 
   const availableMonths = useMemo(() => getAvailableMonths(), []);
 
@@ -446,17 +451,32 @@ const Advertise = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="launchUrl">Existing Launch URL (optional)</Label>
+                    <Label 
+                      htmlFor="launchUrl"
+                      className={formErrors.launchUrl ? 'text-destructive' : ''}
+                    >
+                      Launch URL {(selectedType === 'website' || selectedType === 'combined') ? '*' : '(optional)'}
+                    </Label>
                     <Input
                       id="launchUrl"
                       type="url"
                       value={formData.launchUrl}
-                      onChange={(e) => setFormData({ ...formData, launchUrl: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, launchUrl: e.target.value });
+                        if (formErrors.launchUrl) setFormErrors(prev => ({ ...prev, launchUrl: '' }));
+                      }}
                       placeholder="https://trylaunch.ai/launch/your-product"
+                      className={formErrors.launchUrl ? 'border-destructive' : ''}
                     />
-                    <p className="text-sm text-muted-foreground">
-                      If you already have a product on Launch, paste the link here
-                    </p>
+                    {formErrors.launchUrl ? (
+                      <p className="text-sm text-destructive">{formErrors.launchUrl}</p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        {(selectedType === 'website' || selectedType === 'combined') 
+                          ? 'Required: Your product listing on Launch that will be sponsored'
+                          : 'If you already have a product on Launch, paste the link here'}
+                      </p>
+                    )}
                   </div>
 
 
