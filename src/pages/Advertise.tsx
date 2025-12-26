@@ -452,7 +452,7 @@ const Advertise = () => {
                     {isSubmitting ? 'Processing...' : 'Submit'}
                   </Button>
                   <p className="text-sm text-muted-foreground text-center">
-                    By clicking submit, you'll be redirected to complete payment. After successful payment, your product will be scheduled for launch.
+                    By clicking submit, you'll be redirected to complete payment. After successful payment, we'll contact you to schedule your campaign.
                   </p>
                 </form>
               </CardContent>
