@@ -171,7 +171,7 @@ const Advertise = () => {
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Sponsored listing at top of homepage</span>
+                      <span className="text-sm">Sponsored listing at top of homepage for 1 month</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -207,6 +207,10 @@ const Advertise = () => {
                     $500<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                   <ul className="space-y-3">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                    </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-sm">2,000+ subscribers</span>
@@ -250,11 +254,15 @@ const Advertise = () => {
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Save $250/month with bundle</span>
+                      <span className="text-sm">Sponsored listing at top of homepage for 1 month</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Maximum exposure across both channels</span>
+                      <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Save $250/month with bundle</span>
                     </li>
                   </ul>
                   <Button 
