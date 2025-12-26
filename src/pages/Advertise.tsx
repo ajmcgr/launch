@@ -5,14 +5,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Check, ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addMonths, startOfMonth } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
 
-const MONTHS_AVAILABLE = 6; // Show next 6 months
+const YEARS_AVAILABLE = 10; // Show next 10 years of dates
 
 const Advertise = () => {
   const [step, setStep] = useState<1 | 2>(1);
@@ -31,22 +32,22 @@ const Advertise = () => {
   const getAvailableMonths = () => {
     const months: Date[] = [];
     const today = new Date();
-    // Start from next month
-    for (let i = 1; i <= MONTHS_AVAILABLE; i++) {
+    // Show next 10 years of months (120 months)
+    for (let i = 1; i <= YEARS_AVAILABLE * 12; i++) {
       months.push(startOfMonth(addMonths(today, i)));
     }
     return months;
   };
 
-  const toggleMonth = (month: Date) => {
-    setSelectedMonths(prev => {
-      const isSelected = prev.some(m => m.getTime() === month.getTime());
-      if (isSelected) {
-        return prev.filter(m => m.getTime() !== month.getTime());
-      } else {
-        return [...prev, month].sort((a, b) => a.getTime() - b.getTime());
-      }
-    });
+  const addMonth = (monthStr: string) => {
+    const month = availableMonths.find(m => m.getTime().toString() === monthStr);
+    if (month && !selectedMonths.some(m => m.getTime() === month.getTime())) {
+      setSelectedMonths(prev => [...prev, month].sort((a, b) => a.getTime() - b.getTime()));
+    }
+  };
+
+  const removeMonth = (month: Date) => {
+    setSelectedMonths(prev => prev.filter(m => m.getTime() !== month.getTime()));
   };
 
   const getPrice = () => {
@@ -316,22 +317,42 @@ const Advertise = () => {
                   {/* Month Selection */}
                   <div className="space-y-3">
                     <Label>Select Month(s) to Advertise *</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {availableMonths.map((month) => {
-                        const isSelected = selectedMonths.some(m => m.getTime() === month.getTime());
-                        return (
-                          <Button
-                            key={month.getTime()}
-                            type="button"
-                            variant={isSelected ? 'default' : 'outline'}
-                            className="h-auto py-3"
-                            onClick={() => toggleMonth(month)}
+                    <Select onValueChange={addMonth}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a month to add" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {availableMonths
+                          .filter(month => !selectedMonths.some(m => m.getTime() === month.getTime()))
+                          .map((month) => (
+                            <SelectItem key={month.getTime()} value={month.getTime().toString()}>
+                              {format(month, 'MMMM yyyy')}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    {selectedMonths.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {selectedMonths.map((month) => (
+                          <Badge 
+                            key={month.getTime()} 
+                            variant="secondary"
+                            className="flex items-center gap-1 py-1.5 px-3"
                           >
                             {format(month, 'MMMM yyyy')}
-                          </Button>
-                        );
-                      })}
-                    </div>
+                            <button
+                              type="button"
+                              onClick={() => removeMonth(month)}
+                              className="ml-1 hover:text-destructive"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    
                     {selectedMonths.length > 0 && (
                       <p className="text-sm text-muted-foreground">
                         {selectedMonths.length} month(s) selected
@@ -431,7 +452,7 @@ const Advertise = () => {
                     disabled={isSubmitting || selectedMonths.length === 0} 
                     className="w-full"
                   >
-                    {isSubmitting ? 'Sending...' : 'Request Invoice'}
+                    {isSubmitting ? 'Processing...' : 'Submit to Launch'}
                   </Button>
                 </form>
               </CardContent>
