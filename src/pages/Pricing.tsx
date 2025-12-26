@@ -132,7 +132,7 @@ const Pricing = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-xl">Website Placement</CardTitle>
-                <CardDescription>Prominent display directly above leaderboard</CardDescription>
+                <CardDescription>Sponsored listing on homepage for 1 month</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
@@ -141,11 +141,11 @@ const Pricing = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored listing on homepage</span>
+                    <span className="text-sm">2,000+ users</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Only 1 sponsor per month</span>
+                    <span className="text-sm">Up to 4 sponsored positions available</span>
                   </li>
                 </ul>
                 <Button asChild className="w-full" size="lg" variant="outline">
@@ -157,7 +157,7 @@ const Pricing = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-xl">Newsletter Sponsorship</CardTitle>
-                <CardDescription>Featured placement in our weekly newsletter</CardDescription>
+                <CardDescription>Sponsored section of newsletter for 1 month</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
@@ -170,7 +170,7 @@ const Pricing = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Only 4 sponsors per month</span>
+                    <span className="text-sm">1 sponsor per newsletter</span>
                   </li>
                 </ul>
                 <Button asChild className="w-full" size="lg" variant="outline">
@@ -194,11 +194,15 @@ const Pricing = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Save $250/month with bundle</span>
+                    <span className="text-sm">Sponsored listing on homepage for 1 month</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Maximum exposure across both channels</span>
+                    <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Save $250/month</span>
                   </li>
                 </ul>
                 <Button asChild className="w-full" size="lg">
