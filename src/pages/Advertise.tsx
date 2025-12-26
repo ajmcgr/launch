@@ -460,8 +460,11 @@ const Advertise = () => {
                     disabled={isSubmitting || selectedMonths.length === 0} 
                     className="w-full"
                   >
-                    {isSubmitting ? 'Processing...' : 'Submit to Launch'}
+                    {isSubmitting ? 'Processing...' : 'Submit'}
                   </Button>
+                  <p className="text-sm text-muted-foreground text-center">
+                    By clicking submit, you'll be redirected to complete payment. After successful payment, your product will be scheduled for launch.
+                  </p>
                 </form>
               </CardContent>
             </Card>
