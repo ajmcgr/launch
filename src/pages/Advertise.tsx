@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, ArrowLeft, ArrowRight, X } from 'lucide-react';
+import { Check, ArrowLeft, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { format, addMonths, startOfMonth } from 'date-fns';
@@ -27,6 +27,7 @@ const Advertise = () => {
     launchUrl: '',
     message: '',
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getAvailableMonths = () => {
@@ -63,12 +64,33 @@ const Advertise = () => {
     return getPrice() * selectedMonths.length;
   };
 
-  const handleContinue = () => {
-    if (!selectedType) {
-      toast.error('Please select a sponsorship option');
-      return;
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required';
     }
-    setStep(2);
+    
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      errors.email = 'Please enter a valid email';
+    }
+    
+    if (!formData.company.trim()) {
+      errors.company = 'Company is required';
+    }
+    
+    if (selectedMonths.length === 0) {
+      errors.months = 'Please select at least one month';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleBack = () => {
@@ -83,13 +105,8 @@ const Advertise = () => {
       return;
     }
 
-    if (selectedMonths.length === 0) {
-      toast.error('Please select at least one month');
-      return;
-    }
-
-    if (!formData.name || !formData.email || !formData.company) {
-      toast.error('Please fill in all required fields');
+    if (!validateForm()) {
+      toast.error('Please fix the errors below');
       return;
     }
 
@@ -138,7 +155,7 @@ const Advertise = () => {
     }
   };
 
-  const availableMonths = getAvailableMonths();
+  const availableMonths = useMemo(() => getAvailableMonths(), []);
 
   return (
     <div className="min-h-screen bg-background py-16">
@@ -298,14 +315,24 @@ const Advertise = () => {
               <ArrowLeft className="h-4 w-4" /> Back to options
             </Button>
 
-            {/* Selected Package Summary */}
+            {/* Selected Package Summary with Live Total */}
             <div className="mb-8 p-4 bg-muted/30 rounded-lg border">
-              <p className="text-sm text-muted-foreground">Selected package:</p>
-              <p className="text-lg font-semibold">
-                {selectedType === 'website' && 'Website Placement - $1,000/month'}
-                {selectedType === 'newsletter' && 'Newsletter Sponsorship - $500/month'}
-                {selectedType === 'combined' && 'Combined Package - $1,250/month'}
-              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Selected package:</p>
+                  <p className="text-lg font-semibold">
+                    {selectedType === 'website' && 'Website Placement - $1,000/month'}
+                    {selectedType === 'newsletter' && 'Newsletter Sponsorship - $500/month'}
+                    {selectedType === 'combined' && 'Combined Package - $1,250/month'}
+                  </p>
+                </div>
+                {selectedMonths.length > 0 && (
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">{selectedMonths.length} month(s)</p>
+                    <p className="text-2xl font-bold text-primary">${calculateTotal().toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <Card>
@@ -317,12 +344,14 @@ const Advertise = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Month Selection */}
                   <div className="space-y-3">
-                    <Label>Select Month(s) to Advertise *</Label>
+                    <Label className={formErrors.months ? 'text-destructive' : ''}>
+                      Select Month(s) to Advertise *
+                    </Label>
                     <Select onValueChange={addMonth}>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className={`w-full ${formErrors.months ? 'border-destructive' : ''}`}>
                         <SelectValue placeholder="Select a month to add" />
                       </SelectTrigger>
-                      <SelectContent className="max-h-60">
+                      <SelectContent className="max-h-60 bg-background">
                         {availableMonths
                           .filter(month => !selectedMonths.some(m => m.getTime() === month.getTime()))
                           .map((month) => (
@@ -332,6 +361,9 @@ const Advertise = () => {
                           ))}
                       </SelectContent>
                     </Select>
+                    {formErrors.months && (
+                      <p className="text-sm text-destructive">{formErrors.months}</p>
+                    )}
                     
                     {selectedMonths.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-3">
@@ -353,47 +385,65 @@ const Advertise = () => {
                         ))}
                       </div>
                     )}
-                    
-                    {selectedMonths.length > 0 && (
-                      <p className="text-sm text-muted-foreground">
-                        {selectedMonths.length} month(s) selected
-                      </p>
-                    )}
                   </div>
 
                   <div className="grid gap-6 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Name *</Label>
+                      <Label htmlFor="name" className={formErrors.name ? 'text-destructive' : ''}>
+                        Name *
+                      </Label>
                       <Input
                         id="name"
-                        required
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, name: e.target.value });
+                          if (formErrors.name) setFormErrors(prev => ({ ...prev, name: '' }));
+                        }}
                         placeholder="Your name"
+                        className={formErrors.name ? 'border-destructive' : ''}
                       />
+                      {formErrors.name && (
+                        <p className="text-sm text-destructive">{formErrors.name}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
+                      <Label htmlFor="email" className={formErrors.email ? 'text-destructive' : ''}>
+                        Email *
+                      </Label>
                       <Input
                         id="email"
                         type="email"
-                        required
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value });
+                          if (formErrors.email) setFormErrors(prev => ({ ...prev, email: '' }));
+                        }}
                         placeholder="you@company.com"
+                        className={formErrors.email ? 'border-destructive' : ''}
                       />
+                      {formErrors.email && (
+                        <p className="text-sm text-destructive">{formErrors.email}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="company">Company *</Label>
+                      <Label htmlFor="company" className={formErrors.company ? 'text-destructive' : ''}>
+                        Company *
+                      </Label>
                       <Input
                         id="company"
-                        required
                         value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, company: e.target.value });
+                          if (formErrors.company) setFormErrors(prev => ({ ...prev, company: '' }));
+                        }}
                         placeholder="Your company name"
+                        className={formErrors.company ? 'border-destructive' : ''}
                       />
+                      {formErrors.company && (
+                        <p className="text-sm text-destructive">{formErrors.company}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
@@ -422,19 +472,6 @@ const Advertise = () => {
                     </p>
                   </div>
 
-                  {selectedMonths.length > 0 && (
-                    <div className="border rounded-lg p-4 bg-muted/30">
-                      <p className="text-lg font-semibold">
-                        Total: <span className="text-primary">${calculateTotal().toLocaleString()}</span>
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {selectedType === 'website' && 'Website Placement'}
-                        {selectedType === 'newsletter' && 'Newsletter Sponsorship'}
-                        {selectedType === 'combined' && 'Combined Package'}
-                        {' for '}{selectedMonths.map(m => format(m, 'MMM yyyy')).join(', ')}
-                      </p>
-                    </div>
-                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="message">Additional Message</Label>
