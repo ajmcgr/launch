@@ -14,6 +14,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
 
 const YEARS_AVAILABLE = 10; // Show next 10 years of dates
+const MAX_WEBSITE_SLOTS = 4;
+const MAX_NEWSLETTER_SLOTS = 4;
+
+// Track booked slots per month
+interface MonthAvailability {
+  websiteBooked: number;
+  newsletterBooked: number;
+}
 
 const Advertise = () => {
   const [step, setStep] = useState<1 | 2>(1);
@@ -27,6 +35,79 @@ const Advertise = () => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availability, setAvailability] = useState<Record<string, MonthAvailability>>({});
+
+  // Fetch existing sponsored products to check availability
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      const { data, error } = await supabase
+        .from('sponsored_products')
+        .select('start_date, sponsorship_type')
+        .gte('start_date', format(new Date(), 'yyyy-MM-01'));
+
+      if (error) {
+        console.error('Error fetching availability:', error);
+        return;
+      }
+
+      // Build availability map by month
+      const availMap: Record<string, MonthAvailability> = {};
+      data?.forEach((sp) => {
+        const monthKey = sp.start_date.substring(0, 7); // 'YYYY-MM' format
+        if (!availMap[monthKey]) {
+          availMap[monthKey] = { websiteBooked: 0, newsletterBooked: 0 };
+        }
+        if (sp.sponsorship_type === 'website' || sp.sponsorship_type === 'combined') {
+          availMap[monthKey].websiteBooked++;
+        }
+        if (sp.sponsorship_type === 'newsletter' || sp.sponsorship_type === 'combined') {
+          availMap[monthKey].newsletterBooked++;
+        }
+      });
+      setAvailability(availMap);
+    };
+
+    fetchAvailability();
+  }, []);
+
+  // Check if a month is available for the selected sponsorship type
+  const isMonthAvailable = (date: Date, type: SponsorshipType | null): boolean => {
+    if (!type) return true;
+    const monthKey = format(date, 'yyyy-MM');
+    const avail = availability[monthKey] || { websiteBooked: 0, newsletterBooked: 0 };
+
+    switch (type) {
+      case 'website':
+        return avail.websiteBooked < MAX_WEBSITE_SLOTS;
+      case 'newsletter':
+        return avail.newsletterBooked < MAX_NEWSLETTER_SLOTS;
+      case 'combined':
+        return avail.websiteBooked < MAX_WEBSITE_SLOTS && avail.newsletterBooked < MAX_NEWSLETTER_SLOTS;
+      default:
+        return true;
+    }
+  };
+
+  // Get remaining slots for display
+  const getRemainingSlots = (date: Date, type: SponsorshipType | null): string => {
+    if (!type) return '';
+    const monthKey = format(date, 'yyyy-MM');
+    const avail = availability[monthKey] || { websiteBooked: 0, newsletterBooked: 0 };
+
+    switch (type) {
+      case 'website':
+        return `${MAX_WEBSITE_SLOTS - avail.websiteBooked} slots left`;
+      case 'newsletter':
+        return `${MAX_NEWSLETTER_SLOTS - avail.newsletterBooked} slots left`;
+      case 'combined': {
+        const websiteLeft = MAX_WEBSITE_SLOTS - avail.websiteBooked;
+        const newsletterLeft = MAX_NEWSLETTER_SLOTS - avail.newsletterBooked;
+        return `${Math.min(websiteLeft, newsletterLeft)} slots left`;
+      }
+      default:
+        return '';
+    }
+  };
 
   // Generate available years (current year + next 10 years)
   const getAvailableYears = () => {
@@ -38,9 +119,9 @@ const Advertise = () => {
     return years;
   };
 
-  // Generate months for the selected year, filtering out past months
+  // Generate months for the selected year, filtering out past and fully booked months
   const getMonthsForYear = (year: number) => {
-    const months: { value: number; label: string; date: Date }[] = [];
+    const months: { value: number; label: string; date: Date; available: boolean; slotsInfo: string }[] = [];
     const today = new Date();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
@@ -53,10 +134,15 @@ const Advertise = () => {
       // Skip if already selected
       if (selectedMonths.some(m => m.getTime() === date.getTime())) continue;
       
+      const available = isMonthAvailable(date, selectedType);
+      const slotsInfo = getRemainingSlots(date, selectedType);
+      
       months.push({
         value: month,
         label: format(date, 'MMMM'),
-        date
+        date,
+        available,
+        slotsInfo
       });
     }
     return months;
@@ -376,11 +462,29 @@ const Advertise = () => {
                           <SelectValue placeholder={selectedYear ? "Select month" : "Select year first"} />
                         </SelectTrigger>
                         <SelectContent className="bg-background">
-                          {monthsForSelectedYear.map((month) => (
-                            <SelectItem key={month.value} value={month.value.toString()}>
-                              {month.label}
-                            </SelectItem>
-                          ))}
+                          {monthsForSelectedYear.length === 0 ? (
+                            <div className="px-3 py-2 text-sm text-muted-foreground">
+                              No available months
+                            </div>
+                          ) : (
+                            monthsForSelectedYear.map((month) => (
+                              <SelectItem 
+                                key={month.value} 
+                                value={month.value.toString()}
+                                disabled={!month.available}
+                                className={!month.available ? 'opacity-50' : ''}
+                              >
+                                <span className="flex items-center justify-between w-full gap-2">
+                                  {month.label}
+                                  {!month.available ? (
+                                    <Badge variant="secondary" className="text-xs ml-2">Sold Out</Badge>
+                                  ) : month.slotsInfo && (
+                                    <span className="text-xs text-muted-foreground ml-2">{month.slotsInfo}</span>
+                                  )}
+                                </span>
+                              </SelectItem>
+                            ))
+                          )}
                         </SelectContent>
                       </Select>
                       
