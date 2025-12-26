@@ -15,7 +15,10 @@ interface LaunchedProduct {
   name: string;
   slug: string;
   tagline: string | null;
+  iconUrl: string | null;
 }
+
+import defaultProductIcon from '@/assets/default-product-icon.png';
 
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
 
@@ -58,15 +61,40 @@ const Advertise = () => {
 
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, slug, tagline')
+        .select(`
+          id, 
+          name, 
+          slug, 
+          tagline,
+          product_media!inner(url, type)
+        `)
         .eq('owner_id', user.id)
         .eq('status', 'launched')
+        .eq('product_media.type', 'icon')
         .order('name');
 
       if (error) {
         console.error('Error fetching launched products:', error);
+        // Fallback query without icon filter
+        const { data: fallbackData } = await supabase
+          .from('products')
+          .select('id, name, slug, tagline')
+          .eq('owner_id', user.id)
+          .eq('status', 'launched')
+          .order('name');
+        
+        setLaunchedProducts((fallbackData || []).map(p => ({ ...p, iconUrl: null })));
       } else {
-        setLaunchedProducts(data || []);
+        const productsWithIcons = (data || []).map(p => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          tagline: p.tagline,
+          iconUrl: Array.isArray(p.product_media) && p.product_media.length > 0 
+            ? p.product_media[0].url 
+            : null
+        }));
+        setLaunchedProducts(productsWithIcons);
       }
       setIsLoadingProducts(false);
     };
@@ -592,11 +620,18 @@ const Advertise = () => {
                         <SelectContent className="bg-background">
                           {launchedProducts.map((product) => (
                             <SelectItem key={product.id} value={product.id}>
-                              <div className="flex flex-col">
-                                <span>{product.name}</span>
-                                {product.tagline && (
-                                  <span className="text-xs text-muted-foreground">{product.tagline}</span>
-                                )}
+                              <div className="flex items-center gap-3">
+                                <img 
+                                  src={product.iconUrl || defaultProductIcon} 
+                                  alt={product.name || 'Product'} 
+                                  className="w-8 h-8 rounded-md object-cover flex-shrink-0"
+                                />
+                                <div className="flex flex-col">
+                                  <span>{product.name}</span>
+                                  {product.tagline && (
+                                    <span className="text-xs text-muted-foreground line-clamp-1">{product.tagline}</span>
+                                  )}
+                                </div>
                               </div>
                             </SelectItem>
                           ))}
