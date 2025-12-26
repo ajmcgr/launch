@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, ArrowLeft, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { format, addMonths, startOfMonth } from 'date-fns';
+import { format, startOfMonth } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
@@ -19,6 +19,8 @@ const Advertise = () => {
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedType, setSelectedType] = useState<SponsorshipType | null>(null);
   const [selectedMonths, setSelectedMonths] = useState<Date[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [formData, setFormData] = useState({
     launchUrl: '',
     message: '',
@@ -26,21 +28,49 @@ const Advertise = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const getAvailableMonths = () => {
-    const months: Date[] = [];
+  // Generate available years (current year + next 10 years)
+  const getAvailableYears = () => {
+    const years: number[] = [];
+    const currentYear = new Date().getFullYear();
+    for (let i = 0; i <= YEARS_AVAILABLE; i++) {
+      years.push(currentYear + i);
+    }
+    return years;
+  };
+
+  // Generate months for the selected year, filtering out past months
+  const getMonthsForYear = (year: number) => {
+    const months: { value: number; label: string; date: Date }[] = [];
     const today = new Date();
-    // Show next 10 years of months (120 months)
-    for (let i = 1; i <= YEARS_AVAILABLE * 12; i++) {
-      months.push(startOfMonth(addMonths(today, i)));
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    for (let month = 0; month < 12; month++) {
+      // Skip past months for current year
+      if (year === currentYear && month <= currentMonth) continue;
+      
+      const date = startOfMonth(new Date(year, month, 1));
+      // Skip if already selected
+      if (selectedMonths.some(m => m.getTime() === date.getTime())) continue;
+      
+      months.push({
+        value: month,
+        label: format(date, 'MMMM'),
+        date
+      });
     }
     return months;
   };
 
-  const addMonth = (monthStr: string) => {
-    const month = availableMonths.find(m => m.getTime().toString() === monthStr);
-    if (month && !selectedMonths.some(m => m.getTime() === month.getTime())) {
-      setSelectedMonths(prev => [...prev, month].sort((a, b) => a.getTime() - b.getTime()));
+  const addSelectedMonth = () => {
+    if (!selectedYear || !selectedMonth) return;
+    
+    const date = startOfMonth(new Date(parseInt(selectedYear), parseInt(selectedMonth), 1));
+    if (!selectedMonths.some(m => m.getTime() === date.getTime())) {
+      setSelectedMonths(prev => [...prev, date].sort((a, b) => a.getTime() - b.getTime()));
     }
+    // Reset month selection after adding
+    setSelectedMonth('');
   };
 
   const removeMonth = (month: Date) => {
@@ -135,7 +165,11 @@ const Advertise = () => {
     }
   }, []);
 
-  const availableMonths = useMemo(() => getAvailableMonths(), []);
+  const availableYears = useMemo(() => getAvailableYears(), []);
+  const monthsForSelectedYear = useMemo(() => {
+    if (!selectedYear) return [];
+    return getMonthsForYear(parseInt(selectedYear));
+  }, [selectedYear, selectedMonths]);
 
   return (
     <div className="min-h-screen bg-background py-16">
@@ -314,20 +348,49 @@ const Advertise = () => {
                     <Label className={formErrors.months ? 'text-destructive' : ''}>
                       Select Month(s) to Advertise *
                     </Label>
-                    <Select onValueChange={addMonth}>
-                      <SelectTrigger className={`w-full ${formErrors.months ? 'border-destructive' : ''}`}>
-                        <SelectValue placeholder="Select a month to add" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60 bg-background">
-                        {availableMonths
-                          .filter(month => !selectedMonths.some(m => m.getTime() === month.getTime()))
-                          .map((month) => (
-                            <SelectItem key={month.getTime()} value={month.getTime().toString()}>
-                              {format(month, 'MMMM yyyy')}
+                    <div className="flex gap-2">
+                      <Select value={selectedYear} onValueChange={(value) => {
+                        setSelectedYear(value);
+                        setSelectedMonth(''); // Reset month when year changes
+                      }}>
+                        <SelectTrigger className={`w-[120px] ${formErrors.months ? 'border-destructive' : ''}`}>
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background">
+                          {availableYears.map((year) => (
+                            <SelectItem key={year} value={year.toString()}>
+                              {year}
                             </SelectItem>
                           ))}
-                      </SelectContent>
-                    </Select>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Select 
+                        value={selectedMonth} 
+                        onValueChange={setSelectedMonth}
+                        disabled={!selectedYear}
+                      >
+                        <SelectTrigger className={`flex-1 ${formErrors.months ? 'border-destructive' : ''}`}>
+                          <SelectValue placeholder={selectedYear ? "Select month" : "Select year first"} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background">
+                          {monthsForSelectedYear.map((month) => (
+                            <SelectItem key={month.value} value={month.value.toString()}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      
+                      <Button 
+                        type="button" 
+                        variant="secondary"
+                        onClick={addSelectedMonth}
+                        disabled={!selectedYear || !selectedMonth}
+                      >
+                        Add
+                      </Button>
+                    </div>
                     {formErrors.months && (
                       <p className="text-sm text-destructive">{formErrors.months}</p>
                     )}
