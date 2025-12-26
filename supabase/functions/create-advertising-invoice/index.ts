@@ -31,6 +31,7 @@ Deno.serve(async (req) => {
       websiteSponsorship, 
       newsletterSponsorship, 
       months,
+      selectedMonths,
       message 
     } = await req.json();
 
@@ -49,15 +50,17 @@ Deno.serve(async (req) => {
     let unitAmount: number;
     let description: string;
 
+    const monthsLabel = selectedMonths?.length > 0 ? ` - ${selectedMonths.join(', ')}` : '';
+
     if (websiteSponsorship && newsletterSponsorship) {
       unitAmount = 125000; // $1,250 in cents
-      description = 'Combined Package (Website + Newsletter)';
+      description = `Combined Package (Website + Newsletter)${monthsLabel}`;
     } else if (websiteSponsorship) {
       unitAmount = 100000; // $1,000 in cents
-      description = 'Website Placement';
+      description = `Website Placement${monthsLabel}`;
     } else {
       unitAmount = 50000; // $500 in cents
-      description = 'Newsletter Sponsorship';
+      description = `Newsletter Sponsorship${monthsLabel}`;
     }
 
     // Create or retrieve customer
