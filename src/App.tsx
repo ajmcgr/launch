@@ -25,6 +25,7 @@ import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
+import Advertise from "./pages/Advertise";
 
 import DiscourseSso from "./pages/DiscourseSso";
 
@@ -50,6 +51,7 @@ const AppContent = () => {
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/advertise" element={<Advertise />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/newsletter" element={<Blog />} />
