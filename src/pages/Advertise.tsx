@@ -280,8 +280,8 @@ const Advertise = () => {
                 onClick={() => setSelectedType('website')}
               >
                 <CardHeader>
-                  <CardTitle className="text-xl">Website Placement</CardTitle>
-                  <CardDescription>Prominent display directly above leaderboard</CardDescription>
+                <CardTitle className="text-xl">Website Placement</CardTitle>
+                <CardDescription>Permanent display on homepage leaderboard</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
