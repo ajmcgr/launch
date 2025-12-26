@@ -188,7 +188,7 @@ const Advertise = () => {
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Sponsored listing at top of homepage for 1 month</span>
+                      <span className="text-sm">Sponsored listing on homepage for 1 month</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -196,7 +196,7 @@ const Advertise = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Only 1 sponsor per month</span>
+                      <span className="text-sm">Up to 4 sponsored positions available</span>
                     </li>
                   </ul>
                   <Button 

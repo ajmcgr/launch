@@ -527,6 +527,44 @@ export type Database = {
           },
         ]
       }
+      sponsored_products: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          position: number
+          product_id: string
+          sponsorship_type: string
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          position?: number
+          product_id: string
+          sponsorship_type: string
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          position?: number
+          product_id?: string
+          sponsorship_type?: string
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsored_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
