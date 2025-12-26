@@ -61,23 +61,15 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4 text-foreground">Advertise</h3>
+            <h3 className="font-semibold mb-4 text-foreground">Resources</h3>
             <ul className="space-y-1">
               <li>
-                <a 
-                  href="mailto:alex@trylaunch.ai"
+                <Link 
+                  to="/advertise"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Display
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="mailto:alex@trylaunch.ai"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Newsletter
-                </a>
+                  Advertise
+                </Link>
               </li>
             </ul>
           </div>
