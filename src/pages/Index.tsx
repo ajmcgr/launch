@@ -5,6 +5,7 @@ import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
 import { HomeLaunchCard } from '@/components/HomeLaunchCard';
+import { SponsoredListing } from '@/components/SponsoredListing';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -251,6 +252,13 @@ const Index = () => {
           </div>
         ) : effectiveView === 'list' ? (
           <div className="divide-y mb-8">
+            <SponsoredListing
+              name="Media"
+              tagline="Find Any Journalist or Creator Email. Instantly."
+              slug="media"
+              iconUrl="https://gzpypxgdkxdynovploxn.supabase.co/storage/v1/object/public/product-media/5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc/thumbnail/0.22158311710994627.png"
+              domainUrl="https://trymedia.ai/"
+            />
             {launches.slice(0, displayCount).map((launch) => (
               <HomeLaunchListItem
                 key={launch.id}
@@ -265,19 +273,28 @@ const Index = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {launches.slice(0, displayCount).map((launch) => (
-              <HomeLaunchCard
-                key={launch.id}
-                rank={launch.rank}
-                name={launch.name}
-                tagline={launch.tagline}
-                icon={launch.icon}
-                votes={launch.votes}
-                slug={launch.slug}
-                onVote={() => handleVote(launch.id)}
-              />
-            ))}
+          <div className="mb-8">
+            <SponsoredListing
+              name="Media"
+              tagline="Find Any Journalist or Creator Email. Instantly."
+              slug="media"
+              iconUrl="https://gzpypxgdkxdynovploxn.supabase.co/storage/v1/object/public/product-media/5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc/thumbnail/0.22158311710994627.png"
+              domainUrl="https://trymedia.ai/"
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {launches.slice(0, displayCount).map((launch) => (
+                <HomeLaunchCard
+                  key={launch.id}
+                  rank={launch.rank}
+                  name={launch.name}
+                  tagline={launch.tagline}
+                  icon={launch.icon}
+                  votes={launch.votes}
+                  slug={launch.slug}
+                  onVote={() => handleVote(launch.id)}
+                />
+              ))}
+            </div>
           </div>
         )}
 
