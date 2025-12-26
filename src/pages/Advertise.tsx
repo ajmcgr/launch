@@ -20,10 +20,6 @@ const Advertise = () => {
   const [selectedType, setSelectedType] = useState<SponsorshipType | null>(null);
   const [selectedMonths, setSelectedMonths] = useState<Date[]>([]);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    website: '',
     launchUrl: '',
     message: '',
   });
@@ -64,26 +60,9 @@ const Advertise = () => {
     return getPrice() * selectedMonths.length;
   };
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) {
-      errors.name = 'Name is required';
-    }
-    
-    if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
-      errors.email = 'Please enter a valid email';
-    }
-    
-    if (!formData.company.trim()) {
-      errors.company = 'Company is required';
-    }
     
     if (selectedMonths.length === 0) {
       errors.months = 'Please select at least one month';
@@ -120,10 +99,6 @@ const Advertise = () => {
     try {
       const { data, error } = await supabase.functions.invoke('create-advertising-checkout', {
         body: {
-          name: formData.name,
-          email: formData.email,
-          company: formData.company,
-          website: formData.website,
           launchUrl: formData.launchUrl,
           sponsorshipType: selectedType,
           months: selectedMonths.length.toString(),
@@ -379,76 +354,6 @@ const Advertise = () => {
                     )}
                   </div>
 
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className={formErrors.name ? 'text-destructive' : ''}>
-                        Name *
-                      </Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => {
-                          setFormData({ ...formData, name: e.target.value });
-                          if (formErrors.name) setFormErrors(prev => ({ ...prev, name: '' }));
-                        }}
-                        placeholder="Your name"
-                        className={formErrors.name ? 'border-destructive' : ''}
-                      />
-                      {formErrors.name && (
-                        <p className="text-sm text-destructive">{formErrors.name}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className={formErrors.email ? 'text-destructive' : ''}>
-                        Email *
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => {
-                          setFormData({ ...formData, email: e.target.value });
-                          if (formErrors.email) setFormErrors(prev => ({ ...prev, email: '' }));
-                        }}
-                        placeholder="you@company.com"
-                        className={formErrors.email ? 'border-destructive' : ''}
-                      />
-                      {formErrors.email && (
-                        <p className="text-sm text-destructive">{formErrors.email}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="company" className={formErrors.company ? 'text-destructive' : ''}>
-                        Company *
-                      </Label>
-                      <Input
-                        id="company"
-                        value={formData.company}
-                        onChange={(e) => {
-                          setFormData({ ...formData, company: e.target.value });
-                          if (formErrors.company) setFormErrors(prev => ({ ...prev, company: '' }));
-                        }}
-                        placeholder="Your company name"
-                        className={formErrors.company ? 'border-destructive' : ''}
-                      />
-                      {formErrors.company && (
-                        <p className="text-sm text-destructive">{formErrors.company}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="website">Website</Label>
-                      <Input
-                        id="website"
-                        type="url"
-                        value={formData.website}
-                        onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                        placeholder="https://yourcompany.com"
-                      />
-                    </div>
-                  </div>
 
                   <div className="space-y-2">
                     <Label 

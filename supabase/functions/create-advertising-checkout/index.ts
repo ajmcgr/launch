@@ -23,10 +23,6 @@ Deno.serve(async (req) => {
     });
 
     const { 
-      name, 
-      email, 
-      company, 
-      website, 
       launchUrl, 
       sponsorshipType,
       months,
@@ -34,12 +30,7 @@ Deno.serve(async (req) => {
       message 
     } = await req.json();
 
-    console.log('Creating checkout for:', { email, company, sponsorshipType, months });
-
-    // Validate required fields
-    if (!email || !name || !company) {
-      throw new Error('Missing required fields: email, name, company');
-    }
+    console.log('Creating checkout for:', { sponsorshipType, months, launchUrl });
 
     if (!sponsorshipType) {
       throw new Error('Sponsorship type is required');
@@ -80,10 +71,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Create checkout session
+    // Create checkout session with billing address collection for company invoices
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      customer_email: email,
+      billing_address_collection: 'required',
       line_items: [
         {
           price_data: {
@@ -103,9 +94,6 @@ Deno.serve(async (req) => {
       metadata: {
         type: 'advertising',
         sponsorship_type: sponsorshipType,
-        name: name,
-        company: company,
-        website: website || '',
         launch_url: launchUrl || '',
         product_slug: productSlug,
         months: months,
