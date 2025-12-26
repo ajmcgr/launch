@@ -145,14 +145,6 @@ const Pricing = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Position 1: Top of leaderboard</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Positions 2-4: Interspersed in feed</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <span className="text-sm">2,000+ monthly visitors</span>
                   </li>
                 </ul>
@@ -179,10 +171,6 @@ const Pricing = () => {
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <span className="text-sm">2,000+ subscribers</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Only 4 sponsors per month</span>
                   </li>
                 </ul>
                 <Button asChild className="w-full" size="lg" variant="outline">
