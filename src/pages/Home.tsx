@@ -6,6 +6,7 @@ import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
+import { SponsoredListing } from '@/components/SponsoredListing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -391,6 +392,13 @@ const Home = () => {
       <>
         {effectiveView === 'list' ? (
           <div className="divide-y">
+            <SponsoredListing
+              name="Media"
+              tagline="Find Any Journalist or Creator Email. Instantly."
+              slug="media"
+              iconUrl="https://gzpypxgdkxdynovploxn.supabase.co/storage/v1/object/public/product-media/5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc/thumbnail/0.22158311710994627.png"
+              domainUrl="https://trymedia.ai/"
+            />
             {productList.map((product, index) => (
               <LaunchListItem
                 key={product.id}
@@ -402,6 +410,13 @@ const Home = () => {
           </div>
         ) : (
           <div className="space-y-4">
+            <SponsoredListing
+              name="Media"
+              tagline="Find Any Journalist or Creator Email. Instantly."
+              slug="media"
+              iconUrl="https://gzpypxgdkxdynovploxn.supabase.co/storage/v1/object/public/product-media/5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc/thumbnail/0.22158311710994627.png"
+              domainUrl="https://trymedia.ai/"
+            />
             {productList.map((product, index) => (
               <LaunchCard
                 key={product.id}
