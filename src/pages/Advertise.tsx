@@ -98,14 +98,10 @@ const Advertise = () => {
       errors.months = 'Please select at least one month';
     }
 
-    // URL is required for all types, but Launch URL only required for website/combined
+    // Launch URL is required for all sponsorship types
     if (!formData.launchUrl.trim()) {
-      if (selectedType === 'newsletter') {
-        errors.launchUrl = 'URL is required';
-      } else {
-        errors.launchUrl = 'Launch URL is required';
-      }
-    } else if (selectedType !== 'newsletter' && !formData.launchUrl.includes('trylaunch.ai/launch/')) {
+      errors.launchUrl = 'Launch URL is required';
+    } else if (!formData.launchUrl.includes('trylaunch.ai/launch/')) {
       errors.launchUrl = 'Please enter a valid Launch URL (e.g., https://trylaunch.ai/launch/your-product)';
     }
     
@@ -429,7 +425,7 @@ const Advertise = () => {
                       htmlFor="launchUrl"
                       className={formErrors.launchUrl ? 'text-destructive' : ''}
                     >
-                      {selectedType === 'newsletter' ? 'Website URL *' : 'Launch URL *'}
+                      Launch URL *
                     </Label>
                     <Input
                       id="launchUrl"
@@ -439,20 +435,14 @@ const Advertise = () => {
                         setFormData({ ...formData, launchUrl: e.target.value });
                         if (formErrors.launchUrl) setFormErrors(prev => ({ ...prev, launchUrl: '' }));
                       }}
-                      placeholder={selectedType === 'newsletter' 
-                        ? "https://your-website.com" 
-                        : "https://trylaunch.ai/launch/your-product"
-                      }
+                      placeholder="https://trylaunch.ai/launch/your-product"
                       className={formErrors.launchUrl ? 'border-destructive' : ''}
                     />
                     {formErrors.launchUrl ? (
                       <p className="text-sm text-destructive">{formErrors.launchUrl}</p>
                     ) : (
                       <p className="text-sm text-muted-foreground">
-                        {selectedType === 'newsletter' 
-                          ? 'The URL to link to in the newsletter'
-                          : 'Your product listing on Launch that will be sponsored'
-                        }
+                        Your product listing on Launch that will be sponsored
                       </p>
                     )}
                   </div>
