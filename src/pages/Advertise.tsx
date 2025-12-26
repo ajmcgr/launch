@@ -68,9 +68,9 @@ const Advertise = () => {
       errors.months = 'Please select at least one month';
     }
 
-    // Launch URL is required for website/combined sponsorships
-    if ((selectedType === 'website' || selectedType === 'combined') && !formData.launchUrl.trim()) {
-      errors.launchUrl = 'Launch URL is required for website sponsorship';
+    // Launch URL is required for all sponsorship types
+    if (!formData.launchUrl.trim()) {
+      errors.launchUrl = 'Launch URL is required';
     }
     
     setFormErrors(errors);
@@ -360,7 +360,7 @@ const Advertise = () => {
                       htmlFor="launchUrl"
                       className={formErrors.launchUrl ? 'text-destructive' : ''}
                     >
-                      Launch URL {(selectedType === 'website' || selectedType === 'combined') ? '*' : '(optional)'}
+                      Launch URL *
                     </Label>
                     <Input
                       id="launchUrl"
@@ -377,9 +377,7 @@ const Advertise = () => {
                       <p className="text-sm text-destructive">{formErrors.launchUrl}</p>
                     ) : (
                       <p className="text-sm text-muted-foreground">
-                        {(selectedType === 'website' || selectedType === 'combined') 
-                          ? 'Required: Your product listing on Launch that will be sponsored'
-                          : 'If you already have a product on Launch, paste the link here'}
+                        Your product listing on Launch that will be sponsored
                       </p>
                     )}
                   </div>
