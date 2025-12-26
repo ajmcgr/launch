@@ -178,6 +178,66 @@ Deno.serve(async (req) => {
           console.error('Error sending advertising confirmation email:', emailError);
         }
 
+        // Send admin notification for newsletter sponsorships
+        if (metadata.sponsorship_type === 'newsletter' || metadata.sponsorship_type === 'combined') {
+          try {
+            const adminEmailHtml = `
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                    .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                    .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                    .logo { height: 32px; }
+                    .content { padding: 30px; }
+                    .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                    .content p { margin: 0 0 16px 0; color: #4b5563; }
+                    .highlight { background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #fcd34d; }
+                    .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <div class="card">
+                      <div class="header">
+                        <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
+                      </div>
+                      <div class="content">
+                        <h1>📰 New Newsletter Sponsorship</h1>
+                        <p>A new newsletter sponsorship has been purchased and needs to be added to the newsletter.</p>
+                        <div class="highlight">
+                          <p><strong>Package:</strong> ${metadata.sponsorship_type === 'combined' ? 'Combined Package' : 'Newsletter Sponsorship'}</p>
+                          <p><strong>Product:</strong> ${metadata.launch_url || metadata.product_slug || 'N/A'}</p>
+                          <p><strong>Months:</strong> ${metadata.selected_months || metadata.months + ' month(s)'}</p>
+                          <p><strong>Customer Email:</strong> ${session.customer_email || 'N/A'}</p>
+                          ${metadata.message ? `<p><strong>Message:</strong> ${metadata.message}</p>` : ''}
+                        </div>
+                        <p>Please add this product to the newsletter for the specified months.</p>
+                      </div>
+                      <div class="footer">
+                        <p>Launch Admin Notification</p>
+                      </div>
+                    </div>
+                  </div>
+                </body>
+              </html>
+            `;
+
+            await resend.emails.send({
+              from: 'Launch <notifications@trylaunch.ai>',
+              to: ['alex@trylaunch.ai'],
+              subject: `📰 New Newsletter Sponsorship - ${metadata.selected_months || 'Action Required'}`,
+              html: adminEmailHtml,
+            });
+
+            console.log('Admin notification email sent for newsletter sponsorship');
+          } catch (adminEmailError) {
+            console.error('Error sending admin notification email:', adminEmailError);
+          }
+        }
+
         return new Response(JSON.stringify({ received: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
