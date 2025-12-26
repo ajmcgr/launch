@@ -51,7 +51,7 @@ const Advertise = () => {
     switch (selectedType) {
       case 'website': return 750;
       case 'newsletter': return 500;
-      case 'combined': return 900;
+      case 'combined': return 1200;
       default: return 0;
     }
   };
@@ -254,7 +254,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $900<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $1,200<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
@@ -267,7 +267,7 @@ const Advertise = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Save $350/month with bundle</span>
+                      <span className="text-sm">Save $50/month with bundle</span>
                     </li>
                   </ul>
                   <Button 
