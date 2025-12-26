@@ -132,7 +132,7 @@ const Pricing = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-xl">Website Placement</CardTitle>
-                <CardDescription>Prominent display directly above leaderboard</CardDescription>
+                <CardDescription>Permanent display on homepage leaderboard</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
