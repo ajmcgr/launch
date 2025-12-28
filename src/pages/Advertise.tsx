@@ -4,11 +4,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, ArrowLeft, X } from 'lucide-react';
+import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { format, startOfMonth } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useNavigate } from 'react-router-dom';
 
 interface LaunchedProduct {
   id: string;
@@ -33,6 +35,7 @@ interface MonthAvailability {
 }
 
 const Advertise = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedType, setSelectedType] = useState<SponsorshipType | null>(null);
   const [selectedMonths, setSelectedMonths] = useState<Date[]>([]);
@@ -47,17 +50,37 @@ const Advertise = () => {
   const [availability, setAvailability] = useState<Record<string, MonthAvailability>>({});
   const [launchedProducts, setLaunchedProducts] = useState<LaunchedProduct[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Check authentication state
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setAuthChecked(true);
+    };
+    
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Fetch user's launched products
   useEffect(() => {
     const fetchLaunchedProducts = async () => {
-      setIsLoadingProducts(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
+        setLaunchedProducts([]);
         setIsLoadingProducts(false);
         return;
       }
+
+      setIsLoadingProducts(true);
 
       const { data, error } = await supabase
         .from('products')
@@ -99,8 +122,10 @@ const Advertise = () => {
       setIsLoadingProducts(false);
     };
 
-    fetchLaunchedProducts();
-  }, []);
+    if (authChecked) {
+      fetchLaunchedProducts();
+    }
+  }, [user, authChecked]);
 
   // Fetch existing sponsored products to check availability
   useEffect(() => {
@@ -241,6 +266,15 @@ const Advertise = () => {
     return getPrice() * selectedMonths.length;
   };
 
+  const handleGetStarted = (type: SponsorshipType) => {
+    if (!user) {
+      toast.error('Please sign in to purchase advertising');
+      navigate('/auth?redirect=/advertise');
+      return;
+    }
+    setSelectedType(type);
+    setStep(2);
+  };
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -313,7 +347,7 @@ const Advertise = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-      toast.success('Payment successful! Your sponsorship has been activated.');
+      setShowSuccessModal(true);
       // Clear URL params
       window.history.replaceState({}, '', '/advertise');
     } else if (urlParams.get('canceled') === 'true') {
@@ -328,8 +362,58 @@ const Advertise = () => {
     return getMonthsForYear(parseInt(selectedYear));
   }, [selectedYear, selectedMonths]);
 
+  // Success Modal Component
+  const SuccessModal = () => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <Card className="max-w-md w-full">
+        <CardContent className="pt-6 text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="h-10 w-10 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Payment Successful!</h2>
+          <p className="text-muted-foreground mb-4">
+            Your sponsorship has been activated. You'll receive a confirmation email shortly with all the details.
+          </p>
+          <div className="bg-muted/50 rounded-lg p-4 mb-6 text-left">
+            <h3 className="font-semibold mb-2">What happens next?</h3>
+            <ul className="text-sm space-y-2 text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <span>Your product will appear in the sponsored section during your selected months</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <span>Newsletter sponsors will be featured in our weekly emails</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <span>Check your email for the payment receipt</span>
+              </li>
+            </ul>
+          </div>
+          <Button onClick={() => setShowSuccessModal(false)} className="w-full">
+            Got it!
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  // Stripe Badge Component
+  const StripeBadge = () => (
+    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-4">
+      <Lock className="h-4 w-4" />
+      <span>Payments secured by</span>
+      <svg className="h-5" viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg">
+        <path fill="currentColor" d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a9.18 9.18 0 0 1-4.56 1.02c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.02 1.04-.06 1.56zm-8.06-2.66h4.38c0-1.73-.67-2.89-2.11-2.89-1.34 0-2.11 1.07-2.27 2.89zm-9.99-5.45c-1.14 0-2.02.52-2.65 1.36l-.04-1.12H35v18.4l4.14-.87v-4.5c.69.5 1.66.93 2.9.93 2.97 0 5.65-2.49 5.65-7.52 0-4.66-2.62-7.26-5.1-7.26zm-.9 10.95c-1.02 0-1.65-.42-2.05-.95V12.04c.43-.58 1.11-1 2.05-1 1.56 0 2.65 1.78 2.65 4.01 0 2.29-1.07 4.07-2.65 4.07zm-10.51-11.9v3.36H28v3.08h2.18v4.48c0 2.98 1.54 4.5 4.68 4.5 1.29 0 2.14-.27 2.78-.58V16.6c-.52.24-1.12.4-1.79.4-1.07 0-1.58-.43-1.58-1.59V9.56h3.37V6.49H34.27V5.05l-4.14.87-.06.3zm-5.02 12.43c0 .58.05 1.43.18 2.19h-3.9a8.7 8.7 0 0 1-.1-1.17c-.7 1.04-1.78 1.41-3.14 1.41-2.42 0-3.92-1.5-3.92-3.45 0-2.49 1.9-3.73 5.04-3.73h1.9v-.53c0-1.05-.54-1.73-2.02-1.73-1.14 0-2.27.27-3.27.87l-1.16-2.79a11.33 11.33 0 0 1 5.08-1.12c3.55 0 5.37 1.71 5.37 5.12v4.93h-.06zm-4.02-.66c.9 0 1.72-.54 1.97-1.33v-1.22h-1.56c-1.3 0-1.98.48-1.98 1.3 0 .7.52 1.25 1.57 1.25zm-10.11.66c0 .58.05 1.43.18 2.19h-3.9a8.7 8.7 0 0 1-.1-1.17c-.7 1.04-1.78 1.41-3.14 1.41-2.42 0-3.92-1.5-3.92-3.45 0-2.49 1.9-3.73 5.04-3.73h1.9v-.53c0-1.05-.54-1.73-2.02-1.73-1.14 0-2.27.27-3.27.87l-1.16-2.79a11.33 11.33 0 0 1 5.08-1.12c3.55 0 5.37 1.71 5.37 5.12v4.93h-.06zm-4.02-.66c.9 0 1.72-.54 1.97-1.33v-1.22h-1.56c-1.3 0-1.98.48-1.98 1.3 0 .7.52 1.25 1.57 1.25zM0 7.48c0-.67.55-1.22 1.22-1.22h3.01c.67 0 1.22.55 1.22 1.22v11.8c0 .67-.55 1.22-1.22 1.22H1.22c-.67 0-1.22-.55-1.22-1.22V7.48z"/>
+      </svg>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background py-16">
+      {showSuccessModal && <SuccessModal />}
+      
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Advertise with Launch</h1>
@@ -371,8 +455,7 @@ const Advertise = () => {
                   size="lg" 
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedType('website');
-                    setStep(2);
+                    handleGetStarted('website');
                   }}
                 >
                     Get Started
@@ -409,8 +492,7 @@ const Advertise = () => {
                   size="lg" 
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSelectedType('newsletter');
-                    setStep(2);
+                    handleGetStarted('newsletter');
                   }}
                 >
                     Get Started
@@ -462,14 +544,130 @@ const Advertise = () => {
                     size="lg"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedType('combined');
-                      setStep(2);
+                      handleGetStarted('combined');
                     }}
                   >
                     Get Started
                   </Button>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Placement Preview Section */}
+            <div className="max-w-4xl mx-auto mb-12">
+              <h2 className="text-2xl font-bold text-center mb-8">How Your Sponsorship Appears</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Website Preview */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Eye className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">Website Placement</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-muted/30 rounded-lg p-4 border">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Sponsored</p>
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
+                          <span className="text-lg font-bold text-primary">Y</span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold">Your Product Name</h4>
+                          <p className="text-sm text-muted-foreground">Your tagline appears here with your branding</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                          <div className="w-10 h-10 border border-primary rounded-lg flex items-center justify-center">
+                            <span className="text-primary font-bold">▲</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground mt-1">123</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      Appears at the top of the homepage in a dedicated "Sponsored" section, visible to all visitors.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Newsletter Preview */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">Newsletter Feature</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-muted/30 rounded-lg p-4 border">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">This Week's Sponsor</p>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
+                            <span className="font-bold text-primary">Y</span>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold">Your Product Name</h4>
+                            <p className="text-xs text-muted-foreground">yourproduct.com</p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Featured description of your product reaching 2,000+ engaged subscribers.
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      Featured prominently in our weekly newsletter sent to 2,000+ builders and AI enthusiasts.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="max-w-2xl mx-auto mb-12">
+              <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+                <HelpCircle className="h-6 w-6" />
+                Frequently Asked Questions
+              </h2>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>What are the requirements for advertising?</AccordionTrigger>
+                  <AccordionContent>
+                    You need to have a launched product on Launch to advertise. Your product must be approved and live before you can purchase advertising. This ensures all sponsored products meet our quality standards.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-2">
+                  <AccordionTrigger>When does my sponsorship start?</AccordionTrigger>
+                  <AccordionContent>
+                    Your sponsorship starts on the first day of your selected month(s). For example, if you select "January 2025", your placement will be active from January 1st through January 31st.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-3">
+                  <AccordionTrigger>How many sponsored slots are available per month?</AccordionTrigger>
+                  <AccordionContent>
+                    We limit sponsorships to 4 slots per month for both website placements and newsletter features. This ensures each sponsor gets meaningful visibility without overcrowding.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-4">
+                  <AccordionTrigger>Can I get a refund?</AccordionTrigger>
+                  <AccordionContent>
+                    Full refunds are available if requested before your sponsorship period starts. Once your sponsorship is active, refunds are not available. Please contact us at alex@trymedia.ai for any refund requests.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-5">
+                  <AccordionTrigger>Can I change my selected product after purchase?</AccordionTrigger>
+                  <AccordionContent>
+                    Yes, you can request to change the sponsored product before your sponsorship period begins. Contact us at alex@trymedia.ai with your request.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-6">
+                  <AccordionTrigger>Will I receive analytics or performance data?</AccordionTrigger>
+                  <AccordionContent>
+                    You can view your product's analytics on Launch, including page views and clicks. For newsletter campaigns, we can provide open rates upon request.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
 
           </>
@@ -666,8 +864,10 @@ const Advertise = () => {
                     disabled={isSubmitting || selectedMonths.length === 0} 
                     className="w-full"
                   >
-                    {isSubmitting ? 'Processing...' : 'Submit'}
+                    {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
                   </Button>
+                  
+                  <StripeBadge />
                 </form>
               </CardContent>
             </Card>
@@ -714,6 +914,8 @@ const Advertise = () => {
                       </span>
                     </div>
                   </div>
+                  
+                  <StripeBadge />
                 </div>
               </div>
             </div>

@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Shield, Users, Package, TrendingUp, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { Shield, Users, Package, TrendingUp, CheckCircle, XCircle, RefreshCw, Megaphone, DollarSign, Calendar } from 'lucide-react';
+import { format } from 'date-fns';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -47,16 +48,29 @@ const Admin = () => {
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [productsRes, usersRes, votesRes] = await Promise.all([
+      const [productsRes, usersRes, votesRes, sponsoredRes] = await Promise.all([
         supabase.from('products').select('id, status').eq('status', 'pending'),
         supabase.from('users').select('id'),
         supabase.from('votes').select('id'),
+        supabase.from('sponsored_products').select('id, sponsorship_type')
+          .gte('start_date', format(new Date(), 'yyyy-MM-01')),
       ]);
+
+      // Calculate advertising revenue from active/upcoming sponsorships
+      const sponsorships = sponsoredRes.data || [];
+      let totalRevenue = 0;
+      sponsorships.forEach(sp => {
+        if (sp.sponsorship_type === 'website') totalRevenue += 750;
+        else if (sp.sponsorship_type === 'newsletter') totalRevenue += 500;
+        else if (sp.sponsorship_type === 'combined') totalRevenue += 1000;
+      });
 
       return {
         pendingProducts: productsRes.data?.length || 0,
         totalUsers: usersRes.data?.length || 0,
         totalVotes: votesRes.data?.length || 0,
+        activeSponsorships: sponsorships.length,
+        advertisingRevenue: totalRevenue,
       };
     },
     enabled: isAdmin,
@@ -108,6 +122,23 @@ const Admin = () => {
     enabled: isAdmin,
   });
 
+  const { data: sponsoredProducts, refetch: refetchSponsored } = useQuery({
+    queryKey: ['sponsored-products-admin'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sponsored_products')
+        .select(`
+          *,
+          products(id, name, slug, tagline)
+        `)
+        .order('start_date', { ascending: true });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin,
+  });
+
   const approveProduct = async (productId: string) => {
     const { error } = await supabase
       .from('products')
@@ -136,6 +167,21 @@ const Admin = () => {
     toast.success('Product rejected');
   };
 
+  const deleteSponsorship = async (sponsorshipId: string) => {
+    const { error } = await supabase
+      .from('sponsored_products')
+      .delete()
+      .eq('id', sponsorshipId);
+
+    if (error) {
+      toast.error('Failed to delete sponsorship');
+      return;
+    }
+
+    toast.success('Sponsorship deleted');
+    refetchSponsored();
+  };
+
   const syncUsersToBeehiiv = async () => {
     setSyncingBeehiiv(true);
     try {
@@ -159,6 +205,37 @@ const Admin = () => {
     } finally {
       setSyncingBeehiiv(false);
     }
+  };
+
+  const getSponsorshipTypeLabel = (type: string) => {
+    switch (type) {
+      case 'website': return 'Website';
+      case 'newsletter': return 'Newsletter';
+      case 'combined': return 'Combined';
+      default: return type;
+    }
+  };
+
+  const getSponsorshipPrice = (type: string) => {
+    switch (type) {
+      case 'website': return 750;
+      case 'newsletter': return 500;
+      case 'combined': return 1000;
+      default: return 0;
+    }
+  };
+
+  const isSponsorshipActive = (startDate: string, endDate: string) => {
+    const now = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return now >= start && now <= end;
+  };
+
+  const isSponsorshipUpcoming = (startDate: string) => {
+    const now = new Date();
+    const start = new Date(startDate);
+    return now < start;
   };
 
   if (loading) {
@@ -190,7 +267,7 @@ const Admin = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Products</CardTitle>
@@ -220,12 +297,34 @@ const Admin = () => {
             <div className="text-2xl font-bold">{stats?.totalVotes || 0}</div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Sponsors</CardTitle>
+            <Megaphone className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.activeSponsorships || 0}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ad Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${stats?.advertisingRevenue?.toLocaleString() || 0}</div>
+            <p className="text-xs text-muted-foreground">This month+</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="products" className="space-y-4">
         <TabsList>
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="advertising">Advertising</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products" className="space-y-4">
@@ -320,6 +419,76 @@ const Admin = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="advertising" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sponsored Products</CardTitle>
+              <CardDescription>View and manage all sponsorship bookings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {sponsoredProducts?.map((sp) => {
+                  const isActive = isSponsorshipActive(sp.start_date, sp.end_date);
+                  const isUpcoming = isSponsorshipUpcoming(sp.start_date);
+                  
+                  return (
+                    <div key={sp.id} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-lg">{sp.products?.name || 'Unknown Product'}</h3>
+                            {isActive && <Badge className="bg-green-600">Active</Badge>}
+                            {isUpcoming && <Badge variant="secondary">Upcoming</Badge>}
+                            {!isActive && !isUpcoming && <Badge variant="outline">Expired</Badge>}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{sp.products?.tagline}</p>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant="outline">{getSponsorshipTypeLabel(sp.sponsorship_type)}</Badge>
+                          <p className="text-lg font-bold text-primary mt-1">
+                            ${getSponsorshipPrice(sp.sponsorship_type)}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{format(new Date(sp.start_date), 'MMM d, yyyy')} - {format(new Date(sp.end_date), 'MMM d, yyyy')}</span>
+                        </div>
+                        <span>Position: #{sp.position}</span>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => navigate(`/launch/${sp.products?.slug}`)}
+                        >
+                          View Product
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="destructive"
+                          onClick={() => deleteSponsorship(sp.id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {sponsoredProducts?.length === 0 && (
+                  <p className="text-center text-muted-foreground py-8">
+                    No sponsorships found
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
