@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check } from 'lucide-react';
+import { Check, Lock } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
+import stripeLogo from '@/assets/stripe-logo.png';
 
 const Pricing = () => {
   return (
@@ -221,7 +222,13 @@ const Pricing = () => {
           </div>
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-12">
+          <Lock className="h-4 w-4" />
+          <span>Payments secured by</span>
+          <img src={stripeLogo} alt="Stripe" className="h-6" />
+        </div>
+
+        <div className="mt-8 text-center">
           <p className="text-muted-foreground">
             All plans include support from our team. Questions?{' '}
             <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
