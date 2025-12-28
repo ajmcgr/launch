@@ -625,8 +625,7 @@ const Advertise = () => {
 
             {/* FAQ Section */}
             <div className="max-w-2xl mx-auto mb-12">
-              <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
-                <HelpCircle className="h-6 w-6" />
+              <h2 className="text-2xl font-bold text-center mb-8">
                 Frequently Asked Questions
               </h2>
               <Accordion type="single" collapsible className="w-full">
@@ -651,13 +650,13 @@ const Advertise = () => {
                 <AccordionItem value="item-4">
                   <AccordionTrigger>Can I get a refund?</AccordionTrigger>
                   <AccordionContent>
-                    Full refunds are available if requested before your sponsorship period starts. Once your sponsorship is active, refunds are not available. Please contact us at alex@trymedia.ai for any refund requests.
+                    Full refunds are available if requested before your sponsorship period starts. Once your sponsorship is active, refunds are not available. Please contact us at alex@trylaunch.ai for any refund requests.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-5">
                   <AccordionTrigger>Can I change my selected product after purchase?</AccordionTrigger>
                   <AccordionContent>
-                    Yes, you can request to change the sponsored product before your sponsorship period begins. Contact us at alex@trymedia.ai with your request.
+                    Yes, you can request to change the sponsored product before your sponsorship period begins. Contact us at alex@trylaunch.ai with your request.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-6">
@@ -924,7 +923,7 @@ const Advertise = () => {
         <div className="mt-12 text-center">
           <p className="text-muted-foreground">
             Questions?{' '}
-            <a href="mailto:alex@trymedia.ai" className="text-primary hover:underline">
+            <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
               Contact us
             </a>
           </p>
