@@ -114,10 +114,16 @@ const Pricing = () => {
           ))}
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="mt-8 text-center">
           <p className="text-muted-foreground">
             Maximum 1 launch per week across all plans
           </p>
+        </div>
+
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-6">
+          <Lock className="h-4 w-4" />
+          <span>Payments secured by</span>
+          <img src={stripeLogo} alt="Stripe" className="h-6" />
         </div>
 
         {/* Advertising Section */}
