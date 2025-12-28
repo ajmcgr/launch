@@ -20,6 +20,7 @@ serve(async (req) => {
 
     // Define the products
     const products = [
+      // Launch plans
       {
         name: 'Join the Line',
         description: 'Automatic next available launch date',
@@ -37,6 +38,25 @@ serve(async (req) => {
         description: 'Relaunch existing product into spotlight',
         amount: 1900, // $19 in cents
         metadata: { plan_id: 'relaunch' }
+      },
+      // Advertising products
+      {
+        name: 'Website Placement',
+        description: 'Sponsored homepage listing for one month',
+        amount: 75000, // $750 in cents
+        metadata: { plan_id: 'ad_website' }
+      },
+      {
+        name: 'Newsletter Sponsorship',
+        description: 'Newsletter sponsorship for one month',
+        amount: 50000, // $500 in cents
+        metadata: { plan_id: 'ad_newsletter' }
+      },
+      {
+        name: 'Combined Sponsorship Package',
+        description: 'Website + Newsletter sponsorship for one month',
+        amount: 100000, // $1,000 in cents
+        metadata: { plan_id: 'ad_combined' }
       }
     ];
 
