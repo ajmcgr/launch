@@ -39,12 +39,13 @@ export const HomeLaunchCard = ({
             size="sm"
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               onVote();
             }}
-            className={`group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] hover:border-primary hover:bg-primary transition-all hover:scale-105 ${userVote === 1 ? 'border-primary' : ''}`}
+            className={`group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] touch-manipulation active:scale-95 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary transition-all [@media(hover:hover)]:hover:scale-105 ${userVote === 1 ? 'border-primary' : ''}`}
           >
-            <span className="text-xs group-hover:text-primary-foreground">▲</span>
-            <span className="font-semibold text-sm group-hover:text-primary-foreground">{votes}</span>
+            <span className="text-xs [@media(hover:hover)]:group-hover:text-primary-foreground">▲</span>
+            <span className="font-semibold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground">{votes}</span>
           </Button>
         </div>
         
