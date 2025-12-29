@@ -63,12 +63,13 @@ export const HomeLaunchListItem = ({
           size="sm"
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             onVote();
           }}
-          className={`group flex flex-col items-center gap-0 h-auto py-0.5 px-2 min-w-[40px] hover:border-primary hover:bg-primary transition-all ${userVote === 1 ? 'border-primary' : ''}`}
+          className={`group flex flex-col items-center gap-0 h-auto py-0.5 px-2 min-w-[40px] touch-manipulation active:scale-95 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary transition-all ${userVote === 1 ? 'border-primary' : ''}`}
         >
-          <span className="text-xs group-hover:text-primary-foreground">▲</span>
-          <span className="font-semibold text-xs group-hover:text-primary-foreground">{votes}</span>
+          <span className="text-xs [@media(hover:hover)]:group-hover:text-primary-foreground">▲</span>
+          <span className="font-semibold text-xs [@media(hover:hover)]:group-hover:text-primary-foreground">{votes}</span>
         </Button>
       </div>
       </div>
