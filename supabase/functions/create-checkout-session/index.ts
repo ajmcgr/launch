@@ -48,15 +48,15 @@ serve(async (req) => {
       throw new Error('Unauthorized - No user');
     }
 
-    // Price ID mapping - these are the actual Stripe price IDs
-    const priceIdMap: Record<string, string> = {
-      join: 'price_1SXE8NL6sVtfkDGlQZEi0eOb',    // $9
-      skip: 'price_1SXE8OL6sVtfkDGlEhEGF1dY',   // $39
-      relaunch: 'price_1SXE8PL6sVtfkDGlvVDVkYf6' // $19
+    // Plan pricing configuration (amounts in cents)
+    const planConfig: Record<string, { amount: number; name: string }> = {
+      join: { amount: 900, name: 'Join the Line - $9' },
+      skip: { amount: 3900, name: 'Skip the Line - $39' },
+      relaunch: { amount: 1900, name: 'Relaunch - $19' }
     };
 
-    const priceId = priceIdMap[plan];
-    if (!priceId) {
+    const selectedPlan = planConfig[plan];
+    if (!selectedPlan) {
       throw new Error('Invalid plan');
     }
 
@@ -110,7 +110,13 @@ serve(async (req) => {
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: selectedPlan.name,
+            },
+            unit_amount: selectedPlan.amount,
+          },
           quantity: 1,
         },
       ],
