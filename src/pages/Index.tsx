@@ -200,7 +200,7 @@ const Index = () => {
             <div className="flex items-center justify-center gap-2 mb-3">
               <Clock className="w-5 h-5 text-primary" />
               <p className="text-lg font-semibold text-foreground">
-                <span className="text-primary">Limited Time:</span> Save 20% on any plan. Use code <span className="text-primary">LAUNCH20</span>
+                <span className="text-primary">Limited Time Offer:</span> Save 20% on any plan. Use code <span className="text-primary">LAUNCH20</span>
               </p>
             </div>
             <div className="flex items-center justify-center gap-4 text-center">
