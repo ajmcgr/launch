@@ -42,7 +42,8 @@ const Index = () => {
   }, [view]);
 
   useEffect(() => {
-    const targetDate = new Date('2026-01-01T00:00:00').getTime();
+    // LAUNCH20 promo - 20% off, runs until March 30, 2025
+    const targetDate = new Date('2025-03-30T23:59:59').getTime();
     
     const updateCountdown = () => {
       const now = new Date().getTime();
@@ -199,7 +200,7 @@ const Index = () => {
             <div className="flex items-center justify-center gap-2 mb-3">
               <Clock className="w-5 h-5 text-primary" />
               <p className="text-lg font-semibold text-foreground">
-                Save 50% on any plan. Use code <span className="text-primary">LAUNCH50</span>
+                Save 20% on any plan. Use code <span className="text-primary">LAUNCH20</span>
               </p>
             </div>
             <div className="flex items-center justify-center gap-4 text-center">
