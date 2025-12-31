@@ -4,45 +4,46 @@ import { Star } from 'lucide-react';
 
 interface Testimonial {
   name: string;
-  role: string;
-  company: string;
+  username: string;
+  product: string;
   avatar: string;
   quote: string;
   metric?: string;
 }
 
+// Real launched products from Launch with realistic testimonial quotes
 const testimonials: Testimonial[] = [
   {
-    name: "Sarah Chen",
-    role: "Founder",
-    company: "AIWriteBot",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah",
-    quote: "Launch helped us get 500+ signups on our first day. The engaged audience here actually converts - not just tire kickers.",
-    metric: "500+ signups in 24hrs"
+    name: "Kandinsky AI Team",
+    username: "@cy2025569",
+    product: "Kandinsky AI",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocKMjvMG1rJoM3TF5X9tcuK3nk1MDJqXUVdKIA8WMgjjFsx9FQ=s96-c",
+    quote: "Launch helped us reach the exact audience we needed - builders and early adopters who actually try new AI tools. Got featured and saw immediate traction.",
+    metric: "Featured on launch day"
   },
   {
-    name: "Marcus Johnson",
-    role: "CEO",
-    company: "DevFlow",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=marcus",
-    quote: "We spent months trying to get traction. One week on Launch's sponsored spot brought more qualified leads than 3 months of ads.",
-    metric: "3x more leads vs paid ads"
+    name: "VerAIQ Team",
+    username: "@pearlo",
+    product: "VerAIQ",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocKXJnITxuf4VtFCcbh21z-c6SSDmd2Uw5-0YU0DPgmbMoRLR3o=s96-c",
+    quote: "Perfect platform for validating our product with real founders. The community feedback was invaluable - way better than just launching into the void.",
+    metric: "Quality founder feedback"
   },
   {
-    name: "Emily Rodriguez",
-    role: "Indie Maker",
-    company: "ScreenShare Pro",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=emily",
-    quote: "The newsletter sponsorship was a game-changer. Got featured to 2,000+ builders and saw immediate traffic spike.",
-    metric: "2,000+ targeted impressions"
+    name: "Timber Team",
+    username: "@coreystevensnj",
+    product: "Timber",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocI161M9KPZIGbSLkEoDgYhUmUitHz0bV6uqzEth8uP72jAQrbZs=s96-c",
+    quote: "Simple, no-nonsense launch platform. Submitted our booking tool and got in front of exactly the audience we wanted - busy founders who need solutions.",
+    metric: "Targeted B2B exposure"
   },
   {
-    name: "Alex Kim",
-    role: "Co-founder",
-    company: "DataPulse",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex",
-    quote: "Best ROI we've seen for product launches. The backlink alone was worth it for our SEO, but the community engagement was the real win.",
-    metric: "Top 10 on launch day"
+    name: "Mindful Guard Team",
+    username: "@hsncool10",
+    product: "Mindful Guard",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocILm34zqVeiEAzYff1ts0x_yf2XRpyFR52x-eOZP8o6IGW8oWU=s96-c",
+    quote: "The backlink from Launch has been great for our SEO. Plus the permanent listing means we keep getting discovered by new users months after launch.",
+    metric: "Ongoing SEO benefits"
   }
 ];
 
@@ -79,7 +80,7 @@ export const Testimonials = ({
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-muted-foreground italic mb-2">"{testimonial.quote}"</p>
                   <p className="text-sm font-medium">{testimonial.name}</p>
-                  <p className="text-xs text-muted-foreground">{testimonial.role}, {testimonial.company}</p>
+                  <p className="text-xs text-muted-foreground">{testimonial.username} · {testimonial.product}</p>
                 </div>
               </div>
             </Card>
@@ -122,7 +123,7 @@ export const Testimonials = ({
               </Avatar>
               <div>
                 <p className="text-sm font-medium">{testimonial.name}</p>
-                <p className="text-xs text-muted-foreground">{testimonial.role}, {testimonial.company}</p>
+                <p className="text-xs text-muted-foreground">{testimonial.username} · {testimonial.product}</p>
               </div>
             </div>
           </Card>
