@@ -11,6 +11,7 @@ import { format, startOfMonth } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useNavigate } from 'react-router-dom';
+import { Testimonials } from '@/components/Testimonials';
 
 interface LaunchedProduct {
   id: string;
@@ -920,7 +921,14 @@ const Advertise = () => {
           </div>
         )}
 
-        <div className="mt-12 text-center">
+        <Testimonials 
+          variant="compact"
+          title="Trusted by Makers"
+          subtitle="See what other founders are saying about advertising on Launch"
+          maxItems={2}
+        />
+
+        <div className="mt-8 text-center">
           <p className="text-muted-foreground">
             Questions?{' '}
             <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
