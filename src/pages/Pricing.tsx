@@ -127,6 +127,13 @@ const Pricing = () => {
           <img src={stripeLogo} alt="Stripe" className="h-6" />
         </div>
 
+        <Testimonials 
+          variant="compact"
+          title="What Makers Are Saying"
+          subtitle="Join hundreds of founders who've launched successfully on Launch"
+          maxItems={2}
+        />
+
         {/* Advertising Section */}
         <div className="mt-20">
           <div className="text-center mb-12">
@@ -234,11 +241,6 @@ const Pricing = () => {
           <span>Payments secured by</span>
           <img src={stripeLogo} alt="Stripe" className="h-6" />
         </div>
-
-        <Testimonials 
-          title="What Makers Are Saying"
-          subtitle="Join hundreds of founders who've launched successfully on Launch"
-        />
 
         <div className="mt-8 text-center">
           <p className="text-muted-foreground">

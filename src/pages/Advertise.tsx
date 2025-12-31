@@ -553,6 +553,13 @@ const Advertise = () => {
               </Card>
             </div>
 
+            <Testimonials 
+              variant="compact"
+              title="Trusted by Makers"
+              subtitle="See what other founders are saying about advertising on Launch"
+              maxItems={2}
+            />
+
             {/* Placement Preview Section */}
             <div className="max-w-4xl mx-auto mb-12">
               <h2 className="text-2xl font-bold text-center mb-8">How Your Sponsorship Appears</h2>
@@ -921,12 +928,6 @@ const Advertise = () => {
           </div>
         )}
 
-        <Testimonials 
-          variant="compact"
-          title="Trusted by Makers"
-          subtitle="See what other founders are saying about advertising on Launch"
-          maxItems={2}
-        />
 
         <div className="mt-8 text-center">
           <p className="text-muted-foreground">
