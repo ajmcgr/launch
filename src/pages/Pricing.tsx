@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Lock } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import stripeLogo from '@/assets/stripe-logo.png';
+import { Testimonials } from '@/components/Testimonials';
 
 const Pricing = () => {
   return (
@@ -233,6 +234,11 @@ const Pricing = () => {
           <span>Payments secured by</span>
           <img src={stripeLogo} alt="Stripe" className="h-6" />
         </div>
+
+        <Testimonials 
+          title="What Makers Are Saying"
+          subtitle="Join hundreds of founders who've launched successfully on Launch"
+        />
 
         <div className="mt-8 text-center">
           <p className="text-muted-foreground">
