@@ -219,8 +219,8 @@ const Advertise = () => {
     const currentYear = today.getFullYear();
 
     for (let month = 0; month < 12; month++) {
-      // Skip past months for current year
-      if (year === currentYear && month <= currentMonth) continue;
+      // Skip past months for current year (but allow current month)
+      if (year === currentYear && month < currentMonth) continue;
       
       const date = startOfMonth(new Date(year, month, 1));
       // Skip if already selected
