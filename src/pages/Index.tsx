@@ -195,7 +195,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
+        {new Date() < new Date('2026-02-01') && (countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
           <div className="mb-8 p-6 bg-primary/10 border border-primary/20 rounded-lg">
             <div className="flex items-center justify-center gap-2 mb-3">
               <Clock className="w-5 h-5 text-primary" />
