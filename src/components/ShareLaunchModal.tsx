@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { X, Linkedin, Copy, Code, Check, ExternalLink } from 'lucide-react';
+import { X, Linkedin, Copy, Check, ExternalLink } from 'lucide-react';
 
 interface ShareLaunchModalProps {
   open: boolean;
@@ -24,10 +24,6 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   
   const ctaText = `🚀 Check out ${productName} on Launch - ${productUrl}`;
   
-  const badgeHtml = `<a href="${productUrl}" target="_blank" rel="dofollow" style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:#000;color:#fff;border-radius:8px;text-decoration:none;font-family:system-ui,sans-serif;font-size:14px;">
-  <span>🚀</span>
-  <span>Featured on Launch</span>
-</a>`;
 
   const handleXShare = () => {
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xShareText)}`;
@@ -103,37 +99,6 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
             </div>
           </div>
           
-          {/* Badge Embed */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Embed Badge on Your Site</h3>
-            <div className="p-4 bg-muted/50 rounded-lg flex items-center justify-center">
-              <a 
-                href={productUrl}
-                target="_blank"
-                rel="dofollow"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-black/90 transition-colors"
-              >
-                <span>🚀</span>
-                <span>Featured on Launch</span>
-              </a>
-            </div>
-            <div className="relative">
-              <Textarea 
-                value={badgeHtml}
-                readOnly
-                className="pr-12 resize-none bg-muted/50 font-mono text-xs"
-                rows={4}
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-2 top-2"
-                onClick={() => handleCopy(badgeHtml, 'badge')}
-              >
-                {copied === 'badge' ? <Check className="w-4 h-4 text-green-500" /> : <Code className="w-4 h-4" />}
-              </Button>
-            </div>
-          </div>
           
           {/* Encouragement */}
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 text-center">
