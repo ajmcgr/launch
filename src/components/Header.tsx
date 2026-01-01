@@ -27,6 +27,7 @@ export const Header = () => {
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     // LAUNCH20 promo - 20% off, runs until March 30, 2025
@@ -53,6 +54,15 @@ export const Header = () => {
     const interval = setInterval(updateCountdown, 1000);
     
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -101,8 +111,8 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Promotional Banner - visible until end of January 2026 */}
-      {new Date() < new Date('2026-02-01') && (
+      {/* Promotional Banner - hides on scroll */}
+      {!isScrolled && (
         <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity" style={{ backgroundColor: '#f5f5f5', color: '#383838' }}>
           <div className="container mx-auto px-4 max-w-4xl">
             <p className="text-center text-sm font-medium">
