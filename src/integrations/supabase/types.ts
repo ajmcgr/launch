@@ -527,6 +527,41 @@ export type Database = {
           },
         ]
       }
+      sponsor_analytics: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          product_id: string
+          sponsored_position: number | null
+          visitor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          product_id: string
+          sponsored_position?: number | null
+          visitor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          product_id?: string
+          sponsored_position?: number | null
+          visitor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_analytics_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sponsored_products: {
         Row: {
           created_at: string

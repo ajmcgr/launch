@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
+import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 
 interface LaunchCardProps {
   id: string;
@@ -27,6 +28,8 @@ interface LaunchCardProps {
   }>;
   rank?: number;
   icon?: any;
+  sponsored?: boolean;
+  sponsoredPosition?: number;
   onVote: (productId: string) => void;
   showFollowButton?: boolean;
   isFollowing?: boolean;
@@ -50,6 +53,8 @@ export const LaunchCard = ({
   makers,
   rank,
   icon: IconComponent,
+  sponsored,
+  sponsoredPosition,
   onVote,
   showFollowButton = false,
   isFollowing = false,
@@ -67,10 +72,16 @@ export const LaunchCard = ({
     }
   };
 
+  const handleClick = () => {
+    if (sponsored) {
+      trackSponsorClick(id, sponsoredPosition);
+    }
+  };
+
   return (
     <Card className="group/card overflow-hidden hover:shadow-md transition-shadow">
-      <Link to={`/launch/${slug}`} className="block">
-        {rank && (
+      <Link to={`/launch/${slug}`} className="block" onClick={handleClick}>
+        {rank && !sponsored && (
           <div className="absolute top-2 left-2 z-10 bg-background/90 backdrop-blur-sm rounded-full w-8 h-8 flex items-center justify-center">
             <span className="text-xs font-bold">{rank}</span>
           </div>
