@@ -105,7 +105,7 @@ export const Header = () => {
       <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity" style={{ backgroundColor: '#f5f5f5', color: '#383838' }}>
         <div className="container mx-auto px-4 max-w-4xl">
           <p className="text-center text-sm font-medium">
-            <span className="font-bold">Limited Time Offer:</span> Save 20% on any plan. Use code <span className="font-bold">LAUNCH20</span>
+            <span className="font-bold">Limited Time Offer:</span> Save 20% on everything. Use code <span className="font-bold">LAUNCH20</span>
             {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
               <span className="ml-2">
                 · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
