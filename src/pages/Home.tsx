@@ -529,9 +529,9 @@ const Home = () => {
         }
         
         // Check if there's a sponsored product for the next position
-        // Position 2 = after 5 products, Position 3 = after 10 products, etc.
+        // Position 2 = after 10 products, Position 3 = after 20 products, etc.
         const sponsorPositionCheck = productIndex + 1;
-        const sponsorPosition = sponsorPositionCheck === 5 ? 2 : sponsorPositionCheck === 10 ? 3 : sponsorPositionCheck === 15 ? 4 : null;
+        const sponsorPosition = sponsorPositionCheck === 10 ? 2 : sponsorPositionCheck === 20 ? 3 : sponsorPositionCheck === 30 ? 4 : null;
         if (sponsorPosition) {
           const sponsor = sponsoredProducts.get(sponsorPosition);
           if (sponsor) {
