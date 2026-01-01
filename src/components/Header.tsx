@@ -101,19 +101,21 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Promotional Banner */}
-      <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity" style={{ backgroundColor: '#f5f5f5', color: '#383838' }}>
-        <div className="container mx-auto px-4 max-w-4xl">
-          <p className="text-center text-sm font-medium">
-            <span className="font-bold">Limited Time Offer:</span> Save 20% on everything. Use code <span className="font-bold">LAUNCH20</span>
-            {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
-              <span className="ml-2">
-                · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
-              </span>
-            )}
-          </p>
-        </div>
-      </Link>
+      {/* Promotional Banner - visible until end of January 2026 */}
+      {new Date() < new Date('2026-02-01') && (
+        <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity" style={{ backgroundColor: '#f5f5f5', color: '#383838' }}>
+          <div className="container mx-auto px-4 max-w-4xl">
+            <p className="text-center text-sm font-medium">
+              <span className="font-bold">Limited Time Offer:</span> Save 20% on everything. Use code <span className="font-bold">LAUNCH20</span>
+              {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
+                <span className="ml-2">
+                  · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
+                </span>
+              )}
+            </p>
+          </div>
+        </Link>
+      )}
       
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="flex h-14 items-center justify-between">
