@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
@@ -24,6 +24,8 @@ const MyProducts = () => {
   const [recentProduct, setRecentProduct] = useState<{ name: string; slug: string; tagline?: string } | null>(null);
   const [stripeActionLoading, setStripeActionLoading] = useState<string | null>(null);
   const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
+  const [sponsorAnalytics, setSponsorAnalytics] = useState<Record<string, { impressions: number; clicks: number }>>({});
+  const [sponsoredProductIds, setSponsoredProductIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -138,6 +140,7 @@ const MyProducts = () => {
         .map(p => p.id);
       
       if (launchedProductIds.length > 0) {
+        // Fetch regular product analytics
         const { data: analyticsData } = await supabase
           .from('product_analytics')
           .select('product_id, event_type')
@@ -155,6 +158,39 @@ const MyProducts = () => {
           }
         });
         setAnalytics(analyticsMap);
+
+        // Check which products are currently sponsored
+        const today = new Date().toISOString().split('T')[0];
+        const { data: sponsoredData } = await supabase
+          .from('sponsored_products')
+          .select('product_id')
+          .in('product_id', launchedProductIds)
+          .lte('start_date', today)
+          .gte('end_date', today);
+        
+        const sponsoredIds = new Set(sponsoredData?.map(s => s.product_id) || []);
+        setSponsoredProductIds(sponsoredIds);
+
+        // Fetch sponsor analytics for sponsored products
+        if (sponsoredIds.size > 0) {
+          const { data: sponsorData } = await supabase
+            .from('sponsor_analytics')
+            .select('product_id, event_type')
+            .in('product_id', Array.from(sponsoredIds));
+          
+          const sponsorMap: Record<string, { impressions: number; clicks: number }> = {};
+          sponsorData?.forEach(event => {
+            if (!sponsorMap[event.product_id]) {
+              sponsorMap[event.product_id] = { impressions: 0, clicks: 0 };
+            }
+            if (event.event_type === 'impression') {
+              sponsorMap[event.product_id].impressions++;
+            } else if (event.event_type === 'click') {
+              sponsorMap[event.product_id].clicks++;
+            }
+          });
+          setSponsorAnalytics(sponsorMap);
+        }
       }
     } catch (error: any) {
       console.error('Error fetching products:', error);
@@ -651,21 +687,48 @@ const MyProducts = () => {
                           </div>
                         )}
                         {product.status === 'launched' && (
-                          <div className="mt-3 flex items-center gap-4">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-semibold">{product.netVotes}</span>
-                              <span className="text-muted-foreground">votes</span>
+                          <div className="mt-3 space-y-2">
+                            <div className="flex items-center gap-4 flex-wrap">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-semibold">{product.netVotes}</span>
+                                <span className="text-muted-foreground">votes</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <Eye className="h-4 w-4" />
+                                <span className="font-semibold text-foreground">{analytics[product.id]?.page_views || 0}</span>
+                                <span>views</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <MousePointer className="h-4 w-4" />
+                                <span className="font-semibold text-foreground">{analytics[product.id]?.website_clicks || 0}</span>
+                                <span>clicks</span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <Eye className="h-4 w-4" />
-                              <span className="font-semibold text-foreground">{analytics[product.id]?.page_views || 0}</span>
-                              <span>views</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <MousePointer className="h-4 w-4" />
-                              <span className="font-semibold text-foreground">{analytics[product.id]?.website_clicks || 0}</span>
-                              <span>clicks</span>
-                            </div>
+                            {/* Sponsor Analytics */}
+                            {sponsoredProductIds.has(product.id) && (
+                              <div className="flex items-center gap-4 flex-wrap p-2 bg-primary/5 rounded-md border border-primary/20">
+                                <div className="flex items-center gap-1.5">
+                                  <Megaphone className="h-4 w-4 text-primary" />
+                                  <span className="text-sm font-medium text-primary">Sponsor Stats</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                  <span className="font-semibold text-foreground">{sponsorAnalytics[product.id]?.impressions || 0}</span>
+                                  <span className="text-sm">impressions</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                  <span className="font-semibold text-foreground">{sponsorAnalytics[product.id]?.clicks || 0}</span>
+                                  <span className="text-sm">sponsor clicks</span>
+                                </div>
+                                {(sponsorAnalytics[product.id]?.impressions || 0) > 0 && (
+                                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <span className="font-semibold text-foreground">
+                                      {((sponsorAnalytics[product.id]?.clicks || 0) / (sponsorAnalytics[product.id]?.impressions || 1) * 100).toFixed(1)}%
+                                    </span>
+                                    <span className="text-sm">CTR</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

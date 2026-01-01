@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { notifyProductVote } from '@/lib/notifications';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate } from 'react-router-dom';
+import { trackSponsorImpression } from '@/hooks/use-sponsor-tracking';
 
 import {
   Accordion,
@@ -493,17 +494,20 @@ const Home = () => {
       // Position 1 sponsored product goes at the top
       const pos1Sponsor = sponsoredProducts.get(1);
       if (pos1Sponsor) {
+        // Track impression for position 1
+        trackSponsorImpression(pos1Sponsor.id, 1);
         items.push(
           <LaunchListItem
             key={`sponsored-1`}
             {...pos1Sponsor}
             sponsored
+            sponsoredPosition={1}
             onVote={handleVote}
           />
         );
       }
       
-      // Interleave products with sponsored items at positions 6, 11, etc.
+      // Interleave products with sponsored items at positions 10, 20, 30
       productList.forEach((product, idx) => {
         productIndex++;
         const displayRank = productIndex;
@@ -535,11 +539,14 @@ const Home = () => {
         if (sponsorPosition) {
           const sponsor = sponsoredProducts.get(sponsorPosition);
           if (sponsor) {
+            // Track impression for this position
+            trackSponsorImpression(sponsor.id, sponsorPosition);
             items.push(
               <LaunchListItem
                 key={`sponsored-${sponsorPosition}`}
                 {...sponsor}
                 sponsored
+                sponsoredPosition={sponsorPosition}
                 onVote={handleVote}
               />
             );

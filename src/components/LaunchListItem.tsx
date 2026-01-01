@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, MessageSquare, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
-
+import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 interface LaunchListItemProps {
   id: string;
   slug: string;
@@ -28,6 +28,7 @@ interface LaunchListItemProps {
   rank?: number;
   icon?: any;
   sponsored?: boolean;
+  sponsoredPosition?: number;
   onVote: (productId: string) => void;
 }
 
@@ -49,16 +50,24 @@ export const LaunchListItem = ({
   rank,
   icon: IconComponent,
   sponsored,
+  sponsoredPosition,
   onVote,
 }: LaunchListItemProps) => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  
   const handleVote = () => {
     onVote(id);
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (sponsored) {
+      trackSponsorClick(id, sponsoredPosition);
+    }
+  };
   return (
     <div className="group/card hover:bg-muted/30 transition-colors">
-      <Link to={`/launch/${slug}`} className="block">
+      <Link to={`/launch/${slug}`} className="block" onClick={handleClick}>
         <div className="flex items-start gap-3 py-3 px-2">
           <div className="flex-shrink-0">
             <div className="w-10 h-10 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
