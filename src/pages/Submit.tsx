@@ -71,6 +71,7 @@ const Submit = () => {
         url: '',
         description: '',
         categories: [] as string[],
+        tags: [] as number[],
         slug: '',
         couponCode: '',
         couponDescription: '',
@@ -85,6 +86,7 @@ const Submit = () => {
       url: '',
       description: '',
       categories: [] as string[],
+      tags: [] as number[],
       slug: '',
       couponCode: '',
       couponDescription: '',
@@ -92,6 +94,7 @@ const Submit = () => {
       selectedDate: null as string | null,
     };
   });
+  const [availableTags, setAvailableTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
 
   // Save to localStorage whenever formData changes
   useEffect(() => {

@@ -21,6 +21,7 @@ const LaunchDetail = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
+  const [tags, setTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
   const [userVote, setUserVote] = useState<1 | -1 | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
@@ -108,6 +109,22 @@ const LaunchDetail = () => {
             .in('id', categoryIds);
           
           setCategories(categoriesData?.map((c: any) => c.name) || []);
+        }
+
+        // Fetch tags for this product
+        const { data: tagMapData } = await supabase
+          .from('product_tag_map')
+          .select('tag_id')
+          .eq('product_id', productData.id);
+
+        if (tagMapData && tagMapData.length > 0) {
+          const tagIds = tagMapData.map(t => t.tag_id);
+          const { data: tagsData } = await supabase
+            .from('product_tags')
+            .select('id, name, slug')
+            .in('id', tagIds);
+          
+          setTags(tagsData || []);
         }
 
         // Fetch vote counts
@@ -425,7 +442,7 @@ const LaunchDetail = () => {
                     {categories.map((category) => (
                       <Link 
                         key={category} 
-                        to={`/products?category=${encodeURIComponent(category)}`}
+                        to={`/category/${category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}
                       >
                         <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
                           {category}
@@ -434,6 +451,25 @@ const LaunchDetail = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Tags */}
+                {tags.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag) => (
+                        <Link 
+                          key={tag.id} 
+                          to={`/tag/${tag.slug}`}
+                        >
+                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">
+                            {tag.name}
+                          </Badge>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Voting */}
                 <div>
