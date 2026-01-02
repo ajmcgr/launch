@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -308,8 +309,74 @@ const LaunchDetail = () => {
   
   const embedUrl = videoUrl ? getYouTubeEmbedUrl(videoUrl) : null;
 
+  // Generate JSON-LD structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": product.name,
+    "description": product.tagline || product.description?.substring(0, 160),
+    "url": `https://trylaunch.ai/launch/${product.slug}`,
+    "applicationCategory": categories[0] || "WebApplication",
+    "operatingSystem": "Web",
+    ...(thumbnail && { "image": thumbnail }),
+    ...(product.domain_url && { "downloadUrl": product.domain_url }),
+    "aggregateRating": product.netVotes > 0 ? {
+      "@type": "AggregateRating",
+      "ratingValue": Math.min(5, Math.max(1, 3 + (product.netVotes / 20))).toFixed(1),
+      "ratingCount": product.netVotes,
+      "bestRating": "5",
+      "worstRating": "1"
+    } : undefined,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://trylaunch.ai"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Products",
+        "item": "https://trylaunch.ai/products"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": product.name,
+        "item": `https://trylaunch.ai/launch/${product.slug}`
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-background py-8">
+      <Helmet>
+        <title>{product.name} - Launch AI</title>
+        <meta name="description" content={product.tagline || product.description?.substring(0, 160)} />
+        <meta property="og:title" content={`${product.name} - Launch AI`} />
+        <meta property="og:description" content={product.tagline || product.description?.substring(0, 160)} />
+        {thumbnail && <meta property="og:image" content={thumbnail} />}
+        <meta property="og:url" content={`https://trylaunch.ai/launch/${product.slug}`} />
+        <meta property="og:type" content="product" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${product.name} - Launch AI`} />
+        <meta name="twitter:description" content={product.tagline || product.description?.substring(0, 160)} />
+        {thumbnail && <meta name="twitter:image" content={thumbnail} />}
+        <link rel="canonical" href={`https://trylaunch.ai/launch/${product.slug}`} />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+      </Helmet>
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content - Left Column */}
