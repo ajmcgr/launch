@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Newsletter } from "@/components/Newsletter";
@@ -26,6 +27,9 @@ import Following from "./pages/Following";
 import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
 import Advertise from "./pages/Advertise";
+import TagPage from "./pages/TagPage";
+import CategoryPage from "./pages/CategoryPage";
+import CollectionPage from "./pages/CollectionPage";
 
 import DiscourseSso from "./pages/DiscourseSso";
 
@@ -59,6 +63,9 @@ const AppContent = () => {
           <Route path="/discourse-sso" element={<DiscourseSso />} />
           <Route path="/api/discourse-sso" element={<DiscourseSso />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/tag/:slug" element={<TagPage />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/collections/:slug" element={<CollectionPage />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />
@@ -77,15 +84,17 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

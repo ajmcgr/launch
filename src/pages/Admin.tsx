@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Shield, Users, Package, TrendingUp, CheckCircle, XCircle, RefreshCw, Megaphone, DollarSign, Calendar } from 'lucide-react';
+import { Shield, Users, Package, TrendingUp, CheckCircle, XCircle, RefreshCw, Megaphone, DollarSign, Calendar, Tags } from 'lucide-react';
+import AdminSeoTab from '@/components/AdminSeoTab';
 import { format } from 'date-fns';
 
 const Admin = () => {
@@ -325,6 +326,7 @@ const Admin = () => {
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="advertising">Advertising</TabsTrigger>
+          <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products" className="space-y-4">
@@ -492,6 +494,10 @@ const Admin = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="seo" className="space-y-4">
+          <AdminSeoTab />
         </TabsContent>
       </Tabs>
     </div>

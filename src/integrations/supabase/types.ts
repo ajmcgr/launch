@@ -14,6 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      category_intro_copy: {
+        Row: {
+          category_id: number
+          intro_copy: string | null
+          meta_description: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_id: number
+          intro_copy?: string | null
+          meta_description?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: number
+          intro_copy?: string | null
+          meta_description?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_intro_copy_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: true
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_products: {
+        Row: {
+          collection_id: string
+          position: number | null
+          product_id: string
+        }
+        Insert: {
+          collection_id: string
+          position?: number | null
+          product_id: string
+        }
+        Update: {
+          collection_id?: string
+          position?: number | null
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_products_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          intro_copy: string | null
+          is_auto_update: boolean | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          intro_copy?: string | null
+          is_auto_update?: boolean | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          intro_copy?: string | null
+          is_auto_update?: boolean | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           content: string
@@ -437,6 +532,60 @@ export type Database = {
           },
         ]
       }
+      product_tag_map: {
+        Row: {
+          product_id: string
+          tag_id: number
+        }
+        Insert: {
+          product_id: string
+          tag_id: number
+        }
+        Update: {
+          product_id?: string
+          tag_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_tag_map_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_tag_map_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "product_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_tags: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: number
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           badge_embedded: boolean | null
@@ -596,6 +745,35 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tag_intro_copy: {
+        Row: {
+          intro_copy: string | null
+          meta_description: string | null
+          tag_id: number
+          updated_at: string | null
+        }
+        Insert: {
+          intro_copy?: string | null
+          meta_description?: string | null
+          tag_id: number
+          updated_at?: string | null
+        }
+        Update: {
+          intro_copy?: string | null
+          meta_description?: string | null
+          tag_id?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tag_intro_copy_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: true
+            referencedRelation: "product_tags"
             referencedColumns: ["id"]
           },
         ]

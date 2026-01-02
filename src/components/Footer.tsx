@@ -1,6 +1,32 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+}
 
 export const Footer = () => {
+  const [tags, setTags] = useState<Tag[]>([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      const { data } = await supabase
+        .from('product_tags')
+        .select('id, name, slug')
+        .order('name')
+        .limit(12);
+      
+      if (data) {
+        setTags(data);
+      }
+    };
+
+    fetchTags();
+  }, []);
+
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -118,6 +144,24 @@ export const Footer = () => {
             </ul>
           </div>
         </div>
+
+        {/* Tags Section */}
+        {tags.length > 0 && (
+          <div className="mt-8 pt-8 border-t">
+            <h3 className="font-semibold mb-4 text-foreground">Popular Tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <Link
+                  key={tag.id}
+                  to={`/tag/${tag.slug}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {tag.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
           <p>
