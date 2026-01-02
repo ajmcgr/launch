@@ -8,8 +8,19 @@ interface Tag {
   slug: string;
 }
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+const createSlug = (name: string) => {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+};
+
 export const Footer = () => {
   const [tags, setTags] = useState<Tag[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -24,7 +35,20 @@ export const Footer = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      const { data } = await supabase
+        .from('product_categories')
+        .select('id, name')
+        .order('name')
+        .limit(12);
+      
+      if (data) {
+        setCategories(data.map(c => ({ ...c, slug: createSlug(c.name) })));
+      }
+    };
+
     fetchTags();
+    fetchCategories();
   }, []);
 
   return (
@@ -157,6 +181,24 @@ export const Footer = () => {
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   {tag.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Categories Section */}
+        {categories.length > 0 && (
+          <div className="mt-6 pt-6 border-t">
+            <h3 className="font-semibold mb-4 text-foreground">Popular Categories</h3>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/category/${category.slug}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {category.name}
                 </Link>
               ))}
             </div>
