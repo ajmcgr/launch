@@ -148,7 +148,7 @@ export const Footer = () => {
         {/* Tags Section */}
         {tags.length > 0 && (
           <div className="mt-8 pt-8 border-t">
-            <h3 className="font-semibold mb-4 text-foreground">Popular Tags</h3>
+            <h3 className="font-semibold mb-4 text-foreground">Popular Apps</h3>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <Link
