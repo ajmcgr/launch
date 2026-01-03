@@ -387,7 +387,7 @@ const LaunchDetail = () => {
             </div>
 
             {thumbnail && (
-              <div className="rounded-xl overflow-hidden">
+              <div className="rounded-xl overflow-hidden border border-border/60">
                 <img 
                   src={thumbnail} 
                   alt={product.name}
@@ -396,7 +396,7 @@ const LaunchDetail = () => {
               </div>
             )}
 
-            <div>
+            <div className="pt-2">
               <h2 className="text-xl font-semibold mb-3">About</h2>
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                 {product.description}
@@ -404,7 +404,7 @@ const LaunchDetail = () => {
             </div>
 
             {product.coupon_code && (
-              <div className="p-5 bg-primary/5 rounded-xl">
+              <div className="p-5 bg-primary/5 border border-primary/20 rounded-xl">
                 <div className="flex items-start justify-between mb-2">
                   <h2 className="text-xl font-semibold">Special Offer</h2>
                   <Badge variant="default" className="text-base px-3 py-0.5">
@@ -420,9 +420,9 @@ const LaunchDetail = () => {
             )}
 
             {embedUrl && (
-              <div>
+              <div className="pt-4 border-t border-border/40">
                 <h2 className="text-xl font-semibold mb-3">Video</h2>
-                <div className="aspect-video rounded-xl overflow-hidden">
+                <div className="aspect-video rounded-xl overflow-hidden border border-border/60">
                   <iframe
                     src={embedUrl}
                     title="Product video"
@@ -435,17 +435,19 @@ const LaunchDetail = () => {
             )}
 
             {screenshots.length > 0 && (
-              <div>
+              <div className="pt-4 border-t border-border/40">
                 <h2 className="text-xl font-semibold mb-3">Screenshots</h2>
                 <Carousel className="w-full">
                   <CarouselContent>
                     {screenshots.map((screenshot, index) => (
                       <CarouselItem key={index}>
-                        <img
-                          src={screenshot}
-                          alt={`Screenshot ${index + 1}`}
-                          className="w-full rounded-xl"
-                        />
+                        <div className="rounded-xl overflow-hidden border border-border/60">
+                          <img
+                            src={screenshot}
+                            alt={`Screenshot ${index + 1}`}
+                            className="w-full"
+                          />
+                        </div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
@@ -471,7 +473,7 @@ const LaunchDetail = () => {
 
           {/* Right Sidebar - Desktop Only */}
           <div className="lg:col-span-1">
-            <div className="p-5 bg-muted/30 rounded-xl sticky top-6 space-y-6">
+            <div className="p-5 bg-muted/20 border border-border/50 rounded-xl sticky top-6 space-y-5">
               {/* Makers */}
               {product.makers && product.makers.length > 0 && (
                 <div>
@@ -540,7 +542,7 @@ const LaunchDetail = () => {
               {/* Voting */}
               <div>
                 <h3 className="font-medium text-sm text-muted-foreground mb-2">Upvote this product</h3>
-                <div className="flex items-center gap-2 bg-background rounded-lg p-2 w-full justify-center">
+                <div className="flex items-center gap-2 bg-background border border-border/50 rounded-lg p-2 w-full justify-center">
                   <Button
                     size="sm"
                     variant="ghost"
