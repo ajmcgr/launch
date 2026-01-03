@@ -360,7 +360,7 @@ const LaunchDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-background py-12">
       <Helmet>
         <title>{product.name} - Launch AI</title>
         <meta name="description" content={product.tagline || product.description?.substring(0, 160)} />
@@ -378,11 +378,11 @@ const LaunchDetail = () => {
         <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       </Helmet>
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Main Content - Left Column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-10">
             <div>
-              <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+              <h1 className="text-4xl font-bold mb-3">{product.name}</h1>
               <p className="text-xl text-muted-foreground">{product.tagline}</p>
             </div>
 
@@ -396,16 +396,16 @@ const LaunchDetail = () => {
               </div>
             )}
 
-            <div className="pt-2">
-              <h2 className="text-xl font-semibold mb-3">About</h2>
+            <div>
+              <h2 className="text-xl font-semibold mb-4">About</h2>
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
             </div>
 
             {product.coupon_code && (
-              <div className="p-5 bg-primary/5 border border-primary/20 rounded-xl">
-                <div className="flex items-start justify-between mb-2">
+              <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl">
+                <div className="flex items-start justify-between mb-3">
                   <h2 className="text-xl font-semibold">Special Offer</h2>
                   <Badge variant="default" className="text-base px-3 py-0.5">
                     {product.coupon_code}
@@ -420,8 +420,8 @@ const LaunchDetail = () => {
             )}
 
             {embedUrl && (
-              <div className="pt-4 border-t border-border/40">
-                <h2 className="text-xl font-semibold mb-3">Video</h2>
+              <div className="pt-8 border-t border-border/40">
+                <h2 className="text-xl font-semibold mb-4">Video</h2>
                 <div className="aspect-video rounded-xl overflow-hidden border border-border/60">
                   <iframe
                     src={embedUrl}
@@ -435,8 +435,8 @@ const LaunchDetail = () => {
             )}
 
             {screenshots.length > 0 && (
-              <div className="pt-4 border-t border-border/40">
-                <h2 className="text-xl font-semibold mb-3">Screenshots</h2>
+              <div className="pt-8 border-t border-border/40">
+                <h2 className="text-xl font-semibold mb-4">Screenshots</h2>
                 <Carousel className="w-full">
                   <CarouselContent>
                     {screenshots.map((screenshot, index) => (
@@ -457,7 +457,7 @@ const LaunchDetail = () => {
               </div>
             )}
 
-            <div className="space-y-4 pt-6 border-t border-border/50">
+            <div className="space-y-5 pt-10 border-t border-border/40">
               <h2 className="text-xl font-semibold">Comments</h2>
               {user ? (
                 <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
