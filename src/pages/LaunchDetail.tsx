@@ -387,27 +387,27 @@ const LaunchDetail = () => {
             </div>
 
             {thumbnail && (
-              <Card className="overflow-hidden">
+              <div className="rounded-xl overflow-hidden">
                 <img 
                   src={thumbnail} 
                   alt={product.name}
                   className="w-full aspect-video object-cover"
                 />
-              </Card>
+              </div>
             )}
 
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-4">About</h2>
+            <div>
+              <h2 className="text-xl font-semibold mb-3">About</h2>
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
-            </Card>
+            </div>
 
             {product.coupon_code && (
-              <Card className="p-6 bg-primary/5 border-primary/20">
+              <div className="p-5 bg-primary/5 rounded-xl">
                 <div className="flex items-start justify-between mb-2">
-                  <h2 className="text-2xl font-bold">Special Offer</h2>
-                  <Badge variant="default" className="text-lg px-4 py-1">
+                  <h2 className="text-xl font-semibold">Special Offer</h2>
+                  <Badge variant="default" className="text-base px-3 py-0.5">
                     {product.coupon_code}
                   </Badge>
                 </div>
@@ -416,27 +416,27 @@ const LaunchDetail = () => {
                     {product.coupon_description}
                   </p>
                 )}
-              </Card>
+              </div>
             )}
 
             {embedUrl && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Video</h2>
-                <div className="aspect-video">
+              <div>
+                <h2 className="text-xl font-semibold mb-3">Video</h2>
+                <div className="aspect-video rounded-xl overflow-hidden">
                   <iframe
                     src={embedUrl}
                     title="Product video"
-                    className="w-full h-full rounded-lg"
+                    className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                 </div>
-              </Card>
+              </div>
             )}
 
             {screenshots.length > 0 && (
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Screenshots</h2>
+              <div>
+                <h2 className="text-xl font-semibold mb-3">Screenshots</h2>
                 <Carousel className="w-full">
                   <CarouselContent>
                     {screenshots.map((screenshot, index) => (
@@ -444,7 +444,7 @@ const LaunchDetail = () => {
                         <img
                           src={screenshot}
                           alt={`Screenshot ${index + 1}`}
-                          className="w-full rounded-lg"
+                          className="w-full rounded-xl"
                         />
                       </CarouselItem>
                     ))}
@@ -452,191 +452,187 @@ const LaunchDetail = () => {
                   <CarouselPrevious />
                   <CarouselNext />
                 </Carousel>
-              </Card>
+              </div>
             )}
 
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Comments</h2>
+            <div className="space-y-4 pt-6 border-t border-border/50">
+              <h2 className="text-xl font-semibold">Comments</h2>
               {user ? (
                 <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
               ) : (
-                <Card className="p-4">
+                <div className="p-4 bg-muted/30 rounded-xl">
                   <p className="text-muted-foreground mb-3">Login to leave a comment</p>
                   <Button onClick={() => navigate('/auth')}>Login</Button>
-                </Card>
+                </div>
               )}
               <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
             </div>
           </div>
 
           {/* Right Sidebar - Desktop Only */}
-          <div className="lg:col-span-1 space-y-4">
-            <Card className="p-6 sticky top-6">
-              <div className="space-y-6">
-                {/* Makers */}
-                {product.makers && product.makers.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold mb-3">Makers</h3>
-                    <div className="space-y-3">
-                      {product.makers.map((maker: any) => (
-                        <Link
-                          key={maker.username}
-                          to={`/@${maker.username}`}
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
-                        >
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                            <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm">@{maker.username}</p>
-                            {maker.bio && (
-                              <p className="text-xs text-muted-foreground truncate">
-                                {maker.bio}
-                              </p>
-                            )}
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Categories */}
+          <div className="lg:col-span-1">
+            <div className="p-5 bg-muted/30 rounded-xl sticky top-6 space-y-6">
+              {/* Makers */}
+              {product.makers && product.makers.length > 0 && (
                 <div>
-                  <h3 className="font-semibold mb-3">Categories</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {categories.map((category) => (
-                      <Link 
-                        key={category} 
-                        to={`/category/${category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}
+                  <h3 className="font-medium text-sm text-muted-foreground mb-2">Makers</h3>
+                  <div className="space-y-2">
+                    {product.makers.map((maker: any) => (
+                      <Link
+                        key={maker.username}
+                        to={`/@${maker.username}`}
+                        className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-background transition-colors"
                       >
-                        <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
-                          {category}
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                          <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm">@{maker.username}</p>
+                          {maker.bio && (
+                            <p className="text-xs text-muted-foreground truncate">
+                              {maker.bio}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Categories */}
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-2">Categories</h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {categories.map((category) => (
+                    <Link 
+                      key={category} 
+                      to={`/category/${category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}
+                    >
+                      <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs">
+                        {category}
+                      </Badge>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tags */}
+              {tags.length > 0 && (
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground mb-2">Tags</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {tags.map((tag) => (
+                      <Link 
+                        key={tag.id} 
+                        to={`/tag/${tag.slug}`}
+                      >
+                        <Badge variant="outline" className="cursor-pointer hover:bg-background text-xs">
+                          {tag.name}
                         </Badge>
                       </Link>
                     ))}
                   </div>
                 </div>
+              )}
 
-                {/* Tags */}
-                {tags.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold mb-3">Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {tags.map((tag) => (
-                        <Link 
-                          key={tag.id} 
-                          to={`/tag/${tag.slug}`}
-                        >
-                          <Badge variant="outline" className="cursor-pointer hover:bg-muted">
-                            {tag.name}
-                          </Badge>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Voting */}
-                <div>
-                  <h3 className="font-semibold mb-3">Upvote this product</h3>
-                  <div className="flex items-center gap-2 border rounded-lg p-2 w-full justify-center">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-10 w-10 p-0 hover:border-primary"
-                      onClick={() => handleVote(1)}
-                    >
-                      <ArrowUp className={`h-5 w-5 ${userVote === 1 ? 'text-primary' : ''}`} />
-                    </Button>
-                    <span className="font-bold text-lg min-w-[3rem] text-center">
-                      {product.netVotes}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Follow Product */}
-                <div>
+              {/* Voting */}
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-2">Upvote this product</h3>
+                <div className="flex items-center gap-2 bg-background rounded-lg p-2 w-full justify-center">
                   <Button
-                    variant={isFollowing ? 'outline' : 'default'}
-                    className="w-full"
-                    onClick={handleFollow}
+                    size="sm"
+                    variant="ghost"
+                    className="h-10 w-10 p-0 hover:bg-primary/10"
+                    onClick={() => handleVote(1)}
                   >
-                    <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
-                    {isFollowing ? 'Following' : 'Follow Product'}
+                    <ArrowUp className={`h-5 w-5 ${userVote === 1 ? 'text-primary' : ''}`} />
                   </Button>
-                  <p className="text-sm text-center text-muted-foreground mt-2">
-                    {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
-                  </p>
+                  <span className="font-bold text-lg min-w-[3rem] text-center">
+                    {product.netVotes}
+                  </span>
                 </div>
+              </div>
 
-                {/* Discuss on Forums */}
-                <div>
-                  <Button
-                    variant="outline"
-                    className="w-full gap-2"
-                    asChild
-                  >
-                    <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
-                      <MessageSquare className="h-4 w-4" />
-                      Discuss on Forums
-                    </a>
-                  </Button>
-                </div>
+              {/* Follow Product */}
+              <div>
+                <Button
+                  variant={isFollowing ? 'outline' : 'default'}
+                  className="w-full"
+                  onClick={handleFollow}
+                >
+                  <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
+                  {isFollowing ? 'Following' : 'Follow Product'}
+                </Button>
+                <p className="text-xs text-center text-muted-foreground mt-2">
+                  {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
+                </p>
+              </div>
 
-                {/* Visit Website & Share */}
-                <div className="flex gap-3">
-                  {product.domain_url && (
-                    <Button 
-                      size="lg" 
-                      className="flex-1" 
-                      onClick={async () => {
-                        // Track website click
-                        try {
-                          await supabase.from('product_analytics').insert({
-                            product_id: product.id,
-                            event_type: 'website_click',
-                            visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
-                          });
-                        } catch (error) {
-                          console.error('Failed to track click:', error);
-                        }
-                        window.open(product.domain_url, '_blank', 'noopener');
-                      }}
-                    >
-                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                    </Button>
-                  )}
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className={product.domain_url ? "w-24" : "w-full"}
-                    onClick={() => {
-                      const url = window.location.href;
-                      navigator.clipboard.writeText(url);
-                      toast.success('Link copied to clipboard!');
+              {/* Discuss on Forums */}
+              <div>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  asChild
+                >
+                  <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
+                    <MessageSquare className="h-4 w-4" />
+                    Discuss on Forums
+                  </a>
+                </Button>
+              </div>
+
+              {/* Visit Website & Share */}
+              <div className="flex gap-2">
+                {product.domain_url && (
+                  <Button 
+                    className="flex-1" 
+                    onClick={async () => {
+                      // Track website click
+                      try {
+                        await supabase.from('product_analytics').insert({
+                          product_id: product.id,
+                          event_type: 'website_click',
+                          visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+                        });
+                      } catch (error) {
+                        console.error('Failed to track click:', error);
+                      }
+                      window.open(product.domain_url, '_blank', 'noopener');
                     }}
                   >
-                    Share
+                    Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                   </Button>
-                </div>
+                )}
+                <Button
+                  variant="outline"
+                  className={product.domain_url ? "w-20" : "w-full"}
+                  onClick={() => {
+                    const url = window.location.href;
+                    navigator.clipboard.writeText(url);
+                    toast.success('Link copied to clipboard!');
+                  }}
+                >
+                  Share
+                </Button>
+              </div>
 
 
-                {/* Launch Date */}
-                {product.launch_date && (
-                  <div className="pt-4 border-t">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      <div>
-                        <div className="font-medium text-foreground">Launched</div>
-                        <div>{new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                      </div>
+              {/* Launch Date */}
+              {product.launch_date && (
+                <div className="pt-4 border-t border-border/30">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <div>
+                      <div className="font-medium text-foreground text-xs">Launched</div>
+                      <div className="text-xs">{new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                     </div>
                   </div>
-                )}
-              </div>
-            </Card>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
