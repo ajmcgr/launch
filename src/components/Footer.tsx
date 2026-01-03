@@ -157,6 +157,16 @@ export const Footer = () => {
               </li>
               <li>
                 <a 
+                  href="https://t.me/trylaunch" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Telegram
+                </a>
+              </li>
+              <li>
+                <a 
                   href="https://www.reddit.com/r/TryLaunch/" 
                   target="_blank" 
                   rel="noopener noreferrer"
