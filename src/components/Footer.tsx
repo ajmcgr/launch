@@ -27,8 +27,7 @@ export const Footer = () => {
       const { data } = await supabase
         .from('product_tags')
         .select('id, name, slug')
-        .order('name')
-        .limit(12);
+        .order('name');
       
       if (data) {
         setTags(data);
@@ -39,8 +38,7 @@ export const Footer = () => {
       const { data } = await supabase
         .from('product_categories')
         .select('id, name')
-        .order('name')
-        .limit(12);
+        .order('name');
       
       if (data) {
         setCategories(data.map(c => ({ ...c, slug: createSlug(c.name) })));
