@@ -56,11 +56,11 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     const logoUrl = theme === 'dark' 
       ? 'https://trylaunch.ai/images/launch-badge-logo-white.png'
       : 'https://trylaunch.ai/images/launch-badge-logo.png';
-    const badgeText = theme === 'gold' ? '#1 PRODUCT ON' : 'LIVE ON';
+    const badgeText = theme === 'gold' ? '#1 Product on' : 'Live on';
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 20px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-  <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.8;">${badgeText}</span>
-  <img src="${logoUrl}" alt="Launch" height="24" style="display: block; height: 24px; width: auto;" />
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
+  <span style="font-size: 9px; font-weight: 600; letter-spacing: 0.3px; opacity: 0.7;">${badgeText}</span>
+  <img src="${logoUrl}" alt="Launch" height="28" style="display: block; height: 28px; width: auto;" />
 </a>`;
   };
 
@@ -69,15 +69,17 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     const logoUrl = theme === 'dark' 
       ? 'https://trylaunch.ai/images/launch-badge-logo-white.png'
       : 'https://trylaunch.ai/images/launch-badge-logo.png';
-    const badgeText = theme === 'gold' ? '#1 PRODUCT ON' : 'LIVE ON';
+    const badgeText = theme === 'gold' ? '#1 Product on' : 'Live on';
     const categoryBorder = theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
     const categoriesText = categories.slice(0, 2).join(' · ');
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 20px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-  <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.8;">${badgeText}</span>
-  <img src="${logoUrl}" alt="Launch" height="24" style="display: block; height: 24px; width: auto;" />
-  ${categoriesText ? `<span style="margin-top: 4px; padding: 2px 10px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 11px; font-weight: 500; opacity: 0.9; white-space: nowrap;">${categoriesText}</span>` : ''}
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 16px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
+  <span style="font-size: 9px; font-weight: 600; letter-spacing: 0.3px; opacity: 0.7;">${badgeText}</span>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <img src="${logoUrl}" alt="Launch" height="28" style="display: block; height: 28px; width: auto;" />
+    ${categoriesText ? `<span style="padding: 3px 10px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 11px; font-weight: 500; opacity: 0.8; white-space: nowrap;">${categoriesText}</span>` : ''}
+  </div>
 </a>`;
   };
 
@@ -125,7 +127,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
 
   const renderPreview = (theme: BadgeTheme, withCategories: boolean, type: 'basic' | 'category') => {
     const styles = getThemeStyles(theme);
-    const badgeText = theme === 'gold' ? '#1 PRODUCT ON' : 'LIVE ON';
+    const badgeText = theme === 'gold' ? '#1 Product on' : 'Live on';
     const logoSrc = theme === 'dark' ? '/images/launch-badge-logo-white.png' : '/images/launch-badge-logo.png';
     const refKey = `${type}-${theme}`;
     
@@ -135,9 +137,9 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         style={{
           display: 'inline-flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '12px 20px',
+          alignItems: 'flex-start',
+          gap: '2px',
+          padding: '10px 16px',
           borderRadius: '10px',
           border: `1px solid ${styles.border}`,
           background: styles.bg,
@@ -145,26 +147,27 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
           ...(theme === 'gold' && { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' })
         }}
       >
-        <span style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0.5px', textTransform: 'uppercase', opacity: 0.8 }}>{badgeText}</span>
-        <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '24px', width: 'auto' }} />
-        {withCategories && categories.length > 0 && (
-          <span 
-            style={{
-              marginTop: '4px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              padding: '2px 10px',
-              borderRadius: '4px',
-              fontSize: '11px',
-              fontWeight: '500',
-              whiteSpace: 'nowrap',
-              background: 'transparent',
-              border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
-              opacity: 0.9
-            }}
-          >
-            {categories.slice(0, 2).join(' · ')}
-          </span>
+        <span style={{ fontSize: '9px', fontWeight: '600', letterSpacing: '0.3px', opacity: 0.7 }}>{badgeText}</span>
+        {withCategories && categories.length > 0 ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '28px', width: 'auto' }} />
+            <span 
+              style={{
+                padding: '3px 10px',
+                borderRadius: '4px',
+                fontSize: '11px',
+                fontWeight: '500',
+                whiteSpace: 'nowrap',
+                background: 'transparent',
+                border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
+                opacity: 0.8
+              }}
+            >
+              {categories.slice(0, 2).join(' · ')}
+            </span>
+          </div>
+        ) : (
+          <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '28px', width: 'auto' }} />
         )}
       </div>
     );
