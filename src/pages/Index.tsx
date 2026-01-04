@@ -227,18 +227,22 @@ const Index = () => {
           </div>
         )}
         
-        <div className="mb-8">
-          <div className="text-center mb-6">
-            <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
-              Launch Your Product to the World
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              The launchpad for indie makers to share, vote, and discover the next big thing
-            </p>
-          </div>
-          <div className="flex items-center justify-end gap-3">
-            <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
-            {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
+            Launch Your Product to the World
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            The launchpad for indie makers to share, vote, and discover the next big thing
+          </p>
+        </div>
+
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-foreground">Today's Top Launches</h2>
+            <div className="flex items-center gap-3">
+              <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
+              {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
+            </div>
           </div>
         </div>
 
