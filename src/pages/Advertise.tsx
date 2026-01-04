@@ -881,47 +881,123 @@ const Advertise = () => {
 
               {/* Selected Package Summary - Right Column */}
               <div className="lg:col-span-2 order-1 lg:order-2">
-                <div className="sticky top-6 p-6 bg-muted/30 rounded-lg border">
-                  <p className="text-sm text-muted-foreground mb-1">Selected package:</p>
-                  <p className="text-xl font-semibold mb-4">
-                    {selectedType === 'website' && 'Website Placement'}
-                    {selectedType === 'newsletter' && 'Newsletter Sponsorship'}
-                    {selectedType === 'combined' && 'Combined Package'}
-                  </p>
-                  
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Price per month</span>
-                      <span className="font-medium">${getPrice().toLocaleString()}</span>
+                <div className="sticky top-6 space-y-6">
+                  {/* Package Summary */}
+                  <div className="p-6 bg-muted/30 rounded-lg border">
+                    <p className="text-sm text-muted-foreground mb-1">Selected package:</p>
+                    <p className="text-xl font-semibold mb-4">
+                      {selectedType === 'website' && 'Website Placement'}
+                      {selectedType === 'newsletter' && 'Newsletter Sponsorship'}
+                      {selectedType === 'combined' && 'Combined Package'}
+                    </p>
+                    
+                    <div className="space-y-3 mb-6">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Price per month</span>
+                        <span className="font-medium">${getPrice().toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Months selected</span>
+                        <span className="font-medium">{selectedMonths.length}</span>
+                      </div>
+                      {selectedMonths.length > 0 && (
+                        <div className="pt-3 border-t">
+                          <p className="text-xs text-muted-foreground mb-2">Selected months:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {selectedMonths.map((month) => (
+                              <Badge key={month.getTime()} variant="outline" className="text-xs">
+                                {format(month, 'MMM yyyy')}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Months selected</span>
-                      <span className="font-medium">{selectedMonths.length}</span>
+                    
+                    <div className="pt-4 border-t">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Total</span>
+                        <span className="text-3xl font-bold text-primary">
+                          ${calculateTotal().toLocaleString()}
+                        </span>
+                      </div>
                     </div>
-                    {selectedMonths.length > 0 && (
-                      <div className="pt-3 border-t">
-                        <p className="text-xs text-muted-foreground mb-2">Selected months:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {selectedMonths.map((month) => (
-                            <Badge key={month.getTime()} variant="outline" className="text-xs">
-                              {format(month, 'MMM yyyy')}
-                            </Badge>
-                          ))}
+                    
+                    <StripeBadge />
+                  </div>
+
+                  {/* Ad Preview Section */}
+                  {selectedProductId && (selectedType === 'website' || selectedType === 'combined') && (
+                    <div className="p-4 bg-muted/30 rounded-lg border">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Eye className="h-4 w-4 text-primary" />
+                        <p className="text-sm font-medium">Website Preview</p>
+                      </div>
+                      <div className="bg-background rounded-lg p-3 border">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Sponsored</p>
+                        <div className="flex items-start gap-3">
+                          <img 
+                            src={getSelectedProduct()?.iconUrl || defaultProductIcon} 
+                            alt={getSelectedProduct()?.name || 'Product'}
+                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm truncate">{getSelectedProduct()?.name || 'Your Product'}</h4>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{getSelectedProduct()?.tagline || 'Your tagline appears here'}</p>
+                          </div>
+                          <div className="flex flex-col items-center flex-shrink-0">
+                            <div className="w-8 h-8 border border-primary rounded-md flex items-center justify-center">
+                              <span className="text-primary text-sm font-bold">▲</span>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground mt-0.5">123</span>
+                          </div>
                         </div>
                       </div>
-                    )}
-                  </div>
-                  
-                  <div className="pt-4 border-t">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Total</span>
-                      <span className="text-3xl font-bold text-primary">
-                        ${calculateTotal().toLocaleString()}
-                      </span>
+                      <p className="text-[11px] text-muted-foreground mt-2">
+                        Appears at the top of the homepage
+                      </p>
                     </div>
-                  </div>
-                  
-                  <StripeBadge />
+                  )}
+
+                  {selectedProductId && (selectedType === 'newsletter' || selectedType === 'combined') && (
+                    <div className="p-4 bg-muted/30 rounded-lg border">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Mail className="h-4 w-4 text-primary" />
+                        <p className="text-sm font-medium">Newsletter Preview</p>
+                      </div>
+                      <div className="bg-background rounded-lg p-3 border">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">This Week's Sponsor</p>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <img 
+                              src={getSelectedProduct()?.iconUrl || defaultProductIcon} 
+                              alt={getSelectedProduct()?.name || 'Product'}
+                              className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+                            />
+                            <div className="min-w-0">
+                              <h4 className="font-semibold text-sm truncate">{getSelectedProduct()?.name || 'Your Product'}</h4>
+                              <p className="text-[10px] text-muted-foreground">trylaunch.ai/launch/{getSelectedProduct()?.slug || 'your-product'}</p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {getSelectedProduct()?.tagline || 'Featured description of your product reaching 2,000+ engaged subscribers.'}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-2">
+                        Featured in our weekly newsletter
+                      </p>
+                    </div>
+                  )}
+
+                  {!selectedProductId && (
+                    <div className="p-4 bg-muted/20 rounded-lg border border-dashed">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Eye className="h-4 w-4" />
+                        <p className="text-sm">Select a product to see your ad preview</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
