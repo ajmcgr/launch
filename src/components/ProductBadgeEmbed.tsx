@@ -1,8 +1,10 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Copy, Check, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import badgeGolden from '@/assets/badge-golden.png';
+import badgeNeutral from '@/assets/badge-neutral.png';
+import badgeDark from '@/assets/badge-dark.png';
 
 interface ProductBadgeEmbedProps {
   productSlug: string;
@@ -13,7 +15,7 @@ interface ProductBadgeEmbedProps {
   wonMonthly?: boolean;
 }
 
-type BadgeTheme = 'light' | 'neutral' | 'dark' | 'gold';
+type BadgeTheme = 'neutral' | 'dark' | 'gold';
 
 const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily = false, wonWeekly = false, wonMonthly = false }: ProductBadgeEmbedProps) => {
   const [copiedBasic, setCopiedBasic] = useState<BadgeTheme | null>(null);
@@ -24,17 +26,11 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
 
   const getThemeStyles = (theme: BadgeTheme) => {
     switch (theme) {
-      case 'light':
+      case 'neutral':
         return {
           bg: '#FFFFFF',
           text: '#313131',
           border: '#E5E5E5',
-        };
-      case 'neutral':
-        return {
-          bg: '#F5F5F5',
-          text: '#313131',
-          border: '#D4D4D4',
         };
       case 'dark':
         return {
@@ -51,35 +47,36 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     }
   };
 
+  const getBadgeImageUrl = (theme: BadgeTheme) => {
+    switch (theme) {
+      case 'gold':
+        return 'https://trylaunch.ai/assets/badge-golden.png';
+      case 'neutral':
+        return 'https://trylaunch.ai/assets/badge-neutral.png';
+      case 'dark':
+        return 'https://trylaunch.ai/assets/badge-dark.png';
+    }
+  };
+
   const generateBasicBadgeHTML = (theme: BadgeTheme) => {
     const styles = getThemeStyles(theme);
-    const logoUrl = theme === 'dark' 
-      ? 'https://trylaunch.ai/images/launch-badge-logo-white.png'
-      : 'https://trylaunch.ai/images/launch-badge-logo.png';
-    const badgeText = theme === 'gold' ? '#1 Product on' : 'Live on';
+    const logoUrl = getBadgeImageUrl(theme);
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 6px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-  <span style="font-size: 11px; font-weight: 600; letter-spacing: 0; opacity: 0.7;">${badgeText}</span>
-  <img src="${logoUrl}" alt="Launch" height="28" style="display: block; height: 28px; width: auto;" />
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; padding: 8px 12px; background: ${styles.bg}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
+  <img src="${logoUrl}" alt="Launch" height="36" style="display: block; height: 36px; width: auto;" />
 </a>`;
   };
 
   const generateCategoryBadgeHTML = (theme: BadgeTheme) => {
     const styles = getThemeStyles(theme);
-    const logoUrl = theme === 'dark' 
-      ? 'https://trylaunch.ai/images/launch-badge-logo-white.png'
-      : 'https://trylaunch.ai/images/launch-badge-logo.png';
-    const badgeText = theme === 'gold' ? '#1 Product on' : 'Live on';
+    const logoUrl = getBadgeImageUrl(theme);
     const categoryBorder = theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
     const categoriesText = categories.slice(0, 2).join(' · ');
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 6px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-  <span style="font-size: 11px; font-weight: 600; letter-spacing: 0; opacity: 0.7;">${badgeText}</span>
-  <div style="display: flex; align-items: center; gap: 10px;">
-    <img src="${logoUrl}" alt="Launch" height="28" style="display: block; height: 28px; width: auto;" />
-    ${categoriesText ? `<span style="padding: 2px 8px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 11px; font-weight: 500; letter-spacing: 0; opacity: 0.8; white-space: nowrap;">${categoriesText}</span>` : ''}
-  </div>
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
+  <img src="${logoUrl}" alt="Launch" height="36" style="display: block; height: 36px; width: auto;" />
+  ${categoriesText ? `<span style="padding: 2px 8px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 11px; font-weight: 500; letter-spacing: 0; opacity: 0.8; white-space: nowrap;">${categoriesText}</span>` : ''}
 </a>`;
   };
 
@@ -125,10 +122,20 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     }
   };
 
+  const getBadgeImage = (theme: BadgeTheme) => {
+    switch (theme) {
+      case 'gold':
+        return badgeGolden;
+      case 'neutral':
+        return badgeNeutral;
+      case 'dark':
+        return badgeDark;
+    }
+  };
+
   const renderPreview = (theme: BadgeTheme, withCategories: boolean, type: 'basic' | 'category') => {
     const styles = getThemeStyles(theme);
-    const badgeText = theme === 'gold' ? '#1 Product on' : 'Live on';
-    const logoSrc = theme === 'dark' ? '/images/launch-badge-logo-white.png' : '/images/launch-badge-logo.png';
+    const badgeSrc = getBadgeImage(theme);
     const refKey = `${type}-${theme}`;
     
     return (
@@ -136,10 +143,9 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         ref={(el) => (badgeRefs.current[refKey] = el)}
         style={{
           display: 'inline-flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: '1px',
-          padding: '6px 12px',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '8px 12px',
           borderRadius: '8px',
           border: `1px solid ${styles.border}`,
           background: styles.bg,
@@ -147,28 +153,23 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
           ...(theme === 'gold' && { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' })
         }}
       >
-        <span style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0', opacity: 0.7 }}>{badgeText}</span>
-        {withCategories && categories.length > 0 ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '28px', width: 'auto' }} />
-            <span 
-              style={{
-                padding: '2px 8px',
-                borderRadius: '4px',
-                fontSize: '11px',
-                fontWeight: '500',
-                letterSpacing: '0',
-                whiteSpace: 'nowrap',
-                background: 'transparent',
-                border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
-                opacity: 0.8
-              }}
-            >
-              {categories.slice(0, 2).join(' · ')}
-            </span>
-          </div>
-        ) : (
-          <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '28px', width: 'auto' }} />
+        <img src={badgeSrc} alt="Launch" style={{ display: 'block', height: '36px', width: 'auto' }} />
+        {withCategories && categories.length > 0 && (
+          <span 
+            style={{
+              padding: '2px 8px',
+              borderRadius: '4px',
+              fontSize: '11px',
+              fontWeight: '500',
+              letterSpacing: '0',
+              whiteSpace: 'nowrap',
+              background: 'transparent',
+              border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
+              opacity: 0.8
+            }}
+          >
+            {categories.slice(0, 2).join(' · ')}
+          </span>
         )}
       </div>
     );
@@ -247,8 +248,8 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
 
       <div className="mb-6">
         <h4 className="text-sm font-medium mb-3 text-muted-foreground">Basic Badge</h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {(['neutral', 'dark'] as BadgeTheme[]).map((theme) => (
             <div key={theme} className="space-y-2">
               <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
               <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
@@ -282,7 +283,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         <div>
           <h4 className="text-sm font-medium mb-3 text-muted-foreground">Badge with Categories</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(['light', 'neutral', 'dark'] as BadgeTheme[]).map((theme) => (
+            {(['neutral', 'dark'] as BadgeTheme[]).map((theme) => (
               <div key={theme} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
                 <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
