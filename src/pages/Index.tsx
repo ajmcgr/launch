@@ -229,7 +229,7 @@ const Index = () => {
         
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
-            Launch Your Product to the World
+            Today's Top Launches
           </h1>
           <p className="text-xl text-muted-foreground">
             The launchpad for indie makers to share, vote, and discover the next big thing
