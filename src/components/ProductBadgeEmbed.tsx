@@ -60,7 +60,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 6px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
   <span style="font-size: 11px; font-weight: 600; letter-spacing: 0; opacity: 0.7;">${badgeText}</span>
-  <img src="${logoUrl}" alt="Launch" height="24" style="display: block; height: 24px; width: auto;" />
+  <img src="${logoUrl}" alt="Launch" height="28" style="display: block; height: 28px; width: auto;" />
 </a>`;
   };
 
@@ -77,7 +77,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 6px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
   <span style="font-size: 11px; font-weight: 600; letter-spacing: 0; opacity: 0.7;">${badgeText}</span>
   <div style="display: flex; align-items: center; gap: 10px;">
-    <img src="${logoUrl}" alt="Launch" height="24" style="display: block; height: 24px; width: auto;" />
+    <img src="${logoUrl}" alt="Launch" height="28" style="display: block; height: 28px; width: auto;" />
     ${categoriesText ? `<span style="padding: 2px 8px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 4px; font-size: 11px; font-weight: 500; letter-spacing: 0; opacity: 0.8; white-space: nowrap;">${categoriesText}</span>` : ''}
   </div>
 </a>`;
@@ -150,7 +150,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         <span style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0', opacity: 0.7 }}>{badgeText}</span>
         {withCategories && categories.length > 0 ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '24px', width: 'auto' }} />
+            <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '28px', width: 'auto' }} />
             <span 
               style={{
                 padding: '2px 8px',
@@ -168,7 +168,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
             </span>
           </div>
         ) : (
-          <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '24px', width: 'auto' }} />
+          <img src={logoSrc} alt="Launch" style={{ display: 'block', height: '28px', width: 'auto' }} />
         )}
       </div>
     );
