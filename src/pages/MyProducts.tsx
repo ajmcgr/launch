@@ -845,7 +845,7 @@ const MyProducts = () => {
                     )}
                   </div>
                   {product.status === 'launched' && product.slug && (
-                    <Collapsible className="mt-4">
+                    <Collapsible defaultOpen className="mt-4">
                       <CollapsibleTrigger asChild>
                         <Button variant="outline" className="w-full justify-between">
                           <span className="flex items-center gap-2">
