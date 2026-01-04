@@ -76,7 +76,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
   <img src="${logoUrl}" alt="Launch" height="36" style="display: block; height: 36px; width: auto;" />
-  ${categoriesText ? `<span style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px 7px 12px; background: transparent; border: 1px solid ${categoryBorder}; border-radius: 6px; font-size: 13px; font-weight: 500; line-height: 1; letter-spacing: 0; opacity: 0.8; white-space: nowrap;">${categoriesText}</span>` : ''}
+  ${categoriesText ? `<span style="font-size: 13px; font-weight: 500; letter-spacing: 0; opacity: 0.7; white-space: nowrap;">${categoriesText}</span>` : ''}
 </a>`;
   };
 
@@ -157,19 +157,11 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         {withCategories && categories.length > 0 && (
           <span 
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '6px 12px 7px 12px',
-              borderRadius: '6px',
               fontSize: '13px',
               fontWeight: '500',
-              lineHeight: '1',
               letterSpacing: '0',
               whiteSpace: 'nowrap',
-              background: 'transparent',
-              border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)'}`,
-              opacity: 0.8
+              opacity: 0.7
             }}
           >
             {categories.slice(0, 2).join(' · ')}
