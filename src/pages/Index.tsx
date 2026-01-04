@@ -230,10 +230,10 @@ const Index = () => {
         <div className="mb-8">
           <div className="text-center mb-6">
             <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
-              Today's Top Launches
+              Launch Your Product to the World
             </h1>
             <p className="text-xl text-muted-foreground">
-              Discover the best new products launching today
+              The launchpad for indie makers to share, vote, and discover the next big thing
             </p>
           </div>
           <div className="flex items-center justify-end gap-3">
