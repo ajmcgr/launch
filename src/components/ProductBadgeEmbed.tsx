@@ -75,8 +75,8 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-  <img src="${logoUrl}" alt="Launch" height="36" style="display: block; height: 36px; width: auto;" />
-  ${categoriesText ? `<span style="display: inline-block; height: 36px; line-height: 36px; font-size: 13px; font-weight: 500; letter-spacing: 0; opacity: 0.7; white-space: nowrap;">${categoriesText}</span>` : ''}
+  <img src="${logoUrl}" alt="Launch" height="36" style="display: inline-block; height: 36px; width: auto; vertical-align: middle;" />
+  ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; letter-spacing: 0; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
 </a>`;
   };
 
@@ -153,18 +153,17 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
           ...(theme === 'gold' && { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' })
         }}
       >
-        <img src={badgeSrc} alt="Launch" style={{ display: 'block', height: '36px', width: 'auto' }} />
+        <img src={badgeSrc} alt="Launch" style={{ display: 'inline-block', height: '36px', width: 'auto', verticalAlign: 'middle' }} />
         {withCategories && categories.length > 0 && (
           <span 
             style={{
               display: 'inline-block',
-              height: '36px',
-              lineHeight: '36px',
               fontSize: '13px',
               fontWeight: '500',
               letterSpacing: '0',
               whiteSpace: 'nowrap',
-              opacity: 0.7
+              opacity: 0.7,
+              verticalAlign: 'middle'
             }}
           >
             {categories.slice(0, 2).join(' · ')}
