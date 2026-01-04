@@ -27,13 +27,13 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       case 'light':
         return {
           bg: '#FFFFFF',
-          text: '#545454',
+          text: '#313131',
           border: '#E5E5E5',
         };
       case 'neutral':
         return {
           bg: '#F5F5F5',
-          text: '#545454',
+          text: '#313131',
           border: '#D4D4D4',
         };
       case 'dark':
@@ -45,7 +45,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       case 'gold':
         return {
           bg: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-          text: '#545454',
+          text: '#313131',
           border: '#FFD700',
         };
     }
