@@ -24,19 +24,19 @@ export const PRICING_PLANS = [
     id: 'free',
     name: 'Free',
     price: 0,
-    description: 'Launches 7+ days out, after paid queue',
+    description: 'Launch immediately',
   },
   {
     id: 'join',
     name: 'Launch Lite',
     price: 9,
-    description: 'Go live immediately, priority over free',
+    description: 'Launch immediately, promoted on Launch socials',
   },
   {
     id: 'skip',
     name: 'Launch',
     price: 39,
-    description: 'Choose any available launch date and time',
+    description: 'Choose any available launch date and time, promoted on Launch socials and newsletter',
   },
   {
     id: 'relaunch',
