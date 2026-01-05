@@ -336,6 +336,7 @@ const Products = () => {
                 <Button 
                   variant="outline" 
                   onClick={() => setDisplayCount(prev => Math.min(prev + 30, products.length))}
+                  className="border-2 border-muted-foreground/20"
                 >
                   Load More
                 </Button>
