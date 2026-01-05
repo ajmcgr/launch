@@ -545,9 +545,9 @@ const LaunchDetail = () => {
                 <Button
                   variant="outline"
                   onClick={() => handleVote(1)}
-                  className={`group w-full flex items-center justify-center gap-3 h-14 border-2 transition-all duration-200 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary [@media(hover:hover)]:hover:shadow-lg [@media(hover:hover)]:hover:-translate-y-0.5 ${userVote === 1 ? 'border-primary bg-primary/10 shadow-md' : 'border-muted-foreground/20'}`}
+                  className={`group w-full flex items-center justify-center gap-3 h-14 border-2 transition-colors [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary ${userVote === 1 ? 'border-primary bg-primary/10' : 'border-muted-foreground/20'}`}
                 >
-                  <ArrowUp className={`h-6 w-6 transition-transform [@media(hover:hover)]:group-hover:text-primary-foreground [@media(hover:hover)]:group-hover:-translate-y-1 ${userVote === 1 ? 'text-primary' : ''}`} strokeWidth={2.5} />
+                  <ArrowUp className={`h-6 w-6 [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} strokeWidth={2.5} />
                   <span className={`font-bold text-xl [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>
                     {product.netVotes}
                   </span>
