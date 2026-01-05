@@ -19,6 +19,15 @@ import { z } from 'zod';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
+// Get user's local timezone
+const getUserTimezone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    return PST_TIMEZONE;
+  }
+};
+
 const productSchema = z.object({
   name: z.string().trim().min(1, 'Product name is required').max(100, 'Name too long'),
   tagline: z.string().trim().min(1, 'Tagline is required').max(200, 'Tagline too long'),
@@ -1377,110 +1386,144 @@ const Submit = () => {
                 )}
                 
                 {!isLoadingProduct && formData.plan === 'skip' && (
-                  <div className="space-y-2 mt-6">
-                    <Label>Select Launch Date & Time *</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !formData.selectedDate && "text-muted-foreground"
-                          )}
+                  <div className="space-y-4 mt-6">
+                    {/* Launch Now Option */}
+                    <div className="p-4 border rounded-lg bg-primary/5 border-primary/20">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">Launch Now</h4>
+                          <p className="text-sm text-muted-foreground">Go live immediately</p>
+                        </div>
+                        <Button 
+                          variant="default"
+                          onClick={() => {
+                            // Set launch time to now (will trigger immediately when scheduler runs)
+                            const now = new Date();
+                            handleInputChange('selectedDate', now.toISOString());
+                          }}
+                          className="shrink-0"
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {formData.selectedDate && (() => {
-                            try {
-                              const pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
-                              return !isNaN(pstDate.getTime()) 
-                                ? format(pstDate, "PPP 'at' h:mm a") + ' PST'
-                                : "Pick your launch date and time";
-                            } catch {
-                              return "Pick your launch date and time";
-                            }
-                          })() || "Pick your launch date and time"}
+                          Launch Now
                         </Button>
-                      </PopoverTrigger>
-                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={formData.selectedDate ? toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE) : undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              // Set default time to 12:01 AM PST
-                              const pstDate = toZonedTime(date, PST_TIMEZONE);
-                              pstDate.setHours(0, 1, 0, 0);
-                              const utcDate = fromZonedTime(pstDate, PST_TIMEZONE);
-                              handleInputChange('selectedDate', utcDate.toISOString());
-                            }
-                          }}
-                        disabled={(date) => {
-                            const todayPST = toZonedTime(new Date(), PST_TIMEZONE);
-                            todayPST.setHours(0, 0, 0, 0);
-                            // Minimum date is tomorrow (prevent same-day or past dates)
-                            const tomorrowPST = new Date(todayPST);
-                            tomorrowPST.setDate(tomorrowPST.getDate() + 1);
-                            const endOfYearPST = toZonedTime(new Date(todayPST.getFullYear(), 11, 31), PST_TIMEZONE);
-                            const datePST = toZonedTime(date, PST_TIMEZONE);
-                            return datePST < tomorrowPST || datePST > endOfYearPST;
-                          }}
-                          initialFocus
-                          className="pointer-events-auto"
-                        />
-                        <div className="p-3 border-t">
-                          <Label className="text-sm mb-2 block">Launch Time (PST/PDT)</Label>
-                          <Input
-                            type="time"
-                            value={
-                              formData.selectedDate 
-                                ? (() => {
-                                    try {
-                                      const pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
-                                      return isNaN(pstDate.getTime()) ? '00:01' : format(pstDate, 'HH:mm');
-                                    } catch {
-                                      return '00:01';
-                                    }
-                                  })()
-                                : '00:01'
-                            }
-                            onChange={(e) => {
-                              const [hours, minutes] = e.target.value.split(':');
-                              let pstDate: Date;
-                              
-                              if (formData.selectedDate) {
-                                try {
-                                  pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
-                                  if (isNaN(pstDate.getTime())) {
-                                    pstDate = toZonedTime(new Date(), PST_TIMEZONE);
-                                  }
-                                } catch {
-                                  pstDate = toZonedTime(new Date(), PST_TIMEZONE);
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">Or schedule for later</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Select Launch Date & Time</Label>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Schedule in your timezone ({getUserTimezone()}) - launches happen at midnight PST on the selected date
+                      </p>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !formData.selectedDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.selectedDate && (() => {
+                              try {
+                                const date = new Date(formData.selectedDate);
+                                const now = new Date();
+                                // Check if it's "launch now" (within 5 mins of current time)
+                                if (Math.abs(date.getTime() - now.getTime()) < 5 * 60 * 1000) {
+                                  return "Launching immediately";
                                 }
-                              } else {
-                                pstDate = toZonedTime(new Date(), PST_TIMEZONE);
+                                // Show in user's local timezone
+                                return format(date, "PPP 'at' h:mm a") + ` (${getUserTimezone().split('/').pop()?.replace('_', ' ')})`;
+                              } catch {
+                                return "Pick your launch date and time";
                               }
-                              
-                              pstDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                              
-                              // Convert PST to UTC for storage
-                              const utcDate = fromZonedTime(pstDate, PST_TIMEZONE);
-                              
-                              // Validate the date before saving
-                              if (!isNaN(utcDate.getTime())) {
+                            })() || "Pick your launch date and time"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={formData.selectedDate ? new Date(formData.selectedDate) : undefined}
+                            onSelect={(date) => {
+                              if (date) {
+                                // Create a new date at midnight PST on the selected day
+                                // User sees the date they picked, but launch happens at 00:01 PST
+                                const year = date.getFullYear();
+                                const month = date.getMonth();
+                                const day = date.getDate();
+                                
+                                // Create date at 00:01 PST
+                                const pstDate = new Date(year, month, day, 0, 1, 0, 0);
+                                const utcDate = fromZonedTime(pstDate, PST_TIMEZONE);
                                 handleInputChange('selectedDate', utcDate.toISOString());
                               }
                             }}
-                            className="w-full"
+                            disabled={(date) => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              const endOfYear = new Date(today.getFullYear(), 11, 31);
+                              return date < today || date > endOfYear;
+                            }}
+                            initialFocus
+                            className="pointer-events-auto"
                           />
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Choose the exact time your product goes live (Pacific Time)
-                          </p>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                    <p className="text-sm text-muted-foreground">
-                      Select any available date within the calendar year
-                    </p>
+                          <div className="p-3 border-t">
+                            <Label className="text-sm mb-2 block">Launch Time (optional)</Label>
+                            <Input
+                              type="time"
+                              value={
+                                formData.selectedDate 
+                                  ? (() => {
+                                      try {
+                                        const pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
+                                        return isNaN(pstDate.getTime()) ? '00:01' : format(pstDate, 'HH:mm');
+                                      } catch {
+                                        return '00:01';
+                                      }
+                                    })()
+                                  : '00:01'
+                              }
+                              onChange={(e) => {
+                                const [hours, minutes] = e.target.value.split(':');
+                                let pstDate: Date;
+                                
+                                if (formData.selectedDate) {
+                                  try {
+                                    pstDate = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
+                                    if (isNaN(pstDate.getTime())) {
+                                      pstDate = toZonedTime(new Date(), PST_TIMEZONE);
+                                    }
+                                  } catch {
+                                    pstDate = toZonedTime(new Date(), PST_TIMEZONE);
+                                  }
+                                } else {
+                                  pstDate = toZonedTime(new Date(), PST_TIMEZONE);
+                                }
+                                
+                                pstDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                                const utcDate = fromZonedTime(pstDate, PST_TIMEZONE);
+                                
+                                if (!isNaN(utcDate.getTime())) {
+                                  handleInputChange('selectedDate', utcDate.toISOString());
+                                }
+                              }}
+                              className="w-full"
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Time in PST/PDT (Pacific Time)
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                   </div>
                   )}
                 </div>
@@ -1497,10 +1540,20 @@ const Submit = () => {
                   {formData.selectedDate && (() => {
                     try {
                       const d = new Date(formData.selectedDate);
+                      const now = new Date();
                       if (!isNaN(d.getTime())) {
+                        // Check if launching now (within 5 mins)
+                        if (Math.abs(d.getTime() - now.getTime()) < 5 * 60 * 1000) {
+                          return (
+                            <p className="text-sm font-medium text-primary">
+                              🚀 Launching immediately after submission
+                            </p>
+                          );
+                        }
+                        const pstDate = toZonedTime(d, PST_TIMEZONE);
                         return (
                           <p className="text-sm">
-                            Launch Date: {format(d, "PPP 'at' h:mm a")}
+                            Launch Date: {format(pstDate, "PPP 'at' h:mm a")} PST
                           </p>
                         );
                       }
