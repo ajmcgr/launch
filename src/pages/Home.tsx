@@ -226,7 +226,7 @@ const Home = () => {
       }
 
       const from = pageNum * ITEMS_PER_PAGE;
-      const to = from + ITEMS_PER_PAGE - 1;
+      const to = Math.min(from + ITEMS_PER_PAGE - 1, MAX_HOMEPAGE_PRODUCTS - 1);
 
       // Fetch vote counts first if sorting by popular
       const { data: voteCounts } = await supabase
@@ -266,8 +266,10 @@ const Home = () => {
           return votesB - votesA;
         });
 
-        allProducts = sortedByVotes.slice(from, to + 1);
-        setHasMore(sortedByVotes.length > to + 1);
+        // Cap to MAX_HOMEPAGE_PRODUCTS total
+        const cappedProducts = sortedByVotes.slice(0, MAX_HOMEPAGE_PRODUCTS);
+        allProducts = cappedProducts.slice(from, to + 1);
+        setHasMore(cappedProducts.length > to + 1 && to + 1 < MAX_HOMEPAGE_PRODUCTS);
       } else if (currentSort === 'revenue') {
         // For revenue sorting, fetch all and sort by verified_mrr
         const { data: productsData, error } = await supabase
@@ -296,8 +298,10 @@ const Home = () => {
           return (b.verified_mrr || 0) - (a.verified_mrr || 0);
         });
 
-        allProducts = sortedByRevenue.slice(from, to + 1);
-        setHasMore(sortedByRevenue.length > to + 1);
+        // Cap to MAX_HOMEPAGE_PRODUCTS total
+        const cappedProducts = sortedByRevenue.slice(0, MAX_HOMEPAGE_PRODUCTS);
+        allProducts = cappedProducts.slice(from, to + 1);
+        setHasMore(cappedProducts.length > to + 1 && to + 1 < MAX_HOMEPAGE_PRODUCTS);
       } else {
         // For latest sorting, use database ordering with pagination
         const { data: productsData, error } = await supabase
@@ -322,7 +326,7 @@ const Home = () => {
 
         if (error) throw error;
         allProducts = productsData || [];
-        setHasMore(allProducts.length === ITEMS_PER_PAGE);
+        setHasMore(allProducts.length === ITEMS_PER_PAGE && to + 1 < MAX_HOMEPAGE_PRODUCTS);
       }
 
       const productIds = allProducts.map(p => p.id);
