@@ -560,11 +560,11 @@ const LaunchDetail = () => {
               {/* Follow Product */}
               <div>
                 <Button
-                  variant={isFollowing ? 'outline' : 'default'}
+                  variant="outline"
                   className="w-full"
                   onClick={handleFollow}
                 >
-                  <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
+                  <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current text-primary' : ''}`} />
                   {isFollowing ? 'Following' : 'Follow Product'}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground mt-2">
@@ -590,6 +590,7 @@ const LaunchDetail = () => {
               <div className="flex gap-2">
                 {product.domain_url && (
                   <Button 
+                    variant="outline"
                     className="flex-1" 
                     onClick={async () => {
                       // Track website click
