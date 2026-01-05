@@ -396,8 +396,8 @@ Deno.serve(async (req) => {
           launchDate = await findNextAvailableDate(1, 'skip');
         }
       } else if (plan === 'join') {
-        // Join the Line: First available date >3 days out
-        launchDate = await findNextAvailableDate(3);
+        // Launch Lite: Go live immediately with priority over free
+        launchDate = await findNextAvailableDate(1);
       } else if (plan === 'relaunch') {
         // Relaunch: First available date >30 days out (only counting Launch + Relaunch plans)
         launchDate = await findNextAvailableDate(31, 'relaunch');
