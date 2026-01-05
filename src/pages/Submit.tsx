@@ -838,52 +838,60 @@ const Submit = () => {
           
           console.log('Order created successfully:', orderData);
 
-          // Check if there's capacity to launch immediately today
+          // Free launches start at 7+ days out and only use capacity AFTER paid launches
           const today = new Date();
           today.setHours(0, 0, 0, 0);
-          const tomorrow = new Date(today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          
-          const { count: todayCount } = await supabase
-            .from('products')
-            .select('*', { count: 'exact', head: true })
-            .in('status', ['scheduled', 'launched'])
-            .gte('launch_date', today.toISOString())
-            .lt('launch_date', tomorrow.toISOString());
           
           let launchDate: Date;
-          let productStatus: string;
+          let productStatus: string = 'scheduled';
           let foundSlot = false;
           
-          // If there's capacity today (less than 100 launches), launch immediately
-          if ((todayCount || 0) < 100) {
-            launchDate = new Date(); // Current time
-            productStatus = 'launched';
-            foundSlot = true;
-          } else {
-            // Otherwise, find next available slot
-            for (let i = 1; i < 30; i++) {
-              const checkDate = new Date(today);
-              checkDate.setDate(checkDate.getDate() + i);
-              checkDate.setHours(0, 0, 0, 0);
-              
-              const nextDay = new Date(checkDate);
-              nextDay.setDate(nextDay.getDate() + 1);
-              
-              const { count } = await supabase
-                .from('products')
-                .select('*', { count: 'exact', head: true })
-                .in('status', ['scheduled', 'launched'])
-                .gte('launch_date', checkDate.toISOString())
-                .lt('launch_date', nextDay.toISOString());
-              
-              if ((count || 0) < 100) {
-                launchDate = new Date(checkDate);
-                launchDate.setHours(0, 1, 0, 0);
-                productStatus = 'scheduled';
-                foundSlot = true;
-                break;
-              }
+          // Free launches start at day 7 (same as Join plan, but lower priority)
+          // They only get slots after paid launches have been scheduled
+          for (let i = 7; i < 60; i++) {
+            const checkDate = new Date(today);
+            checkDate.setDate(checkDate.getDate() + i);
+            checkDate.setHours(0, 0, 0, 0);
+            
+            const nextDay = new Date(checkDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            
+            // Count ALL scheduled/launched products for that day
+            const { count: totalCount } = await supabase
+              .from('products')
+              .select('*', { count: 'exact', head: true })
+              .in('status', ['scheduled', 'launched'])
+              .gte('launch_date', checkDate.toISOString())
+              .lt('launch_date', nextDay.toISOString());
+            
+            // Count PAID launches scheduled for that day (skip, join, relaunch)
+            const { data: paidOrders } = await supabase
+              .from('orders')
+              .select('product_id')
+              .in('plan', ['skip', 'join', 'relaunch']);
+            
+            const paidProductIds = paidOrders?.map(o => o.product_id).filter(Boolean) || [];
+            
+            const { count: paidCount } = await supabase
+              .from('products')
+              .select('*', { count: 'exact', head: true })
+              .in('status', ['scheduled', 'launched'])
+              .in('id', paidProductIds.length > 0 ? paidProductIds : ['no-match'])
+              .gte('launch_date', checkDate.toISOString())
+              .lt('launch_date', nextDay.toISOString());
+            
+            // Free launches only get remaining capacity after paid launches
+            // Daily capacity is 100, free launches use what's left
+            const freeCapacityUsed = (totalCount || 0) - (paidCount || 0);
+            const freeCapacityLimit = 50; // Max free launches per day
+            const totalCapacity = 100;
+            
+            // Free launch can go if: total < 100 AND free launches haven't exceeded their limit
+            if ((totalCount || 0) < totalCapacity && freeCapacityUsed < freeCapacityLimit) {
+              launchDate = new Date(checkDate);
+              launchDate.setHours(0, 1, 0, 0);
+              foundSlot = true;
+              break;
             }
           }
           
