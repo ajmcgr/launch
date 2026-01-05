@@ -544,7 +544,7 @@ const LaunchDetail = () => {
                 <h3 className="font-medium text-sm text-muted-foreground mb-2">Support this product</h3>
                 <Button
                   onClick={() => handleVote(1)}
-                  className={`group w-full flex items-center justify-center gap-3 h-14 transition-colors ${userVote === 1 ? 'bg-primary/80' : 'bg-primary'} text-primary-foreground [@media(hover:hover)]:hover:bg-primary/90`}
+                  className="group w-full flex items-center justify-center gap-3 h-14 transition-colors bg-primary text-primary-foreground [@media(hover:hover)]:hover:bg-primary/90"
                 >
                   <ArrowUp className="h-6 w-6 text-primary-foreground" strokeWidth={2.5} />
                   <span className="font-bold text-xl text-primary-foreground">
