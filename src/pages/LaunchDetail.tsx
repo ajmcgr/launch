@@ -541,20 +541,20 @@ const LaunchDetail = () => {
 
               {/* Voting */}
               <div>
-                <h3 className="font-medium text-sm text-muted-foreground mb-2">Upvote this product</h3>
-                <div className="flex items-center gap-2 bg-background border border-border/50 rounded-lg p-2 w-full justify-center">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-10 w-10 p-0 hover:bg-primary/10"
-                    onClick={() => handleVote(1)}
-                  >
-                    <ArrowUp className={`h-5 w-5 ${userVote === 1 ? 'text-primary' : ''}`} />
-                  </Button>
-                  <span className="font-bold text-lg min-w-[3rem] text-center">
+                <h3 className="font-medium text-sm text-muted-foreground mb-2">Support this product</h3>
+                <Button
+                  variant="outline"
+                  onClick={() => handleVote(1)}
+                  className={`group w-full flex items-center justify-center gap-3 h-14 border-2 transition-all duration-200 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary [@media(hover:hover)]:hover:shadow-lg [@media(hover:hover)]:hover:-translate-y-0.5 ${userVote === 1 ? 'border-primary bg-primary/10 shadow-md' : 'border-muted-foreground/20'}`}
+                >
+                  <ArrowUp className={`h-6 w-6 transition-transform [@media(hover:hover)]:group-hover:text-primary-foreground [@media(hover:hover)]:group-hover:-translate-y-1 ${userVote === 1 ? 'text-primary' : ''}`} strokeWidth={2.5} />
+                  <span className={`font-bold text-xl [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>
                     {product.netVotes}
                   </span>
-                </div>
+                  <span className="text-sm text-muted-foreground [@media(hover:hover)]:group-hover:text-primary-foreground">
+                    {userVote === 1 ? 'Upvoted!' : 'Upvote'}
+                  </span>
+                </Button>
               </div>
 
               {/* Follow Product */}

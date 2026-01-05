@@ -47,10 +47,10 @@ export const HomeLaunchCard = ({
               e.stopPropagation();
               onVote();
             }}
-            className={`group flex flex-col items-center gap-0 h-auto py-1 px-3 min-w-[50px] touch-manipulation active:scale-95 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary transition-all [@media(hover:hover)]:hover:scale-105 ${userVote === 1 ? 'border-primary' : ''}`}
+            className={`group flex flex-col items-center gap-0.5 h-auto py-1.5 px-3 min-w-[52px] touch-manipulation active:scale-95 border-2 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary [@media(hover:hover)]:hover:shadow-md [@media(hover:hover)]:hover:-translate-y-0.5 transition-all duration-200 ${userVote === 1 ? 'border-primary bg-primary/10 shadow-sm' : 'border-muted-foreground/20'}`}
           >
-            <span className="text-xs [@media(hover:hover)]:group-hover:text-primary-foreground">▲</span>
-            <span className="font-semibold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground">{votes}</span>
+            <span className={`text-sm font-bold [@media(hover:hover)]:group-hover:text-primary-foreground [@media(hover:hover)]:group-hover:-translate-y-0.5 transition-transform ${userVote === 1 ? 'text-primary' : ''}`}>▲</span>
+            <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>{votes}</span>
           </Button>
         </div>
         
