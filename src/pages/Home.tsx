@@ -560,7 +560,7 @@ const Home = () => {
     return (
       <>
         {effectiveView === 'list' ? (
-          <div className="divide-y">
+          <div className="space-y-2">
             {renderProductsWithSponsored(true)}
           </div>
         ) : (

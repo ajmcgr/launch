@@ -310,7 +310,7 @@ const Products = () => {
             )}
 
             {effectiveView === 'list' ? (
-              <div className="divide-y">
+              <div className="space-y-2">
                 {products.slice(0, displayCount).map((product) => (
                   <LaunchListItem
                     key={product.id}
