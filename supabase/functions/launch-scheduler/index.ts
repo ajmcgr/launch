@@ -72,6 +72,21 @@ Deno.serve(async (req) => {
         
         if (authUser?.user?.email) {
           const productUrl = `${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/launch/${product.slug}`;
+          const advertiseUrl = `${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/advertise`;
+
+          // Get weekly launch count for context
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          
+          const { count: weeklyLaunchCount } = await supabaseAdmin
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'launched')
+            .gte('launch_date', oneWeekAgo.toISOString());
+
+          const launchCountText = weeklyLaunchCount && weeklyLaunchCount > 10 
+            ? `This week saw ${weeklyLaunchCount} new products launch, so standing out matters.`
+            : 'Standing out in a crowded market matters.';
 
           const emailHtml = `
             <!DOCTYPE html>
@@ -91,6 +106,9 @@ Deno.serve(async (req) => {
                   .tips p { margin: 0 0 12px 0; }
                   ul { color: #4b5563; padding-left: 20px; margin: 0; }
                   li { margin-bottom: 8px; }
+                  .cta-box { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #f59e0b; }
+                  .cta-box p { margin: 0; color: #92400e; }
+                  .cta-box a { color: #92400e; font-weight: 600; }
                   .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
                 </style>
               </head>
@@ -101,22 +119,27 @@ Deno.serve(async (req) => {
                       <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
                     </div>
                     <div class="content">
-                      <h1>${product.name} is Live!</h1>
-                      <p>Congratulations! Your product is now live on Launch.</p>
+                      <h1>You're live on Launch! 🎉</h1>
+                      <p><strong>${product.name}</strong> is now live and visible to our community.</p>
+                      <p>${launchCountText}</p>
                       <p style="text-align: center; margin: 24px 0;">
                         <a href="${productUrl}" class="button">View Your Launch</a>
                       </p>
                       <div class="tips">
-                        <p><strong>Tips to maximize your launch:</strong></p>
+                        <p><strong>Quick wins to boost visibility:</strong></p>
                         <ul>
-                          <li>Share your launch link on social media</li>
-                          <li>Engage with comments and feedback</li>
-                          <li>Respond to early users quickly</li>
+                          <li>Share your launch link on Twitter/X and LinkedIn</li>
+                          <li>Reply to every comment within the first hour</li>
+                          <li>Ask your network to upvote and leave feedback</li>
                         </ul>
+                      </div>
+                      <div class="cta-box">
+                        <p>Want help with positioning or extra visibility? <strong>Just reply to this email</strong> — we read every message and can help you stand out.</p>
+                        <p style="margin-top: 12px;"><a href="${advertiseUrl}">Or explore our visibility options →</a></p>
                       </div>
                     </div>
                     <div class="footer">
-                      <p>Good luck with your launch!</p>
+                      <p>Good luck with your launch! 🚀</p>
                     </div>
                   </div>
                 </div>
@@ -127,7 +150,8 @@ Deno.serve(async (req) => {
           await resend.emails.send({
             from: 'Launch <notifications@trylaunch.ai>',
             to: [authUser.user.email],
-            subject: `🎉 ${product.name} is now LIVE on Launch!`,
+            reply_to: 'hello@trylaunch.ai',
+            subject: `🚀 You're live on Launch!`,
             html: emailHtml,
           });
 
