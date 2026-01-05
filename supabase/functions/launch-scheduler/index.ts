@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
           await resend.emails.send({
             from: 'Launch <notifications@trylaunch.ai>',
             to: [authUser.user.email],
-            reply_to: 'hello@trylaunch.ai',
+            reply_to: 'alex@trylaunch.ai',
             subject: `🚀 You're live on Launch!`,
             html: emailHtml,
           });
