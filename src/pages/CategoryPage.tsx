@@ -432,7 +432,7 @@ const CategoryPage = () => {
 
         {hasMore && products.length > 0 && (
           <div className="flex justify-center mt-8">
-            <Button onClick={loadMore} disabled={loadingMore} variant="outline">
+            <Button onClick={loadMore} disabled={loadingMore} variant="outline" className="border-2 border-muted-foreground/20">
               {loadingMore ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

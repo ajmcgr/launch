@@ -8,7 +8,7 @@ interface ViewToggleProps {
 
 export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
   return (
-    <div className="flex items-center gap-1 border rounded-md p-1">
+    <div className="flex items-center gap-1 border rounded-md p-1 h-9">
       <Toggle
         pressed={view === 'list'}
         onPressedChange={() => onViewChange('list')}
