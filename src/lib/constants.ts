@@ -30,7 +30,7 @@ export const PRICING_PLANS = [
     id: 'join',
     name: 'Join the Line',
     price: 9,
-    description: 'Launches 7+ days out, priority over free',
+    description: 'Launches 3+ days out, priority over free',
   },
   {
     id: 'skip',
