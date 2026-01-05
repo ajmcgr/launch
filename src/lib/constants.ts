@@ -28,9 +28,9 @@ export const PRICING_PLANS = [
   },
   {
     id: 'join',
-    name: 'Join the Line',
+    name: 'Launch Lite',
     price: 9,
-    description: 'Launches 3+ days out, priority over free',
+    description: 'Go live immediately, priority over free',
   },
   {
     id: 'skip',
