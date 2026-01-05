@@ -53,7 +53,7 @@ export const ProductSkeleton = ({ view, count = 5 }: ProductSkeletonProps) => {
 
   if (view === 'list') {
     return (
-      <div className="divide-y">
+      <div className="space-y-1">
         {skeletons.map((i) => (
           <ListItemSkeleton key={i} />
         ))}
