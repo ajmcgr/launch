@@ -543,15 +543,14 @@ const LaunchDetail = () => {
               <div>
                 <h3 className="font-medium text-sm text-muted-foreground mb-2">Support this product</h3>
                 <Button
-                  variant="outline"
                   onClick={() => handleVote(1)}
-                  className={`group w-full flex items-center justify-center gap-3 h-14 border-2 transition-colors [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary ${userVote === 1 ? 'border-primary bg-primary/10' : 'border-muted-foreground/20'}`}
+                  className={`group w-full flex items-center justify-center gap-3 h-14 transition-colors ${userVote === 1 ? 'bg-primary/80' : 'bg-primary'} text-primary-foreground [@media(hover:hover)]:hover:bg-primary/90`}
                 >
-                  <ArrowUp className={`h-6 w-6 [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} strokeWidth={2.5} />
-                  <span className={`font-bold text-xl [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>
+                  <ArrowUp className="h-6 w-6 text-primary-foreground" strokeWidth={2.5} />
+                  <span className="font-bold text-xl text-primary-foreground">
                     {product.netVotes}
                   </span>
-                  <span className="text-sm text-muted-foreground [@media(hover:hover)]:group-hover:text-primary-foreground">
+                  <span className="text-sm text-primary-foreground/80">
                     {userVote === 1 ? 'Upvoted!' : 'Upvote'}
                   </span>
                 </Button>
@@ -561,7 +560,7 @@ const LaunchDetail = () => {
               <div>
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full border-2 border-muted-foreground/20"
                   onClick={handleFollow}
                 >
                   <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current text-primary' : ''}`} />
@@ -576,7 +575,7 @@ const LaunchDetail = () => {
               <div>
                 <Button
                   variant="outline"
-                  className="w-full gap-2"
+                  className="w-full gap-2 border-2 border-muted-foreground/20"
                   asChild
                 >
                   <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
@@ -591,7 +590,7 @@ const LaunchDetail = () => {
                 {product.domain_url && (
                   <Button 
                     variant="outline"
-                    className="flex-1" 
+                    className="flex-1 border-2 border-muted-foreground/20" 
                     onClick={async () => {
                       // Track website click
                       try {
@@ -611,7 +610,7 @@ const LaunchDetail = () => {
                 )}
                 <Button
                   variant="outline"
-                  className={product.domain_url ? "w-20" : "w-full"}
+                  className={`border-2 border-muted-foreground/20 ${product.domain_url ? "w-20" : "w-full"}`}
                   onClick={() => {
                     const url = window.location.href;
                     navigator.clipboard.writeText(url);
