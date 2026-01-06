@@ -115,6 +115,7 @@ export type Database = {
           created_at: string | null
           id: string
           parent_comment_id: string | null
+          pinned: boolean | null
           product_id: string
           updated_at: string | null
           user_id: string
@@ -124,6 +125,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           parent_comment_id?: string | null
+          pinned?: boolean | null
           product_id: string
           updated_at?: string | null
           user_id: string
@@ -133,6 +135,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           parent_comment_id?: string | null
+          pinned?: boolean | null
           product_id?: string
           updated_at?: string | null
           user_id?: string
