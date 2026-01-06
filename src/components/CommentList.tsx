@@ -5,12 +5,15 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { CommentForm } from './CommentForm';
+import { Pin, PinOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Comment {
   id: string;
   content: string;
   created_at: string;
   parent_comment_id: string | null;
+  pinned: boolean;
   user: {
     username: string;
     avatar_url?: string;
@@ -20,14 +23,17 @@ interface Comment {
 
 interface CommentListProps {
   productId: string;
+  productOwnerId?: string;
   refreshTrigger?: number;
 }
 
-export const CommentList = ({ productId, refreshTrigger }: CommentListProps) => {
+export const CommentList = ({ productId, productOwnerId, refreshTrigger }: CommentListProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
+
+  const isProductOwner = user?.id === productOwnerId;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -48,12 +54,14 @@ export const CommentList = ({ productId, refreshTrigger }: CommentListProps) => 
           content,
           created_at,
           parent_comment_id,
+          pinned,
           user:users (
             username,
             avatar_url
           )
         `)
         .eq('product_id', productId)
+        .order('pinned', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -94,8 +102,25 @@ export const CommentList = ({ productId, refreshTrigger }: CommentListProps) => 
     fetchComments();
   };
 
+  const handlePinComment = async (commentId: string, currentlyPinned: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .update({ pinned: !currentlyPinned })
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      toast.success(currentlyPinned ? 'Comment unpinned' : 'Comment pinned');
+      fetchComments();
+    } catch (error) {
+      console.error('Error pinning comment:', error);
+      toast.error('Failed to update pin status');
+    }
+  };
+
   const CommentItem = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => (
-    <Card className={`p-4 ${isReply ? 'ml-12 mt-2' : ''}`}>
+    <Card className={`p-4 ${isReply ? 'ml-12 mt-2' : ''} ${comment.pinned ? 'border-primary/50 bg-primary/5' : ''}`}>
       <div className="flex gap-3">
         <Avatar className="h-10 w-10 flex-shrink-0">
           <AvatarImage src={comment.user.avatar_url} alt={comment.user.username} />
@@ -104,21 +129,49 @@ export const CommentList = ({ productId, refreshTrigger }: CommentListProps) => 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-semibold">@{comment.user.username}</span>
+            {comment.pinned && (
+              <span className="flex items-center gap-1 text-xs text-primary font-medium">
+                <Pin className="h-3 w-3" />
+                Pinned
+              </span>
+            )}
             <span className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
             </span>
           </div>
           <p className="text-sm text-foreground whitespace-pre-wrap mb-2">{comment.content}</p>
-          {user && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-              className="h-8 text-xs"
-            >
-              Reply
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                className="h-8 text-xs"
+              >
+                Reply
+              </Button>
+            )}
+            {isProductOwner && !isReply && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handlePinComment(comment.id, comment.pinned)}
+                className="h-8 text-xs gap-1"
+              >
+                {comment.pinned ? (
+                  <>
+                    <PinOff className="h-3 w-3" />
+                    Unpin
+                  </>
+                ) : (
+                  <>
+                    <Pin className="h-3 w-3" />
+                    Pin
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       {replyingTo === comment.id && (

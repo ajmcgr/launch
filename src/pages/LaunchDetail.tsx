@@ -467,7 +467,7 @@ const LaunchDetail = () => {
                   <Button onClick={() => navigate('/auth')}>Login</Button>
                 </div>
               )}
-              <CommentList productId={product.id} refreshTrigger={commentRefreshTrigger} />
+              <CommentList productId={product.id} productOwnerId={product.owner_id} refreshTrigger={commentRefreshTrigger} />
             </div>
           </div>
 
