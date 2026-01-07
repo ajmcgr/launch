@@ -98,6 +98,9 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 213 60% 50%;
+    
+    /* Custom Launch colors */
+    --nav-text: 0 0% 95%;
   }
 }
 
