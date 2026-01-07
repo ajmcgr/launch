@@ -527,6 +527,9 @@ const Home = () => {
               slug={product.slug}
               userVote={product.userVote}
               onVote={() => handleVote(product.id)}
+              launchDate={product.launch_date}
+              commentCount={product.commentCount}
+              makers={product.makers}
             />
           );
         } else if (viewMode === 'list') {
