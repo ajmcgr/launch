@@ -5,7 +5,18 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { CommentForm } from './CommentForm';
-import { Pin, PinOff } from 'lucide-react';
+import { Pin, PinOff, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 
 interface Comment {
@@ -14,6 +25,7 @@ interface Comment {
   created_at: string;
   parent_comment_id: string | null;
   pinned: boolean;
+  user_id: string;
   user: {
     username: string;
     avatar_url?: string;
@@ -55,6 +67,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
           created_at,
           parent_comment_id,
           pinned,
+          user_id,
           user:users (
             username,
             avatar_url
@@ -119,6 +132,23 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
     }
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      toast.success('Comment deleted');
+      fetchComments();
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast.error('Failed to delete comment');
+    }
+  };
+
   const CommentItem = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => (
     <Card className={`p-4 ${isReply ? 'ml-12 mt-2' : ''} ${comment.pinned ? 'border-primary/50 bg-primary/5' : ''}`}>
       <div className="flex gap-3">
@@ -170,6 +200,34 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
                   </>
                 )}
               </Button>
+            )}
+            {user?.id === comment.user_id && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs gap-1 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                    Delete
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete comment?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your comment.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDeleteComment(comment.id)}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </div>
