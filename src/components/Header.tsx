@@ -20,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
 import { NotificationBell } from '@/components/NotificationBell';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -154,8 +155,8 @@ export const Header = () => {
           </div>
           
           {/* Right: Actions */}
-          <div className="flex items-center gap-4 ml-2">
-
+          <div className="flex items-center gap-2 ml-2">
+            <ThemeToggle />
             {/* Desktop User Menu */}
             {user ? (
               <div className="hidden md:flex items-center gap-2">
