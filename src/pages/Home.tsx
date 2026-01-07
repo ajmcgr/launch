@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
+import { MinimalListItem } from '@/components/MinimalListItem';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
@@ -56,9 +57,9 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [user, setUser] = useState<any>(null);
-  const [view, setView] = useState<'list' | 'grid'>(() => {
+  const [view, setView] = useState<'list' | 'grid' | 'minimal'>(() => {
     const saved = localStorage.getItem('productView');
-    return (saved as 'list' | 'grid') || 'list';
+    return (saved === 'list' || saved === 'grid' || saved === 'minimal') ? saved : 'list';
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('latest');
@@ -71,10 +72,10 @@ const Home = () => {
     }
   };
   
-  // Force list view on mobile
-  const effectiveView = isMobile ? 'list' : view;
+  // Force list view on mobile (but allow minimal)
+  const effectiveView = isMobile ? (view === 'grid' ? 'list' : view) : view;
 
-  const handleViewChange = (newView: 'list' | 'grid') => {
+  const handleViewChange = (newView: 'list' | 'grid' | 'minimal') => {
     setView(newView);
     localStorage.setItem('productView', newView);
   };
@@ -491,13 +492,13 @@ const Home = () => {
     }
 
     // Helper to render products with sponsored items at their positions
-    const renderProductsWithSponsored = (isListView: boolean) => {
+    const renderProductsWithSponsored = (viewType: 'list' | 'grid' | 'minimal') => {
       const items: React.ReactNode[] = [];
       let productIndex = 0;
       
-      // Position 1 sponsored product goes at the top
+      // Position 1 sponsored product goes at the top (not in minimal view)
       const pos1Sponsor = sponsoredProducts.get(1);
-      if (pos1Sponsor) {
+      if (pos1Sponsor && viewType !== 'minimal') {
         // Track impression for position 1
         trackSponsorImpression(pos1Sponsor.id, 1);
         items.push(
@@ -509,6 +510,21 @@ const Home = () => {
             onVote={handleVote}
           />
         );
+      } else if (pos1Sponsor && viewType === 'minimal') {
+        trackSponsorImpression(pos1Sponsor.id, 1);
+        items.push(
+          <MinimalListItem
+            key={`sponsored-1`}
+            id={pos1Sponsor.id}
+            name={pos1Sponsor.name}
+            tagline={pos1Sponsor.tagline}
+            slug={pos1Sponsor.slug}
+            netVotes={pos1Sponsor.netVotes}
+            launch_date={pos1Sponsor.launch_date}
+            sponsored
+            onVote={handleVote}
+          />
+        );
       }
       
       // Interleave products with sponsored items at positions 10, 20, 30
@@ -516,7 +532,21 @@ const Home = () => {
         productIndex++;
         const displayRank = productIndex;
         
-        if (isListView) {
+        if (viewType === 'minimal') {
+          items.push(
+            <MinimalListItem
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              tagline={product.tagline}
+              slug={product.slug}
+              netVotes={product.netVotes}
+              launch_date={product.launch_date}
+              rank={displayRank}
+              onVote={handleVote}
+            />
+          );
+        } else if (viewType === 'list') {
           items.push(
             <LaunchListItem
               key={product.id}
@@ -545,15 +575,31 @@ const Home = () => {
           if (sponsor) {
             // Track impression for this position
             trackSponsorImpression(sponsor.id, sponsorPosition);
-            items.push(
-              <LaunchListItem
-                key={`sponsored-${sponsorPosition}`}
-                {...sponsor}
-                sponsored
-                sponsoredPosition={sponsorPosition}
-                onVote={handleVote}
-              />
-            );
+            if (viewType === 'minimal') {
+              items.push(
+                <MinimalListItem
+                  key={`sponsored-${sponsorPosition}`}
+                  id={sponsor.id}
+                  name={sponsor.name}
+                  tagline={sponsor.tagline}
+                  slug={sponsor.slug}
+                  netVotes={sponsor.netVotes}
+                  launch_date={sponsor.launch_date}
+                  sponsored
+                  onVote={handleVote}
+                />
+              );
+            } else {
+              items.push(
+                <LaunchListItem
+                  key={`sponsored-${sponsorPosition}`}
+                  {...sponsor}
+                  sponsored
+                  sponsoredPosition={sponsorPosition}
+                  onVote={handleVote}
+                />
+              );
+            }
           }
         }
       });
@@ -563,13 +609,17 @@ const Home = () => {
 
     return (
       <>
-        {effectiveView === 'list' ? (
+        {effectiveView === 'minimal' ? (
+          <div className="bg-muted/30 border rounded-md p-2">
+            {renderProductsWithSponsored('minimal')}
+          </div>
+        ) : effectiveView === 'list' ? (
           <div className="space-y-2">
-            {renderProductsWithSponsored(true)}
+            {renderProductsWithSponsored('list')}
           </div>
         ) : (
           <div className="space-y-4">
-            {renderProductsWithSponsored(false)}
+            {renderProductsWithSponsored('grid')}
           </div>
         )}
         
