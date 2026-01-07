@@ -1,7 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductSkeletonProps {
-  view: 'list' | 'grid' | 'minimal';
+  view: 'list' | 'grid';
   count?: number;
 }
 
@@ -48,27 +48,8 @@ const CardSkeleton = () => (
   </div>
 );
 
-const MinimalSkeleton = () => (
-  <div className="flex items-center gap-2 py-1">
-    <Skeleton className="h-3 w-6" />
-    <Skeleton className="h-3 w-3" />
-    <Skeleton className="h-3 w-32" />
-    <Skeleton className="h-3 w-48" />
-  </div>
-);
-
 export const ProductSkeleton = ({ view, count = 5 }: ProductSkeletonProps) => {
   const skeletons = Array.from({ length: count }, (_, i) => i);
-
-  if (view === 'minimal') {
-    return (
-      <div className="bg-muted/30 border rounded-md p-2 space-y-0.5">
-        {skeletons.map((i) => (
-          <MinimalSkeleton key={i} />
-        ))}
-      </div>
-    );
-  }
 
   if (view === 'list') {
     return (
