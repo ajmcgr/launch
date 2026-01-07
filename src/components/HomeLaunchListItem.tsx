@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface HomeLaunchListItemProps {
   rank: number;
@@ -10,6 +11,7 @@ interface HomeLaunchListItemProps {
   votes: number;
   slug: string;
   domainUrl?: string;
+  launchDate?: string;
   userVote?: 1 | null;
   onVote: () => void;
 }
@@ -22,6 +24,7 @@ export const HomeLaunchListItem = ({
   votes,
   slug,
   domainUrl,
+  launchDate,
   userVote,
   onVote,
 }: HomeLaunchListItemProps) => {
@@ -52,6 +55,11 @@ export const HomeLaunchListItem = ({
               >
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
+            )}
+            {launchDate && (
+              <span className="text-xs text-muted-foreground">
+                · {formatDistanceToNow(new Date(launchDate), { addSuffix: true })}
+              </span>
             )}
           </div>
           <p className="text-sm text-muted-foreground line-clamp-1">{tagline}</p>

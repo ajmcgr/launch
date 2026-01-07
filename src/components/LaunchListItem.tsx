@@ -7,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
+import { formatDistanceToNow } from 'date-fns';
 interface LaunchListItemProps {
   id: string;
   slug: string;
@@ -21,6 +22,7 @@ interface LaunchListItemProps {
   commentCount?: number;
   verifiedMrr?: number | null;
   mrrVerifiedAt?: string | null;
+  launch_date?: string;
   makers: Array<{
     username: string;
     avatar_url?: string;
@@ -46,6 +48,7 @@ export const LaunchListItem = ({
   commentCount = 0,
   verifiedMrr,
   mrrVerifiedAt,
+  launch_date,
   makers,
   rank,
   icon: IconComponent,
@@ -178,6 +181,12 @@ export const LaunchListItem = ({
                 </div>
                 
                 <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
+                
+                {launch_date && (
+                  <span className="text-xs text-muted-foreground">
+                    {formatDistanceToNow(new Date(launch_date), { addSuffix: true })}
+                  </span>
+                )}
               </div>
             </div>
           </div>
