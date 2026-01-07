@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
+import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
@@ -56,9 +57,9 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [user, setUser] = useState<any>(null);
-  const [view, setView] = useState<'list' | 'grid'>(() => {
+  const [view, setView] = useState<'list' | 'grid' | 'compact'>(() => {
     const saved = localStorage.getItem('productView');
-    return (saved as 'list' | 'grid') || 'list';
+    return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('latest');
@@ -72,9 +73,9 @@ const Home = () => {
   };
   
   // Force list view on mobile
-  const effectiveView = isMobile ? 'list' : view;
+  const effectiveView = isMobile ? 'compact' : view;
 
-  const handleViewChange = (newView: 'list' | 'grid') => {
+  const handleViewChange = (newView: 'list' | 'grid' | 'compact') => {
     setView(newView);
     localStorage.setItem('productView', newView);
   };
@@ -491,13 +492,13 @@ const Home = () => {
     }
 
     // Helper to render products with sponsored items at their positions
-    const renderProductsWithSponsored = (isListView: boolean) => {
+    const renderProductsWithSponsored = (viewMode: 'list' | 'grid' | 'compact') => {
       const items: React.ReactNode[] = [];
       let productIndex = 0;
       
-      // Position 1 sponsored product goes at the top
+      // Position 1 sponsored product goes at the top (skip for compact view)
       const pos1Sponsor = sponsoredProducts.get(1);
-      if (pos1Sponsor) {
+      if (pos1Sponsor && viewMode !== 'compact') {
         // Track impression for position 1
         trackSponsorImpression(pos1Sponsor.id, 1);
         items.push(
@@ -516,7 +517,19 @@ const Home = () => {
         productIndex++;
         const displayRank = productIndex;
         
-        if (isListView) {
+        if (viewMode === 'compact') {
+          items.push(
+            <CompactLaunchListItem
+              key={product.id}
+              rank={displayRank}
+              name={product.name}
+              votes={product.netVotes}
+              slug={product.slug}
+              userVote={product.userVote}
+              onVote={() => handleVote(product.id)}
+            />
+          );
+        } else if (viewMode === 'list') {
           items.push(
             <LaunchListItem
               key={product.id}
@@ -536,24 +549,26 @@ const Home = () => {
           );
         }
         
-        // Check if there's a sponsored product for the next position
+        // Check if there's a sponsored product for the next position (skip for compact)
         // Position 2 = after 10 products, Position 3 = after 20 products, etc.
-        const sponsorPositionCheck = productIndex + 1;
-        const sponsorPosition = sponsorPositionCheck === 10 ? 2 : sponsorPositionCheck === 20 ? 3 : sponsorPositionCheck === 30 ? 4 : null;
-        if (sponsorPosition) {
-          const sponsor = sponsoredProducts.get(sponsorPosition);
-          if (sponsor) {
-            // Track impression for this position
-            trackSponsorImpression(sponsor.id, sponsorPosition);
-            items.push(
-              <LaunchListItem
-                key={`sponsored-${sponsorPosition}`}
-                {...sponsor}
-                sponsored
-                sponsoredPosition={sponsorPosition}
-                onVote={handleVote}
-              />
-            );
+        if (viewMode !== 'compact') {
+          const sponsorPositionCheck = productIndex + 1;
+          const sponsorPosition = sponsorPositionCheck === 10 ? 2 : sponsorPositionCheck === 20 ? 3 : sponsorPositionCheck === 30 ? 4 : null;
+          if (sponsorPosition) {
+            const sponsor = sponsoredProducts.get(sponsorPosition);
+            if (sponsor) {
+              // Track impression for this position
+              trackSponsorImpression(sponsor.id, sponsorPosition);
+              items.push(
+                <LaunchListItem
+                  key={`sponsored-${sponsorPosition}`}
+                  {...sponsor}
+                  sponsored
+                  sponsoredPosition={sponsorPosition}
+                  onVote={handleVote}
+                />
+              );
+            }
           }
         }
       });
@@ -563,13 +578,17 @@ const Home = () => {
 
     return (
       <>
-        {effectiveView === 'list' ? (
+        {effectiveView === 'compact' ? (
+          <div className="divide-y">
+            {renderProductsWithSponsored('compact')}
+          </div>
+        ) : effectiveView === 'list' ? (
           <div className="space-y-2">
-            {renderProductsWithSponsored(true)}
+            {renderProductsWithSponsored('list')}
           </div>
         ) : (
           <div className="space-y-4">
-            {renderProductsWithSponsored(false)}
+            {renderProductsWithSponsored('grid')}
           </div>
         )}
         

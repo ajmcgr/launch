@@ -1,7 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductSkeletonProps {
-  view: 'list' | 'grid';
+  view: 'list' | 'grid' | 'compact';
   count?: number;
 }
 
@@ -22,6 +22,14 @@ const ListItemSkeleton = () => (
     
     {/* Upvote button */}
     <Skeleton className="h-9 w-10 rounded-md" />
+  </div>
+);
+
+const CompactItemSkeleton = () => (
+  <div className="flex items-center gap-2 py-2 px-2">
+    <Skeleton className="h-4 w-6" />
+    <Skeleton className="h-4 flex-1 max-w-48" />
+    <Skeleton className="h-4 w-8" />
   </div>
 );
 
@@ -50,6 +58,16 @@ const CardSkeleton = () => (
 
 export const ProductSkeleton = ({ view, count = 5 }: ProductSkeletonProps) => {
   const skeletons = Array.from({ length: count }, (_, i) => i);
+
+  if (view === 'compact') {
+    return (
+      <div className="divide-y">
+        {skeletons.map((i) => (
+          <CompactItemSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
   if (view === 'list') {
     return (
