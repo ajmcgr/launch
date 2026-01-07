@@ -531,6 +531,7 @@ const Home = () => {
               commentCount={product.commentCount}
               makers={product.makers}
               domainUrl={product.domainUrl}
+              categories={product.categories}
             />
           );
         } else if (viewMode === 'list') {

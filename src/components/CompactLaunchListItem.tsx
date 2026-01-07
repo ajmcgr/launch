@@ -13,6 +13,7 @@ interface CompactLaunchListItemProps {
   commentCount?: number;
   makers?: Array<{ username: string; avatar_url?: string }>;
   domainUrl?: string;
+  categories?: string[];
 }
 
 export const CompactLaunchListItem = ({
@@ -26,10 +27,12 @@ export const CompactLaunchListItem = ({
   commentCount = 0,
   makers = [],
   domainUrl,
+  categories = [],
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
   const metaParts: string[] = [];
+  if (categories.length > 0) metaParts.push(categories[0]);
   if (firstMaker) metaParts.push(firstMaker.username);
   metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
   if (launchDate) metaParts.push(formatDistanceToNow(new Date(launchDate), { addSuffix: true }));
