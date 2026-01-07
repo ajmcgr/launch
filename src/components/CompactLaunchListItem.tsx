@@ -31,8 +31,8 @@ export const CompactLaunchListItem = ({
   
   const metaParts: string[] = [];
   if (firstMaker) metaParts.push(firstMaker.username);
-  if (launchDate) metaParts.push(formatDistanceToNow(new Date(launchDate), { addSuffix: true }));
   if (commentCount > 0) metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
+  if (launchDate) metaParts.push(formatDistanceToNow(new Date(launchDate), { addSuffix: true }));
   
   return (
     <Link to={`/launch/${slug}`} className="block">
