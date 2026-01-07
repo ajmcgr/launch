@@ -164,9 +164,6 @@ export const Header = () => {
             {user ? (
               <div className="hidden md:flex items-center gap-2">
                 <ThemeToggle />
-                <Button onClick={handleSubmitClick}>
-                  Submit
-                </Button>
                 <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -205,6 +202,9 @@ export const Header = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <Button onClick={handleSubmitClick}>
+                  Submit
+                </Button>
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-2">
