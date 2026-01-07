@@ -634,11 +634,10 @@ const Home = () => {
       <div className="container mx-auto px-4 py-3 md:py-4 max-w-4xl">
         <Tabs defaultValue="week" onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-4">
-            <TabsList className="flex-shrink h-8 bg-transparent border rounded-md p-0.5 gap-0.5 overflow-hidden">
-              <TabsTrigger value="today" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Today</TabsTrigger>
-              <TabsTrigger value="week" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Week</TabsTrigger>
-              <TabsTrigger value="month" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Month</TabsTrigger>
-              <TabsTrigger value="year" className="text-xs px-2 h-6 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Year</TabsTrigger>
+            <TabsList className="flex-shrink h-9 bg-transparent border rounded-md p-1 gap-0.5 overflow-hidden">
+              <TabsTrigger value="today" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Today</TabsTrigger>
+              <TabsTrigger value="week" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Week</TabsTrigger>
+              <TabsTrigger value="month" className="text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Month</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
