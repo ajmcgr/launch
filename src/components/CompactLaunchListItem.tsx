@@ -58,7 +58,7 @@ export const CompactLaunchListItem = ({
             )}
           </div>
           {metaParts.length > 0 && (
-            <p className="text-sm text-muted-foreground truncate">
+            <p className="text-xs text-muted-foreground truncate">
               {metaParts.join(' · ')}
             </p>
           )}
