@@ -256,7 +256,7 @@ const Index = () => {
             <p className="text-muted-foreground">No launches today. Check back soon!</p>
           </div>
         ) : effectiveView === 'compact' ? (
-          <div className="divide-y mb-8">
+          <div className="space-y-0 mb-8">
             {launches.slice(0, displayCount).map((launch) => (
               <CompactLaunchListItem
                 key={launch.id}

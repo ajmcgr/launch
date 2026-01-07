@@ -582,7 +582,7 @@ const Home = () => {
     return (
       <>
         {effectiveView === 'compact' ? (
-          <div className="divide-y">
+          <div className="space-y-0">
             {renderProductsWithSponsored('compact')}
           </div>
         ) : effectiveView === 'list' ? (
