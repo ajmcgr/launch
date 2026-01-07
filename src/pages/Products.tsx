@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
+import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { CATEGORIES } from '@/lib/constants';
@@ -24,16 +25,16 @@ const Products = () => {
   const [archiveYears, setArchiveYears] = useState<number[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [displayCount, setDisplayCount] = useState(30);
-  const [view, setView] = useState<'list' | 'grid'>(() => {
+  const [view, setView] = useState<'list' | 'grid' | 'compact'>(() => {
     const saved = localStorage.getItem('productView');
-    return (saved as 'list' | 'grid') || 'list';
+    return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
   
-  // Force list view on mobile
-  const effectiveView = isMobile ? 'list' : view;
+  // Use the saved view preference
+  const effectiveView = view;
 
-  const handleViewChange = (newView: 'list' | 'grid') => {
+  const handleViewChange = (newView: 'list' | 'grid' | 'compact') => {
     setView(newView);
     localStorage.setItem('productView', newView);
   };
@@ -290,7 +291,7 @@ const Products = () => {
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
-                {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
+                <ViewToggle view={view} onViewChange={handleViewChange} />
               </div>
             </div>
 
@@ -309,7 +310,25 @@ const Products = () => {
               </div>
             )}
 
-            {effectiveView === 'list' ? (
+            {effectiveView === 'compact' ? (
+              <div className="space-y-0">
+                {products.slice(0, displayCount).map((product, index) => (
+                  <CompactLaunchListItem
+                    key={product.id}
+                    rank={index + 1}
+                    name={product.name}
+                    votes={product.netVotes}
+                    slug={product.slug}
+                    onVote={() => {}}
+                    launchDate={product.launch_date}
+                    commentCount={0}
+                    makers={product.makers}
+                    domainUrl={product.domainUrl}
+                    categories={product.categories}
+                  />
+                ))}
+              </div>
+            ) : effectiveView === 'list' ? (
               <div className="space-y-2">
                 {products.slice(0, displayCount).map((product) => (
                   <LaunchListItem
