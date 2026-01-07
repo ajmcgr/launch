@@ -36,13 +36,13 @@ export const CompactLaunchListItem = ({
   
   return (
     <Link to={`/launch/${slug}`} className="block">
-      <div className="group/card flex items-start gap-2 py-1.5 px-2 hover:bg-muted/30 transition-colors cursor-pointer">
-        <span className="text-xs font-bold text-muted-foreground w-5 text-right flex-shrink-0 pt-0.5">
+      <div className="group/card flex items-start gap-3 py-2 px-2 hover:bg-muted/30 transition-colors cursor-pointer">
+        <span className="text-sm font-bold text-muted-foreground w-6 text-right flex-shrink-0 pt-0.5">
           {rank}.
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <h3 className="font-medium text-sm text-foreground truncate">
+            <h3 className="font-semibold text-base text-foreground truncate">
               {name}
             </h3>
             {domainUrl && (
@@ -53,12 +53,12 @@ export const CompactLaunchListItem = ({
                 onClick={(e) => e.stopPropagation()}
                 className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
               >
-                <ExternalLink className="h-3 w-3" />
+                <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
           </div>
           {metaParts.length > 0 && (
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-sm text-muted-foreground truncate">
               {metaParts.join(' · ')}
             </p>
           )}
