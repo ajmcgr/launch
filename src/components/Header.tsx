@@ -20,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
 import { NotificationBell } from '@/components/NotificationBell';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -159,6 +160,7 @@ export const Header = () => {
             {/* Desktop User Menu */}
             {user ? (
               <div className="hidden md:flex items-center gap-2">
+                <ThemeToggle />
                 <Button onClick={handleSubmitClick}>
                   Submit
                 </Button>
@@ -202,7 +204,8 @@ export const Header = () => {
                 </DropdownMenu>
               </div>
             ) : (
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2">
+                <ThemeToggle />
                 <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                   Login
                 </Link>
@@ -211,6 +214,11 @@ export const Header = () => {
                 </Button>
               </div>
             )}
+
+            {/* Mobile Theme Toggle */}
+            <div className="md:hidden">
+              <ThemeToggle />
+            </div>
 
             {/* Mobile Hamburger Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
