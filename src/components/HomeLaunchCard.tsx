@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface HomeLaunchCardProps {
   rank: number;
@@ -11,6 +12,7 @@ interface HomeLaunchCardProps {
   votes: number;
   slug: string;
   domainUrl?: string;
+  launchDate?: string;
   userVote?: 1 | null;
   onVote: () => void;
 }
@@ -23,6 +25,7 @@ export const HomeLaunchCard = ({
   votes,
   slug,
   domainUrl,
+  launchDate,
   userVote,
   onVote,
 }: HomeLaunchCardProps) => {
@@ -73,10 +76,15 @@ export const HomeLaunchCard = ({
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           )}
-        </div>
+          </div>
         <p className="text-sm text-muted-foreground text-center line-clamp-2">
           {tagline}
         </p>
+        {launchDate && (
+          <p className="text-xs text-muted-foreground text-center mt-2">
+            {formatDistanceToNow(new Date(launchDate), { addSuffix: true })}
+          </p>
+        )}
       </div>
       </Card>
     </Link>

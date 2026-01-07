@@ -265,6 +265,7 @@ const Index = () => {
                 icon={launch.icon}
                 votes={launch.votes}
                 slug={launch.slug}
+                launchDate={launch.launch_date}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
@@ -281,6 +282,7 @@ const Index = () => {
                   icon={launch.icon}
                   votes={launch.votes}
                   slug={launch.slug}
+                  launchDate={launch.launch_date}
                   onVote={() => handleVote(launch.id)}
                 />
               ))}
