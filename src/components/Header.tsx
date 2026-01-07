@@ -202,12 +202,12 @@ export const Header = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button onClick={handleSubmitClick}>
+                <Button onClick={handleSubmitClick} className="ml-1">
                   Submit
                 </Button>
               </div>
             ) : (
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-3">
                 <ThemeToggle />
                 <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                   Login
