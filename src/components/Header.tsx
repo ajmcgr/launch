@@ -19,11 +19,14 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
+import logoDark from '@/assets/logo-dark.png';
 import { NotificationBell } from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useTheme } from 'next-themes';
 
 export const Header = () => {
   const navigate = useNavigate();
+  const { resolvedTheme } = useTheme();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -133,7 +136,7 @@ export const Header = () => {
           {/* Left: Logo + Navigation */}
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center">
-              <img src={logo} alt="Launch" className="h-10 w-auto object-contain" />
+              <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" />
             </Link>
             <nav className="hidden md:flex items-center gap-4">
               <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
