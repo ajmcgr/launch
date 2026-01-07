@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ChevronUp, MessageCircle } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface CompactLaunchListItemProps {
   rank: number;
@@ -28,40 +27,27 @@ export const CompactLaunchListItem = ({
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
+  const metaParts: string[] = [];
+  if (firstMaker) metaParts.push(firstMaker.username);
+  if (launchDate) metaParts.push(formatDistanceToNow(new Date(launchDate), { addSuffix: true }));
+  if (commentCount > 0) metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
+  
   return (
     <Link to={`/launch/${slug}`} className="block">
-      <div className="group/card flex items-center gap-2 py-2 px-2 hover:bg-muted/30 transition-colors cursor-pointer">
-        <span className="text-xs font-bold text-muted-foreground w-5 text-right flex-shrink-0">
+      <div className="group/card flex items-start gap-2 py-1.5 px-2 hover:bg-muted/30 transition-colors cursor-pointer">
+        <span className="text-xs font-bold text-muted-foreground w-5 text-right flex-shrink-0 pt-0.5">
           {rank}.
         </span>
-        <h3 className="font-medium text-sm text-foreground flex-1 truncate">
-          {name}
-        </h3>
-        
-        {/* Maker avatar */}
-        {firstMaker && (
-          <Avatar className="h-5 w-5 flex-shrink-0">
-            <AvatarImage src={firstMaker.avatar_url} alt={firstMaker.username} />
-            <AvatarFallback className="text-[10px]">
-              {firstMaker.username?.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        )}
-        
-        {/* Comment count */}
-        {commentCount > 0 && (
-          <span className="flex items-center gap-0.5 text-xs text-muted-foreground flex-shrink-0">
-            <MessageCircle className="h-3 w-3" />
-            {commentCount}
-          </span>
-        )}
-        
-        {/* Timestamp */}
-        {launchDate && (
-          <span className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">
-            {formatDistanceToNow(new Date(launchDate), { addSuffix: true })}
-          </span>
-        )}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-sm text-foreground truncate">
+            {name}
+          </h3>
+          {metaParts.length > 0 && (
+            <p className="text-xs text-muted-foreground truncate">
+              {metaParts.join(' · ')}
+            </p>
+          )}
+        </div>
         
         {/* Vote button */}
         <button
@@ -75,7 +61,7 @@ export const CompactLaunchListItem = ({
             e.stopPropagation();
             onVote();
           }}
-          className={`flex items-center gap-0.5 text-sm touch-manipulation active:scale-95 transition-colors flex-shrink-0 ${
+          className={`flex items-center gap-0.5 text-sm touch-manipulation active:scale-95 transition-colors flex-shrink-0 pt-0.5 ${
             userVote === 1 ? 'text-primary' : 'text-muted-foreground hover:text-primary'
           }`}
         >
