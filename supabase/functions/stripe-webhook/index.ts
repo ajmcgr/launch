@@ -396,14 +396,16 @@ Deno.serve(async (req) => {
           launchDate = await findNextAvailableDate(1, 'skip');
         }
       } else if (plan === 'join') {
-        // Launch Lite: Go live immediately with priority over free
-        launchDate = await findNextAvailableDate(1);
+        // Launch Lite: Launch immediately (1 minute from now)
+        const immediateDate = new Date(Date.now() + 60000);
+        launchDate = immediateDate.toISOString();
       } else if (plan === 'relaunch') {
         // Relaunch: First available date >30 days out (only counting Launch + Relaunch plans)
         launchDate = await findNextAvailableDate(31, 'relaunch');
       } else {
-        // Default fallback (free plan)
-        launchDate = await findNextAvailableDate(1);
+        // Default fallback (free plan) - launch immediately if capacity available
+        const immediateDate = new Date(Date.now() + 60000);
+        launchDate = immediateDate.toISOString();
       }
 
       console.log(`Assigning launch date for plan '${plan}': ${launchDate}`);

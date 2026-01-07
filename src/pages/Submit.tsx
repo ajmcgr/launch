@@ -735,11 +735,8 @@ const Submit = () => {
           
           // Auto-assign date for 'join' and 'relaunch' plans (all in PST)
           if (existingPlan === 'join') {
-            // Find first available slot at least 7 days out in PST
-            const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
-            nowPST.setDate(nowPST.getDate() + 7);
-            nowPST.setHours(0, 1, 0, 0);
-            launchDate = fromZonedTime(nowPST, PST_TIMEZONE);
+            // Launch immediately - 1 minute from now
+            launchDate = new Date(Date.now() + 60000);
           } else if (existingPlan === 'relaunch') {
             // Find first available slot at least 30 days out in PST
             const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
@@ -760,17 +757,23 @@ const Submit = () => {
             return;
           }
 
+          // For Join plan, launch immediately; for others, schedule
+          const launchStatus = existingPlan === 'join' ? 'launched' : 'scheduled';
+          
           const { error } = await supabase
             .from('products')
             .update({
-              status: 'scheduled',
+              status: launchStatus,
               launch_date: launchDate.toISOString(),
             })
             .eq('id', productId);
 
           if (error) throw error;
 
-          toast.success('Launch rescheduled successfully');
+          const successMessage = launchStatus === 'launched' 
+            ? 'Product launched successfully!' 
+            : 'Launch rescheduled successfully';
+          toast.success(successMessage);
           navigate('/my-products');
           return;
         } catch (error) {
@@ -838,7 +841,8 @@ const Submit = () => {
           
           console.log('Order created successfully:', orderData);
 
-          // Free launches start at 7+ days out and only use capacity AFTER paid launches
+          // Free launches can launch same-day if there's capacity
+          const now = new Date();
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           
@@ -846,9 +850,8 @@ const Submit = () => {
           let productStatus: string = 'scheduled';
           let foundSlot = false;
           
-          // Free launches start at day 7 (same as Join plan, but lower priority)
-          // They only get slots after paid launches have been scheduled
-          for (let i = 7; i < 60; i++) {
+          // Free launches start from today (day 0) - launch immediately if capacity available
+          for (let i = 0; i < 60; i++) {
             const checkDate = new Date(today);
             checkDate.setDate(checkDate.getDate() + i);
             checkDate.setHours(0, 0, 0, 0);
@@ -889,7 +892,13 @@ const Submit = () => {
             // Free launch can go if: total < 100 AND free launches haven't exceeded their limit
             if ((totalCount || 0) < totalCapacity && freeCapacityUsed < freeCapacityLimit) {
               launchDate = new Date(checkDate);
-              launchDate.setHours(0, 1, 0, 0);
+              // If launching today, launch now; otherwise schedule for midnight
+              if (i === 0) {
+                launchDate = new Date(now.getTime() + 60000); // 1 minute from now
+                productStatus = 'launched'; // Launch immediately
+              } else {
+                launchDate.setHours(0, 1, 0, 0);
+              }
               foundSlot = true;
               break;
             }
