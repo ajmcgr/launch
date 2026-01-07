@@ -72,8 +72,8 @@ const Home = () => {
     }
   };
   
-  // Force list view on mobile
-  const effectiveView = isMobile ? 'compact' : view;
+  // Use the saved view preference (mobile defaults to 'list' if no preference saved)
+  const effectiveView = view;
 
   const handleViewChange = (newView: 'list' | 'grid' | 'compact') => {
     setView(newView);
@@ -652,7 +652,7 @@ const Home = () => {
                 />
               </div>
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
-              {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
+              <ViewToggle view={view} onViewChange={handleViewChange} />
             </div>
           </div>
 
