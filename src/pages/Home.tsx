@@ -61,7 +61,7 @@ const Home = () => {
     const saved = localStorage.getItem('productView');
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
-  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
+  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month'>('week');
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -95,13 +95,53 @@ const Home = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Check if we have enough daily launches to default to 'today'
+  useEffect(() => {
+    const checkDailyLaunchVolume = async () => {
+      try {
+        // Get launch counts per day for the last 14 days
+        const fourteenDaysAgo = new Date();
+        fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+        
+        const { data, error } = await supabase
+          .from('products')
+          .select('launch_date')
+          .eq('status', 'launched')
+          .gte('launch_date', fourteenDaysAgo.toISOString());
+        
+        if (error || !data) return;
+        
+        // Group by date and count
+        const dailyCounts = new Map<string, number>();
+        data.forEach(product => {
+          if (product.launch_date) {
+            const day = product.launch_date.split('T')[0];
+            dailyCounts.set(day, (dailyCounts.get(day) || 0) + 1);
+          }
+        });
+        
+        // Check if all 14 days have 20+ launches
+        const allDaysHave20Plus = dailyCounts.size >= 14 && 
+          Array.from(dailyCounts.values()).every(count => count >= 20);
+        
+        if (allDaysHave20Plus) {
+          setCurrentPeriod('today');
+        }
+      } catch (err) {
+        console.error('Error checking launch volume:', err);
+      }
+    };
+    
+    checkDailyLaunchVolume();
+  }, []);
+
   // Fetch products only once when user state is first determined
   useEffect(() => {
     if (userLoaded) {
       fetchProducts(currentPeriod, sort, 0, true);
       fetchSponsoredProducts();
     }
-  }, [userLoaded]);
+  }, [userLoaded, currentPeriod]);
 
   const fetchSponsoredProducts = async () => {
     try {
@@ -199,7 +239,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month', currentSort: 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -220,9 +260,6 @@ const Home = () => {
           break;
         case 'month':
           startDate = new Date(now.setMonth(now.getMonth() - 1));
-          break;
-        case 'year':
-          startDate = new Date(now.setFullYear(now.getFullYear() - 1));
           break;
       }
 
@@ -405,7 +442,7 @@ const Home = () => {
   // Check if we've hit the homepage limit
   const canLoadMore = hasMore && products.length < MAX_HOMEPAGE_PRODUCTS;
 
-  const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year') => {
+  const handlePeriodChange = (period: 'today' | 'week' | 'month') => {
     setCurrentPeriod(period);
     setPage(0);
     setProducts([]);
@@ -665,10 +702,6 @@ const Home = () => {
           </TabsContent>
 
           <TabsContent value="month" className="space-y-6">
-            {renderProductList(products)}
-          </TabsContent>
-
-          <TabsContent value="year" className="space-y-6">
             {renderProductList(products)}
           </TabsContent>
         </Tabs>
