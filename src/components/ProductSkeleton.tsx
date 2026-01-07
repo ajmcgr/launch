@@ -61,7 +61,7 @@ export const ProductSkeleton = ({ view, count = 5 }: ProductSkeletonProps) => {
 
   if (view === 'compact') {
     return (
-      <div className="divide-y">
+      <div>
         {skeletons.map((i) => (
           <CompactItemSkeleton key={i} />
         ))}
