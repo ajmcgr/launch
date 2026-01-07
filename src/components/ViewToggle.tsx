@@ -1,14 +1,23 @@
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List, AlignJustify } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 
 interface ViewToggleProps {
-  view: 'list' | 'grid';
-  onViewChange: (view: 'list' | 'grid') => void;
+  view: 'list' | 'grid' | 'compact';
+  onViewChange: (view: 'list' | 'grid' | 'compact') => void;
 }
 
 export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
+      <Toggle
+        pressed={view === 'compact'}
+        onPressedChange={() => onViewChange('compact')}
+        aria-label="Compact view"
+        size="sm"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+      >
+        <AlignJustify className="h-3.5 w-3.5" />
+      </Toggle>
       <Toggle
         pressed={view === 'list'}
         onPressedChange={() => onViewChange('list')}

@@ -4,6 +4,7 @@ import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
+import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { HomeLaunchCard } from '@/components/HomeLaunchCard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -26,16 +27,16 @@ const Index = () => {
   const [launches, setLaunches] = useState<Launch[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [view, setView] = useState<'list' | 'grid'>(() => {
+  const [view, setView] = useState<'list' | 'grid' | 'compact'>(() => {
     const savedView = localStorage.getItem('homeViewPreference');
-    return (savedView === 'grid' || savedView === 'list') ? savedView : 'list';
+    return (savedView === 'grid' || savedView === 'list' || savedView === 'compact') ? savedView : 'list';
   });
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
   const [displayCount, setDisplayCount] = useState(25);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   
   // Force list view on mobile
-  const effectiveView = isMobile ? 'list' : view;
+  const effectiveView = isMobile ? 'compact' : view;
 
   useEffect(() => {
     localStorage.setItem('homeViewPreference', view);
@@ -253,6 +254,19 @@ const Index = () => {
         ) : launches.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No launches today. Check back soon!</p>
+          </div>
+        ) : effectiveView === 'compact' ? (
+          <div className="divide-y mb-8">
+            {launches.slice(0, displayCount).map((launch) => (
+              <CompactLaunchListItem
+                key={launch.id}
+                rank={launch.rank}
+                name={launch.name}
+                votes={launch.votes}
+                slug={launch.slug}
+                onVote={() => handleVote(launch.id)}
+              />
+            ))}
           </div>
         ) : effectiveView === 'list' ? (
           <div className="divide-y mb-8">
