@@ -530,6 +530,7 @@ const Home = () => {
               launchDate={product.launch_date}
               commentCount={product.commentCount}
               makers={product.makers}
+              domainUrl={product.domainUrl}
             />
           );
         } else if (viewMode === 'list') {

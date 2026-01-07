@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronUp } from 'lucide-react';
+import { ChevronUp, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface CompactLaunchListItemProps {
@@ -12,6 +12,7 @@ interface CompactLaunchListItemProps {
   launchDate?: string;
   commentCount?: number;
   makers?: Array<{ username: string; avatar_url?: string }>;
+  domainUrl?: string;
 }
 
 export const CompactLaunchListItem = ({
@@ -24,6 +25,7 @@ export const CompactLaunchListItem = ({
   launchDate,
   commentCount = 0,
   makers = [],
+  domainUrl,
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
@@ -39,9 +41,22 @@ export const CompactLaunchListItem = ({
           {rank}.
         </span>
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-sm text-foreground truncate">
-            {name}
-          </h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-medium text-sm text-foreground truncate">
+              {name}
+            </h3>
+            {domainUrl && (
+              <a
+                href={domainUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
+              >
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
+          </div>
           {metaParts.length > 0 && (
             <p className="text-xs text-muted-foreground truncate">
               {metaParts.join(' · ')}
