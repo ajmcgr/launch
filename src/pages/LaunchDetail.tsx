@@ -591,21 +591,25 @@ const LaunchDetail = () => {
                   <Button 
                     variant="outline"
                     className="flex-1 border-2 border-muted-foreground/20" 
-                    onClick={async () => {
-                      // Track website click
-                      try {
-                        await supabase.from('product_analytics').insert({
+                    asChild
+                  >
+                    <a 
+                      href={product.domain_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => {
+                        // Track website click asynchronously (don't block navigation)
+                        supabase.from('product_analytics').insert({
                           product_id: product.id,
                           event_type: 'website_click',
                           visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+                        }).then(({ error }) => {
+                          if (error) console.error('Failed to track click:', error);
                         });
-                      } catch (error) {
-                        console.error('Failed to track click:', error);
-                      }
-                      window.open(product.domain_url, '_blank', 'noopener');
-                    }}
-                  >
-                    Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                      }}
+                    >
+                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
                   </Button>
                 )}
                 <Button
