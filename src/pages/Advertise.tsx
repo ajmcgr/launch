@@ -447,7 +447,7 @@ const Advertise = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">6,000+ monthly visitors</span>
+                    <span className="text-sm">6,000+ daily visitors</span>
                   </li>
                 </ul>
                 <Button 
