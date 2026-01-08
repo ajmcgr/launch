@@ -117,7 +117,7 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner - hides on scroll */}
       {!isScrolled && (
-        <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted text-foreground">
+        <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
           <div className="container mx-auto px-4 max-w-5xl">
             <p className="text-center text-sm font-medium">
               Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span>
