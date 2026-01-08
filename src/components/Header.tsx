@@ -118,7 +118,7 @@ export const Header = () => {
       {/* Promotional Banner - hides on scroll */}
       {!isScrolled && (
         <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted text-foreground">
-          <div className="container mx-auto px-4 max-w-4xl">
+          <div className="container mx-auto px-4 max-w-5xl">
             <p className="text-center text-sm font-medium">
               Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span>
               {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
@@ -131,7 +131,7 @@ export const Header = () => {
         </Link>
       )}
       
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex h-14 items-center justify-between">
           {/* Left: Logo + Navigation */}
           <div className="flex items-center gap-6">
