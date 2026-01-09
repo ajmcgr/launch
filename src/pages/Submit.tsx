@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { X, CalendarIcon } from 'lucide-react';
+import { X, CalendarIcon, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS } from '@/lib/constants';
 import { toast } from 'sonner';
@@ -104,6 +104,8 @@ const Submit = () => {
     };
   });
   const [availableTags, setAvailableTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
+  const [newTagName, setNewTagName] = useState('');
+  const [isCreatingTag, setIsCreatingTag] = useState(false);
 
   // Save to localStorage whenever formData changes
   useEffect(() => {
@@ -404,6 +406,46 @@ const Submit = () => {
         ? [...prev.tags, tagId]
         : prev.tags
     }));
+  };
+
+  const handleCreateTag = async () => {
+    const trimmedName = newTagName.trim();
+    if (!trimmedName) return;
+    
+    // Check if tag already exists
+    const existingTag = availableTags.find(
+      t => t.name.toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (existingTag) {
+      toast.error('This tag already exists');
+      return;
+    }
+    
+    setIsCreatingTag(true);
+    try {
+      const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      
+      const { data, error } = await supabase
+        .from('product_tags')
+        .insert({ name: trimmedName, slug })
+        .select('id, name, slug')
+        .single();
+      
+      if (error) throw error;
+      
+      // Add to available tags and select it
+      setAvailableTags(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+      if (formData.tags.length < 5) {
+        setFormData(prev => ({ ...prev, tags: [...prev.tags, data.id] }));
+      }
+      setNewTagName('');
+      toast.success(`Tag "${trimmedName}" created!`);
+    } catch (error: any) {
+      console.error('Error creating tag:', error);
+      toast.error('Failed to create tag');
+    } finally {
+      setIsCreatingTag(false);
+    }
   };
 
   const handleFileUpload = async (type: 'icon' | 'thumbnail' | 'screenshots', files: FileList | null) => {
@@ -1275,8 +1317,32 @@ const Submit = () => {
                       </div>
                     ))}
                   </div>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      placeholder="Create new tag..."
+                      value={newTagName}
+                      onChange={(e) => setNewTagName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleCreateTag();
+                        }
+                      }}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCreateTag}
+                      disabled={isCreatingTag || !newTagName.trim()}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      {isCreatingTag ? 'Adding...' : 'Add'}
+                    </Button>
+                  </div>
                   <p className="text-sm text-muted-foreground">
-                    Tags help users discover your product via search
+                    Tags help users discover your product via search. Can't find a tag? Create one!
                   </p>
                 </div>
                 <div className="space-y-2">
