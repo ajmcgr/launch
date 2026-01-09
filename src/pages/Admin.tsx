@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Shield, Users, Package, TrendingUp, Megaphone, DollarSign, Calendar, Tags } from 'lucide-react';
+import { Shield, Calendar, Tags } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import { format } from 'date-fns';
 
