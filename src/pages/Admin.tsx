@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Shield, Users, Package, TrendingUp, RefreshCw, Megaphone, DollarSign, Calendar, Tags } from 'lucide-react';
+import { Shield, Users, Package, TrendingUp, Megaphone, DollarSign, Calendar, Tags } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import { format } from 'date-fns';
 
@@ -15,7 +15,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [syncingBeehiiv, setSyncingBeehiiv] = useState(false);
+  
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -161,30 +161,6 @@ const Admin = () => {
     refetchSponsored();
   };
 
-  const syncUsersToBeehiiv = async () => {
-    setSyncingBeehiiv(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('sync-users-to-beehiiv');
-      
-      if (error) {
-        toast.error(`Sync failed: ${error.message}`);
-        return;
-      }
-
-      if (data?.results) {
-        const { success, skipped, failed, total } = data.results;
-        toast.success(
-          `Sync complete! ${success} added, ${skipped} already subscribed, ${failed} failed out of ${total} total users.`
-        );
-      } else {
-        toast.success('Sync completed successfully');
-      }
-    } catch (err) {
-      toast.error('Failed to sync users to Beehiiv');
-    } finally {
-      setSyncingBeehiiv(false);
-    }
-  };
 
   const getSponsorshipTypeLabel = (type: string) => {
     switch (type) {
@@ -231,19 +207,9 @@ const Admin = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-2">
-          <Shield className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
-        </div>
-        <Button 
-          onClick={syncUsersToBeehiiv} 
-          disabled={syncingBeehiiv}
-          variant="outline"
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${syncingBeehiiv ? 'animate-spin' : ''}`} />
-          {syncingBeehiiv ? 'Syncing...' : 'Sync Users to Beehiiv'}
-        </Button>
+      <div className="flex items-center gap-2 mb-8">
+        <Shield className="h-8 w-8 text-primary" />
+        <h1 className="text-3xl font-bold">Admin Panel</h1>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
