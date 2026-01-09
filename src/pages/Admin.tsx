@@ -216,8 +216,7 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <img src="/launch-icon-light.png" alt="Launch" className="h-5 w-5 dark:hidden" />
-            <img src="/launch-icon-dark.png" alt="Launch" className="h-5 w-5 hidden dark:block" />
+            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalProducts || 0}</div>
@@ -227,8 +226,7 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <img src="/launch-icon-light.png" alt="Launch" className="h-5 w-5 dark:hidden" />
-            <img src="/launch-icon-dark.png" alt="Launch" className="h-5 w-5 hidden dark:block" />
+            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
@@ -238,8 +236,7 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Votes</CardTitle>
-            <img src="/launch-icon-light.png" alt="Launch" className="h-5 w-5 dark:hidden" />
-            <img src="/launch-icon-dark.png" alt="Launch" className="h-5 w-5 hidden dark:block" />
+            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalVotes || 0}</div>
@@ -249,8 +246,7 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Sponsors</CardTitle>
-            <img src="/launch-icon-light.png" alt="Launch" className="h-5 w-5 dark:hidden" />
-            <img src="/launch-icon-dark.png" alt="Launch" className="h-5 w-5 hidden dark:block" />
+            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.activeSponsorships || 0}</div>
@@ -260,8 +256,7 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ad Revenue</CardTitle>
-            <img src="/launch-icon-light.png" alt="Launch" className="h-5 w-5 dark:hidden" />
-            <img src="/launch-icon-dark.png" alt="Launch" className="h-5 w-5 hidden dark:block" />
+            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${stats?.advertisingRevenue?.toLocaleString() || 0}</div>
