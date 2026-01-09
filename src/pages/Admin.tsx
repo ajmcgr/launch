@@ -213,7 +213,9 @@ const Admin = () => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <Card>
+        <Card className="relative">
+          <img src="/launch-icon-light.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 dark:hidden" />
+          <img src="/launch-icon-dark.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 hidden dark:block" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
@@ -223,7 +225,9 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative">
+          <img src="/launch-icon-light.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 dark:hidden" />
+          <img src="/launch-icon-dark.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 hidden dark:block" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -233,7 +237,9 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative">
+          <img src="/launch-icon-light.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 dark:hidden" />
+          <img src="/launch-icon-dark.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 hidden dark:block" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Votes</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -243,7 +249,9 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative">
+          <img src="/launch-icon-light.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 dark:hidden" />
+          <img src="/launch-icon-dark.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 hidden dark:block" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Sponsors</CardTitle>
             <Megaphone className="h-4 w-4 text-muted-foreground" />
@@ -253,7 +261,9 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative">
+          <img src="/launch-icon-light.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 dark:hidden" />
+          <img src="/launch-icon-dark.png" alt="Launch" className="absolute top-2 right-2 h-5 w-5 opacity-30 hidden dark:block" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ad Revenue</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
