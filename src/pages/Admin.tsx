@@ -49,10 +49,11 @@ const Admin = () => {
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [productsRes, usersRes, votesRes, sponsoredRes] = await Promise.all([
-        supabase.from('products').select('id, status').eq('status', 'pending'),
-        supabase.from('users').select('id'),
-        supabase.from('votes').select('id'),
+      const [pendingProductsRes, allProductsRes, usersRes, votesRes, sponsoredRes] = await Promise.all([
+        supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('products').select('id', { count: 'exact', head: true }),
+        supabase.from('users').select('id', { count: 'exact', head: true }),
+        supabase.from('votes').select('id', { count: 'exact', head: true }),
         supabase.from('sponsored_products').select('id, sponsorship_type')
           .gte('start_date', format(new Date(), 'yyyy-MM-01')),
       ]);
@@ -67,9 +68,10 @@ const Admin = () => {
       });
 
       return {
-        pendingProducts: productsRes.data?.length || 0,
-        totalUsers: usersRes.data?.length || 0,
-        totalVotes: votesRes.data?.length || 0,
+        pendingProducts: pendingProductsRes.count || 0,
+        totalProducts: allProductsRes.count || 0,
+        totalUsers: usersRes.count || 0,
+        totalVotes: votesRes.count || 0,
         activeSponsorships: sponsorships.length,
         advertisingRevenue: totalRevenue,
       };
@@ -287,10 +289,20 @@ const Admin = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Products</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.totalProducts || 0}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
