@@ -52,7 +52,44 @@ export const Footer = () => {
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Tags Section */}
+        {tags.length > 0 && (
+          <div className="mb-8">
+            <h3 className="font-semibold mb-4 text-foreground">Popular Products</h3>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <Link
+                  key={tag.id}
+                  to={`/tag/${tag.slug}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {tag.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Categories Section */}
+        {categories.length > 0 && (
+          <div className="mb-8 pt-6 border-t">
+            <h3 className="font-semibold mb-4 text-foreground">Popular Categories</h3>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/category/${category.slug}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Footer Links */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-6 border-t">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">About</h3>
             <ul className="space-y-1">
@@ -171,42 +208,6 @@ export const Footer = () => {
             </ul>
           </div>
         </div>
-
-        {/* Tags Section */}
-        {tags.length > 0 && (
-          <div className="mt-8 pt-8 border-t">
-            <h3 className="font-semibold mb-4 text-foreground">Popular Products</h3>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <Link
-                  key={tag.id}
-                  to={`/tag/${tag.slug}`}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {tag.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Categories Section */}
-        {categories.length > 0 && (
-          <div className="mt-6 pt-6 border-t">
-            <h3 className="font-semibold mb-4 text-foreground">Popular Categories</h3>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  to={`/category/${category.slug}`}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {category.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
           <p>
