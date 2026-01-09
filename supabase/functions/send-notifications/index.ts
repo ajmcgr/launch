@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
                 .content { padding: 30px; }
                 .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
                 .content p { margin: 0 0 20px 0; color: #4b5563; }
-                .button { display: inline-block; background: #206dcb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
+                .button { display: inline-block; background: #206dcb; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
                 .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
                 .footer a { color: #6b7280; }
               </style>
@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
                   <div class="content">
                     <h1>${title}</h1>
                     <p>${message}</p>
-                    ${relatedProductId ? `<p><a href="${productUrl}" class="button">View Product</a></p>` : ''}
+                    ${relatedProductId ? `<p><a href="${productUrl}" class="button" style="color: #ffffff !important;">View Product</a></p>` : ''}
                   </div>
                   <div class="footer">
                     <p>You're receiving this because you're a member of Launch.<br/>
