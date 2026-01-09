@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -51,6 +51,24 @@ export const NotificationBell = () => {
     },
   });
 
+  const markAllAsRead = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+
   const unreadCount = notifications?.filter(n => !n.read).length || 0;
 
   const handleNotificationClick = (notification: any) => {
@@ -88,8 +106,25 @@ export const NotificationBell = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <div className="p-2">
-          <h3 className="font-semibold mb-2">Notifications</h3>
+        <div className="flex items-center justify-between p-2 pb-0">
+          <h3 className="font-semibold">Notifications</h3>
+          {unreadCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-auto py-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                markAllAsRead.mutate();
+              }}
+            >
+              <CheckCheck className="h-3 w-3 mr-1" />
+              Mark all read
+            </Button>
+          )}
+        </div>
+        <div className="p-2 pt-2">
           {!notifications || notifications.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4 text-center">
               No notifications yet
