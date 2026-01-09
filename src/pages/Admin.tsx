@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Shield, Users, Package, TrendingUp, CheckCircle, XCircle, RefreshCw, Megaphone, DollarSign, Calendar, Tags } from 'lucide-react';
+import { Shield, Users, Package, TrendingUp, RefreshCw, Megaphone, DollarSign, Calendar, Tags } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import { format } from 'date-fns';
 
@@ -77,20 +77,6 @@ const Admin = () => {
     enabled: isAdmin,
   });
 
-  const { data: pendingProducts } = useQuery({
-    queryKey: ['pending-products'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*, users!products_owner_id_fkey(username, avatar_url)')
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: isAdmin,
-  });
 
   const { data: allUsers } = useQuery({
     queryKey: ['all-users'],
@@ -159,33 +145,6 @@ const Admin = () => {
     enabled: isAdmin,
   });
 
-  const approveProduct = async (productId: string) => {
-    const { error } = await supabase
-      .from('products')
-      .update({ status: 'live' })
-      .eq('id', productId);
-
-    if (error) {
-      toast.error('Failed to approve product');
-      return;
-    }
-
-    toast.success('Product approved');
-  };
-
-  const rejectProduct = async (productId: string) => {
-    const { error } = await supabase
-      .from('products')
-      .update({ status: 'rejected' })
-      .eq('id', productId);
-
-    if (error) {
-      toast.error('Failed to reject product');
-      return;
-    }
-
-    toast.success('Product rejected');
-  };
 
   const deleteSponsorship = async (sponsorshipId: string) => {
     const { error } = await supabase
@@ -340,74 +299,13 @@ const Admin = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="products" className="space-y-4">
+      <Tabs defaultValue="users" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="promotion">Promotion</TabsTrigger>
           <TabsTrigger value="advertising">Advertising</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="products" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pending Products</CardTitle>
-              <CardDescription>Review and moderate product submissions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {pendingProducts?.map((product) => (
-                  <div key={product.id} className="border rounded-lg p-4 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{product.name}</h3>
-                        <p className="text-sm text-muted-foreground">{product.tagline}</p>
-                        <p className="text-sm text-muted-foreground mt-2">
-                          By: {product.users?.username}
-                        </p>
-                      </div>
-                      <Badge variant="outline">{product.status}</Badge>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        onClick={() => approveProduct(product.id)}
-                        className="flex items-center gap-2"
-                      >
-                        <CheckCircle className="h-4 w-4" />
-                        Approve
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="destructive"
-                        onClick={() => rejectProduct(product.id)}
-                        className="flex items-center gap-2"
-                      >
-                        <XCircle className="h-4 w-4" />
-                        Reject
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => navigate(`/launch/${product.slug}`)}
-                      >
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                
-                {pendingProducts?.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">
-                    No pending products to review
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="users" className="space-y-4">
           <Card>
