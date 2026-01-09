@@ -140,6 +140,25 @@ const Admin = () => {
     enabled: isAdmin,
   });
 
+  const { data: promotionOrders } = useQuery({
+    queryKey: ['promotion-orders-admin'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          products(id, name, slug, tagline, launch_date),
+          users!orders_user_id_fkey(username, name, avatar_url)
+        `)
+        .in('plan', ['lite', 'launch'])
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin,
+  });
+
   const approveProduct = async (productId: string) => {
     const { error } = await supabase
       .from('products')
@@ -325,6 +344,7 @@ const Admin = () => {
         <TabsList>
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="promotion">Promotion</TabsTrigger>
           <TabsTrigger value="advertising">Advertising</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
@@ -421,6 +441,70 @@ const Admin = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="promotion" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Products to Promote</CardTitle>
+              <CardDescription>Products with Launch Lite or Launch plans that need promotion on socials and newsletter</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {promotionOrders?.map((order) => {
+                  const planLabel = order.plan === 'lite' ? 'Launch Lite' : 'Launch';
+                  const planPrice = order.plan === 'lite' ? '$29' : '$79';
+                  
+                  return (
+                    <div key={order.id} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-lg">{order.products?.name || 'Unknown Product'}</h3>
+                            <Badge variant={order.plan === 'launch' ? 'default' : 'secondary'}>
+                              {planLabel}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{order.products?.tagline}</p>
+                          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                            <span>By: {order.users?.name || order.users?.username}</span>
+                            {order.products?.launch_date && (
+                              <span className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                Launch: {format(new Date(order.products.launch_date), 'MMM d, yyyy')}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-primary">{planPrice}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Ordered {format(new Date(order.created_at!), 'MMM d, yyyy')}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => navigate(`/launch/${order.products?.slug}`)}
+                        >
+                          View Product
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                {(!promotionOrders || promotionOrders.length === 0) && (
+                  <p className="text-center text-muted-foreground py-8">
+                    No paid launch plans yet
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
