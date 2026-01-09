@@ -219,7 +219,7 @@ const Admin = () => {
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalProducts || 0}</div>
+            <div className="text-2xl font-bold">🚀 {stats?.totalProducts || 0}</div>
           </CardContent>
         </Card>
 
@@ -229,7 +229,7 @@ const Admin = () => {
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
+            <div className="text-2xl font-bold">🎉 {stats?.totalUsers || 0}</div>
           </CardContent>
         </Card>
 
@@ -239,7 +239,7 @@ const Admin = () => {
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalVotes || 0}</div>
+            <div className="text-2xl font-bold">⭐ {stats?.totalVotes || 0}</div>
           </CardContent>
         </Card>
 
@@ -249,7 +249,7 @@ const Admin = () => {
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.activeSponsorships || 0}</div>
+            <div className="text-2xl font-bold">🎯 {stats?.activeSponsorships || 0}</div>
           </CardContent>
         </Card>
 
@@ -259,7 +259,7 @@ const Admin = () => {
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats?.advertisingRevenue?.toLocaleString() || 0}</div>
+            <div className="text-2xl font-bold">💰 ${stats?.advertisingRevenue?.toLocaleString() || 0}</div>
             <p className="text-xs text-muted-foreground">This month+</p>
           </CardContent>
         </Card>
