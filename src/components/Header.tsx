@@ -115,8 +115,12 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Promotional Banner - hides on scroll */}
-      {!isScrolled && (
+      {/* Promotional Banner - hides on scroll with smooth transition */}
+      <div 
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isScrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
+        }`}
+      >
         <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
           <div className="container mx-auto px-4 max-w-5xl">
             <p className="text-center text-sm font-medium">
@@ -129,7 +133,7 @@ export const Header = () => {
             </p>
           </div>
         </Link>
-      )}
+      </div>
       
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex h-14 items-center justify-between">
