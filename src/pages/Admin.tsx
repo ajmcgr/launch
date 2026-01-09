@@ -150,7 +150,7 @@ const Admin = () => {
           products(id, name, slug, tagline, launch_date),
           users!orders_user_id_fkey(username, name, avatar_url)
         `)
-        .in('plan', ['lite', 'launch'])
+        .in('plan', ['join', 'skip']) // join = Launch Lite, skip = Launch
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -455,8 +455,8 @@ const Admin = () => {
             <CardContent>
               <div className="space-y-4">
                 {promotionOrders?.map((order) => {
-                  const planLabel = order.plan === 'lite' ? 'Launch Lite' : 'Launch';
-                  const planPrice = order.plan === 'lite' ? '$29' : '$79';
+                  const planLabel = order.plan === 'join' ? 'Launch Lite' : 'Launch';
+                  const planPrice = order.plan === 'join' ? '$9' : '$39';
                   
                   return (
                     <div key={order.id} className="border rounded-lg p-4 space-y-3">
@@ -464,7 +464,7 @@ const Admin = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-semibold text-lg">{order.products?.name || 'Unknown Product'}</h3>
-                            <Badge variant={order.plan === 'launch' ? 'default' : 'secondary'}>
+                            <Badge variant={order.plan === 'skip' ? 'default' : 'secondary'}>
                               {planLabel}
                             </Badge>
                           </div>
