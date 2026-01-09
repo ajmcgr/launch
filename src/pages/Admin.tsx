@@ -49,8 +49,7 @@ const Admin = () => {
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [pendingProductsRes, allProductsRes, usersRes, votesRes, sponsoredRes] = await Promise.all([
-        supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+      const [allProductsRes, usersRes, votesRes, sponsoredRes] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('votes').select('id', { count: 'exact', head: true }),
@@ -68,7 +67,6 @@ const Admin = () => {
       });
 
       return {
-        pendingProducts: pendingProductsRes.count || 0,
         totalProducts: allProductsRes.count || 0,
         totalUsers: usersRes.count || 0,
         totalVotes: votesRes.count || 0,
@@ -289,7 +287,7 @@ const Admin = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
@@ -297,16 +295,6 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalProducts || 0}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.pendingProducts || 0}</div>
           </CardContent>
         </Card>
 
