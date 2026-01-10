@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
+import { PlatformFilter } from '@/components/PlatformFilter';
 
 const Products = () => {
   const isMobile = useIsMobile();
@@ -317,7 +318,11 @@ const Products = () => {
                 </div>
                 <Button variant="outline" className="h-9">Search</Button>
               </div>
-              <div className="flex items-center gap-3 justify-center sm:justify-start">
+              <div className="flex items-center gap-2 justify-center sm:justify-start">
+                <PlatformFilter 
+                  selectedPlatforms={selectedPlatforms} 
+                  onPlatformToggle={handlePlatformToggle} 
+                />
                 <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
                 <ViewToggle view={view} onViewChange={handleViewChange} />
               </div>
