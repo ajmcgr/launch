@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 
 interface HomeLaunchCardProps {
   rank: number;
@@ -13,6 +14,7 @@ interface HomeLaunchCardProps {
   slug: string;
   domainUrl?: string;
   launchDate?: string;
+  platforms?: Platform[];
   userVote?: 1 | null;
   onVote: () => void;
 }
@@ -26,6 +28,7 @@ export const HomeLaunchCard = ({
   slug,
   domainUrl,
   launchDate,
+  platforms,
   userVote,
   onVote,
 }: HomeLaunchCardProps) => {
@@ -76,6 +79,7 @@ export const HomeLaunchCard = ({
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           )}
+          <PlatformIcons platforms={platforms} size="sm" />
           </div>
         <p className="text-sm text-muted-foreground text-center line-clamp-2">
           {tagline}

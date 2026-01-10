@@ -6,6 +6,8 @@ import { SortToggle } from '@/components/SortToggle';
 import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { HomeLaunchCard } from '@/components/HomeLaunchCard';
+import { PlatformFilter } from '@/components/PlatformFilter';
+import { Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -20,6 +22,7 @@ interface Launch {
   thumbnail?: string;
   slug: string;
   launch_date?: string;
+  platforms?: Platform[];
 }
 
 const Index = () => {
@@ -32,6 +35,7 @@ const Index = () => {
     return (savedView === 'grid' || savedView === 'list' || savedView === 'compact') ? savedView : 'list';
   });
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [displayCount, setDisplayCount] = useState(25);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   
@@ -111,6 +115,7 @@ const Index = () => {
           tagline,
           slug,
           launch_date,
+          platforms,
           product_media(url, type)
         `)
         .eq('status', 'published')
@@ -135,7 +140,8 @@ const Index = () => {
           votes: voteMap.get(p.id) || 0,
           thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
           slug: p.slug,
-          launch_date: p.launch_date
+          launch_date: p.launch_date,
+          platforms: (p.platforms || []) as Platform[]
         }));
 
       setLaunches(launches);
@@ -240,7 +246,13 @@ const Index = () => {
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-foreground">Today's Top Launches</h2>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <PlatformFilter 
+                selectedPlatforms={selectedPlatforms} 
+                onPlatformToggle={(p) => setSelectedPlatforms(prev => 
+                  prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]
+                )} 
+              />
               <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
               {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
             </div>
@@ -257,20 +269,25 @@ const Index = () => {
           </div>
         ) : effectiveView === 'compact' ? (
           <div className="space-y-0 mb-8">
-            {launches.slice(0, displayCount).map((launch) => (
+            {launches
+              .filter(l => selectedPlatforms.length === 0 || l.platforms?.some(p => selectedPlatforms.includes(p)))
+              .slice(0, displayCount).map((launch) => (
               <CompactLaunchListItem
                 key={launch.id}
                 rank={launch.rank}
                 name={launch.name}
                 votes={launch.votes}
                 slug={launch.slug}
+                platforms={launch.platforms}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
           </div>
         ) : effectiveView === 'list' ? (
           <div className="divide-y mb-8">
-            {launches.slice(0, displayCount).map((launch) => (
+            {launches
+              .filter(l => selectedPlatforms.length === 0 || l.platforms?.some(p => selectedPlatforms.includes(p)))
+              .slice(0, displayCount).map((launch) => (
               <HomeLaunchListItem
                 key={launch.id}
                 rank={launch.rank}
@@ -280,6 +297,7 @@ const Index = () => {
                 votes={launch.votes}
                 slug={launch.slug}
                 launchDate={launch.launch_date}
+                platforms={launch.platforms}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
@@ -287,7 +305,9 @@ const Index = () => {
         ) : (
           <div className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {launches.slice(0, displayCount).map((launch) => (
+              {launches
+                .filter(l => selectedPlatforms.length === 0 || l.platforms?.some(p => selectedPlatforms.includes(p)))
+                .slice(0, displayCount).map((launch) => (
                 <HomeLaunchCard
                   key={launch.id}
                   rank={launch.rank}
@@ -297,6 +317,7 @@ const Index = () => {
                   votes={launch.votes}
                   slug={launch.slug}
                   launchDate={launch.launch_date}
+                  platforms={launch.platforms}
                   onVote={() => handleVote(launch.id)}
                 />
               ))}
