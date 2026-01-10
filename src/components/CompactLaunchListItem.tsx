@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ChevronUp, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 
 interface CompactLaunchListItemProps {
   rank: number;
@@ -14,6 +15,7 @@ interface CompactLaunchListItemProps {
   makers?: Array<{ username: string; avatar_url?: string }>;
   domainUrl?: string;
   categories?: string[];
+  platforms?: Platform[];
 }
 
 export const CompactLaunchListItem = ({
@@ -28,6 +30,7 @@ export const CompactLaunchListItem = ({
   makers = [],
   domainUrl,
   categories = [],
+  platforms,
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
@@ -59,6 +62,7 @@ export const CompactLaunchListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
+            <PlatformIcons platforms={platforms} size="sm" />
           </div>
           {metaParts.length > 0 && (
             <p className="text-xs text-muted-foreground truncate">
