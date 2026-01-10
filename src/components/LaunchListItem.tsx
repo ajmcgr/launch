@@ -117,7 +117,6 @@ export const LaunchListItem = ({
               <h3 className="font-semibold text-base hover:text-primary transition-colors">
                 {name}
               </h3>
-              <PlatformIcons platforms={platforms} size="sm" />
               {domainUrl && (
                 <a
                   href={domainUrl}
@@ -136,7 +135,7 @@ export const LaunchListItem = ({
             </p>
             
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {categories.slice(0, isMobile ? 1 : 3).map((category) => (
                   <span
                     key={category}
@@ -154,6 +153,7 @@ export const LaunchListItem = ({
                     </Link>
                   </span>
                 ))}
+                <PlatformIcons platforms={platforms} size="sm" />
               </div>
               
               <div className="flex items-center gap-2">
