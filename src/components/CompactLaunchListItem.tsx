@@ -62,7 +62,7 @@ export const CompactLaunchListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
-            <PlatformIcons platforms={platforms} size="sm" />
+            
           </div>
           {metaParts.length > 0 && (
             <p className="text-xs text-muted-foreground truncate">
