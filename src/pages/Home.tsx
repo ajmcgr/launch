@@ -6,6 +6,8 @@ import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { CategoryCloud } from '@/components/CategoryCloud';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
+import { PlatformFilter } from '@/components/PlatformFilter';
+import { Platform } from '@/components/PlatformIcons';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +37,7 @@ interface Product {
   iconUrl?: string;
   domainUrl?: string;
   categories: string[];
+  platforms?: Platform[];
   netVotes: number;
   userVote?: 1 | null;
   commentCount: number;
@@ -64,6 +67,15 @@ const Home = () => {
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month'>('week');
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  
+  const handlePlatformToggle = (platform: Platform) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platform) 
+        ? prev.filter(p => p !== platform)
+        : [...prev, platform]
+    );
+  };
   
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
@@ -286,6 +298,7 @@ const Home = () => {
             tagline,
             launch_date,
             domain_url,
+            platforms,
             verified_mrr,
             mrr_verified_at,
             product_media(url, type),
@@ -319,6 +332,7 @@ const Home = () => {
             tagline,
             launch_date,
             domain_url,
+            platforms,
             verified_mrr,
             mrr_verified_at,
             product_media(url, type),
@@ -351,6 +365,7 @@ const Home = () => {
             tagline,
             launch_date,
             domain_url,
+            platforms,
             verified_mrr,
             mrr_verified_at,
             product_media(url, type),
@@ -405,6 +420,7 @@ const Home = () => {
         iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         domainUrl: p.domain_url || '',
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+        platforms: (p.platforms || []) as Platform[],
         netVotes: voteMap.get(p.id) || 0,
         userVote: userVoteMap.get(p.id) || null,
         commentCount: commentMap.get(p.id) || 0,
@@ -520,11 +536,16 @@ const Home = () => {
   // Products are now sorted from the database/fetch, no need for client-side sorting
 
   const renderProductList = (productList: Product[]) => {
+    // Filter by selected platforms
+    const filteredList = selectedPlatforms.length > 0 
+      ? productList.filter(p => p.platforms?.some(platform => selectedPlatforms.includes(platform)))
+      : productList;
+
     if (loading) {
       return <ProductSkeleton view={effectiveView} count={5} />;
     }
 
-    if (productList.length === 0) {
+    if (filteredList.length === 0) {
       return <div className="text-center py-12 text-muted-foreground">No products found for this period.</div>;
     }
 
@@ -550,7 +571,7 @@ const Home = () => {
       }
       
       // Interleave products with sponsored items at positions 10, 20, 30
-      productList.forEach((product, idx) => {
+      filteredList.forEach((product, idx) => {
         productIndex++;
         const displayRank = productIndex;
         
@@ -569,6 +590,7 @@ const Home = () => {
               makers={product.makers}
               domainUrl={product.domainUrl}
               categories={product.categories}
+              platforms={product.platforms}
             />
           );
         } else if (viewMode === 'list') {
@@ -656,7 +678,7 @@ const Home = () => {
         )}
         
         {/* View all link when limit reached or no more products */}
-        {(!canLoadMore && productList.length > 0) && (
+        {(!canLoadMore && filteredList.length > 0) && (
           <div className="flex justify-center pt-4">
             <Link to={`/products?period=${currentPeriod}`}>
               <Button variant="outline" className="border-2 border-muted-foreground/20">View all {currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} products</Button>
@@ -688,6 +710,7 @@ const Home = () => {
                   className="pl-7 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
+              <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
               <ViewToggle view={view} onViewChange={handleViewChange} />
             </div>
