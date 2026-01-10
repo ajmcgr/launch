@@ -2,9 +2,9 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, Download } from 'lucide-react';
 import { toast } from 'sonner';
-import badgeGolden from '@/assets/badge-golden.png';
-import badgeNeutral from '@/assets/badge-neutral.png';
-import badgeDark from '@/assets/badge-dark.png';
+import badgeGolden from '@/assets/badge-golden-new.png';
+import badgeWhite from '@/assets/badge-white.png';
+import badgeColor from '@/assets/badge-color.png';
 
 interface ProductBadgeEmbedProps {
   productSlug: string;
@@ -15,7 +15,7 @@ interface ProductBadgeEmbedProps {
   wonMonthly?: boolean;
 }
 
-type BadgeTheme = 'neutral' | 'dark' | 'gold';
+type BadgeTheme = 'white' | 'color' | 'gold';
 
 const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily = false, wonWeekly = false, wonMonthly = false }: ProductBadgeEmbedProps) => {
   const [copiedBasic, setCopiedBasic] = useState<BadgeTheme | null>(null);
@@ -26,17 +26,17 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
 
   const getThemeStyles = (theme: BadgeTheme) => {
     switch (theme) {
-      case 'neutral':
-        return {
-          bg: '#FFFFFF',
-          text: '#313131',
-          border: '#E5E5E5',
-        };
-      case 'dark':
+      case 'white':
         return {
           bg: '#1A1A1A',
           text: '#FFFFFF',
           border: '#333333',
+        };
+      case 'color':
+        return {
+          bg: '#FFFFFF',
+          text: '#313131',
+          border: '#E5E5E5',
         };
       case 'gold':
         return {
@@ -51,10 +51,10 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     switch (theme) {
       case 'gold':
         return 'https://trylaunch.ai/badges/badge-golden.png';
-      case 'neutral':
-        return 'https://trylaunch.ai/badges/badge-neutral.png';
-      case 'dark':
-        return 'https://trylaunch.ai/badges/badge-dark.png';
+      case 'white':
+        return 'https://trylaunch.ai/badges/badge-white.png';
+      case 'color':
+        return 'https://trylaunch.ai/badges/badge-color.png';
     }
   };
 
@@ -70,7 +70,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
   const generateCategoryBadgeHTML = (theme: BadgeTheme) => {
     const styles = getThemeStyles(theme);
     const logoUrl = getBadgeImageUrl(theme);
-    const categoryBorder = theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
+    const categoryBorder = theme === 'white' ? 'rgba(255, 255, 255, 0.3)' : theme === 'gold' ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)';
     const categoriesText = categories.slice(0, 2).join(' · ');
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
@@ -126,10 +126,10 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
     switch (theme) {
       case 'gold':
         return badgeGolden;
-      case 'neutral':
-        return badgeNeutral;
-      case 'dark':
-        return badgeDark;
+      case 'white':
+        return badgeWhite;
+      case 'color':
+        return badgeColor;
     }
   };
 
@@ -247,7 +247,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       <div className="mb-6">
         <h4 className="text-sm font-medium mb-3 text-muted-foreground">Basic Badge</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {(['neutral', 'dark'] as BadgeTheme[]).map((theme) => (
+          {(['color', 'white'] as BadgeTheme[]).map((theme) => (
             <div key={theme} className="space-y-2">
               <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
               <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
@@ -281,7 +281,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
         <div>
           <h4 className="text-sm font-medium mb-3 text-muted-foreground">Badge with Categories</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(['neutral', 'dark'] as BadgeTheme[]).map((theme) => (
+            {(['color', 'white'] as BadgeTheme[]).map((theme) => (
               <div key={theme} className="space-y-2">
                 <div className="text-xs text-muted-foreground capitalize mb-2">{theme}</div>
                 <div className="flex items-center justify-center p-4 rounded-lg border bg-muted/30 mb-2">
