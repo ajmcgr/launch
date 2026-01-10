@@ -2,8 +2,8 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, Download } from 'lucide-react';
 import { toast } from 'sonner';
-import badgeGolden from '@/assets/badge-golden-new.png';
-import badgeWhite from '@/assets/badge-white.png';
+import badgeGolden from '@/assets/badge-golden.svg';
+import badgeWhite from '@/assets/badge-white.svg';
 import badgeColor from '@/assets/badge-color.png';
 
 interface ProductBadgeEmbedProps {
@@ -50,9 +50,9 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
   const getBadgeImageUrl = (theme: BadgeTheme) => {
     switch (theme) {
       case 'gold':
-        return 'https://trylaunch.ai/badges/badge-golden.png';
+        return 'https://trylaunch.ai/badges/badge-golden.svg';
       case 'white':
-        return 'https://trylaunch.ai/badges/badge-white.png';
+        return 'https://trylaunch.ai/badges/badge-white.svg';
       case 'color':
         return 'https://trylaunch.ai/badges/badge-color.png';
     }
