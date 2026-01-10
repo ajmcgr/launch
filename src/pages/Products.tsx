@@ -14,12 +14,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 
 const Products = () => {
   const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [topPeriod, setTopPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
   const [selectedArchiveYear, setSelectedArchiveYear] = useState<number | null>(null);
   const [archiveYears, setArchiveYears] = useState<number[]>([]);
@@ -58,6 +60,14 @@ const Products = () => {
     );
   };
 
+  const handlePlatformToggle = (platform: Platform) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platform) 
+        ? prev.filter(p => p !== platform)
+        : [...prev, platform]
+    );
+  };
+
   useEffect(() => {
     fetchArchiveYears();
   }, []);
@@ -69,7 +79,7 @@ const Products = () => {
     } else {
       fetchTopProducts();
     }
-  }, [selectedCategories, topPeriod, selectedArchiveYear, sort, searchQuery]);
+  }, [selectedCategories, selectedPlatforms, topPeriod, selectedArchiveYear, sort, searchQuery]);
 
   const fetchArchiveYears = async () => {
     try {
@@ -122,6 +132,7 @@ const Products = () => {
           tagline,
           launch_date,
           domain_url,
+          platforms,
           product_media(url, type),
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
@@ -154,6 +165,7 @@ const Products = () => {
         thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
         iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         domainUrl: p.domain_url || '',
+        platforms: (p.platforms || []) as Platform[],
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
         netVotes: voteMap.get(p.id) || 0,
         makers: p.product_makers?.map((m: any) => ({
@@ -165,6 +177,13 @@ const Products = () => {
       if (selectedCategories.length > 0) {
         formattedProducts = formattedProducts.filter((p: any) => 
           p.categories.some((c: string) => selectedCategories.includes(c))
+        );
+      }
+
+      // Filter by platforms
+      if (selectedPlatforms.length > 0) {
+        formattedProducts = formattedProducts.filter((p: any) => 
+          p.platforms?.some((platform: Platform) => selectedPlatforms.includes(platform))
         );
       }
 
@@ -208,6 +227,7 @@ const Products = () => {
             tagline,
             launch_date,
             domain_url,
+            platforms,
             product_media(url, type),
             product_category_map(category_id),
             product_makers(user_id, users(username, avatar_url))
@@ -238,6 +258,7 @@ const Products = () => {
             thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
             iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
             domainUrl: p.domain_url || '',
+            platforms: (p.platforms || []) as Platform[],
             categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
             netVotes: a.net_votes,
             makers: p.product_makers?.map((m: any) => ({
@@ -250,6 +271,13 @@ const Products = () => {
       if (selectedCategories.length > 0) {
         formattedProducts = formattedProducts.filter((p: any) => 
           p.categories.some((c: string) => selectedCategories.includes(c))
+        );
+      }
+
+      // Filter by platforms
+      if (selectedPlatforms.length > 0) {
+        formattedProducts = formattedProducts.filter((p: any) => 
+          p.platforms?.some((platform: Platform) => selectedPlatforms.includes(platform))
         );
       }
 
@@ -422,6 +450,24 @@ const Products = () => {
                     />
                     <Label htmlFor={category} className="text-sm cursor-pointer">
                       {category}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="font-semibold mb-3">Platforms</h3>
+              <div className="space-y-2">
+                {PLATFORMS.map((platform) => (
+                  <div key={platform.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`platform-${platform.id}`}
+                      checked={selectedPlatforms.includes(platform.id)}
+                      onCheckedChange={() => handlePlatformToggle(platform.id)}
+                    />
+                    <Label htmlFor={`platform-${platform.id}`} className="text-sm cursor-pointer">
+                      {platform.label}
                     </Label>
                   </div>
                 ))}

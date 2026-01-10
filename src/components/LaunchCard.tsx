@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
+import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 
 interface LaunchCardProps {
   id: string;
@@ -17,6 +18,7 @@ interface LaunchCardProps {
   iconUrl?: string;
   domainUrl?: string;
   categories: string[];
+  platforms?: Platform[];
   netVotes: number;
   userVote?: 1 | null;
   commentCount?: number;
@@ -45,6 +47,7 @@ export const LaunchCard = ({
   iconUrl,
   domainUrl,
   categories,
+  platforms,
   netVotes,
   userVote,
   commentCount = 0,
@@ -122,6 +125,7 @@ export const LaunchCard = ({
             <h3 className="font-semibold text-base hover:text-primary transition-colors">
               {name}
             </h3>
+            <PlatformIcons platforms={platforms} size="sm" />
             {domainUrl && (
               <a
                 href={domainUrl}
