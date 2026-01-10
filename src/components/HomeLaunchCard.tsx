@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 
 interface HomeLaunchCardProps {
@@ -86,7 +86,7 @@ export const HomeLaunchCard = ({
         </p>
         {launchDate && (
           <p className="text-xs text-muted-foreground text-center mt-2">
-            {formatDistanceToNow(new Date(launchDate), { addSuffix: true })}
+            {formatTimeAgo(launchDate)}
           </p>
         )}
       </div>

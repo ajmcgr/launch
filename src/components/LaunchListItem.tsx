@@ -7,7 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 interface LaunchListItemProps {
   id: string;
@@ -188,7 +188,7 @@ export const LaunchListItem = ({
                 
                 {launch_date && (
                   <span className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(launch_date), { addSuffix: true })}
+                    {formatTimeAgo(launch_date)}
                   </span>
                 )}
               </div>

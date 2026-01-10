@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 
 interface HomeLaunchListItemProps {
@@ -61,7 +61,7 @@ export const HomeLaunchListItem = ({
             )}
             {launchDate && (
               <span className="text-xs text-muted-foreground">
-                · {formatDistanceToNow(new Date(launchDate), { addSuffix: true })}
+                · {formatTimeAgo(launchDate)}
               </span>
             )}
             <PlatformIcons platforms={platforms} size="sm" />
