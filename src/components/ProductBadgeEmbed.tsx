@@ -50,11 +50,11 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
   const getBadgeImageUrl = (theme: BadgeTheme) => {
     switch (theme) {
       case 'gold':
-        return 'https://trylaunch.ai/assets/badge-golden.png';
+        return 'https://trylaunch.ai/badges/badge-golden.png';
       case 'neutral':
-        return 'https://trylaunch.ai/assets/badge-neutral.png';
+        return 'https://trylaunch.ai/badges/badge-neutral.png';
       case 'dark':
-        return 'https://trylaunch.ai/assets/badge-dark.png';
+        return 'https://trylaunch.ai/badges/badge-dark.png';
     }
   };
 
