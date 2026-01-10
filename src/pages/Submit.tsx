@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { X, CalendarIcon, Plus } from 'lucide-react';
+import { X, CalendarIcon, Plus, Globe } from 'lucide-react';
+import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS } from '@/lib/constants';
 import { toast } from 'sonner';
@@ -81,6 +82,7 @@ const Submit = () => {
         description: '',
         categories: [] as string[],
         tags: [] as number[],
+        platforms: [] as Platform[],
         slug: '',
         couponCode: '',
         couponDescription: '',
@@ -96,6 +98,7 @@ const Submit = () => {
       description: '',
       categories: [] as string[],
       tags: [] as number[],
+      platforms: [] as Platform[],
       slug: '',
       couponCode: '',
       couponDescription: '',
@@ -220,6 +223,7 @@ const Submit = () => {
           description: product.description || '',
           categories,
           tags: existingTags,
+          platforms: (product.platforms || []) as Platform[],
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
@@ -251,6 +255,7 @@ const Submit = () => {
           description: product.description || '',
           categories,
           tags: existingTags,
+          platforms: (product.platforms || []) as Platform[],
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
@@ -357,6 +362,7 @@ const Submit = () => {
         description: product.description || '',
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         tags: draftTags,
+        platforms: (product.platforms || []) as Platform[],
         slug: product.slug || '',
         couponCode: product.coupon_code || '',
         couponDescription: product.coupon_description || '',
@@ -405,6 +411,15 @@ const Submit = () => {
         : prev.tags.length < 5
         ? [...prev.tags, tagId]
         : prev.tags
+    }));
+  };
+
+  const handlePlatformToggle = (platformId: Platform) => {
+    setFormData(prev => ({
+      ...prev,
+      platforms: prev.platforms.includes(platformId)
+        ? prev.platforms.filter(p => p !== platformId)
+        : [...prev.platforms, platformId]
     }));
   };
 
@@ -612,6 +627,7 @@ const Submit = () => {
             description: formData.description,
             slug: formData.slug || `draft-${Date.now()}`,
             status: 'draft',
+            platforms: formData.platforms,
             coupon_code: formData.couponCode || null,
             coupon_description: formData.couponDescription || null,
           })
@@ -632,6 +648,7 @@ const Submit = () => {
           domain_url: formData.url,
           description: formData.description,
           slug: formData.slug,
+          platforms: formData.platforms,
           coupon_code: formData.couponCode || null,
           coupon_description: formData.couponDescription || null,
         };
@@ -1295,6 +1312,26 @@ const Submit = () => {
                         />
                         <Label htmlFor={category} className="text-sm cursor-pointer">
                           {category}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Platforms *</Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Select which platforms your product is available on
+                  </p>
+                  <div className="flex flex-wrap gap-3 p-4 border rounded-md">
+                    {PLATFORMS.map((platform) => (
+                      <div key={platform.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`platform-${platform.id}`}
+                          checked={formData.platforms.includes(platform.id)}
+                          onCheckedChange={() => handlePlatformToggle(platform.id)}
+                        />
+                        <Label htmlFor={`platform-${platform.id}`} className="text-sm cursor-pointer">
+                          {platform.label}
                         </Label>
                       </div>
                     ))}

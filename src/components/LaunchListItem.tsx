@@ -8,6 +8,7 @@ import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 import { formatDistanceToNow } from 'date-fns';
+import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 interface LaunchListItemProps {
   id: string;
   slug: string;
@@ -17,6 +18,7 @@ interface LaunchListItemProps {
   iconUrl?: string;
   domainUrl?: string;
   categories: string[];
+  platforms?: Platform[];
   netVotes: number;
   userVote?: 1 | null;
   commentCount?: number;
@@ -43,6 +45,7 @@ export const LaunchListItem = ({
   iconUrl,
   domainUrl,
   categories,
+  platforms,
   netVotes,
   userVote,
   commentCount = 0,
@@ -114,6 +117,7 @@ export const LaunchListItem = ({
               <h3 className="font-semibold text-base hover:text-primary transition-colors">
                 {name}
               </h3>
+              <PlatformIcons platforms={platforms} size="sm" />
               {domainUrl && (
                 <a
                   href={domainUrl}

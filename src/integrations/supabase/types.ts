@@ -604,6 +604,7 @@ export type Database = {
           mrr_verified_at: string | null
           name: string | null
           owner_id: string
+          platforms: string[] | null
           slug: string | null
           status: string | null
           stripe_connect_account_id: string | null
@@ -628,6 +629,7 @@ export type Database = {
           mrr_verified_at?: string | null
           name?: string | null
           owner_id: string
+          platforms?: string[] | null
           slug?: string | null
           status?: string | null
           stripe_connect_account_id?: string | null
@@ -652,6 +654,7 @@ export type Database = {
           mrr_verified_at?: string | null
           name?: string | null
           owner_id?: string
+          platforms?: string[] | null
           slug?: string | null
           status?: string | null
           stripe_connect_account_id?: string | null
