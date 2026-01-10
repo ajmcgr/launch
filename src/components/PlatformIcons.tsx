@@ -35,17 +35,17 @@ const platformConfig: Record<Platform, { icon: React.ReactNode; label: string; c
   web: {
     icon: <Globe />,
     label: 'Web App',
-    color: 'text-blue-500',
+    color: 'text-foreground',
   },
   ios: {
     icon: <AppleIcon />,
     label: 'iOS App',
-    color: 'text-gray-600 dark:text-gray-400',
+    color: 'text-foreground',
   },
   android: {
     icon: <AndroidIcon />,
     label: 'Android App',
-    color: 'text-green-500',
+    color: 'text-foreground',
   },
 };
 
