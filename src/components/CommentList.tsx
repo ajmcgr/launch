@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/formatTime';
 import { CommentForm } from './CommentForm';
 import { Pin, PinOff, Trash2 } from 'lucide-react';
 import {
@@ -166,7 +166,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
               </span>
             )}
             <span className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+              {formatTimeAgo(comment.created_at)}
             </span>
           </div>
           <p className="text-sm text-foreground whitespace-pre-wrap mb-2">{comment.content}</p>

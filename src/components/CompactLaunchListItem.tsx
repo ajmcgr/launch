@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ChevronUp, ExternalLink } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 
 interface CompactLaunchListItemProps {
@@ -38,7 +38,7 @@ export const CompactLaunchListItem = ({
   if (categories.length > 0) metaParts.push(categories[0]);
   if (firstMaker) metaParts.push(firstMaker.username);
   metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
-  if (launchDate) metaParts.push(formatDistanceToNow(new Date(launchDate), { addSuffix: true }));
+  if (launchDate) metaParts.push(formatTimeAgo(launchDate));
   
   return (
     <Link to={`/launch/${slug}`} className="block">

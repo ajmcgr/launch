@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/formatTime';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -154,9 +154,7 @@ const Notifications = () => {
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(notification.created_at!), {
-                      addSuffix: true,
-                    })}
+                    {formatTimeAgo(notification.created_at!)}
                   </p>
                 </div>
               </div>

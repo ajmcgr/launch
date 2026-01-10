@@ -11,7 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/formatTime';
 import { useNavigate } from 'react-router-dom';
 
 export const NotificationBell = () => {
@@ -145,9 +145,7 @@ export const NotificationBell = () => {
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(notification.created_at!), {
-                        addSuffix: true,
-                      })}
+                      {formatTimeAgo(notification.created_at!)}
                     </p>
                   </div>
                 </DropdownMenuItem>
