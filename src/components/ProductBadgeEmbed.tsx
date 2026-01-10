@@ -4,7 +4,7 @@ import { Copy, Check, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import badgeGolden from '@/assets/badge-golden.svg';
 import badgeWhite from '@/assets/badge-white.svg';
-import badgeColor from '@/assets/badge-color.png';
+import badgeColor from '@/assets/badge-color.svg';
 
 interface ProductBadgeEmbedProps {
   productSlug: string;
@@ -54,7 +54,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       case 'white':
         return 'https://trylaunch.ai/badges/badge-white.svg';
       case 'color':
-        return 'https://trylaunch.ai/badges/badge-color.png';
+        return 'https://trylaunch.ai/badges/badge-color.svg';
     }
   };
 
