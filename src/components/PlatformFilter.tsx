@@ -15,7 +15,7 @@ interface PlatformFilterProps {
 
 export const PlatformFilter = ({ selectedPlatforms, onPlatformToggle }: PlatformFilterProps) => {
   const getButtonLabel = () => {
-    if (selectedPlatforms.length === 0) return 'All Platforms';
+    if (selectedPlatforms.length === 0) return 'Platform';
     if (selectedPlatforms.length === 1) {
       return PLATFORMS.find(p => p.id === selectedPlatforms[0])?.label || 'Platform';
     }
@@ -25,9 +25,9 @@ export const PlatformFilter = ({ selectedPlatforms, onPlatformToggle }: Platform
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 gap-1.5">
-          <Smartphone className="h-4 w-4" />
-          <span className="hidden sm:inline">{getButtonLabel()}</span>
+        <Button variant="outline" size="sm" className="h-9 gap-1 px-2">
+          <Smartphone className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline text-xs">{getButtonLabel()}</span>
           <ChevronDown className="h-3 w-3 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
