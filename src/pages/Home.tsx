@@ -64,7 +64,7 @@ const Home = () => {
     const saved = localStorage.getItem('productView');
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
-  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month'>('week');
+  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('week');
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
@@ -251,7 +251,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month', currentSort: 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -272,6 +272,9 @@ const Home = () => {
           break;
         case 'month':
           startDate = new Date(now.setMonth(now.getMonth() - 1));
+          break;
+        case 'year':
+          startDate = new Date(now.setFullYear(now.getFullYear() - 1));
           break;
       }
 
@@ -458,7 +461,7 @@ const Home = () => {
   // Check if we've hit the homepage limit
   const canLoadMore = hasMore && products.length < MAX_HOMEPAGE_PRODUCTS;
 
-  const handlePeriodChange = (period: 'today' | 'week' | 'month') => {
+  const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year') => {
     setCurrentPeriod(period);
     setPage(0);
     setProducts([]);
@@ -698,6 +701,7 @@ const Home = () => {
               <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Today</TabsTrigger>
               <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Week</TabsTrigger>
               <TabsTrigger value="month" className="text-[11px] sm:text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Month</TabsTrigger>
+              <TabsTrigger value="year" className="hidden sm:inline-flex text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
               <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
@@ -725,6 +729,10 @@ const Home = () => {
           </TabsContent>
 
           <TabsContent value="month" className="space-y-6">
+            {renderProductList(products)}
+          </TabsContent>
+
+          <TabsContent value="year" className="space-y-6">
             {renderProductList(products)}
           </TabsContent>
         </Tabs>
