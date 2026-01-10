@@ -34,14 +34,15 @@ export const CompactLaunchListItem = ({
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
-  // Build meta parts before and after platform icons
-  const metaBeforeIcons: string[] = [];
-  if (categories.length > 0) metaBeforeIcons.push(categories[0]);
-  if (firstMaker) metaBeforeIcons.push(firstMaker.username);
-  
-  const metaAfterIcons: string[] = [];
-  metaAfterIcons.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
-  if (launchDate) metaAfterIcons.push(formatTimeAgo(launchDate));
+  // Build meta parts - platforms as text between maker and comments
+  const metaParts: string[] = [];
+  if (categories.length > 0) metaParts.push(categories[0]);
+  if (firstMaker) metaParts.push(firstMaker.username);
+  if (platforms && platforms.length > 0) {
+    metaParts.push(platforms.join(', '));
+  }
+  metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
+  if (launchDate) metaParts.push(formatTimeAgo(launchDate));
   
   return (
     <Link to={`/launch/${slug}`} className="block">
@@ -67,12 +68,8 @@ export const CompactLaunchListItem = ({
             )}
             
           </div>
-          <p className="flex items-center gap-1 text-xs text-muted-foreground truncate">
-            {metaBeforeIcons.length > 0 && <span>{metaBeforeIcons.join(' · ')}</span>}
-            {metaBeforeIcons.length > 0 && (platforms && platforms.length > 0) && <span>·</span>}
-            <PlatformIcons platforms={platforms} size="sm" />
-            {(platforms && platforms.length > 0) && metaAfterIcons.length > 0 && <span>·</span>}
-            {metaAfterIcons.length > 0 && <span>{metaAfterIcons.join(' · ')}</span>}
+          <p className="text-xs text-muted-foreground truncate">
+            {metaParts.join(' · ')}
           </p>
         </div>
         
