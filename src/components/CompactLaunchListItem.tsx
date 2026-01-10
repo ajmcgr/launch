@@ -64,9 +64,10 @@ export const CompactLaunchListItem = ({
             )}
             
           </div>
-          {metaParts.length > 0 && (
-            <p className="text-xs text-muted-foreground truncate">
-              {metaParts.join(' · ')}
+          {(metaParts.length > 0 || (platforms && platforms.length > 0)) && (
+            <p className="flex items-center gap-1 text-xs text-muted-foreground truncate">
+              <span className="truncate">{metaParts.join(' · ')}</span>
+              <PlatformIcons platforms={platforms} size="sm" />
             </p>
           )}
         </div>
