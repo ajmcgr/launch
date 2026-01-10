@@ -153,7 +153,6 @@ export const LaunchListItem = ({
                     </Link>
                   </span>
                 ))}
-                <PlatformIcons platforms={platforms} size="sm" />
               </div>
               
               <div className="flex items-center gap-2">
@@ -178,6 +177,8 @@ export const LaunchListItem = ({
                     </span>
                   ))}
                 </div>
+                
+                <PlatformIcons platforms={platforms} size="sm" />
                 
                 <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
                   <MessageSquare className="h-3.5 w-3.5" />

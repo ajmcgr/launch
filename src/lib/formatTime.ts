@@ -2,7 +2,7 @@ import { differenceInMinutes, differenceInHours, differenceInDays, differenceInM
 
 /**
  * Formats a date as a compact relative time string
- * Examples: "32m ago", "1h ago", "3d ago", "1mo ago", "1y ago"
+ * Examples: "32m", "1h", "3d", "1mo", "1y"
  */
 export const formatTimeAgo = (date: Date | string): string => {
   const now = new Date();
@@ -15,19 +15,19 @@ export const formatTimeAgo = (date: Date | string): string => {
   const years = differenceInYears(now, targetDate);
   
   if (years >= 1) {
-    return `${years}y ago`;
+    return `${years}y`;
   }
   if (months >= 1) {
-    return `${months}mo ago`;
+    return `${months}mo`;
   }
   if (days >= 1) {
-    return `${days}d ago`;
+    return `${days}d`;
   }
   if (hours >= 1) {
-    return `${hours}h ago`;
+    return `${hours}h`;
   }
   if (minutes >= 1) {
-    return `${minutes}m ago`;
+    return `${minutes}m`;
   }
-  return 'just now';
+  return 'now';
 };
