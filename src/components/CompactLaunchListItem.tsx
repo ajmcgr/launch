@@ -34,11 +34,14 @@ export const CompactLaunchListItem = ({
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
-  const metaParts: string[] = [];
-  if (categories.length > 0) metaParts.push(categories[0]);
-  if (firstMaker) metaParts.push(firstMaker.username);
-  metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
-  if (launchDate) metaParts.push(formatTimeAgo(launchDate));
+  // Build meta parts before and after platform icons
+  const metaBeforeIcons: string[] = [];
+  if (categories.length > 0) metaBeforeIcons.push(categories[0]);
+  if (firstMaker) metaBeforeIcons.push(firstMaker.username);
+  
+  const metaAfterIcons: string[] = [];
+  metaAfterIcons.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
+  if (launchDate) metaAfterIcons.push(formatTimeAgo(launchDate));
   
   return (
     <Link to={`/launch/${slug}`} className="block">
@@ -64,12 +67,13 @@ export const CompactLaunchListItem = ({
             )}
             
           </div>
-          {(metaParts.length > 0 || (platforms && platforms.length > 0)) && (
-            <p className="flex items-center gap-1 text-xs text-muted-foreground truncate">
-              <span className="truncate">{metaParts.join(' · ')}</span>
-              <PlatformIcons platforms={platforms} size="sm" />
-            </p>
-          )}
+          <p className="flex items-center gap-1 text-xs text-muted-foreground truncate">
+            {metaBeforeIcons.length > 0 && <span>{metaBeforeIcons.join(' · ')}</span>}
+            {metaBeforeIcons.length > 0 && (platforms && platforms.length > 0) && <span>·</span>}
+            <PlatformIcons platforms={platforms} size="sm" />
+            {(platforms && platforms.length > 0) && metaAfterIcons.length > 0 && <span>·</span>}
+            {metaAfterIcons.length > 0 && <span>{metaAfterIcons.join(' · ')}</span>}
+          </p>
         </div>
         
         {/* Vote button */}
