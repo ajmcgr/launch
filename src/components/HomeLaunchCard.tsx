@@ -79,15 +79,15 @@ export const HomeLaunchCard = ({
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           )}
-          <PlatformIcons platforms={platforms} size="sm" />
           </div>
         <p className="text-sm text-muted-foreground text-center line-clamp-2">
           {tagline}
         </p>
-        {launchDate && (
-          <p className="text-xs text-muted-foreground text-center mt-2">
-            {formatTimeAgo(launchDate)}
-          </p>
+        {(launchDate || (platforms && platforms.length > 0)) && (
+          <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mt-2">
+            {launchDate && <span>{formatTimeAgo(launchDate)}</span>}
+            <PlatformIcons platforms={platforms} size="sm" />
+          </div>
         )}
       </div>
       </Card>
