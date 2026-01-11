@@ -55,15 +55,15 @@ Deno.serve(async (req) => {
     const monthsLabel = selectedMonths?.length > 0 ? ` (${selectedMonths.join(', ')})` : '';
 
     if (sponsorshipType === 'combined') {
-      unitAmount = 100000; // $1,000 in cents
+      unitAmount = 35000; // $350 in cents
       productName = 'Combined Sponsorship Package';
       description = `Website + Newsletter sponsorship${monthsLabel}`;
     } else if (sponsorshipType === 'website') {
-      unitAmount = 75000; // $750 in cents
+      unitAmount = 30000; // $300 in cents
       productName = 'Website Placement';
       description = `Sponsored homepage listing${monthsLabel}`;
     } else {
-      unitAmount = 50000; // $500 in cents
+      unitAmount = 20000; // $200 in cents
       productName = 'Newsletter Sponsorship';
       description = `Newsletter sponsorship${monthsLabel}`;
     }

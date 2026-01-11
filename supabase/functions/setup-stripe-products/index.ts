@@ -43,19 +43,19 @@ serve(async (req) => {
       {
         name: 'Website Placement',
         description: 'Sponsored homepage listing for one month',
-        amount: 75000, // $750 in cents
+        amount: 30000, // $300 in cents
         metadata: { plan_id: 'ad_website' }
       },
       {
         name: 'Newsletter Sponsorship',
         description: 'Newsletter sponsorship for one month',
-        amount: 50000, // $500 in cents
+        amount: 20000, // $200 in cents
         metadata: { plan_id: 'ad_newsletter' }
       },
       {
         name: 'Combined Sponsorship Package',
         description: 'Website + Newsletter sponsorship for one month',
-        amount: 100000, // $1,000 in cents
+        amount: 35000, // $350 in cents
         metadata: { plan_id: 'ad_combined' }
       }
     ];
