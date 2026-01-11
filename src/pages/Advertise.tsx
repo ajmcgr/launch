@@ -7,8 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock, CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { format, startOfMonth, addMonths } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
+import { format, startOfMonth, addMonths, setMonth, setYear } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -28,6 +27,62 @@ import defaultProductIcon from '@/assets/default-product-icon.png';
 import stripeLogo from '@/assets/stripe-logo.png';
 
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
+
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+const MonthYearPicker = ({ onSelect }: { onSelect: (date: Date) => void }) => {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  
+  const years = Array.from({ length: 3 }, (_, i) => currentYear + i);
+  
+  const handleMonthClick = (monthIndex: number) => {
+    const date = setMonth(setYear(new Date(), selectedYear), monthIndex);
+    onSelect(date);
+  };
+  
+  const isDisabled = (monthIndex: number) => {
+    if (selectedYear === currentYear && monthIndex < currentMonth) {
+      return true;
+    }
+    return false;
+  };
+  
+  return (
+    <div className="space-y-4">
+      <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
+        <SelectTrigger className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="bg-background">
+          {years.map((year) => (
+            <SelectItem key={year} value={year.toString()}>
+              {year}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <div className="grid grid-cols-3 gap-2">
+        {MONTHS.map((month, index) => (
+          <Button
+            key={month}
+            variant="outline"
+            size="sm"
+            disabled={isDisabled(index)}
+            onClick={() => handleMonthClick(index)}
+            className="text-xs"
+          >
+            {month.slice(0, 3)}
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Advertise = () => {
   const navigate = useNavigate();
@@ -608,23 +663,8 @@ const Advertise = () => {
                             : "Click to select months"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={undefined}
-                          onSelect={handleMonthSelect}
-                          disabled={(date) => {
-                            const today = startOfMonth(new Date());
-                            const maxDate = addMonths(today, 24); // Allow up to 2 years out
-                            const monthStart = startOfMonth(date);
-                            return monthStart < today || monthStart > maxDate;
-                          }}
-                          initialFocus
-                          className="pointer-events-auto"
-                        />
-                        <p className="text-xs text-muted-foreground p-3 border-t">
-                          Click on any date to add that month
-                        </p>
+                      <PopoverContent className="w-64 p-4" align="start">
+                        <MonthYearPicker onSelect={handleMonthSelect} />
                       </PopoverContent>
                     </Popover>
                     {formErrors.months && (
