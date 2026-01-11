@@ -257,9 +257,9 @@ const Advertise = () => {
 
   const getPrice = () => {
     switch (selectedType) {
-      case 'website': return 750;
-      case 'newsletter': return 500;
-      case 'combined': return 1000;
+      case 'website': return 300;
+      case 'newsletter': return 200;
+      case 'combined': return 350;
       default: return 0;
     }
   };
@@ -438,7 +438,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $750<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $300<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
@@ -475,7 +475,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $500<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $200<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
@@ -515,7 +515,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $1,000<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $350<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
