@@ -4,14 +4,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock } from 'lucide-react';
+import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock, CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { format, startOfMonth } from 'date-fns';
+import { format, startOfMonth, addMonths } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useNavigate } from 'react-router-dom';
 import { Testimonials } from '@/components/Testimonials';
+import { cn } from '@/lib/utils';
 
 interface LaunchedProduct {
   id: string;
@@ -26,35 +29,23 @@ import stripeLogo from '@/assets/stripe-logo.png';
 
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
 
-const YEARS_AVAILABLE = 10; // Show next 10 years of dates
-const MAX_WEBSITE_SLOTS = 4;
-const MAX_NEWSLETTER_SLOTS = 4;
-
-// Track booked slots per month
-interface MonthAvailability {
-  websiteBooked: number;
-  newsletterBooked: number;
-}
-
 const Advertise = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedType, setSelectedType] = useState<SponsorshipType | null>(null);
   const [selectedMonths, setSelectedMonths] = useState<Date[]>([]);
-  const [selectedYear, setSelectedYear] = useState<string>('');
-  const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [formData, setFormData] = useState({
     message: '',
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availability, setAvailability] = useState<Record<string, MonthAvailability>>({});
   const [launchedProducts, setLaunchedProducts] = useState<LaunchedProduct[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Check authentication state
   useEffect(() => {
@@ -129,126 +120,27 @@ const Advertise = () => {
     }
   }, [user, authChecked]);
 
-  // Fetch existing sponsored products to check availability
-  useEffect(() => {
-    const fetchAvailability = async () => {
-      const { data, error } = await supabase
-        .from('sponsored_products')
-        .select('start_date, sponsorship_type')
-        .gte('start_date', format(new Date(), 'yyyy-MM-01'));
-
-      if (error) {
-        console.error('Error fetching availability:', error);
-        return;
-      }
-
-      // Build availability map by month
-      const availMap: Record<string, MonthAvailability> = {};
-      data?.forEach((sp) => {
-        const monthKey = sp.start_date.substring(0, 7); // 'YYYY-MM' format
-        if (!availMap[monthKey]) {
-          availMap[monthKey] = { websiteBooked: 0, newsletterBooked: 0 };
-        }
-        if (sp.sponsorship_type === 'website' || sp.sponsorship_type === 'combined') {
-          availMap[monthKey].websiteBooked++;
-        }
-        if (sp.sponsorship_type === 'newsletter' || sp.sponsorship_type === 'combined') {
-          availMap[monthKey].newsletterBooked++;
-        }
-      });
-      setAvailability(availMap);
-    };
-
-    fetchAvailability();
-  }, []);
-
-  // Check if a month is available for the selected sponsorship type
-  const isMonthAvailable = (date: Date, type: SponsorshipType | null): boolean => {
-    if (!type) return true;
-    const monthKey = format(date, 'yyyy-MM');
-    const avail = availability[monthKey] || { websiteBooked: 0, newsletterBooked: 0 };
-
-    switch (type) {
-      case 'website':
-        return avail.websiteBooked < MAX_WEBSITE_SLOTS;
-      case 'newsletter':
-        return avail.newsletterBooked < MAX_NEWSLETTER_SLOTS;
-      case 'combined':
-        return avail.websiteBooked < MAX_WEBSITE_SLOTS && avail.newsletterBooked < MAX_NEWSLETTER_SLOTS;
-      default:
-        return true;
-    }
-  };
-
-  // Get remaining slots for display
-  const getRemainingSlots = (date: Date, type: SponsorshipType | null): string => {
-    if (!type) return '';
-    const monthKey = format(date, 'yyyy-MM');
-    const avail = availability[monthKey] || { websiteBooked: 0, newsletterBooked: 0 };
-
-    switch (type) {
-      case 'website':
-        return `${MAX_WEBSITE_SLOTS - avail.websiteBooked} slots left`;
-      case 'newsletter':
-        return `${MAX_NEWSLETTER_SLOTS - avail.newsletterBooked} slots left`;
-      case 'combined': {
-        const websiteLeft = MAX_WEBSITE_SLOTS - avail.websiteBooked;
-        const newsletterLeft = MAX_NEWSLETTER_SLOTS - avail.newsletterBooked;
-        return `${Math.min(websiteLeft, newsletterLeft)} slots left`;
-      }
-      default:
-        return '';
-    }
-  };
-
-  // Generate available years (current year + next 10 years)
-  const getAvailableYears = () => {
-    const years: number[] = [];
-    const currentYear = new Date().getFullYear();
-    for (let i = 0; i <= YEARS_AVAILABLE; i++) {
-      years.push(currentYear + i);
-    }
-    return years;
-  };
-
-  // Generate months for the selected year, filtering out past and fully booked months
-  const getMonthsForYear = (year: number) => {
-    const months: { value: number; label: string; date: Date; available: boolean; slotsInfo: string }[] = [];
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-
-    for (let month = 0; month < 12; month++) {
-      // Skip past months for current year (but allow current month)
-      if (year === currentYear && month < currentMonth) continue;
-      
-      const date = startOfMonth(new Date(year, month, 1));
-      // Skip if already selected
-      if (selectedMonths.some(m => m.getTime() === date.getTime())) continue;
-      
-      const available = isMonthAvailable(date, selectedType);
-      const slotsInfo = getRemainingSlots(date, selectedType);
-      
-      months.push({
-        value: month,
-        label: format(date, 'MMMM'),
-        date,
-        available,
-        slotsInfo
-      });
-    }
-    return months;
-  };
-
-  const addSelectedMonth = () => {
-    if (!selectedYear || !selectedMonth) return;
+  // Handle calendar month selection
+  const handleMonthSelect = (date: Date | undefined) => {
+    if (!date) return;
     
-    const date = startOfMonth(new Date(parseInt(selectedYear), parseInt(selectedMonth), 1));
-    if (!selectedMonths.some(m => m.getTime() === date.getTime())) {
-      setSelectedMonths(prev => [...prev, date].sort((a, b) => a.getTime() - b.getTime()));
+    const monthStart = startOfMonth(date);
+    const today = startOfMonth(new Date());
+    
+    // Don't allow past months
+    if (monthStart < today) {
+      toast.error('Cannot select past months');
+      return;
     }
-    // Reset month selection after adding
-    setSelectedMonth('');
+    
+    // Check if already selected
+    if (selectedMonths.some(m => m.getTime() === monthStart.getTime())) {
+      toast.error('This month is already selected');
+      return;
+    }
+    
+    setSelectedMonths(prev => [...prev, monthStart].sort((a, b) => a.getTime() - b.getTime()));
+    setCalendarOpen(false);
   };
 
   const removeMonth = (month: Date) => {
@@ -358,11 +250,6 @@ const Advertise = () => {
     }
   }, []);
 
-  const availableYears = useMemo(() => getAvailableYears(), []);
-  const monthsForSelectedYear = useMemo(() => {
-    if (!selectedYear) return [];
-    return getMonthsForYear(parseInt(selectedYear));
-  }, [selectedYear, selectedMonths]);
 
   // Success Modal Component
   const SuccessModal = () => (
@@ -536,7 +423,7 @@ const Advertise = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Save $250/month with bundle</span>
+                      <span className="text-sm">Save $150/month with bundle</span>
                     </li>
                   </ul>
                   <Button 
@@ -705,67 +592,41 @@ const Advertise = () => {
                     <Label className={formErrors.months ? 'text-destructive' : ''}>
                       Select Month(s) to Advertise *
                     </Label>
-                    <div className="flex gap-2">
-                      <Select value={selectedYear} onValueChange={(value) => {
-                        setSelectedYear(value);
-                        setSelectedMonth(''); // Reset month when year changes
-                      }}>
-                        <SelectTrigger className={`w-[120px] ${formErrors.months ? 'border-destructive' : ''}`}>
-                          <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background">
-                          {availableYears.map((year) => (
-                            <SelectItem key={year} value={year.toString()}>
-                              {year}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      
-                      <Select 
-                        value={selectedMonth} 
-                        onValueChange={setSelectedMonth}
-                        disabled={!selectedYear}
-                      >
-                        <SelectTrigger className={`flex-1 ${formErrors.months ? 'border-destructive' : ''}`}>
-                          <SelectValue placeholder={selectedYear ? "Select month" : "Select year first"} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background">
-                          {monthsForSelectedYear.length === 0 ? (
-                            <div className="px-3 py-2 text-sm text-muted-foreground">
-                              No available months
-                            </div>
-                          ) : (
-                            monthsForSelectedYear.map((month) => (
-                              <SelectItem 
-                                key={month.value} 
-                                value={month.value.toString()}
-                                disabled={!month.available}
-                                className={!month.available ? 'opacity-50' : ''}
-                              >
-                                <span className="flex items-center justify-between w-full gap-2">
-                                  {month.label}
-                                  {!month.available ? (
-                                    <Badge variant="secondary" className="text-xs ml-2">Sold Out</Badge>
-                                  ) : month.slotsInfo && (
-                                    <span className="text-xs text-muted-foreground ml-2">{month.slotsInfo}</span>
-                                  )}
-                                </span>
-                              </SelectItem>
-                            ))
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !selectedMonths.length && "text-muted-foreground",
+                            formErrors.months && "border-destructive"
                           )}
-                        </SelectContent>
-                      </Select>
-                      
-                      <Button 
-                        type="button" 
-                        variant="secondary"
-                        onClick={addSelectedMonth}
-                        disabled={!selectedYear || !selectedMonth}
-                      >
-                        Add
-                      </Button>
-                    </div>
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {selectedMonths.length > 0 
+                            ? `${selectedMonths.length} month${selectedMonths.length > 1 ? 's' : ''} selected`
+                            : "Click to select months"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={undefined}
+                          onSelect={handleMonthSelect}
+                          disabled={(date) => {
+                            const today = startOfMonth(new Date());
+                            const maxDate = addMonths(today, 24); // Allow up to 2 years out
+                            const monthStart = startOfMonth(date);
+                            return monthStart < today || monthStart > maxDate;
+                          }}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                        <p className="text-xs text-muted-foreground p-3 border-t">
+                          Click on any date to add that month
+                        </p>
+                      </PopoverContent>
+                    </Popover>
                     {formErrors.months && (
                       <p className="text-sm text-destructive">{formErrors.months}</p>
                     )}
