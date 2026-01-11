@@ -204,9 +204,9 @@ const Advertise = () => {
 
   const getPrice = () => {
     switch (selectedType) {
-      case 'website': return 300;
+      case 'website': return 250;
       case 'newsletter': return 200;
-      case 'combined': return 350;
+      case 'combined': return 400;
       default: return 0;
     }
   };
@@ -376,20 +376,24 @@ const Advertise = () => {
               >
                 <CardHeader>
                 <CardTitle className="text-xl">Website Placement</CardTitle>
-                <CardDescription>Permanent display on homepage leaderboard</CardDescription>
+                <CardDescription>Sponsored listing on the Launch homepage</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $300<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $250<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored listing on homepage for 1 month</span>
+                    <span className="text-sm">Sponsored listing on Launch homepage</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">6,000+ daily visitors</span>
+                    <span className="text-sm">Visible to thousands of founders & builders</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Clearly labelled. No impact on rankings.</span>
                   </li>
                 </ul>
                 <Button 
@@ -413,20 +417,24 @@ const Advertise = () => {
               >
                 <CardHeader>
                   <CardTitle className="text-xl">Newsletter Sponsorship</CardTitle>
-                  <CardDescription>Featured placement in our weekly newsletter</CardDescription>
+                  <CardDescription>Featured sponsor in our weekly newsletter</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $200<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $200<span className="text-base font-normal text-muted-foreground"> / issue</span>
                   </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                    <span className="text-sm">Featured sponsor section in one weekly newsletter</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">2,000+ subscribers</span>
+                    <span className="text-sm">Sent to ~2,000 founders, makers & early-stage teams</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">One sponsor per issue</span>
                   </li>
                 </ul>
                 <Button 
@@ -457,28 +465,24 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $350<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $400<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Sponsored listing on homepage for 1 month</span>
+                      <span className="text-sm">Homepage sponsorship (1 month)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                      <span className="text-sm">1 newsletter sponsorship (one issue)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">6,000+ monthly visitors</span>
+                      <span className="text-sm">Limited availability</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">2,000+ subscribers</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Save $150/month with bundle</span>
+                      <span className="text-sm">Save $50 vs. buying separately</span>
                     </li>
                   </ul>
                   <Button 
@@ -592,9 +596,9 @@ const Advertise = () => {
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-3">
-                  <AccordionTrigger>How many sponsored slots are available per month?</AccordionTrigger>
+                  <AccordionTrigger>How many sponsored slots are available?</AccordionTrigger>
                   <AccordionContent>
-                    We limit sponsorships to 4 slots per month for both website placements and newsletter features. This ensures each sponsor gets meaningful visibility without overcrowding.
+                    Newsletter sponsorships are limited to one sponsor per issue to ensure maximum visibility. Website placements have limited availability each month. This ensures each sponsor gets meaningful exposure without overcrowding.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">
