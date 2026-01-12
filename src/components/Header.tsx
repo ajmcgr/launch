@@ -117,7 +117,7 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner - hides on scroll with smooth transition */}
       <div 
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
           isScrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
         }`}
       >
