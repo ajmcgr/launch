@@ -81,7 +81,7 @@ export const PlatformIcons = ({ platforms = [], size = 'sm', showTooltip = true 
           return (
             <Tooltip key={platform}>
               <TooltipTrigger asChild>
-                <span className={`${config.color} ${iconSize} cursor-help`}>
+                <span className={`${config.color} ${iconSize}`}>
                   {platform === 'web' && <Globe className={iconSize} />}
                   {platform === 'ios' && <AppleIcon className={iconSize} />}
                   {platform === 'android' && <AndroidIcon className={iconSize} />}
