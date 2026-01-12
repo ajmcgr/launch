@@ -267,7 +267,7 @@ const Admin = () => {
 
       <Tabs defaultValue="users" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="users">Members</TabsTrigger>
           <TabsTrigger value="promotion">Promotion</TabsTrigger>
           <TabsTrigger value="advertising">Advertising</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
@@ -276,8 +276,8 @@ const Admin = () => {
         <TabsContent value="users" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Users</CardTitle>
-              <CardDescription>Manage user accounts and roles</CardDescription>
+              <CardTitle>Members</CardTitle>
+              <CardDescription>Manage member accounts and roles</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
