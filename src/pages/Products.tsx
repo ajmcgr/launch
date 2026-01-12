@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { PlatformFilter } from '@/components/PlatformFilter';
+import { toast } from 'sonner';
 
 const Products = () => {
   const isMobile = useIsMobile();
@@ -33,6 +34,8 @@ const Products = () => {
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
+  const [user, setUser] = useState<any>(null);
+  const [userVotes, setUserVotes] = useState<Set<string>>(new Set());
   
   // Use the saved view preference
   const effectiveView = view;
@@ -40,6 +43,88 @@ const Products = () => {
   const handleViewChange = (newView: 'list' | 'grid' | 'compact') => {
     setView(newView);
     localStorage.setItem('productView', newView);
+  };
+
+  // Fetch user session and votes
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserVotes(session.user.id);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserVotes(session.user.id);
+      } else {
+        setUserVotes(new Set());
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUserVotes = async (userId: string) => {
+    const { data } = await supabase
+      .from('votes')
+      .select('product_id')
+      .eq('user_id', userId);
+    
+    if (data) {
+      setUserVotes(new Set(data.map(v => v.product_id)));
+    }
+  };
+
+  const handleVote = async (productId: string) => {
+    if (!user) {
+      window.location.href = '/auth';
+      return;
+    }
+
+    try {
+      const hasVoted = userVotes.has(productId);
+
+      if (hasVoted) {
+        await supabase
+          .from('votes')
+          .delete()
+          .eq('product_id', productId)
+          .eq('user_id', user.id);
+        
+        setUserVotes(prev => {
+          const next = new Set(prev);
+          next.delete(productId);
+          return next;
+        });
+        
+        setProducts(prev => 
+          prev.map(p => 
+            p.id === productId 
+              ? { ...p, netVotes: p.netVotes - 1 }
+              : p
+          )
+        );
+      } else {
+        await supabase
+          .from('votes')
+          .insert({ product_id: productId, user_id: user.id, value: 1 });
+        
+        setUserVotes(prev => new Set(prev).add(productId));
+        
+        setProducts(prev => 
+          prev.map(p => 
+            p.id === productId 
+              ? { ...p, netVotes: p.netVotes + 1 }
+              : p
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error voting:', error);
+      toast.error('Failed to vote');
+    }
   };
 
   useEffect(() => {
@@ -352,7 +437,8 @@ const Products = () => {
                     name={product.name}
                     votes={product.netVotes}
                     slug={product.slug}
-                    onVote={() => {}}
+                    onVote={() => handleVote(product.id)}
+                    userVote={userVotes.has(product.id) ? 1 : null}
                     launchDate={product.launch_date}
                     commentCount={0}
                     makers={product.makers}
@@ -367,7 +453,8 @@ const Products = () => {
                   <LaunchListItem
                     key={product.id}
                     {...product}
-                    onVote={() => {}}
+                    onVote={() => handleVote(product.id)}
+                    userVote={userVotes.has(product.id) ? 1 : null}
                   />
                 ))}
               </div>
@@ -377,7 +464,8 @@ const Products = () => {
                   <LaunchCard
                     key={product.id}
                     {...product}
-                    onVote={() => {}}
+                    onVote={() => handleVote(product.id)}
+                    userVote={userVotes.has(product.id) ? 1 : null}
                   />
                 ))}
               </div>
