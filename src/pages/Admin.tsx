@@ -219,7 +219,7 @@ const Admin = () => {
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">🚀 {stats?.totalProducts || 0}</div>
+            <div className="text-2xl font-bold">⚡ {stats?.totalProducts || 0}</div>
           </CardContent>
         </Card>
 
