@@ -150,7 +150,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
   };
 
   const CommentItem = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => (
-    <Card className={`p-4 ${isReply ? 'ml-12 mt-2' : ''} ${comment.pinned ? 'border-primary/50 bg-primary/5' : ''}`}>
+    <div className={`p-4 ${isReply ? 'ml-8 mt-3 border-l-2 border-muted' : 'border rounded-lg bg-card'} ${comment.pinned && !isReply ? 'border-primary/50 bg-primary/5' : ''}`}>
       <div className="flex gap-3">
         <Avatar className="h-10 w-10 flex-shrink-0">
           <AvatarImage src={comment.user.avatar_url} alt={comment.user.username} />
@@ -249,7 +249,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
           ))}
         </div>
       )}
-    </Card>
+    </div>
   );
 
   if (loading) {
