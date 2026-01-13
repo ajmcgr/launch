@@ -149,7 +149,6 @@ export const LaunchCard = ({
             onClick={handleFollow}
             className="w-full mb-3"
           >
-            <Star className={`h-3 w-3 mr-1 ${isFollowing ? 'fill-current' : ''}`} />
             {isFollowing ? 'Following' : 'Follow'}
           </Button>
         )}
