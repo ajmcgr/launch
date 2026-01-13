@@ -42,12 +42,12 @@ const Categories = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>All Categories | Launch</title>
-        <meta name="description" content="Browse all product categories and discover products by category" />
+        <title>Popular Categories | Launch</title>
+        <meta name="description" content="Browse popular product categories and discover products by category" />
       </Helmet>
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8">All Categories</h1>
+        <h1 className="text-4xl font-bold mb-8">Popular Categories</h1>
         
         {loading ? (
           <div className="flex justify-center py-12">
