@@ -37,7 +37,7 @@ export function VerifiedRevenueBadge({
         <TooltipTrigger asChild>
           <div className={`flex items-center gap-1 ${colorClass} cursor-help`}>
             <span className={`${textSize} font-medium`}>{mrrRange}</span>
-            <span className={`${textSize} font-medium opacity-70`}>MRR</span>
+            <span className={`${textSize} font-medium`}>MRR</span>
           </div>
         </TooltipTrigger>
         <TooltipContent>
