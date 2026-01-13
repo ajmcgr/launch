@@ -476,7 +476,7 @@ const Products = () => {
                     className={`px-2 h-7 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
                       topPeriod === period.value && !selectedArchiveYear
                         ? 'bg-muted text-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                     }`}
                   >
                     {period.label}
