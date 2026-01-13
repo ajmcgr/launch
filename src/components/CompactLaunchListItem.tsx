@@ -19,7 +19,6 @@ interface CompactLaunchListItemProps {
   platforms?: Platform[];
   verifiedMrr?: number | null;
   mrrVerifiedAt?: string | null;
-  showMrr?: boolean;
 }
 
 export const CompactLaunchListItem = ({
@@ -37,7 +36,6 @@ export const CompactLaunchListItem = ({
   platforms,
   verifiedMrr,
   mrrVerifiedAt,
-  showMrr = false,
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
@@ -73,7 +71,7 @@ export const CompactLaunchListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
-            {showMrr && <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />}
+            <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />
           </div>
           <p className="text-xs text-muted-foreground truncate">
             {metaParts.join(' · ')}

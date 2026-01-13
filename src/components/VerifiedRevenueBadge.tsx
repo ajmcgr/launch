@@ -1,4 +1,3 @@
-import { CreditCard } from 'lucide-react';
 import { formatMRRRange, getMRRColorClass } from '@/lib/revenue';
 import {
   Tooltip,
@@ -10,21 +9,18 @@ import {
 interface VerifiedRevenueBadgeProps {
   verifiedMrr: number | null;
   mrrVerifiedAt?: string | null;
-  showLabel?: boolean;
   size?: 'sm' | 'md';
 }
 
 export function VerifiedRevenueBadge({ 
   verifiedMrr, 
   mrrVerifiedAt,
-  showLabel = true,
   size = 'sm'
 }: VerifiedRevenueBadgeProps) {
   if (verifiedMrr === null || verifiedMrr === undefined) return null;
   
   const mrrRange = formatMRRRange(verifiedMrr);
   const colorClass = getMRRColorClass(verifiedMrr);
-  const iconSize = size === 'sm' ? 'h-3 w-3' : 'h-4 w-4';
   const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
   
   const verifiedDate = mrrVerifiedAt 
@@ -40,8 +36,8 @@ export function VerifiedRevenueBadge({
       <Tooltip>
         <TooltipTrigger asChild>
           <div className={`flex items-center gap-1 ${colorClass} cursor-help`}>
-            <CreditCard className={iconSize} />
-            {showLabel && <span className={`${textSize} font-medium`}>{mrrRange}</span>}
+            <span className={`${textSize} font-medium`}>{mrrRange}</span>
+            <span className={`${textSize} font-medium opacity-70`}>MRR</span>
           </div>
         </TooltipTrigger>
         <TooltipContent>
