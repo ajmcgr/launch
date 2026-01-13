@@ -413,6 +413,33 @@ const Products = () => {
               </div>
             </div>
 
+            {/* Time Period Toggle */}
+            <div className="flex justify-center">
+              <div className="inline-flex rounded-lg border border-border p-1 bg-muted/50">
+                {[
+                  { value: 'today', label: 'Today' },
+                  { value: 'week', label: 'Week' },
+                  { value: 'month', label: 'Month' },
+                  { value: 'year', label: 'Year' },
+                ].map((period) => (
+                  <button
+                    key={period.value}
+                    onClick={() => {
+                      setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year');
+                      setSelectedArchiveYear(null);
+                    }}
+                    className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                      topPeriod === period.value && !selectedArchiveYear
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {period.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {selectedCategories.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {selectedCategories.map((cat) => (
