@@ -499,6 +499,21 @@ const Advertise = () => {
               </Card>
             </div>
 
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-8">
+              <Lock className="h-4 w-4" />
+              <span>Payments secured by</span>
+              <img src={stripeLogo} alt="Stripe" className="h-6" />
+            </div>
+
+            <div className="mt-6 text-center mb-12">
+              <p className="text-muted-foreground">
+                All plans include support from our team. Questions?{' '}
+                <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
+                  Contact us
+                </a>
+              </p>
+            </div>
+
             <Testimonials 
               variant="compact"
               title="Trusted by Makers"
@@ -620,21 +635,6 @@ const Advertise = () => {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-12">
-              <Lock className="h-4 w-4" />
-              <span>Payments secured by</span>
-              <img src={stripeLogo} alt="Stripe" className="h-6" />
-            </div>
-
-            <div className="mt-8 text-center">
-              <p className="text-muted-foreground">
-                All plans include support from our team. Questions?{' '}
-                <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
-                  Contact us
-                </a>
-              </p>
             </div>
           </>
         )}
