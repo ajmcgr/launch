@@ -32,6 +32,7 @@ interface LaunchCardProps {
   icon?: any;
   sponsored?: boolean;
   sponsoredPosition?: number;
+  showMrr?: boolean;
   onVote: (productId: string) => void;
   showFollowButton?: boolean;
   isFollowing?: boolean;
@@ -58,6 +59,7 @@ export const LaunchCard = ({
   icon: IconComponent,
   sponsored,
   sponsoredPosition,
+  showMrr = false,
   onVote,
   showFollowButton = false,
   isFollowing = false,
@@ -221,7 +223,7 @@ export const LaunchCard = ({
               <span className="text-xs">{commentCount}</span>
             </div>
             
-            <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
+            {showMrr && <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />}
           </div>
         </div>
       </div>
