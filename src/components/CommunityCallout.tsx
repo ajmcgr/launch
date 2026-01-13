@@ -14,13 +14,13 @@ export const CommunityCallout = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button asChild variant="outline" className="gap-2">
+            <Button asChild className="gap-2">
               <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
                 <Mail className="h-4 w-4" />
                 Subscribe to Newsletter
               </a>
             </Button>
-            <Button asChild className="gap-2">
+            <Button asChild variant="outline" className="gap-2">
               <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
                 <MessageSquare className="h-4 w-4" />
                 Join Forums
