@@ -57,7 +57,7 @@ export const Footer = () => {
           <div className="mb-8">
             <h3 className="font-semibold mb-4 text-foreground">Popular Products</h3>
             <div className="flex flex-wrap gap-2">
-              {tags.slice(0, 20).map((tag) => (
+              {tags.slice(0, 30).map((tag) => (
                 <Link
                   key={tag.id}
                   to={`/tag/${tag.slug}`}
@@ -83,7 +83,7 @@ export const Footer = () => {
           <div className="mb-8 pt-6 border-t">
             <h3 className="font-semibold mb-4 text-foreground">Popular Categories</h3>
             <div className="flex flex-wrap gap-2">
-              {categories.slice(0, 20).map((category) => (
+              {categories.slice(0, 30).map((category) => (
                 <Link
                   key={category.id}
                   to={`/category/${category.slug}`}
