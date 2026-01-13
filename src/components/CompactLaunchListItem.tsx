@@ -39,16 +39,19 @@ export const CompactLaunchListItem = ({
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
-  // Build meta parts - platforms as text between maker and comments
-  const metaParts: string[] = [];
-  if (categories.length > 0) metaParts.push(categories[0]);
-  if (firstMaker) metaParts.push(firstMaker.username);
+  // Build meta parts - split into before and after MRR
+  const metaBeforeMrr: string[] = [];
+  if (categories.length > 0) metaBeforeMrr.push(categories[0]);
+  if (firstMaker) metaBeforeMrr.push(firstMaker.username);
   if (platforms && platforms.length > 0) {
-    metaParts.push(platforms.join(', '));
+    metaBeforeMrr.push(platforms.join(', '));
   }
-  // MRR will be shown as badge, not in metaParts
-  metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
-  if (launchDate) metaParts.push(formatTimeAgo(launchDate));
+  
+  const metaAfterMrr: string[] = [];
+  metaAfterMrr.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
+  if (launchDate) metaAfterMrr.push(formatTimeAgo(launchDate));
+  
+  const hasMrr = verifiedMrr !== null && verifiedMrr !== undefined;
   
   return (
     <Link to={`/launch/${slug}`} className="block">
@@ -73,11 +76,15 @@ export const CompactLaunchListItem = ({
               </a>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            {metaBeforeMrr.length > 0 && (
+              <span className="truncate">{metaBeforeMrr.join(' · ')}</span>
+            )}
+            {hasMrr && metaBeforeMrr.length > 0 && <span>·</span>}
             <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />
-            <p className="text-xs text-muted-foreground truncate">
-              {metaParts.join(' · ')}
-            </p>
+            {hasMrr && metaAfterMrr.length > 0 && <span>·</span>}
+            {!hasMrr && metaBeforeMrr.length > 0 && metaAfterMrr.length > 0 && <span>·</span>}
+            <span className="truncate">{metaAfterMrr.join(' · ')}</span>
           </div>
         </div>
         
