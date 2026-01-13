@@ -700,10 +700,10 @@ const Home = () => {
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-4">
             <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
-              <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Today</TabsTrigger>
-              <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Week</TabsTrigger>
-              <TabsTrigger value="month" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Month</TabsTrigger>
-              <TabsTrigger value="year" className="hidden sm:inline-flex text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Year</TabsTrigger>
+              <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Today</TabsTrigger>
+              <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Week</TabsTrigger>
+              <TabsTrigger value="month" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Month</TabsTrigger>
+              <TabsTrigger value="year" className="hidden sm:inline-flex text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Year</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
               <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
