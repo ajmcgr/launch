@@ -5,9 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone, AlertTriangle } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
@@ -200,15 +211,7 @@ const MyProducts = () => {
     }
   };
 
-  const handleDelete = async (productId: string, productStatus: string) => {
-    const confirmMessage = productStatus === 'launched' 
-      ? 'Are you sure you want to delete this launched product? All votes and comments will be permanently removed. This action cannot be undone.'
-      : 'Are you sure you want to delete this product? This action cannot be undone.';
-    
-    if (!confirm(confirmMessage)) {
-      return;
-    }
-
+  const handleDelete = async (productId: string) => {
     try {
       // Delete associated media
       await supabase.from('product_media').delete().eq('product_id', productId);
@@ -831,17 +834,42 @@ const MyProducts = () => {
                       </Button>
                     )}
                     {canDelete(product) && (
-                      <Button 
-                        variant="outline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleDelete(product.id, product.status);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost"
+                            size="sm"
+                            className="text-muted-foreground hover:text-destructive"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+                                <AlertTriangle className="h-5 w-5 text-destructive" />
+                              </div>
+                              <AlertDialogTitle>Delete "{product.name}"?</AlertDialogTitle>
+                            </div>
+                            <AlertDialogDescription className="pt-2">
+                              {product.status === 'launched' 
+                                ? 'This will permanently delete your launched product, including all votes, comments, and analytics. This action cannot be undone.'
+                                : 'This will permanently delete your product draft. This action cannot be undone.'}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={() => handleDelete(product.id)}
+                            >
+                              Delete Product
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
                   </div>
                   {product.status === 'launched' && product.slug && (
