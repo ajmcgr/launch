@@ -9,6 +9,8 @@ import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare } from 'lucide-rea
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
+import { StarRating } from '@/components/StarRating';
+import { LanguageDisplay } from '@/components/LanguageSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductFollow, notifyProductVote } from '@/lib/notifications';
@@ -538,6 +540,20 @@ const LaunchDetail = () => {
                   </div>
                 </div>
               )}
+
+              {/* Languages */}
+              {product.languages && product.languages.length > 0 && (
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground mb-2">Languages</h3>
+                  <LanguageDisplay languages={product.languages} size="md" />
+                </div>
+              )}
+
+              {/* Star Rating */}
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-2">Rate this product</h3>
+                <StarRating productId={product.id} size="md" />
+              </div>
 
               {/* Voting */}
               <div>

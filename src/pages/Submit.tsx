@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { X, CalendarIcon, Plus, Globe } from 'lucide-react';
+import { X, CalendarIcon, Plus } from 'lucide-react';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS } from '@/lib/constants';
@@ -83,6 +84,7 @@ const Submit = () => {
         categories: [] as string[],
         tags: [] as number[],
         platforms: [] as Platform[],
+        languages: [] as string[],
         slug: '',
         couponCode: '',
         couponDescription: '',
@@ -99,6 +101,7 @@ const Submit = () => {
       categories: [] as string[],
       tags: [] as number[],
       platforms: [] as Platform[],
+      languages: [] as string[],
       slug: '',
       couponCode: '',
       couponDescription: '',
@@ -224,6 +227,7 @@ const Submit = () => {
           categories,
           tags: existingTags,
           platforms: (product.platforms || []) as Platform[],
+          languages: (product.languages || []) as string[],
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
@@ -256,6 +260,7 @@ const Submit = () => {
           categories,
           tags: existingTags,
           platforms: (product.platforms || []) as Platform[],
+          languages: (product.languages || []) as string[],
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
@@ -314,6 +319,8 @@ const Submit = () => {
           description: '',
           categories: [],
           tags: [],
+          platforms: [],
+          languages: [],
           slug: '',
           couponCode: '',
           couponDescription: '',
@@ -363,6 +370,7 @@ const Submit = () => {
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         tags: draftTags,
         platforms: (product.platforms || []) as Platform[],
+        languages: (product.languages || []) as string[],
         slug: product.slug || '',
         couponCode: product.coupon_code || '',
         couponDescription: product.coupon_description || '',
@@ -420,6 +428,17 @@ const Submit = () => {
       platforms: prev.platforms.includes(platformId)
         ? prev.platforms.filter(p => p !== platformId)
         : [...prev.platforms, platformId]
+    }));
+  };
+
+  const handleLanguageToggle = (langCode: string) => {
+    setFormData(prev => ({
+      ...prev,
+      languages: prev.languages.includes(langCode)
+        ? prev.languages.filter(l => l !== langCode)
+        : prev.languages.length < 5
+        ? [...prev.languages, langCode]
+        : prev.languages
     }));
   };
 
@@ -628,6 +647,7 @@ const Submit = () => {
             slug: formData.slug || `draft-${Date.now()}`,
             status: 'draft',
             platforms: formData.platforms,
+            languages: formData.languages,
             coupon_code: formData.couponCode || null,
             coupon_description: formData.couponDescription || null,
           })
@@ -649,6 +669,7 @@ const Submit = () => {
           description: formData.description,
           slug: formData.slug,
           platforms: formData.platforms,
+          languages: formData.languages,
           coupon_code: formData.couponCode || null,
           coupon_description: formData.couponDescription || null,
         };
@@ -1419,6 +1440,15 @@ const Submit = () => {
                   <p className="text-sm text-muted-foreground">
                     Describe what the coupon offers
                   </p>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t">
+                  <Label>App Languages</Label>
+                  <LanguageSelector
+                    selectedLanguages={formData.languages}
+                    onToggle={handleLanguageToggle}
+                    maxSelections={5}
+                  />
                 </div>
               </>
             )}
