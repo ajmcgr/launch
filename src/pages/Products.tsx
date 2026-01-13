@@ -484,13 +484,13 @@ const Products = () => {
                 ))}
               </div>
               {/* Search */}
-              <div className="relative flex items-center h-9 border rounded-md bg-background w-48">
-                <Search className="absolute left-3 text-muted-foreground h-4 w-4" />
+              <div className="relative flex items-center h-9 border rounded-md bg-background w-32">
+                <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5" />
                 <Input
-                  placeholder="Search..."
+                  placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="pl-7 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
             </div>
