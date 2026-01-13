@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
@@ -293,8 +294,34 @@ const LaunchDetail = () => {
   };
 
 
-  if (!product) {
-    return null;
+  if (loading || !product) {
+    return (
+      <div className="min-h-screen bg-background py-12">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            {/* Main Content Skeleton */}
+            <div className="lg:col-span-2 space-y-10">
+              <div>
+                <Skeleton className="h-10 w-3/4 mb-3" />
+                <Skeleton className="h-6 w-full" />
+              </div>
+              <Skeleton className="w-full aspect-video rounded-xl" />
+              <div className="space-y-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+            {/* Sidebar Skeleton */}
+            <div className="space-y-6">
+              <Skeleton className="h-12 w-full rounded-lg" />
+              <Skeleton className="h-12 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const thumbnail = product.product_media?.find((m: any) => m.type === 'thumbnail')?.url;
