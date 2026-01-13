@@ -251,7 +251,21 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
+  const getStartDateForPeriod = (period: 'today' | 'week' | 'month' | 'year'): Date => {
+    const now = new Date();
+    switch (period) {
+      case 'today':
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+      case 'week':
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      case 'month':
+        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      case 'year':
+        return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+    }
+  };
+
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -260,23 +274,7 @@ const Home = () => {
 
     try {
       // Calculate date range based on period
-      const now = new Date();
-      let startDate: Date;
-      
-      switch (period) {
-        case 'today':
-          startDate = new Date(now.setHours(0, 0, 0, 0));
-          break;
-        case 'week':
-          startDate = new Date(now.setDate(now.getDate() - 7));
-          break;
-        case 'month':
-          startDate = new Date(now.setMonth(now.getMonth() - 1));
-          break;
-        case 'year':
-          startDate = new Date(now.setFullYear(now.getFullYear() - 1));
-          break;
-      }
+      let startDate = getStartDateForPeriod(period);
 
       const from = pageNum * ITEMS_PER_PAGE;
       const to = Math.min(from + ITEMS_PER_PAGE - 1, MAX_HOMEPAGE_PRODUCTS - 1);
@@ -476,6 +474,14 @@ const Home = () => {
         })) || [],
         launch_date: p.launch_date
       }));
+
+      // If "today" has no products and this isn't already a fallback retry, switch to "week"
+      if (reset && period === 'today' && formattedProducts.length === 0 && !isRetryWithFallback) {
+        console.log('No products launched today, falling back to week view');
+        setCurrentPeriod('week');
+        // Retry with week period
+        return fetchProducts('week', currentSort, 0, true, true);
+      }
 
       if (reset) {
         setProducts(formattedProducts);
