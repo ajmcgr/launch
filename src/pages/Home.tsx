@@ -594,6 +594,9 @@ const Home = () => {
               domainUrl={product.domainUrl}
               categories={product.categories}
               platforms={product.platforms}
+              verifiedMrr={product.verifiedMrr}
+              mrrVerifiedAt={product.mrrVerifiedAt}
+              showMrr={sort === 'revenue'}
             />
           );
         } else if (viewMode === 'list') {
@@ -603,6 +606,7 @@ const Home = () => {
               {...product}
               rank={displayRank}
               onVote={handleVote}
+              showMrr={sort === 'revenue'}
             />
           );
         } else {
@@ -612,6 +616,7 @@ const Home = () => {
               {...product}
               rank={displayRank}
               onVote={handleVote}
+              showMrr={sort === 'revenue'}
             />
           );
         }

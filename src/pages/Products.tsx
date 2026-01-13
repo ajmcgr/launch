@@ -226,6 +226,8 @@ const Products = () => {
           launch_date,
           domain_url,
           platforms,
+          verified_mrr,
+          mrr_verified_at,
           product_media(url, type),
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
@@ -261,6 +263,8 @@ const Products = () => {
         platforms: (p.platforms || []) as Platform[],
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
         netVotes: voteMap.get(p.id) || 0,
+        verifiedMrr: p.verified_mrr || null,
+        mrrVerifiedAt: p.mrr_verified_at || null,
         makers: p.product_makers?.map((m: any) => ({
           username: m.users?.username || 'Anonymous',
           avatar_url: m.users?.avatar_url || ''
@@ -321,6 +325,8 @@ const Products = () => {
           launch_date,
           domain_url,
           platforms,
+          verified_mrr,
+          mrr_verified_at,
           product_media(url, type),
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
@@ -357,6 +363,8 @@ const Products = () => {
         platforms: (p.platforms || []) as Platform[],
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
         netVotes: voteMap.get(p.id) || 0,
+        verifiedMrr: p.verified_mrr || null,
+        mrrVerifiedAt: p.mrr_verified_at || null,
         makers: p.product_makers?.map((m: any) => ({
           username: m.users?.username || 'Anonymous',
           avatar_url: m.users?.avatar_url || ''
