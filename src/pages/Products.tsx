@@ -395,7 +395,7 @@ const Products = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* Time Period Toggle */}
-              <div className="inline-flex rounded-lg border border-border p-1 bg-muted/50">
+              <div className="flex items-center gap-1 border rounded-md p-1 h-9">
                 {[
                   { value: 'today', label: 'Today' },
                   { value: 'week', label: 'Week' },
@@ -408,9 +408,9 @@ const Products = () => {
                       setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year');
                       setSelectedArchiveYear(null);
                     }}
-                    className={`px-3 py-1 text-sm font-medium rounded-md transition-all ${
+                    className={`px-2 h-7 text-xs font-medium rounded-md transition-all ${
                       topPeriod === period.value && !selectedArchiveYear
-                        ? 'bg-background text-foreground shadow-sm'
+                        ? 'bg-muted text-foreground'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
