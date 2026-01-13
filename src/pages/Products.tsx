@@ -21,7 +21,7 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
-  const [topPeriod, setTopPeriod] = useState<'today' | 'week' | 'month' | 'year'>('year');
+  const [topPeriod, setTopPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'all'>('year');
   const [selectedArchiveYear, setSelectedArchiveYear] = useState<number | null>(null);
   const [archiveYears, setArchiveYears] = useState<number[]>([]);
   const [products, setProducts] = useState<any[]>([]);
@@ -180,7 +180,7 @@ const Products = () => {
     }
   };
 
-  const getDateRange = (period: 'today' | 'week' | 'month' | 'year') => {
+  const getDateRange = (period: 'today' | 'week' | 'month' | 'year' | 'all') => {
     const now = new Date();
     const start = new Date();
 
@@ -196,6 +196,9 @@ const Products = () => {
         break;
       case 'year':
         start.setFullYear(now.getFullYear() - 1);
+        break;
+      case 'all':
+        start.setFullYear(2000); // Far past date to include all products
         break;
     }
 
@@ -401,11 +404,12 @@ const Products = () => {
                   { value: 'week', label: 'Week' },
                   { value: 'month', label: 'Month' },
                   { value: 'year', label: 'Year' },
+                  { value: 'all', label: 'All-Time' },
                 ].map((period) => (
                   <button
                     key={period.value}
                     onClick={() => {
-                      setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year');
+                      setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year' | 'all');
                       setSelectedArchiveYear(null);
                     }}
                     className={`px-2 h-7 text-xs font-medium rounded-md transition-all ${
