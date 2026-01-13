@@ -64,7 +64,7 @@ const Home = () => {
     const saved = localStorage.getItem('productView');
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
-  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('week');
+  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('today');
   const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
