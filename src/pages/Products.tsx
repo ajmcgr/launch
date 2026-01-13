@@ -387,7 +387,7 @@ const Products = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">
-          {selectedArchiveYear ? `Top Products ${selectedArchiveYear}` : 'Top Products'}
+          {selectedArchiveYear ? `All Products ${selectedArchiveYear}` : 'All Products'}
         </h1>
 
         {/* Filters Row - matching homepage style */}
