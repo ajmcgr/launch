@@ -490,7 +490,7 @@ const Products = () => {
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-7 h-full text-[11px] sm:text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="pl-7 h-full !text-[11px] sm:!text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
             </div>
