@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { LaunchCard } from '@/components/LaunchCard';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
@@ -10,11 +9,9 @@ import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { CATEGORIES } from '@/lib/constants';
 import { Search } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { PLATFORMS, Platform } from '@/components/PlatformIcons';
+import { Platform } from '@/components/PlatformIcons';
 import { PlatformFilter } from '@/components/PlatformFilter';
 import { toast } from 'sonner';
 
@@ -380,239 +377,194 @@ const Products = () => {
     }
   };
 
+  // Simple random sizing for visual interest in category cloud
+  const getSizeClass = (index: number) => {
+    const sizes = ['text-sm', 'text-base', 'text-lg', 'text-xl'];
+    return sizes[index % sizes.length];
+  };
+
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
-        <h1 className="text-4xl font-bold mb-8 text-center">
-          {selectedArchiveYear ? `Products ${selectedArchiveYear}` : 'Products'}
-        </h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-8 mx-auto">
-          <div className="hidden lg:block lg:col-span-1"></div>
-          <div className="lg:col-span-3 space-y-6 max-w-3xl mx-auto w-full">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <div className="flex gap-4 flex-1 max-w-2xl">
-                <div className="relative flex-1 flex items-center h-9 border rounded-md bg-background">
-                  <Search className="absolute left-3 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                </div>
-                <Button variant="outline" className="h-9">Search</Button>
-              </div>
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <PlatformFilter 
-                  selectedPlatforms={selectedPlatforms} 
-                  onPlatformToggle={handlePlatformToggle} 
-                />
-                <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
-                <ViewToggle view={view} onViewChange={handleViewChange} />
-              </div>
-            </div>
-
-            {/* Time Period Toggle */}
-            <div className="flex justify-center">
-              <div className="inline-flex rounded-lg border border-border p-1 bg-muted/50">
-                {[
-                  { value: 'today', label: 'Today' },
-                  { value: 'week', label: 'Week' },
-                  { value: 'month', label: 'Month' },
-                  { value: 'year', label: 'Year' },
-                ].map((period) => (
-                  <button
-                    key={period.value}
-                    onClick={() => {
-                      setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year');
-                      setSelectedArchiveYear(null);
-                    }}
-                    className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                      topPeriod === period.value && !selectedArchiveYear
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {period.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {selectedCategories.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {selectedCategories.map((cat) => (
-                  <Button
-                    key={cat}
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleCategoryToggle(cat)}
-                  >
-                    {cat} ×
-                  </Button>
-                ))}
-              </div>
-            )}
-
-            {effectiveView === 'compact' ? (
-              <div className="space-y-0">
-                {products.slice(0, displayCount).map((product, index) => (
-                  <CompactLaunchListItem
-                    key={product.id}
-                    rank={index + 1}
-                    name={product.name}
-                    votes={product.netVotes}
-                    slug={product.slug}
-                    onVote={() => handleVote(product.id)}
-                    userVote={userVotes.has(product.id) ? 1 : null}
-                    launchDate={product.launch_date}
-                    commentCount={0}
-                    makers={product.makers}
-                    domainUrl={product.domainUrl}
-                    categories={product.categories}
-                  />
-                ))}
-              </div>
-            ) : effectiveView === 'list' ? (
-              <div className="space-y-2">
-                {products.slice(0, displayCount).map((product) => (
-                  <LaunchListItem
-                    key={product.id}
-                    {...product}
-                    onVote={() => handleVote(product.id)}
-                    userVote={userVotes.has(product.id) ? 1 : null}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.slice(0, displayCount).map((product) => (
-                  <LaunchCard
-                    key={product.id}
-                    {...product}
-                    onVote={() => handleVote(product.id)}
-                    userVote={userVotes.has(product.id) ? 1 : null}
-                  />
-                ))}
-              </div>
-            )}
-
-            {displayCount < products.length && (
-              <div className="flex justify-center pt-6">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setDisplayCount(prev => Math.min(prev + 30, products.length))}
-                  className="border-2 border-muted-foreground/20"
-                >
-                  Load More
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <aside className="lg:col-span-2 space-y-6">
-            <Card className="p-6">
-              <h3 className="font-semibold mb-3">Top Products</h3>
-              <div className="space-y-2">
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start ${topPeriod === 'today' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
-                  onClick={() => {
-                    setTopPeriod('today');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  Today
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start ${topPeriod === 'week' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
-                  onClick={() => {
-                    setTopPeriod('week');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  This Week
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start ${topPeriod === 'month' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
-                  onClick={() => {
-                    setTopPeriod('month');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  This Month
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start ${topPeriod === 'year' && !selectedArchiveYear ? 'bg-muted text-foreground' : ''}`}
-                  onClick={() => {
-                    setTopPeriod('year');
-                    setSelectedArchiveYear(null);
-                  }}
-                >
-                  This Year
-                </Button>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h3 className="font-semibold mb-3">Categories</h3>
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {CATEGORIES.map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={category}
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={() => handleCategoryToggle(category)}
-                    />
-                    <Label htmlFor={category} className="text-sm cursor-pointer">
-                      {category}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h3 className="font-semibold mb-3">Platforms</h3>
-              <div className="space-y-2">
-                {PLATFORMS.map((platform) => (
-                  <div key={platform.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`platform-${platform.id}`}
-                      checked={selectedPlatforms.includes(platform.id)}
-                      onCheckedChange={() => handlePlatformToggle(platform.id)}
-                    />
-                    <Label htmlFor={`platform-${platform.id}`} className="text-sm cursor-pointer">
-                      {platform.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            {archiveYears.length > 0 && (
-              <Card className="p-6">
-                <h3 className="font-semibold mb-3">Archived</h3>
-                <div className="space-y-2">
-                  {archiveYears.map((year) => (
-                    <Button
-                      key={year}
-                      variant="ghost"
-                      className={`w-full justify-start ${selectedArchiveYear === year ? 'bg-muted text-foreground' : ''}`}
-                      onClick={() => setSelectedArchiveYear(year)}
-                    >
-                      {year}
-                    </Button>
-                  ))}
-                </div>
-              </Card>
-            )}
-          </aside>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
+            {selectedArchiveYear ? `Top Products ${selectedArchiveYear}` : 'Top Products'}
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Discover the best products launched by indie makers
+          </p>
         </div>
+
+        {/* Time Period Toggle */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex rounded-lg border border-border p-1 bg-muted/50">
+            {[
+              { value: 'today', label: 'Today' },
+              { value: 'week', label: 'Week' },
+              { value: 'month', label: 'Month' },
+              { value: 'year', label: 'Year' },
+            ].map((period) => (
+              <button
+                key={period.value}
+                onClick={() => {
+                  setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year');
+                  setSelectedArchiveYear(null);
+                }}
+                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                  topPeriod === period.value && !selectedArchiveYear
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {period.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Category Cloud */}
+        <div className="mb-8">
+          <div className="flex flex-wrap justify-center gap-3">
+            {CATEGORIES.map((category, index) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryToggle(category)}
+                className={`${getSizeClass(index)} px-4 py-2 rounded-full border transition-all hover:scale-105 ${
+                  selectedCategories.includes(category)
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border text-muted-foreground hover:text-primary hover:border-primary'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Filters Row */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="relative flex items-center h-9 border rounded-md bg-background w-64">
+                <Search className="absolute left-3 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <PlatformFilter 
+                selectedPlatforms={selectedPlatforms} 
+                onPlatformToggle={handlePlatformToggle} 
+              />
+              <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
+              {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
+            </div>
+          </div>
+        </div>
+
+        {/* Selected categories tags */}
+        {selectedCategories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {selectedCategories.map((cat) => (
+              <Button
+                key={cat}
+                variant="secondary"
+                size="sm"
+                onClick={() => handleCategoryToggle(cat)}
+              >
+                {cat} ×
+              </Button>
+            ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedCategories([])}
+              className="text-muted-foreground"
+            >
+              Clear all
+            </Button>
+          </div>
+        )}
+
+        {effectiveView === 'compact' ? (
+          <div className="space-y-0 mb-8">
+            {products.slice(0, displayCount).map((product, index) => (
+              <CompactLaunchListItem
+                key={product.id}
+                rank={index + 1}
+                name={product.name}
+                votes={product.netVotes}
+                slug={product.slug}
+                onVote={() => handleVote(product.id)}
+                userVote={userVotes.has(product.id) ? 1 : null}
+                launchDate={product.launch_date}
+                commentCount={0}
+                makers={product.makers}
+                domainUrl={product.domainUrl}
+                categories={product.categories}
+              />
+            ))}
+          </div>
+        ) : effectiveView === 'list' ? (
+          <div className="divide-y mb-8">
+            {products.slice(0, displayCount).map((product) => (
+              <LaunchListItem
+                key={product.id}
+                {...product}
+                onVote={() => handleVote(product.id)}
+                userVote={userVotes.has(product.id) ? 1 : null}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {products.slice(0, displayCount).map((product) => (
+              <LaunchCard
+                key={product.id}
+                {...product}
+                onVote={() => handleVote(product.id)}
+                userVote={userVotes.has(product.id) ? 1 : null}
+              />
+            ))}
+          </div>
+        )}
+
+        {displayCount < products.length && (
+          <div className="flex justify-center mb-16">
+            <button
+              onClick={() => setDisplayCount(prev => Math.min(prev + 30, products.length))}
+              className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
+            >
+              Load More
+            </button>
+          </div>
+        )}
+
+        {/* Archive Years */}
+        {archiveYears.length > 0 && (
+          <div className="border-t pt-8 mt-8">
+            <h3 className="text-lg font-semibold text-center mb-4">Browse Archives</h3>
+            <div className="flex flex-wrap justify-center gap-2">
+              {archiveYears.map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedArchiveYear(year)}
+                  className={`px-4 py-2 rounded-full border transition-all hover:scale-105 ${
+                    selectedArchiveYear === year
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:text-primary hover:border-primary'
+                  }`}
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
