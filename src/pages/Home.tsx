@@ -697,7 +697,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-3 md:py-4 max-w-5xl">
-        <Tabs defaultValue="week" onValueChange={(v) => handlePeriodChange(v as any)}>
+        <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-4">
             <TabsList className="flex-shrink h-9 bg-transparent border rounded-md p-1 gap-0.5 overflow-hidden">
               <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 data-[state=active]:bg-muted data-[state=active]:shadow-none hover:bg-muted/50 transition-colors">Today</TabsTrigger>
