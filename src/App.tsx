@@ -30,7 +30,9 @@ import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
 import Advertise from "./pages/Advertise";
 import TagPage from "./pages/TagPage";
+import Tags from "./pages/Tags";
 import CategoryPage from "./pages/CategoryPage";
+import Categories from "./pages/Categories";
 import CollectionPage from "./pages/CollectionPage";
 
 import DiscourseSso from "./pages/DiscourseSso";
@@ -76,7 +78,9 @@ const AppContent = () => {
           <Route path="/discourse-sso" element={<DiscourseSso />} />
           <Route path="/api/discourse-sso" element={<DiscourseSso />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/tags" element={<Tags />} />
           <Route path="/tag/:slug" element={<TagPage />} />
+          <Route path="/categories" element={<Categories />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/collections/:slug" element={<CollectionPage />} />
           <Route path="/:username/followers" element={<Followers />} />
