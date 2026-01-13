@@ -579,7 +579,7 @@ const LaunchDetail = () => {
                   className="w-full border-2 border-muted-foreground/20"
                   onClick={handleFollow}
                 >
-                  <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current text-primary' : ''}`} />
+                  <Star className={`h-4 w-4 mr-2 ${isFollowing ? 'fill-current' : ''}`} />
                   {isFollowing ? 'Following' : 'Follow Product'}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground mt-2">
