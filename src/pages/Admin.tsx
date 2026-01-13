@@ -49,15 +49,15 @@ const Admin = () => {
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [allProductsRes, usersRes, votesRes, sponsoredRes] = await Promise.all([
+      const [allProductsRes, usersRes, votesRes, sponsoredRes, ordersRes] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('votes').select('id', { count: 'exact', head: true }),
-        supabase.from('sponsored_products').select('id, sponsorship_type')
-          .gte('start_date', format(new Date(), 'yyyy-MM-01')),
+        supabase.from('sponsored_products').select('id, sponsorship_type'),
+        supabase.from('orders').select('plan').in('plan', ['join', 'skip']),
       ]);
 
-      // Calculate advertising revenue from active/upcoming sponsorships
+      // Calculate advertising revenue from all sponsorships
       const sponsorships = sponsoredRes.data || [];
       let totalRevenue = 0;
       sponsorships.forEach(sp => {
@@ -66,12 +66,19 @@ const Admin = () => {
         else if (sp.sponsorship_type === 'combined') totalRevenue += 1000;
       });
 
+      // Add launch revenues (join = $9, skip = $39)
+      const orders = ordersRes.data || [];
+      orders.forEach(order => {
+        if (order.plan === 'join') totalRevenue += 9;
+        else if (order.plan === 'skip') totalRevenue += 39;
+      });
+
       return {
         totalProducts: allProductsRes.count || 0,
         totalUsers: usersRes.count || 0,
         totalVotes: votesRes.count || 0,
-        activeSponsorships: sponsorships.length,
-        advertisingRevenue: totalRevenue,
+        totalSponsorships: sponsorships.length,
+        totalRevenue: totalRevenue,
       };
     },
     enabled: isAdmin,
@@ -245,22 +252,22 @@ const Admin = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Sponsors</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Sponsors</CardTitle>
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">🎯 {stats?.activeSponsorships || 0}</div>
+            <div className="text-2xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ad Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">💰 ${stats?.advertisingRevenue?.toLocaleString() || 0}</div>
-            <p className="text-xs text-muted-foreground">This month+</p>
+            <div className="text-2xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
+            <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
       </div>
