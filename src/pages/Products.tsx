@@ -21,7 +21,7 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
-  const [topPeriod, setTopPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'all'>('today');
+  const [topPeriod, setTopPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'all'>('week');
   const [selectedArchiveYear, setSelectedArchiveYear] = useState<number | null>(null);
   const [archiveYears, setArchiveYears] = useState<number[]>([]);
   const [products, setProducts] = useState<any[]>([]);
