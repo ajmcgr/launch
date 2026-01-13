@@ -1,5 +1,6 @@
 import { TrendingUp, Clock, DollarSign, Star } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SortToggleProps {
   sort: 'rated' | 'popular' | 'latest' | 'revenue';
@@ -9,18 +10,22 @@ interface SortToggleProps {
 }
 
 export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue = false }: SortToggleProps) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
-      <Toggle
-        pressed={sort === 'rated'}
-        onPressedChange={() => onSortChange('rated')}
-        aria-label="Sort by highest rated"
-        size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
-      >
-        <Star className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
-        {!iconOnly && <span className="text-xs">Rated</span>}
-      </Toggle>
+      {!isMobile && (
+        <Toggle
+          pressed={sort === 'rated'}
+          onPressedChange={() => onSortChange('rated')}
+          aria-label="Sort by highest rated"
+          size="sm"
+          className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
+        >
+          <Star className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
+          {!iconOnly && <span className="text-xs">Rated</span>}
+        </Toggle>
+      )}
       <Toggle
         pressed={sort === 'popular'}
         onPressedChange={() => onSortChange('popular')}
