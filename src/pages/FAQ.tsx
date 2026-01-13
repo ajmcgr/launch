@@ -9,8 +9,8 @@ const FAQ = () => {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
-        <p className="text-muted-foreground mb-8">
+        <h1 className="text-4xl font-bold mb-4 text-center">Frequently Asked Questions</h1>
+        <p className="text-muted-foreground mb-8 text-center">
           Everything you need to know about Launch
         </p>
 
