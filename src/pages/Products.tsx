@@ -457,7 +457,7 @@ const Products = () => {
         {/* Filters Row - matching homepage style */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* Time Period Toggle */}
               <div className="flex items-center gap-1 border rounded-md p-1 h-9">
                 {[
@@ -473,7 +473,7 @@ const Products = () => {
                       setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year' | 'all');
                       setSelectedArchiveYear(null);
                     }}
-                    className={`px-2 h-7 text-xs font-medium rounded-md transition-all ${
+                    className={`px-2 h-7 text-xs font-medium rounded-md transition-all whitespace-nowrap ${
                       topPeriod === period.value && !selectedArchiveYear
                         ? 'bg-muted text-foreground'
                         : 'text-muted-foreground hover:text-foreground'
@@ -494,7 +494,7 @@ const Products = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <PlatformFilter 
                 selectedPlatforms={selectedPlatforms} 
                 onPlatformToggle={handlePlatformToggle} 
