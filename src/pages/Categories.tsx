@@ -47,7 +47,7 @@ const Categories = () => {
       </Helmet>
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8">Popular Categories</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">Popular Categories</h1>
         
         {loading ? (
           <div className="flex justify-center py-12">
