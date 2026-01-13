@@ -166,14 +166,21 @@ const Products = () => {
 
   const fetchArchiveYears = async () => {
     try {
+      // Get years from products that have launched (for archive browsing)
+      const currentYear = new Date().getFullYear();
       const { data, error } = await supabase
-        .from('product_archives')
-        .select('year')
-        .order('year', { ascending: false });
+        .from('products')
+        .select('launch_date')
+        .eq('status', 'launched')
+        .not('launch_date', 'is', null);
 
       if (error) throw error;
 
-      const uniqueYears = [...new Set(data?.map(d => d.year) || [])];
+      // Extract unique years from launch dates, excluding current year
+      const years = data
+        ?.map(p => new Date(p.launch_date!).getFullYear())
+        .filter(year => year < currentYear) || [];
+      const uniqueYears = [...new Set(years)].sort((a, b) => b - a);
       setArchiveYears(uniqueYears);
     } catch (error) {
       console.error('Error fetching archive years:', error);
@@ -195,7 +202,7 @@ const Products = () => {
         start.setMonth(now.getMonth() - 1);
         break;
       case 'year':
-        start.setFullYear(now.getFullYear() - 1);
+        start.setFullYear(now.getFullYear(), 0, 1); // Jan 1 of current year
         break;
       case 'all':
         start.setFullYear(2000); // Far past date to include all products
@@ -300,28 +307,35 @@ const Products = () => {
     if (!selectedArchiveYear) return;
 
     try {
-      const { data: archives, error } = await supabase
-        .from('product_archives')
+      // For archive years, fetch products directly by launch_date year instead of using product_archives
+      const startOfYear = new Date(selectedArchiveYear, 0, 1).toISOString();
+      const endOfYear = new Date(selectedArchiveYear, 11, 31, 23, 59, 59).toISOString();
+
+      const { data: allProducts, error } = await supabase
+        .from('products')
         .select(`
-          product_id,
-          rank,
-          net_votes,
-            products (
-            id,
-            slug,
-            name,
-            tagline,
-            launch_date,
-            domain_url,
-            platforms,
-            product_media(url, type),
-            product_category_map(category_id),
-            product_makers(user_id, users(username, avatar_url))
-          )
+          id,
+          slug,
+          name,
+          tagline,
+          launch_date,
+          domain_url,
+          platforms,
+          product_media(url, type),
+          product_category_map(category_id),
+          product_makers(user_id, users(username, avatar_url))
         `)
-        .eq('year', selectedArchiveYear)
-        .eq('period', topPeriod)
-        .order('rank', { ascending: true });
+        .eq('status', 'launched')
+        .gte('launch_date', startOfYear)
+        .lte('launch_date', endOfYear);
+
+      if (error) throw error;
+
+      const { data: voteCounts } = await supabase
+        .from('product_vote_counts')
+        .select('product_id, net_votes');
+
+      const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
 
       if (error) throw error;
 
@@ -331,28 +345,26 @@ const Products = () => {
 
       const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
 
-      let formattedProducts = (archives || [])
-        .filter((a: any) => a.products)
-        .map((a: any) => {
-          const p = a.products;
-          return {
-            id: p.id,
-            slug: p.slug,
-            name: p.name,
-            tagline: p.tagline,
-            launch_date: p.launch_date,
-            thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
-            iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
-            domainUrl: p.domain_url || '',
-            platforms: (p.platforms || []) as Platform[],
-            categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
-            netVotes: a.net_votes,
-            makers: p.product_makers?.map((m: any) => ({
-              username: m.users?.username || 'Anonymous',
-              avatar_url: m.users?.avatar_url || ''
-            })) || []
-          };
-        });
+      let formattedProducts = (allProducts || []).map((p: any) => ({
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        tagline: p.tagline,
+        launch_date: p.launch_date,
+        thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+        iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+        domainUrl: p.domain_url || '',
+        platforms: (p.platforms || []) as Platform[],
+        categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+        netVotes: voteMap.get(p.id) || 0,
+        makers: p.product_makers?.map((m: any) => ({
+          username: m.users?.username || 'Anonymous',
+          avatar_url: m.users?.avatar_url || ''
+        })) || []
+      }));
+
+      // Sort by votes (most popular first)
+      formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
 
       if (selectedCategories.length > 0) {
         formattedProducts = formattedProducts.filter((p: any) => 
