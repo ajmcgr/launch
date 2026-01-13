@@ -496,28 +496,35 @@ const Products = () => {
                 makers={product.makers}
                 domainUrl={product.domainUrl}
                 categories={product.categories}
+                verifiedMrr={product.verifiedMrr}
+                mrrVerifiedAt={product.mrrVerifiedAt}
+                showMrr={sort === 'revenue'}
               />
             ))}
           </div>
         ) : effectiveView === 'list' ? (
           <div className="divide-y mb-8">
-            {products.slice(0, displayCount).map((product) => (
+            {products.slice(0, displayCount).map((product, index) => (
               <LaunchListItem
                 key={product.id}
                 {...product}
+                rank={index + 1}
                 onVote={() => handleVote(product.id)}
                 userVote={userVotes.has(product.id) ? 1 : null}
+                showMrr={sort === 'revenue'}
               />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {products.slice(0, displayCount).map((product) => (
+            {products.slice(0, displayCount).map((product, index) => (
               <LaunchCard
                 key={product.id}
                 {...product}
+                rank={index + 1}
                 onVote={() => handleVote(product.id)}
                 userVote={userVotes.has(product.id) ? 1 : null}
+                showMrr={sort === 'revenue'}
               />
             ))}
           </div>

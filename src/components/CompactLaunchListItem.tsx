@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ChevronUp, ExternalLink } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
+import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 
 interface CompactLaunchListItemProps {
   rank: number;
@@ -16,6 +17,9 @@ interface CompactLaunchListItemProps {
   domainUrl?: string;
   categories?: string[];
   platforms?: Platform[];
+  verifiedMrr?: number | null;
+  mrrVerifiedAt?: string | null;
+  showMrr?: boolean;
 }
 
 export const CompactLaunchListItem = ({
@@ -31,6 +35,9 @@ export const CompactLaunchListItem = ({
   domainUrl,
   categories = [],
   platforms,
+  verifiedMrr,
+  mrrVerifiedAt,
+  showMrr = false,
 }: CompactLaunchListItemProps) => {
   const firstMaker = makers[0];
   
@@ -66,7 +73,7 @@ export const CompactLaunchListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
-            
+            {showMrr && <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />}
           </div>
           <p className="text-xs text-muted-foreground truncate">
             {metaParts.join(' · ')}
