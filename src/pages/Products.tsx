@@ -195,7 +195,7 @@ const Products = () => {
         start.setMonth(now.getMonth() - 1);
         break;
       case 'year':
-        start.setFullYear(now.getFullYear(), 0, 1);
+        start.setFullYear(now.getFullYear() - 1);
         break;
     }
 
