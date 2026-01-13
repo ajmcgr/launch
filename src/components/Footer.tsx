@@ -55,15 +55,7 @@ export const Footer = () => {
         {/* Tags Section */}
         {tags.length > 0 && (
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-foreground">Popular Products</h3>
-              <Link 
-                to="/tags" 
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                More →
-              </Link>
-            </div>
+            <h3 className="font-semibold mb-4 text-foreground">Popular Products</h3>
             <div className="flex flex-wrap gap-2">
               {tags.slice(0, 20).map((tag) => (
                 <Link
@@ -75,21 +67,21 @@ export const Footer = () => {
                 </Link>
               ))}
             </div>
+            <div className="mt-4">
+              <Link 
+                to="/tags" 
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                More →
+              </Link>
+            </div>
           </div>
         )}
 
         {/* Categories Section */}
         {categories.length > 0 && (
           <div className="mb-8 pt-6 border-t">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-foreground">Popular Categories</h3>
-              <Link 
-                to="/categories" 
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                More →
-              </Link>
-            </div>
+            <h3 className="font-semibold mb-4 text-foreground">Popular Categories</h3>
             <div className="flex flex-wrap gap-2">
               {categories.slice(0, 20).map((category) => (
                 <Link
@@ -100,6 +92,14 @@ export const Footer = () => {
                   {category.name}
                 </Link>
               ))}
+            </div>
+            <div className="mt-4">
+              <Link 
+                to="/categories" 
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                More →
+              </Link>
             </div>
           </div>
         )}
