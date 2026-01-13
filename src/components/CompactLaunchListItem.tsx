@@ -46,6 +46,7 @@ export const CompactLaunchListItem = ({
   if (platforms && platforms.length > 0) {
     metaParts.push(platforms.join(', '));
   }
+  // MRR will be shown as badge, not in metaParts
   metaParts.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
   if (launchDate) metaParts.push(formatTimeAgo(launchDate));
   
@@ -71,11 +72,13 @@ export const CompactLaunchListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
-            <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />
           </div>
-          <p className="text-xs text-muted-foreground truncate">
-            {metaParts.join(' · ')}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />
+            <p className="text-xs text-muted-foreground truncate">
+              {metaParts.join(' · ')}
+            </p>
+          </div>
         </div>
         
         {/* Vote button */}

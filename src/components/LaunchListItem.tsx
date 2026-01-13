@@ -180,12 +180,12 @@ export const LaunchListItem = ({
                 
                 <PlatformIcons platforms={platforms} size="sm" />
                 
+                <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
+                
                 <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
                   <MessageSquare className="h-3.5 w-3.5" />
                   <span className="text-xs">{commentCount}</span>
                 </div>
-                
-                <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
                 
                 {launch_date && (
                   <span className="text-xs text-muted-foreground">
