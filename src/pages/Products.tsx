@@ -386,41 +386,9 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
-            {selectedArchiveYear ? `Top Products ${selectedArchiveYear}` : 'Top Products'}
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Discover the best products launched by indie makers
-          </p>
-        </div>
-
-        {/* Time Period Toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-lg border border-border p-1 bg-muted/50">
-            {[
-              { value: 'today', label: 'Today' },
-              { value: 'week', label: 'Week' },
-              { value: 'month', label: 'Month' },
-              { value: 'year', label: 'Year' },
-            ].map((period) => (
-              <button
-                key={period.value}
-                onClick={() => {
-                  setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year');
-                  setSelectedArchiveYear(null);
-                }}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  topPeriod === period.value && !selectedArchiveYear
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {period.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <h1 className="text-4xl font-bold mb-8">
+          {selectedArchiveYear ? `Top Products ${selectedArchiveYear}` : 'Top Products'}
+        </h1>
 
         {/* Category Cloud */}
         <div className="mb-8">
@@ -441,14 +409,39 @@ const Products = () => {
           </div>
         </div>
 
-        {/* Filters Row */}
+        {/* Filters Row - matching homepage style */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="relative flex items-center h-9 border rounded-md bg-background w-64">
+            <div className="flex items-center gap-4">
+              {/* Time Period Toggle */}
+              <div className="inline-flex rounded-lg border border-border p-1 bg-muted/50">
+                {[
+                  { value: 'today', label: 'Today' },
+                  { value: 'week', label: 'Week' },
+                  { value: 'month', label: 'Month' },
+                  { value: 'year', label: 'Year' },
+                ].map((period) => (
+                  <button
+                    key={period.value}
+                    onClick={() => {
+                      setTopPeriod(period.value as 'today' | 'week' | 'month' | 'year');
+                      setSelectedArchiveYear(null);
+                    }}
+                    className={`px-3 py-1 text-sm font-medium rounded-md transition-all ${
+                      topPeriod === period.value && !selectedArchiveYear
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {period.label}
+                  </button>
+                ))}
+              </div>
+              {/* Search */}
+              <div className="relative flex items-center h-9 border rounded-md bg-background w-48">
                 <Search className="absolute left-3 text-muted-foreground h-4 w-4" />
                 <Input
-                  placeholder="Search products..."
+                  placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
