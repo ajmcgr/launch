@@ -520,6 +520,7 @@ const Products = () => {
 
         {/* Category Cloud */}
         <div className="border-t pt-8 mt-8 mb-8">
+          <h2 className="text-2xl font-bold text-center mb-6">Browse by Category</h2>
           <div className="flex flex-wrap justify-center gap-3">
             {CATEGORIES.map((category, index) => (
               <button
@@ -540,7 +541,7 @@ const Products = () => {
         {/* Archive Years */}
         {archiveYears.length > 0 && (
           <div className="border-t pt-8 mt-8">
-            <h3 className="text-lg font-semibold text-center mb-4">Browse Archives</h3>
+            <h2 className="text-2xl font-bold text-center mb-6">Browse Archives</h2>
             <div className="flex flex-wrap justify-center gap-2">
               {archiveYears.map((year) => (
                 <button
