@@ -16,7 +16,7 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
         onPressedChange={() => onSortChange('rated')}
         aria-label="Sort by highest rated"
         size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
       >
         <Star className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
         {!iconOnly && <span className="text-xs">Rated</span>}
@@ -26,7 +26,7 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
         onPressedChange={() => onSortChange('popular')}
         aria-label="Sort by popular"
         size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
       >
         <TrendingUp className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
         {!iconOnly && <span className="text-xs">Popular</span>}
@@ -36,7 +36,7 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
         onPressedChange={() => onSortChange('latest')}
         aria-label="Sort by latest"
         size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
       >
         <Clock className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
         {!iconOnly && <span className="text-xs">Latest</span>}
@@ -47,7 +47,7 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
           onPressedChange={() => onSortChange('revenue')}
           aria-label="Sort by revenue"
           size="sm"
-          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+          className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
         >
           <DollarSign className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
           {!iconOnly && <span className="text-xs">Revenue</span>}
