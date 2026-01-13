@@ -1,4 +1,4 @@
-import { Globe, Smartphone } from 'lucide-react';
+import { Globe, Smartphone, Box } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Apple icon as SVG since lucide doesn't have it
@@ -23,7 +23,7 @@ const AndroidIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export type Platform = 'web' | 'ios' | 'android';
+export type Platform = 'web' | 'ios' | 'android' | 'hardware';
 
 interface PlatformIconsProps {
   platforms?: Platform[];
@@ -47,6 +47,11 @@ const platformConfig: Record<Platform, { icon: React.ReactNode; label: string; c
     label: 'Android App',
     color: 'text-muted-foreground',
   },
+  hardware: {
+    icon: <Box />,
+    label: 'Hardware',
+    color: 'text-muted-foreground',
+  },
 };
 
 export const PlatformIcons = ({ platforms = [], size = 'sm', showTooltip = true }: PlatformIconsProps) => {
@@ -62,9 +67,10 @@ export const PlatformIcons = ({ platforms = [], size = 'sm', showTooltip = true 
           if (!config) return null;
           return (
             <span key={platform} className={`${config.color} ${iconSize}`}>
-              {platform === 'web' && <Globe className={iconSize} />}
+            {platform === 'web' && <Globe className={iconSize} />}
               {platform === 'ios' && <AppleIcon className={iconSize} />}
               {platform === 'android' && <AndroidIcon className={iconSize} />}
+              {platform === 'hardware' && <Box className={iconSize} />}
             </span>
           );
         })}
@@ -82,9 +88,10 @@ export const PlatformIcons = ({ platforms = [], size = 'sm', showTooltip = true 
             <Tooltip key={platform}>
               <TooltipTrigger asChild>
                 <span className={`${config.color} ${iconSize}`}>
-                  {platform === 'web' && <Globe className={iconSize} />}
+                {platform === 'web' && <Globe className={iconSize} />}
                   {platform === 'ios' && <AppleIcon className={iconSize} />}
                   {platform === 'android' && <AndroidIcon className={iconSize} />}
+                  {platform === 'hardware' && <Box className={iconSize} />}
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
@@ -102,4 +109,5 @@ export const PLATFORMS: { id: Platform; label: string }[] = [
   { id: 'web', label: 'Web' },
   { id: 'ios', label: 'iOS' },
   { id: 'android', label: 'Android' },
+  { id: 'hardware', label: 'Hardware' },
 ];
