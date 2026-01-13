@@ -65,7 +65,7 @@ const Home = () => {
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
   const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('today');
-  const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
+  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   
@@ -251,7 +251,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -288,9 +288,50 @@ const Home = () => {
 
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
 
+      // Fetch rating stats for sorting by rating
+      const { data: ratingStats } = await supabase
+        .from('product_rating_stats')
+        .select('product_id, average_rating, rating_count');
+
+      const ratingMap = new Map(ratingStats?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
+
       let allProducts: any[] = [];
 
-      if (currentSort === 'popular') {
+      if (currentSort === 'rated') {
+        // For rated sorting, fetch all products in the period and sort by average rating
+        const { data: productsData, error } = await supabase
+          .from('products')
+          .select(`
+            id,
+            slug,
+            name,
+            tagline,
+            launch_date,
+            domain_url,
+            platforms,
+            verified_mrr,
+            mrr_verified_at,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          `)
+          .eq('status', 'launched')
+          .gte('launch_date', startDate.toISOString());
+
+        if (error) throw error;
+
+        // Sort by average rating descending, then by rating count as tiebreaker
+        const sortedByRating = (productsData || []).sort((a, b) => {
+          const ratingA = ratingMap.get(a.id) || { avg: 0, count: 0 };
+          const ratingB = ratingMap.get(b.id) || { avg: 0, count: 0 };
+          if (ratingB.avg !== ratingA.avg) return ratingB.avg - ratingA.avg;
+          return ratingB.count - ratingA.count;
+        });
+
+        const cappedProducts = sortedByRating.slice(0, MAX_HOMEPAGE_PRODUCTS);
+        allProducts = cappedProducts.slice(from, to + 1);
+        setHasMore(cappedProducts.length > to + 1 && to + 1 < MAX_HOMEPAGE_PRODUCTS);
+      } else if (currentSort === 'popular') {
         // For popular sorting, we need to fetch all products in the period and sort by votes
         const { data: productsData, error } = await supabase
           .from('products')
@@ -469,7 +510,7 @@ const Home = () => {
     fetchProducts(period, sort, 0, true);
   };
 
-  const handleSortChange = (newSort: 'popular' | 'latest' | 'revenue') => {
+  const handleSortChange = (newSort: 'rated' | 'popular' | 'latest' | 'revenue') => {
     setSort(newSort);
     setPage(0);
     setProducts([]);

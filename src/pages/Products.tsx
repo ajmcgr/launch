@@ -30,7 +30,7 @@ const Products = () => {
     const saved = localStorage.getItem('productView');
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
-  const [sort, setSort] = useState<'popular' | 'latest' | 'revenue'>('popular');
+  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
   const [user, setUser] = useState<any>(null);
   const [userVotes, setUserVotes] = useState<Set<string>>(new Set());
   
@@ -245,6 +245,13 @@ const Products = () => {
 
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
 
+      // Fetch rating stats for sorting by rating
+      const { data: ratingStats } = await supabase
+        .from('product_rating_stats')
+        .select('product_id, average_rating, rating_count');
+
+      const ratingMap = new Map(ratingStats?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
+
       const { data: categories } = await supabase
         .from('product_categories')
         .select('id, name');
@@ -265,6 +272,8 @@ const Products = () => {
         netVotes: voteMap.get(p.id) || 0,
         verifiedMrr: p.verified_mrr || null,
         mrrVerifiedAt: p.mrr_verified_at || null,
+        averageRating: ratingMap.get(p.id)?.avg || 0,
+        ratingCount: ratingMap.get(p.id)?.count || 0,
         makers: p.product_makers?.map((m: any) => ({
           username: m.users?.username || 'Anonymous',
           avatar_url: m.users?.avatar_url || ''
@@ -284,7 +293,13 @@ const Products = () => {
         );
       }
 
-      if (sort === 'popular') {
+      if (sort === 'rated') {
+        // Sort by average rating descending, then by rating count as tiebreaker
+        formattedProducts.sort((a: any, b: any) => {
+          if (b.averageRating !== a.averageRating) return b.averageRating - a.averageRating;
+          return b.ratingCount - a.ratingCount;
+        });
+      } else if (sort === 'popular') {
         formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
       } else if (sort === 'revenue') {
         // Filter to only products with verified MRR, then sort by MRR
@@ -347,7 +362,12 @@ const Products = () => {
 
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
 
-      if (error) throw error;
+      // Fetch rating stats for sorting by rating
+      const { data: ratingStats } = await supabase
+        .from('product_rating_stats')
+        .select('product_id, average_rating, rating_count');
+
+      const ratingMap = new Map(ratingStats?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
 
       const { data: categories } = await supabase
         .from('product_categories')
@@ -369,6 +389,8 @@ const Products = () => {
         netVotes: voteMap.get(p.id) || 0,
         verifiedMrr: p.verified_mrr || null,
         mrrVerifiedAt: p.mrr_verified_at || null,
+        averageRating: ratingMap.get(p.id)?.avg || 0,
+        ratingCount: ratingMap.get(p.id)?.count || 0,
         makers: p.product_makers?.map((m: any) => ({
           username: m.users?.username || 'Anonymous',
           avatar_url: m.users?.avatar_url || ''
@@ -376,7 +398,12 @@ const Products = () => {
       }));
 
       // Sort based on current sort option
-      if (sort === 'popular') {
+      if (sort === 'rated') {
+        formattedProducts.sort((a: any, b: any) => {
+          if (b.averageRating !== a.averageRating) return b.averageRating - a.averageRating;
+          return b.ratingCount - a.ratingCount;
+        });
+      } else if (sort === 'popular') {
         formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
       } else if (sort === 'revenue') {
         // Filter to only products with verified MRR, then sort by MRR

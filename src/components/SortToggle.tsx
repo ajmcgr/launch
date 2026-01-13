@@ -1,9 +1,9 @@
-import { TrendingUp, Clock, DollarSign } from 'lucide-react';
+import { TrendingUp, Clock, DollarSign, Star } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 
 interface SortToggleProps {
-  sort: 'popular' | 'latest' | 'revenue';
-  onSortChange: (sort: 'popular' | 'latest' | 'revenue') => void;
+  sort: 'rated' | 'popular' | 'latest' | 'revenue';
+  onSortChange: (sort: 'rated' | 'popular' | 'latest' | 'revenue') => void;
   iconOnly?: boolean;
   showRevenue?: boolean;
 }
@@ -11,6 +11,16 @@ interface SortToggleProps {
 export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue = false }: SortToggleProps) => {
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
+      <Toggle
+        pressed={sort === 'rated'}
+        onPressedChange={() => onSortChange('rated')}
+        aria-label="Sort by highest rated"
+        size="sm"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+      >
+        <Star className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
+        {!iconOnly && <span className="text-xs">Rated</span>}
+      </Toggle>
       <Toggle
         pressed={sort === 'popular'}
         onPressedChange={() => onSortChange('popular')}
