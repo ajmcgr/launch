@@ -39,12 +39,12 @@ const Tags = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>All Tags | Launch</title>
-        <meta name="description" content="Browse all product tags and discover products by topic" />
+        <title>Popular Products | Launch</title>
+        <meta name="description" content="Browse popular product tags and discover products by topic" />
       </Helmet>
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8">All Tags</h1>
+        <h1 className="text-4xl font-bold mb-8">Popular Products</h1>
         
         {loading ? (
           <div className="flex justify-center py-12">
