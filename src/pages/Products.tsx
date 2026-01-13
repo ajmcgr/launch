@@ -508,13 +508,14 @@ const Products = () => {
         )}
 
         {displayCount < products.length && (
-          <div className="flex justify-center mb-16">
-            <button
+          <div className="flex justify-center pt-6">
+            <Button 
+              variant="outline" 
               onClick={() => setDisplayCount(prev => Math.min(prev + 30, products.length))}
-              className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
+              className="border-2 border-muted-foreground/20"
             >
               Load More
-            </button>
+            </Button>
           </div>
         )}
 
