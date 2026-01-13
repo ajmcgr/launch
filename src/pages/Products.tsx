@@ -287,6 +287,8 @@ const Products = () => {
       if (sort === 'popular') {
         formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
       } else if (sort === 'revenue') {
+        // Filter to only products with verified MRR, then sort by MRR
+        formattedProducts = formattedProducts.filter((p: any) => p.verifiedMrr !== null && p.verifiedMrr > 0);
         formattedProducts.sort((a: any, b: any) => (b.verifiedMrr || 0) - (a.verifiedMrr || 0));
       } else {
         formattedProducts.sort((a: any, b: any) => 
@@ -377,6 +379,8 @@ const Products = () => {
       if (sort === 'popular') {
         formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
       } else if (sort === 'revenue') {
+        // Filter to only products with verified MRR, then sort by MRR
+        formattedProducts = formattedProducts.filter((p: any) => p.verifiedMrr !== null && p.verifiedMrr > 0);
         formattedProducts.sort((a: any, b: any) => (b.verifiedMrr || 0) - (a.verifiedMrr || 0));
       } else {
         formattedProducts.sort((a: any, b: any) => 
