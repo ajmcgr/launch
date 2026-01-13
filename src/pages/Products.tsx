@@ -490,7 +490,7 @@ const Products = () => {
 
         {effectiveView === 'compact' ? (
           <div className="space-y-0 mb-8">
-            {products.slice(0, displayCount).map((product, index) => (
+          {products.slice(0, displayCount).map((product, index) => (
               <CompactLaunchListItem
                 key={product.id}
                 rank={index + 1}
@@ -506,7 +506,6 @@ const Products = () => {
                 categories={product.categories}
                 verifiedMrr={product.verifiedMrr}
                 mrrVerifiedAt={product.mrrVerifiedAt}
-                showMrr={sort === 'revenue'}
               />
             ))}
           </div>
@@ -519,7 +518,6 @@ const Products = () => {
                 rank={index + 1}
                 onVote={() => handleVote(product.id)}
                 userVote={userVotes.has(product.id) ? 1 : null}
-                showMrr={sort === 'revenue'}
               />
             ))}
           </div>
@@ -532,7 +530,6 @@ const Products = () => {
                 rank={index + 1}
                 onVote={() => handleVote(product.id)}
                 userVote={userVotes.has(product.id) ? 1 : null}
-                showMrr={sort === 'revenue'}
               />
             ))}
           </div>

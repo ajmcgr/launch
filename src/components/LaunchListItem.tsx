@@ -33,7 +33,6 @@ interface LaunchListItemProps {
   icon?: any;
   sponsored?: boolean;
   sponsoredPosition?: number;
-  showMrr?: boolean;
   onVote: (productId: string) => void;
 }
 
@@ -58,7 +57,6 @@ export const LaunchListItem = ({
   icon: IconComponent,
   sponsored,
   sponsoredPosition,
-  showMrr = false,
   onVote,
 }: LaunchListItemProps) => {
   const isMobile = useIsMobile();
@@ -187,7 +185,7 @@ export const LaunchListItem = ({
                   <span className="text-xs">{commentCount}</span>
                 </div>
                 
-                {showMrr && <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />}
+                <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
                 
                 {launch_date && (
                   <span className="text-xs text-muted-foreground">
