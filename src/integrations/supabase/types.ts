@@ -535,6 +535,55 @@ export type Database = {
           },
         ]
       }
+      product_ratings: {
+        Row: {
+          created_at: string | null
+          id: string
+          product_id: string
+          rating: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          product_id: string
+          rating: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          product_id?: string
+          rating?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_ratings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_tag_map: {
         Row: {
           product_id: string
@@ -599,6 +648,7 @@ export type Database = {
           description: string | null
           domain_url: string | null
           id: string
+          languages: string[] | null
           last_badge_check: string | null
           launch_date: string | null
           mrr_verified_at: string | null
@@ -624,6 +674,7 @@ export type Database = {
           description?: string | null
           domain_url?: string | null
           id?: string
+          languages?: string[] | null
           last_badge_check?: string | null
           launch_date?: string | null
           mrr_verified_at?: string | null
@@ -649,6 +700,7 @@ export type Database = {
           description?: string | null
           domain_url?: string | null
           id?: string
+          languages?: string[] | null
           last_badge_check?: string | null
           launch_date?: string | null
           mrr_verified_at?: string | null
@@ -935,6 +987,22 @@ export type Database = {
           },
         ]
       }
+      product_rating_stats: {
+        Row: {
+          average_rating: number | null
+          product_id: string | null
+          rating_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_ratings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_vote_counts: {
         Row: {
           net_votes: number | null
@@ -1002,6 +1070,13 @@ export type Database = {
     }
     Functions: {
       get_comment_count: { Args: { product_uuid: string }; Returns: number }
+      get_product_rating: {
+        Args: { product_uuid: string }
+        Returns: {
+          average_rating: number
+          rating_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
