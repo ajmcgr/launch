@@ -14,18 +14,16 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
   
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
-      {!isMobile && (
-        <Toggle
-          pressed={sort === 'rated'}
-          onPressedChange={() => onSortChange('rated')}
-          aria-label="Sort by highest rated"
-          size="sm"
-          className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
-        >
-          <Star className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
-          {!iconOnly && <span className="text-xs">Rated</span>}
-        </Toggle>
-      )}
+      <Toggle
+        pressed={sort === 'rated'}
+        onPressedChange={() => onSortChange('rated')}
+        aria-label="Sort by highest rated"
+        size="sm"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
+      >
+        <Star className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
+        {!iconOnly && <span className="text-xs">Rated</span>}
+      </Toggle>
       <Toggle
         pressed={sort === 'popular'}
         onPressedChange={() => onSortChange('popular')}
@@ -46,7 +44,7 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
         <Clock className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
         {!iconOnly && <span className="text-xs">Latest</span>}
       </Toggle>
-      {showRevenue && (
+      {showRevenue && !isMobile && (
         <Toggle
           pressed={sort === 'revenue'}
           onPressedChange={() => onSortChange('revenue')}
