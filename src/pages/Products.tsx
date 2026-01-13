@@ -390,25 +390,6 @@ const Products = () => {
           {selectedArchiveYear ? `Top Products ${selectedArchiveYear}` : 'Top Products'}
         </h1>
 
-        {/* Category Cloud */}
-        <div className="mb-8">
-          <div className="flex flex-wrap justify-center gap-3">
-            {CATEGORIES.map((category, index) => (
-              <button
-                key={category}
-                onClick={() => handleCategoryToggle(category)}
-                className={`${getSizeClass(index)} px-4 py-2 rounded-full border transition-all hover:scale-105 ${
-                  selectedCategories.includes(category)
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border text-muted-foreground hover:text-primary hover:border-primary'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Filters Row - matching homepage style */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
@@ -536,6 +517,25 @@ const Products = () => {
             </button>
           </div>
         )}
+
+        {/* Category Cloud */}
+        <div className="border-t pt-8 mt-8 mb-8">
+          <div className="flex flex-wrap justify-center gap-3">
+            {CATEGORIES.map((category, index) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryToggle(category)}
+                className={`${getSizeClass(index)} px-4 py-2 rounded-full border transition-all hover:scale-105 ${
+                  selectedCategories.includes(category)
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border text-muted-foreground hover:text-primary hover:border-primary'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Archive Years */}
         {archiveYears.length > 0 && (
