@@ -286,6 +286,8 @@ const Products = () => {
 
       if (sort === 'popular') {
         formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
+      } else if (sort === 'revenue') {
+        formattedProducts.sort((a: any, b: any) => (b.verifiedMrr || 0) - (a.verifiedMrr || 0));
       } else {
         formattedProducts.sort((a: any, b: any) => 
           new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime()
@@ -371,8 +373,16 @@ const Products = () => {
         })) || []
       }));
 
-      // Sort by votes (most popular first)
-      formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
+      // Sort based on current sort option
+      if (sort === 'popular') {
+        formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
+      } else if (sort === 'revenue') {
+        formattedProducts.sort((a: any, b: any) => (b.verifiedMrr || 0) - (a.verifiedMrr || 0));
+      } else {
+        formattedProducts.sort((a: any, b: any) => 
+          new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime()
+        );
+      }
 
       if (selectedCategories.length > 0) {
         formattedProducts = formattedProducts.filter((p: any) => 
