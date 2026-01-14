@@ -147,20 +147,24 @@ const Pricing = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-xl">Website Placement</CardTitle>
-                <CardDescription>Permanent display on homepage leaderboard</CardDescription>
+                <CardDescription>Sponsored listing on the Launch homepage</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
-                  $750<span className="text-base font-normal text-muted-foreground"> / month</span>
+                  $250<span className="text-base font-normal text-muted-foreground"> / month</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored listing on homepage for 1 month</span>
+                    <span className="text-sm">Sponsored listing on Launch homepage</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">2,000+ monthly visitors</span>
+                    <span className="text-sm">Visible to thousands of founders & builders</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Clearly labelled. No impact on rankings.</span>
                   </li>
                 </ul>
                 <Button asChild className="w-full" size="lg" variant="outline">
@@ -172,20 +176,24 @@ const Pricing = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-xl">Newsletter Sponsorship</CardTitle>
-                <CardDescription>Featured placement in our weekly newsletter</CardDescription>
+                <CardDescription>Featured sponsor in our weekly newsletter</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
-                  $500<span className="text-base font-normal text-muted-foreground"> / month</span>
+                  $200<span className="text-base font-normal text-muted-foreground"> / issue</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                    <span className="text-sm">Featured sponsor section in one weekly newsletter</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">2,000+ subscribers</span>
+                    <span className="text-sm">Sent to ~2,000 founders, makers & early-stage teams</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">25% email open rate</span>
                   </li>
                 </ul>
                 <Button asChild className="w-full" size="lg" variant="outline">
@@ -204,28 +212,20 @@ const Pricing = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
-                  $1,000<span className="text-base font-normal text-muted-foreground"> / month</span>
+                  $400<span className="text-base font-normal text-muted-foreground"> / month</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored listing on homepage for 1 month</span>
+                    <span className="text-sm">Homepage sponsorship (1 month)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored section of newsletter for 1 month</span>
+                    <span className="text-sm">One newsletter sponsorship per month</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">2,000+ monthly visitors</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">2,000+ subscribers</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Save $250/month with bundle</span>
+                    <span className="text-sm">Save $50/month with bundle</span>
                   </li>
                 </ul>
                 <Button asChild className="w-full" size="lg">
