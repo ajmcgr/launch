@@ -49,10 +49,11 @@ const Admin = () => {
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [allProductsRes, usersRes, votesRes, sponsoredRes, ordersRes] = await Promise.all([
+      const [allProductsRes, usersRes, votesRes, ratingsRes, sponsoredRes, ordersRes] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('votes').select('id', { count: 'exact', head: true }),
+        supabase.from('product_ratings').select('id', { count: 'exact', head: true }),
         supabase.from('sponsored_products').select('id, sponsorship_type'),
         supabase.from('orders').select('plan').in('plan', ['join', 'skip']),
       ]);
@@ -77,6 +78,7 @@ const Admin = () => {
         totalProducts: allProductsRes.count || 0,
         totalUsers: usersRes.count || 0,
         totalVotes: votesRes.count || 0,
+        totalRatings: ratingsRes.count || 0,
         totalSponsorships: sponsorships.length,
         totalRevenue: totalRevenue,
       };
@@ -246,7 +248,17 @@ const Admin = () => {
             <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">⭐ {stats?.totalVotes || 0}</div>
+            <div className="text-2xl font-bold">⬆ {stats?.totalVotes || 0}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Ratings</CardTitle>
+            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">⭐ {stats?.totalRatings || 0}</div>
           </CardContent>
         </Card>
 
