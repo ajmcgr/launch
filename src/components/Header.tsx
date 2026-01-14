@@ -61,13 +61,29 @@ export const Header = () => {
   }, []);
 
   useEffect(() => {
+    let ticking = false;
+    let lastScrollY = 0;
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      lastScrollY = window.scrollY;
+      
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // Use a larger threshold to prevent rapid toggling
+          if (lastScrollY > 20 && !isScrolled) {
+            setIsScrolled(true);
+          } else if (lastScrollY <= 5 && isScrolled) {
+            setIsScrolled(false);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isScrolled]);
 
   useEffect(() => {
     // Get initial session
@@ -117,9 +133,10 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner - hides on scroll with smooth transition */}
       <div 
-        className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
-          isScrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
+        className={`overflow-hidden transition-all duration-200 ease-out will-change-[height,opacity] ${
+          isScrolled ? 'h-0 opacity-0 pointer-events-none' : 'h-10 opacity-100'
         }`}
+        style={{ contain: 'layout' }}
       >
         <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
           <div className="container mx-auto px-4 max-w-5xl">
