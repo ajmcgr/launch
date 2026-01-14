@@ -15,7 +15,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { User, Settings, Package, LogOut, Menu } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
@@ -60,30 +60,24 @@ export const Header = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Use ref to track scroll state without causing re-renders during scroll
+  const scrolledRef = useRef(false);
+  
   useEffect(() => {
-    let ticking = false;
-    let lastScrollY = 0;
-    
     const handleScroll = () => {
-      lastScrollY = window.scrollY;
+      const scrollY = window.scrollY;
+      const shouldBeScrolled = scrollY > 50;
       
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          // Use a larger threshold to prevent rapid toggling
-          if (lastScrollY > 20 && !isScrolled) {
-            setIsScrolled(true);
-          } else if (lastScrollY <= 5 && isScrolled) {
-            setIsScrolled(false);
-          }
-          ticking = false;
-        });
-        ticking = true;
+      // Only update state if value actually changed
+      if (shouldBeScrolled !== scrolledRef.current) {
+        scrolledRef.current = shouldBeScrolled;
+        setIsScrolled(shouldBeScrolled);
       }
     };
     
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isScrolled]);
+  }, []);
 
   useEffect(() => {
     // Get initial session
@@ -131,22 +125,20 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Promotional Banner - hides on scroll with smooth transition */}
+      {/* Promotional Banner - hides on scroll */}
       {!isScrolled && (
-        <div className="animate-fade-in">
-          <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
-            <div className="container mx-auto px-4 max-w-5xl">
-              <p className="text-center text-sm font-medium">
-                Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span>
-                {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
-                  <span className="ml-2">
-                    · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
-                  </span>
-                )}
-              </p>
-            </div>
-          </Link>
-        </div>
+        <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
+          <div className="container mx-auto px-4 max-w-5xl">
+            <p className="text-center text-sm font-medium">
+              Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span>
+              {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
+                <span className="ml-2">
+                  · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
+                </span>
+              )}
+            </p>
+          </div>
+        </Link>
       )}
       
       <div className="container mx-auto px-4 max-w-5xl">
