@@ -16,6 +16,7 @@ const UserProfile = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [upvotedProducts, setUpvotedProducts] = useState<any[]>([]);
   const [followedUsers, setFollowedUsers] = useState<any[]>([]);
+  const [followers, setFollowers] = useState<any[]>([]);
   const [followedProducts, setFollowedProducts] = useState<any[]>([]);
   const [followedProductIds, setFollowedProductIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -194,6 +195,16 @@ const UserProfile = () => {
 
       if (followedUsersData) {
         setFollowedUsers(followedUsersData.map(f => f.users));
+      }
+
+      // Fetch followers (people who follow this user)
+      const { data: followersData } = await supabase
+        .from('follows')
+        .select('follower_id, users!follows_follower_id_fkey(username, avatar_url, bio)')
+        .eq('followed_id', profileData.id);
+
+      if (followersData) {
+        setFollowers(followersData.map(f => f.users));
       }
 
       // Fetch followed products
@@ -561,6 +572,34 @@ const UserProfile = () => {
                   {...product}
                   onVote={() => {}}
                 />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {followers.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">Followers</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {followers.map((user) => (
+                <Link
+                  key={user.username}
+                  to={`/@${user.username}`}
+                  className="flex flex-col items-center p-4 rounded-lg border hover:border-primary transition-colors"
+                >
+                  <Avatar className="h-16 w-16 mb-2">
+                    <AvatarImage src={user.avatar_url} alt={user.username} />
+                    <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="text-center">
+                    <p className="font-semibold">@{user.username}</p>
+                    {user.bio && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                        {user.bio}
+                      </p>
+                    )}
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
