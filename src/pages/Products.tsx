@@ -293,6 +293,14 @@ const Products = () => {
         );
       }
 
+      // Apply search filter BEFORE sorting and slicing to search all products
+      if (searchQuery) {
+        formattedProducts = formattedProducts.filter((p: any) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
       if (sort === 'rated') {
         // Sort by average rating descending, then by rating count as tiebreaker
         formattedProducts.sort((a: any, b: any) => {
@@ -312,13 +320,6 @@ const Products = () => {
       }
       
       formattedProducts = formattedProducts.slice(0, 100);
-
-      if (searchQuery) {
-        formattedProducts = formattedProducts.filter((p: any) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
 
       setProducts(formattedProducts);
     } catch (error) {
@@ -397,6 +398,14 @@ const Products = () => {
         })) || []
       }));
 
+      // Apply search filter BEFORE sorting to search all products
+      if (searchQuery) {
+        formattedProducts = formattedProducts.filter((p: any) =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
       // Sort based on current sort option
       if (sort === 'rated') {
         formattedProducts.sort((a: any, b: any) => {
@@ -425,13 +434,6 @@ const Products = () => {
       if (selectedPlatforms.length > 0) {
         formattedProducts = formattedProducts.filter((p: any) => 
           p.platforms?.some((platform: Platform) => selectedPlatforms.includes(platform))
-        );
-      }
-
-      if (searchQuery) {
-        formattedProducts = formattedProducts.filter((p: any) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
 
