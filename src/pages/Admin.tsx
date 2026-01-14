@@ -279,7 +279,6 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
-            <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
       </div>
