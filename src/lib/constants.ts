@@ -36,7 +36,7 @@ export const PRICING_PLANS = [
     id: 'skip',
     name: 'Launch',
     price: 39,
-    description: 'Choose any available launch date and time, promoted on Launch socials and newsletter',
+    description: 'Choose any launch date and time, promoted on Launch socials and newsletter',
   },
   {
     id: 'relaunch',
