@@ -132,25 +132,22 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner - hides on scroll with smooth transition */}
-      <div 
-        className={`overflow-hidden transition-all duration-200 ease-out will-change-[height,opacity] ${
-          isScrolled ? 'h-0 opacity-0 pointer-events-none' : 'h-10 opacity-100'
-        }`}
-        style={{ contain: 'layout' }}
-      >
-        <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <p className="text-center text-sm font-medium">
-              Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span>
-              {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
-                <span className="ml-2">
-                  · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
-                </span>
-              )}
-            </p>
-          </div>
-        </Link>
-      </div>
+      {!isScrolled && (
+        <div className="animate-fade-in">
+          <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
+            <div className="container mx-auto px-4 max-w-5xl">
+              <p className="text-center text-sm font-medium">
+                Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span>
+                {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
+                  <span className="ml-2">
+                    · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
+                  </span>
+                )}
+              </p>
+            </div>
+          </Link>
+        </div>
+      )}
       
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex h-14 items-center justify-between">
