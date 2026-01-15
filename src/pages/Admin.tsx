@@ -434,7 +434,7 @@ const Admin = () => {
         <TabsContent value="manage" className="flex-1 mt-0 data-[state=inactive]:hidden">
           <div className="container mx-auto px-4 py-8">
             <Tabs defaultValue="users" className="space-y-4">
-              <TabsList className="flex-wrap h-auto gap-1">
+              <TabsList className="flex flex-wrap h-auto gap-1 w-full justify-start">
                 <TabsTrigger value="users">Members</TabsTrigger>
                 <TabsTrigger value="promotion">Promotion</TabsTrigger>
                 <TabsTrigger value="advertising">Advertising</TabsTrigger>
