@@ -8,6 +8,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePass } from '@/hooks/use-pass';
 import stripeLogo from '@/assets/stripe-logo.png';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const Pass = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -221,37 +227,47 @@ const Pass = () => {
           </div>
 
           {/* FAQ Section */}
-          <Card className="mb-12">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-semibold mb-2">When does my year start?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your 12-month access period begins immediately upon purchase.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">What happens after 12 months?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    You'll return to standard pricing. You can purchase another Pass at any time.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Can I get a refund?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Pass purchases are non-refundable. If you have concerns, contact us before purchasing.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Does this include advertising?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    No. Advertising, sponsorships, and featured placements are not included and are priced separately.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+            
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              <AccordionItem value="year-start" className="border rounded-lg px-6">
+                <AccordionTrigger className="text-left text-sm">
+                  When does my year start?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Your 12-month access period begins immediately upon purchase.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="after-12-months" className="border rounded-lg px-6">
+                <AccordionTrigger className="text-left text-sm">
+                  What happens after 12 months?
+                </AccordionTrigger>
+                <AccordionContent>
+                  You'll return to standard pricing. You can purchase another Pass at any time.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="refund" className="border rounded-lg px-6">
+                <AccordionTrigger className="text-left text-sm">
+                  Can I get a refund?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Pass purchases are non-refundable. If you have concerns, contact us before purchasing.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="advertising" className="border rounded-lg px-6">
+                <AccordionTrigger className="text-left text-sm">
+                  Does this include advertising?
+                </AccordionTrigger>
+                <AccordionContent>
+                  No. Advertising, sponsorships, and featured placements are not included and are priced separately.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
 
           {/* Stripe Badge */}
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
