@@ -57,7 +57,8 @@ const Admin = () => {
         sponsoredRes, 
         ordersRes,
         commentsRes,
-        badgesRes,
+        badgesEmbeddedRes,
+        badgeEventsRes,
         mrrRes,
       ] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
@@ -67,9 +68,15 @@ const Admin = () => {
         supabase.from('sponsored_products').select('id, sponsorship_type'),
         supabase.from('orders').select('plan').in('plan', ['join', 'skip']),
         supabase.from('comments').select('id', { count: 'exact', head: true }),
-        supabase.from('product_analytics').select('id', { count: 'exact', head: true }).in('event_type', ['badge_copy', 'badge_download']),
+        supabase.from('products').select('id', { count: 'exact', head: true }).eq('badge_embedded', true),
+        supabase.from('product_analytics').select('product_id').in('event_type', ['badge_copy', 'badge_download']),
         supabase.from('products').select('verified_mrr').not('verified_mrr', 'is', null),
       ]);
+
+      // Count unique products with badge activity (historical embedded + new events)
+      const embeddedCount = badgesEmbeddedRes.count || 0;
+      const eventProductIds = new Set((badgeEventsRes.data || []).map(e => e.product_id));
+      const totalBadges = embeddedCount + eventProductIds.size;
 
       // Calculate advertising revenue from all sponsorships
       const sponsorships = sponsoredRes.data || [];
@@ -99,7 +106,7 @@ const Admin = () => {
         totalSponsorships: sponsorships.length,
         totalRevenue: totalRevenue,
         totalComments: commentsRes.count || 0,
-        totalBadges: badgesRes.count || 0,
+        totalBadges: totalBadges,
         totalVerifiedMRR: totalVerifiedMRR,
       };
     },
