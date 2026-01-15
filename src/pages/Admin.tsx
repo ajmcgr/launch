@@ -67,7 +67,7 @@ const Admin = () => {
         supabase.from('sponsored_products').select('id, sponsorship_type'),
         supabase.from('orders').select('plan').in('plan', ['join', 'skip']),
         supabase.from('comments').select('id', { count: 'exact', head: true }),
-        supabase.from('products').select('id', { count: 'exact', head: true }).eq('badge_embedded', true),
+        supabase.from('product_analytics').select('id', { count: 'exact', head: true }).in('event_type', ['badge_copy', 'badge_download']),
         supabase.from('products').select('verified_mrr').not('verified_mrr', 'is', null),
       ]);
 

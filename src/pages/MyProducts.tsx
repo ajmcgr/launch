@@ -885,6 +885,7 @@ const MyProducts = () => {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <ProductBadgeEmbed 
+                          productId={product.id}
                           productSlug={product.slug}
                           productName={product.name}
                           categories={product.categories}
