@@ -309,12 +309,15 @@ const Admin = () => {
     <div className="min-h-screen">
       <Tabs defaultValue="metrics" className="w-full">
         <div className="container mx-auto px-4 py-4 md:py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h1 className="text-4xl font-bold text-center md:text-left">Admin</h1>
-            <TabsList>
-              <TabsTrigger value="metrics">Metrics</TabsTrigger>
-              <TabsTrigger value="manage">Ops</TabsTrigger>
-            </TabsList>
+          <div className="flex items-center justify-between">
+            <div className="flex-1" />
+            <h1 className="text-4xl font-bold">Admin</h1>
+            <div className="flex-1 flex justify-end">
+              <TabsList>
+                <TabsTrigger value="metrics">Metrics</TabsTrigger>
+                <TabsTrigger value="manage">Ops</TabsTrigger>
+              </TabsList>
+            </div>
           </div>
         </div>
 
@@ -426,11 +429,11 @@ const Admin = () => {
         <TabsContent value="manage" className="mt-0">
           <div className="container mx-auto px-4 py-8">
             <Tabs defaultValue="users" className="space-y-4">
-              <TabsList className="flex flex-wrap h-auto gap-1">
-                <TabsTrigger value="users">Members</TabsTrigger>
-                <TabsTrigger value="promotion">Promotion</TabsTrigger>
-                <TabsTrigger value="advertising">Advertising</TabsTrigger>
-                <TabsTrigger value="seo">SEO</TabsTrigger>
+              <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
+                <TabsTrigger value="users" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Members</TabsTrigger>
+                <TabsTrigger value="promotion" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Promotion</TabsTrigger>
+                <TabsTrigger value="advertising" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Advertising</TabsTrigger>
+                <TabsTrigger value="seo" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">SEO</TabsTrigger>
               </TabsList>
 
               <TabsContent value="users" className="space-y-4">
