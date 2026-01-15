@@ -238,7 +238,7 @@ const Admin = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Tabs defaultValue="metrics" className="flex-1 flex flex-col">
-        <div className="border-b bg-background sticky top-0 z-10">
+        <div className="bg-background sticky top-0 z-10">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between py-4">
               <h1 className="text-2xl font-bold">Admin</h1>
