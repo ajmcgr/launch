@@ -174,7 +174,7 @@ const Pass = () => {
           </Card>
 
           {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <div className="grid grid-cols-1 gap-6 mb-12">
             {features.map((feature) => (
               <Card key={feature.title}>
                 <CardContent className="p-6">
@@ -193,7 +193,7 @@ const Pass = () => {
           </div>
 
           {/* What's Included / Not Included */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div className="grid grid-cols-1 gap-6 mb-12">
             <Card>
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-4 text-lg">What's included</h3>
