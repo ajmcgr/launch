@@ -99,11 +99,6 @@ const Pass = () => {
     "Priority support"
   ];
 
-  const notIncludedItems = [
-    "Advertising placements",
-    "Sponsored listings",
-    "Newsletter sponsorships"
-  ];
 
   if (passLoading) {
     return (
@@ -192,8 +187,8 @@ const Pass = () => {
             ))}
           </div>
 
-          {/* What's Included / Not Included */}
-          <div className="grid grid-cols-1 gap-6 mb-12">
+          {/* What's Included */}
+          <div className="mb-12">
             <Card>
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-4 text-lg">What's included</h3>
@@ -205,22 +200,6 @@ const Pass = () => {
                     </li>
                   ))}
                 </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-muted/30">
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4 text-lg">Not included</h3>
-                <ul className="space-y-3">
-                  {notIncludedItems.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-muted-foreground">
-                      <span className="text-sm">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-xs text-muted-foreground mt-4">
-                  Advertising and sponsorships are sold separately.
-                </p>
               </CardContent>
             </Card>
           </div>
