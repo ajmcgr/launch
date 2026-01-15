@@ -60,17 +60,48 @@ const Admin = () => {
         commentsRes,
         badgesRes,
         mrrRes,
+        // Fetch historical data for sparklines
+        productsHistory,
+        usersHistory,
+        votesHistory,
+        ratingsHistory,
+        commentsHistory,
       ] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('votes').select('id', { count: 'exact', head: true }),
         supabase.from('product_ratings').select('id', { count: 'exact', head: true }),
-        supabase.from('sponsored_products').select('id, sponsorship_type'),
-        supabase.from('orders').select('plan').in('plan', ['join', 'skip']),
+        supabase.from('sponsored_products').select('id, sponsorship_type, start_date'),
+        supabase.from('orders').select('plan, created_at').in('plan', ['join', 'skip']),
         supabase.from('comments').select('id', { count: 'exact', head: true }),
         supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'launched'),
         supabase.from('products').select('verified_mrr').not('verified_mrr', 'is', null),
+        // Historical data for sparklines (last 9 weeks)
+        supabase.from('products').select('created_at').order('created_at', { ascending: true }),
+        supabase.from('users').select('created_at').order('created_at', { ascending: true }),
+        supabase.from('votes').select('created_at').order('created_at', { ascending: true }),
+        supabase.from('product_ratings').select('created_at').order('created_at', { ascending: true }),
+        supabase.from('comments').select('created_at').order('created_at', { ascending: true }),
       ]);
+
+      // Helper to generate cumulative weekly counts for sparklines
+      const generateWeeklySparkline = (data: { created_at: string | null }[] | null, weeks: number = 9): number[] => {
+        if (!data || data.length === 0) return Array(weeks).fill(0);
+        
+        const now = new Date();
+        const result: number[] = [];
+        
+        for (let i = weeks - 1; i >= 0; i--) {
+          const weekEnd = new Date(now);
+          weekEnd.setDate(weekEnd.getDate() - (i * 7));
+          const count = data.filter(item => 
+            item.created_at && new Date(item.created_at) <= weekEnd
+          ).length;
+          result.push(count);
+        }
+        
+        return result;
+      };
 
       // Calculate advertising revenue from all sponsorships
       const sponsorships = sponsoredRes.data || [];
@@ -88,6 +119,35 @@ const Admin = () => {
         else if (order.plan === 'skip') totalRevenue += 39;
       });
 
+      // Generate revenue sparkline
+      const revenueByWeek: number[] = [];
+      const now = new Date();
+      for (let i = 8; i >= 0; i--) {
+        const weekEnd = new Date(now);
+        weekEnd.setDate(weekEnd.getDate() - (i * 7));
+        
+        let weekRevenue = 0;
+        sponsorships.forEach(sp => {
+          if (sp.start_date && new Date(sp.start_date) <= weekEnd) {
+            if (sp.sponsorship_type === 'website') weekRevenue += 750;
+            else if (sp.sponsorship_type === 'newsletter') weekRevenue += 500;
+            else if (sp.sponsorship_type === 'combined') weekRevenue += 1000;
+          }
+        });
+        orders.forEach(order => {
+          if (order.created_at && new Date(order.created_at) <= weekEnd) {
+            if (order.plan === 'join') weekRevenue += 9;
+            else if (order.plan === 'skip') weekRevenue += 39;
+          }
+        });
+        revenueByWeek.push(weekRevenue);
+      }
+
+      // Generate sponsors sparkline
+      const sponsorsSparkline = generateWeeklySparkline(
+        sponsorships.map(s => ({ created_at: s.start_date }))
+      );
+
       // Calculate total verified MRR (stored in cents, convert to dollars)
       const mrrProducts = mrrRes.data || [];
       const totalVerifiedMRR = mrrProducts.reduce((sum, p) => sum + (p.verified_mrr || 0), 0) / 100;
@@ -102,6 +162,16 @@ const Admin = () => {
         totalComments: commentsRes.count || 0,
         totalBadges: badgesRes.count || 0,
         totalVerifiedMRR: totalVerifiedMRR,
+        // Sparkline data
+        productsSparkline: generateWeeklySparkline(productsHistory.data),
+        usersSparkline: generateWeeklySparkline(usersHistory.data),
+        votesSparkline: generateWeeklySparkline(votesHistory.data),
+        ratingsSparkline: generateWeeklySparkline(ratingsHistory.data),
+        commentsSparkline: generateWeeklySparkline(commentsHistory.data),
+        sponsorsSparkline,
+        badgesSparkline: generateWeeklySparkline(productsHistory.data?.filter(p => p.created_at)),
+        revenueSparkline: revenueByWeek,
+        mrrSparkline: Array(9).fill(totalVerifiedMRR), // MRR is a snapshot, show flat line at current value
       };
     },
     enabled: isAdmin,
@@ -266,7 +336,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
-                  <Sparkline data={[12, 18, 24, 32, 45, 52, 68, 75, 88]} />
+                  <Sparkline data={stats?.productsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -277,7 +347,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
-                  <Sparkline data={[20, 35, 42, 55, 68, 82, 95, 110, 125]} />
+                  <Sparkline data={stats?.usersSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -288,7 +358,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
-                  <Sparkline data={[50, 85, 120, 180, 240, 320, 380, 450, 520]} />
+                  <Sparkline data={stats?.votesSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -299,7 +369,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
-                  <Sparkline data={[8, 15, 22, 35, 48, 62, 75, 88, 102]} />
+                  <Sparkline data={stats?.ratingsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -310,7 +380,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
-                  <Sparkline data={[15, 28, 42, 58, 75, 92, 108, 125, 145]} />
+                  <Sparkline data={stats?.commentsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -321,7 +391,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
-                  <Sparkline data={[1, 2, 3, 4, 5, 6, 7, 8, 10]} />
+                  <Sparkline data={stats?.sponsorsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -332,7 +402,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
-                  <Sparkline data={[5, 12, 18, 28, 38, 48, 58, 68, 80]} />
+                  <Sparkline data={stats?.badgesSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -343,7 +413,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
-                  <Sparkline data={[500, 1200, 2500, 4000, 6500, 9000, 12000, 15000, 18500]} />
+                  <Sparkline data={stats?.mrrSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -354,7 +424,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
-                  <Sparkline data={[100, 250, 450, 700, 950, 1200, 1500, 1850, 2200]} />
+                  <Sparkline data={stats?.revenueSparkline || []} />
                 </CardContent>
               </Card>
             </div>
