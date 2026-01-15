@@ -314,14 +314,14 @@ const Admin = () => {
             <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:block">
               <TabsList>
                 <TabsTrigger value="metrics">Metrics</TabsTrigger>
-                <TabsTrigger value="manage">Manage</TabsTrigger>
+                <TabsTrigger value="manage">Ops</TabsTrigger>
               </TabsList>
             </div>
           </div>
           <div className="container mx-auto px-4 pb-4 md:hidden flex justify-center">
             <TabsList>
               <TabsTrigger value="metrics">Metrics</TabsTrigger>
-              <TabsTrigger value="manage">Manage</TabsTrigger>
+              <TabsTrigger value="manage">Ops</TabsTrigger>
             </TabsList>
           </div>
         </div>
@@ -434,7 +434,7 @@ const Admin = () => {
         <TabsContent value="manage" className="flex-1 mt-0 data-[state=inactive]:hidden">
           <div className="container mx-auto px-4 py-8">
             <Tabs defaultValue="users" className="space-y-4">
-              <TabsList>
+              <TabsList className="flex-wrap h-auto gap-1">
                 <TabsTrigger value="users">Members</TabsTrigger>
                 <TabsTrigger value="promotion">Promotion</TabsTrigger>
                 <TabsTrigger value="advertising">Advertising</TabsTrigger>
