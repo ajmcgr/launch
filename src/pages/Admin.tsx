@@ -240,8 +240,8 @@ const Admin = () => {
       <Tabs defaultValue="metrics" className="flex-1 flex flex-col">
         <div className="bg-background sticky top-0 z-10">
           <div className="container mx-auto px-4 py-6">
-            <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">Admin</h1>
-            <div className="flex justify-center">
+            <div className="flex items-center justify-between">
+              <h1 className="text-4xl md:text-5xl font-bold">Admin</h1>
               <TabsList>
                 <TabsTrigger value="metrics">Metrics</TabsTrigger>
                 <TabsTrigger value="manage">Manage</TabsTrigger>
