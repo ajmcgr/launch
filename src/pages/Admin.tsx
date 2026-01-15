@@ -239,7 +239,8 @@ const Admin = () => {
       <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
           </CardHeader>
@@ -248,7 +249,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Members</CardTitle>
           </CardHeader>
@@ -257,7 +259,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Votes</CardTitle>
           </CardHeader>
@@ -266,7 +269,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Ratings</CardTitle>
           </CardHeader>
@@ -275,7 +279,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Comments</CardTitle>
           </CardHeader>
@@ -284,7 +289,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Sponsors</CardTitle>
           </CardHeader>
@@ -293,7 +299,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Badges Deployed</CardTitle>
           </CardHeader>
@@ -302,7 +309,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Verified MRR</CardTitle>
           </CardHeader>
@@ -311,7 +319,8 @@ const Admin = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="relative overflow-hidden">
+          <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-6 w-6 opacity-20" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
           </CardHeader>
