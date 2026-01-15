@@ -242,7 +242,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Total Products</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Products</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
@@ -252,7 +252,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Total Members</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Members</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
@@ -262,7 +262,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Total Votes</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Votes</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
@@ -272,7 +272,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Total Ratings</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Ratings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
@@ -282,7 +282,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Total Comments</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Comments</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
@@ -292,7 +292,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Total Sponsors</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Sponsors</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
@@ -322,7 +322,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Total Revenue</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Revenue</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
