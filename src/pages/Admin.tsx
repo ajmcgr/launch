@@ -235,282 +235,302 @@ const Admin = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
+    <div className="min-h-screen flex flex-col">
+      <Tabs defaultValue="metrics" className="flex-1 flex flex-col">
+        <div className="border-b bg-background sticky top-0 z-10">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between py-4">
+              <h1 className="text-2xl font-bold">Admin</h1>
+              <TabsList>
+                <TabsTrigger value="metrics">Metrics</TabsTrigger>
+                <TabsTrigger value="manage">Manage</TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Products</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
-          </CardContent>
-        </Card>
+        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden">
+          <div className="container mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Products</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Members</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
-          </CardContent>
-        </Card>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Members</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Votes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
-          </CardContent>
-        </Card>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Votes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Ratings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
-          </CardContent>
-        </Card>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Ratings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Comments</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
-          </CardContent>
-        </Card>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Comments</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Sponsors</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
-          </CardContent>
-        </Card>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Sponsors</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Badges Awarded</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
-          </CardContent>
-        </Card>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Badges Awarded</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Verified MRR</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
-          </CardContent>
-        </Card>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Verified MRR</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
+                </CardContent>
+              </Card>
 
-        <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
-          </CardContent>
-        </Card>
-      </div>
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Revenue</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
 
-      <Tabs defaultValue="users" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="users">Members</TabsTrigger>
-          <TabsTrigger value="promotion">Promotion</TabsTrigger>
-          <TabsTrigger value="advertising">Advertising</TabsTrigger>
-          <TabsTrigger value="seo">SEO</TabsTrigger>
-        </TabsList>
+        <TabsContent value="manage" className="flex-1 mt-0 data-[state=inactive]:hidden">
+          <div className="container mx-auto px-4 py-8">
+            <Tabs defaultValue="users" className="space-y-4">
+              <TabsList>
+                <TabsTrigger value="users">Members</TabsTrigger>
+                <TabsTrigger value="promotion">Promotion</TabsTrigger>
+                <TabsTrigger value="advertising">Advertising</TabsTrigger>
+                <TabsTrigger value="seo">SEO</TabsTrigger>
+              </TabsList>
 
-        <TabsContent value="users" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Members</CardTitle>
-              <CardDescription>Manage member accounts and roles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {allUsers?.map((user) => (
-                  <div key={user.id} className="border rounded-lg p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <img 
-                        src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
-                        alt={user.username}
-                        className="h-10 w-10 rounded-full"
-                      />
-                      <div>
-                        <p className="font-medium">{user.username}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Joined {new Date(user.created_at!).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      {user.user_roles?.map((ur: any) => (
-                        <Badge key={ur.role} variant="secondary">
-                          {ur.role}
-                        </Badge>
+              <TabsContent value="users" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Members</CardTitle>
+                    <CardDescription>Manage member accounts and roles</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {allUsers?.map((user) => (
+                        <div key={user.id} className="border rounded-lg p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <img 
+                              src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
+                              alt={user.username}
+                              className="h-10 w-10 rounded-full"
+                            />
+                            <div>
+                              <p className="font-medium">{user.username}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Joined {new Date(user.created_at!).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            {user.user_roles?.map((ur: any) => (
+                              <Badge key={ur.role} variant="secondary">
+                                {ur.role}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-        <TabsContent value="promotion" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Products to Promote</CardTitle>
-              <CardDescription>Products with Launch Lite or Launch plans that need promotion on socials and newsletter</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {promotionOrders?.map((order) => {
-                  const planLabel = order.plan === 'join' ? 'Launch Lite' : 'Launch';
-                  const planPrice = order.plan === 'join' ? '$9' : '$39';
-                  
-                  return (
-                    <div key={order.id} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">{order.products?.name || 'Unknown Product'}</h3>
-                            <Badge variant={order.plan === 'skip' ? 'default' : 'secondary'}>
-                              {planLabel}
-                            </Badge>
+              <TabsContent value="promotion" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Products to Promote</CardTitle>
+                    <CardDescription>Products with Launch Lite or Launch plans that need promotion on socials and newsletter</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {promotionOrders?.map((order) => {
+                        const planLabel = order.plan === 'join' ? 'Launch Lite' : 'Launch';
+                        const planPrice = order.plan === 'join' ? '$9' : '$39';
+                        
+                        return (
+                          <div key={order.id} className="border rounded-lg p-4 space-y-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-semibold text-lg">{order.products?.name || 'Unknown Product'}</h3>
+                                  <Badge variant={order.plan === 'skip' ? 'default' : 'secondary'}>
+                                    {planLabel}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground">{order.products?.tagline}</p>
+                                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                                  <span>By: {order.users?.name || order.users?.username}</span>
+                                  {order.products?.launch_date && (
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      Launch: {format(new Date(order.products.launch_date), 'MMM d, yyyy')}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-lg font-bold text-primary">{planPrice}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  Ordered {format(new Date(order.created_at!), 'MMM d, yyyy')}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => navigate(`/launch/${order.products?.slug}`)}
+                              >
+                                View Product
+                              </Button>
+                            </div>
                           </div>
-                          <p className="text-sm text-muted-foreground">{order.products?.tagline}</p>
-                          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                            <span>By: {order.users?.name || order.users?.username}</span>
-                            {order.products?.launch_date && (
-                              <span className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                Launch: {format(new Date(order.products.launch_date), 'MMM d, yyyy')}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-primary">{planPrice}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Ordered {format(new Date(order.created_at!), 'MMM d, yyyy')}
-                          </p>
-                        </div>
-                      </div>
+                        );
+                      })}
                       
-                      <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => navigate(`/launch/${order.products?.slug}`)}
-                        >
-                          View Product
-                        </Button>
-                      </div>
+                      {(!promotionOrders || promotionOrders.length === 0) && (
+                        <p className="text-center text-muted-foreground py-8">
+                          No paid launch plans yet
+                        </p>
+                      )}
                     </div>
-                  );
-                })}
-                
-                {(!promotionOrders || promotionOrders.length === 0) && (
-                  <p className="text-center text-muted-foreground py-8">
-                    No paid launch plans yet
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-        <TabsContent value="advertising" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sponsored Products</CardTitle>
-              <CardDescription>View and manage all sponsorship bookings</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {sponsoredProducts?.map((sp) => {
-                  const isActive = isSponsorshipActive(sp.start_date, sp.end_date);
-                  const isUpcoming = isSponsorshipUpcoming(sp.start_date);
-                  
-                  return (
-                    <div key={sp.id} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">{sp.products?.name || 'Unknown Product'}</h3>
-                            {isActive && <Badge className="bg-green-600">Active</Badge>}
-                            {isUpcoming && <Badge variant="secondary">Upcoming</Badge>}
-                            {!isActive && !isUpcoming && <Badge variant="outline">Expired</Badge>}
+              <TabsContent value="advertising" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Sponsored Products</CardTitle>
+                    <CardDescription>View and manage all sponsorship bookings</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {sponsoredProducts?.map((sp) => {
+                        const isActive = isSponsorshipActive(sp.start_date, sp.end_date);
+                        const isUpcoming = isSponsorshipUpcoming(sp.start_date);
+                        
+                        return (
+                          <div key={sp.id} className="border rounded-lg p-4 space-y-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-semibold text-lg">{sp.products?.name || 'Unknown Product'}</h3>
+                                  {isActive && <Badge className="bg-green-600">Active</Badge>}
+                                  {isUpcoming && <Badge variant="secondary">Upcoming</Badge>}
+                                  {!isActive && !isUpcoming && <Badge variant="outline">Expired</Badge>}
+                                </div>
+                                <p className="text-sm text-muted-foreground">{sp.products?.tagline}</p>
+                              </div>
+                              <div className="text-right">
+                                <Badge variant="outline">{getSponsorshipTypeLabel(sp.sponsorship_type)}</Badge>
+                                <p className="text-lg font-bold text-primary mt-1">
+                                  ${getSponsorshipPrice(sp.sponsorship_type)}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4" />
+                                <span>{format(new Date(sp.start_date), 'MMM d, yyyy')} - {format(new Date(sp.end_date), 'MMM d, yyyy')}</span>
+                              </div>
+                              <span>Position: #{sp.position}</span>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => navigate(`/launch/${sp.products?.slug}`)}
+                              >
+                                View Product
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive"
+                                onClick={() => deleteSponsorship(sp.id)}
+                              >
+                                Delete
+                              </Button>
+                            </div>
                           </div>
-                          <p className="text-sm text-muted-foreground">{sp.products?.tagline}</p>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline">{getSponsorshipTypeLabel(sp.sponsorship_type)}</Badge>
-                          <p className="text-lg font-bold text-primary mt-1">
-                            ${getSponsorshipPrice(sp.sponsorship_type)}
-                          </p>
-                        </div>
-                      </div>
+                        );
+                      })}
                       
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{format(new Date(sp.start_date), 'MMM d, yyyy')} - {format(new Date(sp.end_date), 'MMM d, yyyy')}</span>
-                        </div>
-                        <span>Position: #{sp.position}</span>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => navigate(`/launch/${sp.products?.slug}`)}
-                        >
-                          View Product
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="destructive"
-                          onClick={() => deleteSponsorship(sp.id)}
-                        >
-                          Delete
-                        </Button>
-                      </div>
+                      {sponsoredProducts?.length === 0 && (
+                        <p className="text-center text-muted-foreground py-8">
+                          No sponsorships found
+                        </p>
+                      )}
                     </div>
-                  );
-                })}
-                
-                {sponsoredProducts?.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">
-                    No sponsorships found
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-        <TabsContent value="seo" className="space-y-4">
-          <AdminSeoTab />
+              <TabsContent value="seo" className="space-y-4">
+                <AdminSeoTab />
+              </TabsContent>
+            </Tabs>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
