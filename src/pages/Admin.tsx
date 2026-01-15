@@ -240,7 +240,7 @@ const Admin = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Total Products</CardTitle>
           </CardHeader>
@@ -250,7 +250,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Total Members</CardTitle>
           </CardHeader>
@@ -260,7 +260,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Total Votes</CardTitle>
           </CardHeader>
@@ -270,7 +270,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Total Ratings</CardTitle>
           </CardHeader>
@@ -280,7 +280,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Total Comments</CardTitle>
           </CardHeader>
@@ -290,7 +290,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Total Sponsors</CardTitle>
           </CardHeader>
@@ -300,7 +300,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Badges Deployed</CardTitle>
           </CardHeader>
@@ -310,7 +310,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Verified MRR</CardTitle>
           </CardHeader>
@@ -320,7 +320,7 @@ const Admin = () => {
         </Card>
 
         <Card className="relative overflow-hidden rounded-2xl">
-          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8 opacity-60" />
+          <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium text-muted-foreground">Total Revenue</CardTitle>
           </CardHeader>
