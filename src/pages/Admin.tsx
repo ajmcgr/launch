@@ -306,22 +306,11 @@ const Admin = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      <Tabs defaultValue="metrics" className="flex-1 flex flex-col min-h-0">
-        <div className="bg-background sticky top-0 z-10 shrink-0 border-b">
-          <div className="container mx-auto px-4 py-4 md:py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1" />
-              <h1 className="text-4xl font-bold">Admin</h1>
-              <div className="flex-1 flex justify-end">
-                <TabsList className="hidden md:flex">
-                  <TabsTrigger value="metrics">Metrics</TabsTrigger>
-                  <TabsTrigger value="manage">Ops</TabsTrigger>
-                </TabsList>
-              </div>
-            </div>
-          </div>
-          <div className="container mx-auto px-4 pb-4 md:hidden flex justify-center">
+    <div className="min-h-screen">
+      <Tabs defaultValue="metrics" className="w-full">
+        <div className="container mx-auto px-4 py-4 md:py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <h1 className="text-4xl font-bold text-center md:text-left">Admin</h1>
             <TabsList>
               <TabsTrigger value="metrics">Metrics</TabsTrigger>
               <TabsTrigger value="manage">Ops</TabsTrigger>
@@ -329,9 +318,9 @@ const Admin = () => {
           </div>
         </div>
 
-        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden flex flex-col min-h-0 overflow-auto">
-          <div className="container mx-auto px-4 py-4 md:py-6 flex-1 flex flex-col">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 flex-1 auto-rows-fr">
+        <TabsContent value="metrics" className="mt-0">
+          <div className="container mx-auto px-4 py-4 md:py-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               <Card className="relative overflow-hidden rounded-2xl">
                 <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
                 <CardHeader className="pb-2">
@@ -434,10 +423,10 @@ const Admin = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="manage" className="flex-1 mt-0 data-[state=inactive]:hidden">
+        <TabsContent value="manage" className="mt-0">
           <div className="container mx-auto px-4 py-8">
             <Tabs defaultValue="users" className="space-y-4">
-              <TabsList className="flex flex-wrap h-auto gap-1 w-full justify-start sticky top-0 z-10 bg-background py-2">
+              <TabsList className="flex flex-wrap h-auto gap-1">
                 <TabsTrigger value="users">Members</TabsTrigger>
                 <TabsTrigger value="promotion">Promotion</TabsTrigger>
                 <TabsTrigger value="advertising">Advertising</TabsTrigger>
