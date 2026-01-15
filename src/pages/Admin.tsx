@@ -302,7 +302,7 @@ const Admin = () => {
         <Card className="relative overflow-hidden rounded-2xl">
           <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium text-muted-foreground">Badges Deployed</CardTitle>
+            <CardTitle className="text-base font-medium text-muted-foreground">Badges Awarded</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
