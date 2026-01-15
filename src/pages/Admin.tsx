@@ -236,23 +236,29 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Tabs defaultValue="metrics" className="flex-1 flex flex-col">
-        <div className="bg-background sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-6 relative">
+    <div className="h-screen flex flex-col overflow-hidden">
+      <Tabs defaultValue="metrics" className="flex-1 flex flex-col min-h-0">
+        <div className="bg-background sticky top-0 z-10 shrink-0">
+          <div className="container mx-auto px-4 py-4 md:py-6 relative">
             <h1 className="text-4xl font-bold text-center">Admin</h1>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:block">
               <TabsList>
                 <TabsTrigger value="metrics">Metrics</TabsTrigger>
                 <TabsTrigger value="manage">Manage</TabsTrigger>
               </TabsList>
             </div>
           </div>
+          <div className="container mx-auto px-4 pb-4 md:hidden flex justify-center">
+            <TabsList>
+              <TabsTrigger value="metrics">Metrics</TabsTrigger>
+              <TabsTrigger value="manage">Manage</TabsTrigger>
+            </TabsList>
+          </div>
         </div>
 
-        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden flex flex-col">
-          <div className="container mx-auto px-4 py-8 flex-1 flex flex-col">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 auto-rows-fr">
+        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden flex flex-col min-h-0 overflow-auto">
+          <div className="container mx-auto px-4 py-4 md:py-6 flex-1 flex flex-col">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 flex-1 auto-rows-fr">
               <Card className="relative overflow-hidden rounded-2xl">
                 <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
                 <CardHeader className="pb-2">
