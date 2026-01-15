@@ -124,7 +124,7 @@ const Pricing = () => {
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-6">
           <Lock className="h-4 w-4" />
           <span>Payments secured by</span>
-          <img src={stripeLogo} alt="Stripe" className="h-6 dark:invert" />
+          <img src={stripeLogo} alt="Stripe" className="h-6" />
         </div>
 
         <Testimonials 
@@ -305,7 +305,7 @@ const Pricing = () => {
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-12">
           <Lock className="h-4 w-4" />
           <span>Payments secured by</span>
-          <img src={stripeLogo} alt="Stripe" className="h-6 dark:invert" />
+          <img src={stripeLogo} alt="Stripe" className="h-6" />
         </div>
 
         <div className="mt-8 text-center">
