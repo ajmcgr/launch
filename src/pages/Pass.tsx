@@ -124,7 +124,6 @@ const Pass = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <div className="text-center mb-12">
-            <p className="text-sm font-medium text-muted-foreground mb-3">For frequent builders</p>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Launch Pass</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Unlimited access to all Launch features for one year.
