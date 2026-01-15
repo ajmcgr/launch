@@ -395,13 +395,13 @@ const LaunchDetail = () => {
         <meta name="description" content={product.tagline || product.description?.substring(0, 160)} />
         <meta property="og:title" content={`${product.name} - Launch AI`} />
         <meta property="og:description" content={product.tagline || product.description?.substring(0, 160)} />
-        {thumbnail && <meta property="og:image" content={thumbnail} />}
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
         <meta property="og:url" content={`https://trylaunch.ai/launch/${product.slug}`} />
         <meta property="og:type" content="product" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${product.name} - Launch AI`} />
         <meta name="twitter:description" content={product.tagline || product.description?.substring(0, 160)} />
-        {thumbnail && <meta name="twitter:image" content={thumbnail} />}
+        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png" />
         <link rel="canonical" href={`https://trylaunch.ai/launch/${product.slug}`} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
