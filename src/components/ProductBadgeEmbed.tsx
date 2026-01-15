@@ -2,11 +2,13 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import badgeGolden from '@/assets/badge-golden.svg';
 import badgeWhite from '@/assets/badge-white.svg';
 import badgeColor from '@/assets/badge-color.svg';
 
 interface ProductBadgeEmbedProps {
+  productId: string;
   productSlug: string;
   productName: string;
   categories?: string[];
@@ -17,12 +19,27 @@ interface ProductBadgeEmbedProps {
 
 type BadgeTheme = 'white' | 'color' | 'gold';
 
-const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily = false, wonWeekly = false, wonMonthly = false }: ProductBadgeEmbedProps) => {
+const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [], wonDaily = false, wonWeekly = false, wonMonthly = false }: ProductBadgeEmbedProps) => {
   const [copiedBasic, setCopiedBasic] = useState<BadgeTheme | null>(null);
   const [copiedWithCategories, setCopiedWithCategories] = useState<BadgeTheme | null>(null);
   const badgeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const productUrl = `https://trylaunch.ai/launch/${productSlug}`;
+
+  const trackBadgeEvent = async (eventType: 'badge_copy' | 'badge_download') => {
+    try {
+      const visitorId = localStorage.getItem('visitor_id') || crypto.randomUUID();
+      localStorage.setItem('visitor_id', visitorId);
+      
+      await supabase.from('product_analytics').insert({
+        product_id: productId,
+        event_type: eventType,
+        visitor_id: visitorId,
+      });
+    } catch (error) {
+      console.error('Failed to track badge event:', error);
+    }
+  };
 
   const getThemeStyles = (theme: BadgeTheme) => {
     switch (theme) {
@@ -82,6 +99,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
 
   const copyToClipboard = (html: string, type: 'basic' | 'category', theme: BadgeTheme) => {
     navigator.clipboard.writeText(html);
+    trackBadgeEvent('badge_copy');
     if (type === 'basic') {
       setCopiedBasic(theme);
       setTimeout(() => setCopiedBasic(null), 2000);
@@ -115,6 +133,7 @@ const ProductBadgeEmbed = ({ productSlug, productName, categories = [], wonDaily
       link.href = canvas.toDataURL('image/png');
       link.click();
       
+      trackBadgeEvent('badge_download');
       toast.success('Badge downloaded as image!');
     } catch (error) {
       console.error('Error generating image:', error);
