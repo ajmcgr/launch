@@ -348,7 +348,7 @@ const Advertise = () => {
     <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-4">
       <Lock className="h-4 w-4" />
       <span>Payments secured by</span>
-      <img src={stripeLogo} alt="Stripe" className="h-6 dark:invert" />
+      <img src={stripeLogo} alt="Stripe" className="h-6" />
     </div>
   );
 
@@ -502,7 +502,7 @@ const Advertise = () => {
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-8">
               <Lock className="h-4 w-4" />
               <span>Payments secured by</span>
-              <img src={stripeLogo} alt="Stripe" className="h-6 dark:invert" />
+              <img src={stripeLogo} alt="Stripe" className="h-6" />
             </div>
 
             <div className="mt-6 text-center mb-12">
