@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Calendar, Tags } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
+import Sparkline from '@/components/Sparkline';
 import { format } from 'date-fns';
 
 const Admin = () => {
@@ -257,8 +258,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Products</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
+                  <Sparkline data={[12, 18, 24, 32, 45, 52, 68, 75, 88]} />
                 </CardContent>
               </Card>
 
@@ -267,8 +269,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Members</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
+                  <Sparkline data={[20, 35, 42, 55, 68, 82, 95, 110, 125]} />
                 </CardContent>
               </Card>
 
@@ -277,8 +280,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Votes</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
+                  <Sparkline data={[50, 85, 120, 180, 240, 320, 380, 450, 520]} />
                 </CardContent>
               </Card>
 
@@ -287,8 +291,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Ratings</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
+                  <Sparkline data={[8, 15, 22, 35, 48, 62, 75, 88, 102]} />
                 </CardContent>
               </Card>
 
@@ -297,8 +302,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Comments</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
+                  <Sparkline data={[15, 28, 42, 58, 75, 92, 108, 125, 145]} />
                 </CardContent>
               </Card>
 
@@ -307,8 +313,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Sponsors</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
+                  <Sparkline data={[1, 2, 3, 4, 5, 6, 7, 8, 10]} />
                 </CardContent>
               </Card>
 
@@ -317,8 +324,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Badges Awarded</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
+                  <Sparkline data={[5, 12, 18, 28, 38, 48, 58, 68, 80]} />
                 </CardContent>
               </Card>
 
@@ -327,8 +335,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Verified MRR</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
+                  <Sparkline data={[500, 1200, 2500, 4000, 6500, 9000, 12000, 15000, 18500]} />
                 </CardContent>
               </Card>
 
@@ -337,8 +346,9 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Revenue</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
+                  <Sparkline data={[100, 250, 450, 700, 950, 1200, 1500, 1850, 2200]} />
                 </CardContent>
               </Card>
             </div>
