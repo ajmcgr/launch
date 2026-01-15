@@ -381,6 +381,109 @@ Deno.serve(async (req) => {
       let launchDate: string;
       const plan = metadata.plan;
       
+      // Handle Annual Access plan - user-level subscription, not product-specific
+      if (plan === 'annual_access') {
+        console.log('Processing Annual Access purchase for user:', metadata.user_id);
+        
+        // Calculate expiry date (12 months from now)
+        const expiryDate = new Date();
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+        
+        // Update user with annual access
+        const { error: updateUserError } = await supabaseClient
+          .from('users')
+          .update({
+            plan: 'annual_access',
+            annual_access_expires_at: expiryDate.toISOString(),
+          })
+          .eq('id', metadata.user_id);
+        
+        if (updateUserError) {
+          console.error('Error updating user with annual access:', updateUserError);
+          throw updateUserError;
+        }
+        
+        console.log('Annual Access activated until:', expiryDate.toISOString());
+        
+        // Send confirmation email
+        try {
+          const { data: authUser } = await supabaseClient.auth.admin.getUserById(metadata.user_id);
+          
+          if (authUser?.user?.email) {
+            const expiryFormatted = expiryDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            });
+            
+            const emailHtml = `
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                    .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                    .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                    .logo { height: 32px; }
+                    .content { padding: 30px; }
+                    .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                    .content p { margin: 0 0 16px 0; color: #4b5563; }
+                    .highlight { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #e5e7eb; }
+                    .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <div class="card">
+                      <div class="header">
+                        <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
+                      </div>
+                      <div class="content">
+                        <h1>Annual Access Activated! 🎉</h1>
+                        <p>Thank you for purchasing Launch Annual Access. You now have unlimited access to all Launch features for one year.</p>
+                        <div class="highlight">
+                          <p style="font-weight: 600; margin: 0;">Your access expires on</p>
+                          <p style="font-size: 18px; font-weight: bold; color: #111; margin: 8px 0 0 0;">${expiryFormatted}</p>
+                        </div>
+                        <p><strong>What's included:</strong></p>
+                        <ul>
+                          <li>Unlimited product launches</li>
+                          <li>Unlimited relaunches</li>
+                          <li>Priority date scheduling</li>
+                          <li>Newsletter and social media promotion</li>
+                        </ul>
+                        <p style="color: #6b7280; font-size: 14px;"><em>Note: Advertising and sponsored placements are not included in Annual Access.</em></p>
+                      </div>
+                      <div class="footer">
+                        <p>Thank you for being part of the Launch community.</p>
+                      </div>
+                    </div>
+                  </div>
+                </body>
+              </html>
+            `;
+            
+            await resend.emails.send({
+              from: 'Launch <notifications@trylaunch.ai>',
+              to: [authUser.user.email],
+              subject: 'Your Annual Access is Active! 🚀',
+              html: emailHtml,
+            });
+            
+            console.log('Annual access confirmation email sent');
+          }
+        } catch (emailError) {
+          console.error('Error sending annual access confirmation email:', emailError);
+        }
+        
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      }
+      
       if (plan === 'skip') {
         // Launch plan: Use the selected date, but validate capacity
         if (metadata.selected_date) {

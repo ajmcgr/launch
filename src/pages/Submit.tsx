@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { X, CalendarIcon, Plus } from 'lucide-react';
+import { X, CalendarIcon, Plus, Zap } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +18,8 @@ import { format, addDays } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
+import { useAnnualPass } from '@/hooks/use-annual-pass';
+import { AnnualPassOption } from '@/components/AnnualPassOption';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -112,6 +114,10 @@ const Submit = () => {
   const [availableTags, setAvailableTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
   const [newTagName, setNewTagName] = useState('');
   const [isCreatingTag, setIsCreatingTag] = useState(false);
+  
+  // Annual pass status
+  const { data: annualPassStatus } = useAnnualPass(user?.id);
+  const hasActiveAnnualPass = annualPassStatus?.hasActivePass || false;
 
   // Save to localStorage whenever formData changes
   useEffect(() => {
@@ -885,6 +891,47 @@ const Submit = () => {
       const canReuseExistingPlan = hasExistingPlan && existingOrders[0].plan !== 'join';
       const isUpgrading = hasExistingPlan && existingOrders[0].plan === 'join' && formData.plan !== 'join';
       
+      // Check if user has active Annual Access Pass - bypass payment for non-advertising features
+      if (hasActiveAnnualPass && formData.plan !== 'free') {
+        toast.info('Processing with Annual Access...');
+        
+        // Determine launch date
+        let launchDate: Date;
+        if (formData.plan === 'skip' && formData.selectedDate) {
+          launchDate = new Date(formData.selectedDate);
+        } else if (formData.plan === 'relaunch') {
+          launchDate = new Date();
+          launchDate.setDate(launchDate.getDate() + 30);
+          launchDate.setHours(0, 1, 0, 0);
+        } else {
+          launchDate = new Date(Date.now() + 60000);
+        }
+        
+        const launchStatus = formData.plan === 'join' ? 'launched' : 'scheduled';
+        
+        // Create order record referencing annual pass
+        await supabase.from('orders').insert({
+          user_id: session.user.id,
+          product_id: savedProductId,
+          plan: formData.plan,
+          stripe_session_id: 'annual_access_' + Date.now(),
+        });
+        
+        // Update product
+        await supabase.from('products').update({
+          status: launchStatus,
+          launch_date: launchDate.toISOString(),
+        }).eq('id', savedProductId);
+        
+        localStorage.removeItem('submitFormData');
+        localStorage.removeItem('submitMedia');
+        localStorage.removeItem('submitStep');
+        
+        toast.success(launchStatus === 'launched' ? 'Product launched!' : 'Product scheduled!');
+        navigate('/my-products?success=true');
+        return;
+      }
+      
       // Handle free plan separately
       if (formData.plan === 'free') {
         try {
@@ -1485,6 +1532,14 @@ const Submit = () => {
                           </p>
                         </div>
                       )}
+                      {hasActiveAnnualPass && (
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4 flex items-center gap-3">
+                          <Zap className="h-5 w-5 text-primary flex-shrink-0" />
+                          <p className="text-sm font-medium">
+                            <span className="font-bold">Annual Access Active</span> — All launch options are included at no additional cost.
+                          </p>
+                        </div>
+                      )}
                       {filteredPlans.map((plan) => {
                         const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
                         const isSelected = formData.plan === plan.id;
@@ -1532,6 +1587,14 @@ const Submit = () => {
                           </Card>
                         );
                       })}
+                      
+                      {/* Annual Pass Option - only show if not already active */}
+                      {!hasActiveAnnualPass && !isPaidPlan && (
+                        <div className="mt-6 pt-6 border-t">
+                          <p className="text-sm text-muted-foreground mb-4">For frequent builders</p>
+                          <AnnualPassOption />
+                        </div>
+                      )}
                   </>
                 )}
                 

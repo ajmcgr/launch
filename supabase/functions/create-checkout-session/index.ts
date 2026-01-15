@@ -50,9 +50,10 @@ serve(async (req) => {
 
     // Plan pricing configuration (amounts in cents)
     const planConfig: Record<string, { amount: number; name: string }> = {
-      join: { amount: 900, name: 'Join the Line - $9' },
-      skip: { amount: 3900, name: 'Skip the Line - $39' },
-      relaunch: { amount: 1900, name: 'Relaunch - $19' }
+      join: { amount: 900, name: 'Launch Lite - $9' },
+      skip: { amount: 3900, name: 'Launch - $39' },
+      relaunch: { amount: 1900, name: 'Relaunch - $19' },
+      annual_access: { amount: 9900, name: 'Launch Annual Access - $99' }
     };
 
     const selectedPlan = planConfig[plan];
@@ -105,6 +106,15 @@ serve(async (req) => {
     const productionUrl = (Deno.env.get('PRODUCTION_URL') || req.headers.get('origin') || '').replace(/\/$/, '');
     console.log('Using production URL:', productionUrl);
     
+    // Set success/cancel URLs based on plan type
+    const isAnnualAccess = plan === 'annual_access';
+    const successUrl = isAnnualAccess 
+      ? `${productionUrl}/settings?tab=billing&success=annual`
+      : `${productionUrl}/my-products?success=true`;
+    const cancelUrl = isAnnualAccess
+      ? `${productionUrl}/settings?tab=billing&canceled=true`
+      : `${productionUrl}/submit?canceled=true`;
+    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
@@ -122,13 +132,13 @@ serve(async (req) => {
       ],
       mode: 'payment',
       allow_promotion_codes: true,
-      success_url: `${productionUrl}/my-products?success=true`,
-      cancel_url: `${productionUrl}/submit?canceled=true`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         user_id: user.id,
         plan,
         selected_date: selectedDate || '',
-        product_id: productId,
+        product_id: productId || '',
       },
     });
 

@@ -957,6 +957,7 @@ export type Database = {
       }
       users: {
         Row: {
+          annual_access_expires_at: string | null
           avatar_url: string | null
           bio: string | null
           created_at: string | null
@@ -969,6 +970,7 @@ export type Database = {
           notify_on_follow: boolean | null
           notify_on_launch: boolean | null
           notify_on_vote: boolean | null
+          plan: string | null
           stripe_customer_id: string | null
           telegram: string | null
           twitter: string | null
@@ -978,6 +980,7 @@ export type Database = {
           youtube: string | null
         }
         Insert: {
+          annual_access_expires_at?: string | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
@@ -990,6 +993,7 @@ export type Database = {
           notify_on_follow?: boolean | null
           notify_on_launch?: boolean | null
           notify_on_vote?: boolean | null
+          plan?: string | null
           stripe_customer_id?: string | null
           telegram?: string | null
           twitter?: string | null
@@ -999,6 +1003,7 @@ export type Database = {
           youtube?: string | null
         }
         Update: {
+          annual_access_expires_at?: string | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
@@ -1011,6 +1016,7 @@ export type Database = {
           notify_on_follow?: boolean | null
           notify_on_launch?: boolean | null
           notify_on_vote?: boolean | null
+          plan?: string | null
           stripe_customer_id?: string | null
           telegram?: string | null
           twitter?: string | null
