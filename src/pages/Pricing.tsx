@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Lock } from 'lucide-react';
+import { Check, Lock, Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import stripeLogo from '@/assets/stripe-logo.png';
 import { Testimonials } from '@/components/Testimonials';
@@ -133,6 +133,72 @@ const Pricing = () => {
           subtitle="Join hundreds of founders who've launched successfully on Launch"
           maxItems={2}
         />
+
+        {/* Pass Section */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Launch Pass</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Unlimited launches for a full year — one simple price
+            </p>
+          </div>
+
+          <Card className="max-w-lg mx-auto relative hover:shadow-lg transition-shadow border-primary shadow-md">
+            <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
+              Best for Power Launchers
+            </Badge>
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Pass</CardTitle>
+              <CardDescription>12 months of unlimited access</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-center">
+                <div className="text-5xl font-bold">
+                  $99<span className="text-base font-normal text-muted-foreground"> / year</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">One-time payment</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+                  <Rocket className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Unlimited Launches</span>
+                </div>
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+                  <RefreshCw className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Unlimited Relaunches</span>
+                </div>
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+                  <Zap className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Future Features</span>
+                </div>
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">12 Months Access</span>
+                </div>
+              </div>
+
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">Skip the queue on all your launches</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">Perfect for agencies & serial builders</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">All future non-advertising features included</span>
+                </li>
+              </ul>
+
+              <Button asChild className="w-full" size="lg">
+                <Link to="/pass">Get Your Pass</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Advertising Section */}
         <div className="mt-20">
