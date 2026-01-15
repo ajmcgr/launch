@@ -250,9 +250,9 @@ const Admin = () => {
           </div>
         </div>
 
-        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden">
-          <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden flex flex-col">
+          <div className="container mx-auto px-4 py-8 flex-1 flex flex-col">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 auto-rows-fr">
               <Card className="relative overflow-hidden rounded-2xl">
                 <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
                 <CardHeader className="pb-2">
