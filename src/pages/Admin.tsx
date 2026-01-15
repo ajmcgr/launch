@@ -308,14 +308,17 @@ const Admin = () => {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <Tabs defaultValue="metrics" className="flex-1 flex flex-col min-h-0">
-        <div className="bg-background sticky top-0 z-10 shrink-0">
-          <div className="container mx-auto px-4 py-4 md:py-6 relative">
-            <h1 className="text-4xl font-bold text-center">Admin</h1>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:block">
-              <TabsList>
-                <TabsTrigger value="metrics">Metrics</TabsTrigger>
-                <TabsTrigger value="manage">Ops</TabsTrigger>
-              </TabsList>
+        <div className="bg-background sticky top-0 z-10 shrink-0 border-b">
+          <div className="container mx-auto px-4 py-4 md:py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1" />
+              <h1 className="text-4xl font-bold">Admin</h1>
+              <div className="flex-1 flex justify-end">
+                <TabsList className="hidden md:flex">
+                  <TabsTrigger value="metrics">Metrics</TabsTrigger>
+                  <TabsTrigger value="manage">Ops</TabsTrigger>
+                </TabsList>
+              </div>
             </div>
           </div>
           <div className="container mx-auto px-4 pb-4 md:hidden flex justify-center">
