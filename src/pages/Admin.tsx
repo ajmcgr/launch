@@ -49,13 +49,26 @@ const Admin = () => {
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [allProductsRes, usersRes, votesRes, ratingsRes, sponsoredRes, ordersRes] = await Promise.all([
+      const [
+        allProductsRes, 
+        usersRes, 
+        votesRes, 
+        ratingsRes, 
+        sponsoredRes, 
+        ordersRes,
+        commentsRes,
+        badgesRes,
+        mrrRes,
+      ] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('votes').select('id', { count: 'exact', head: true }),
         supabase.from('product_ratings').select('id', { count: 'exact', head: true }),
         supabase.from('sponsored_products').select('id, sponsorship_type'),
         supabase.from('orders').select('plan').in('plan', ['join', 'skip']),
+        supabase.from('comments').select('id', { count: 'exact', head: true }),
+        supabase.from('products').select('id', { count: 'exact', head: true }).eq('badge_embedded', true),
+        supabase.from('products').select('verified_mrr').not('verified_mrr', 'is', null),
       ]);
 
       // Calculate advertising revenue from all sponsorships
@@ -74,6 +87,10 @@ const Admin = () => {
         else if (order.plan === 'skip') totalRevenue += 39;
       });
 
+      // Calculate total verified MRR (stored in cents, convert to dollars)
+      const mrrProducts = mrrRes.data || [];
+      const totalVerifiedMRR = mrrProducts.reduce((sum, p) => sum + (p.verified_mrr || 0), 0) / 100;
+
       return {
         totalProducts: allProductsRes.count || 0,
         totalUsers: usersRes.count || 0,
@@ -81,6 +98,9 @@ const Admin = () => {
         totalRatings: ratingsRes.count || 0,
         totalSponsorships: sponsorships.length,
         totalRevenue: totalRevenue,
+        totalComments: commentsRes.count || 0,
+        totalBadges: badgesRes.count || 0,
+        totalVerifiedMRR: totalVerifiedMRR,
       };
     },
     enabled: isAdmin,
@@ -218,11 +238,10 @@ const Admin = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">⚡ {stats?.totalProducts || 0}</div>
@@ -232,7 +251,6 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Members</CardTitle>
-            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">🎉 {stats?.totalUsers || 0}</div>
@@ -242,7 +260,6 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Votes</CardTitle>
-            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">⬆ {stats?.totalVotes || 0}</div>
@@ -252,7 +269,6 @@ const Admin = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Ratings</CardTitle>
-            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">⭐ {stats?.totalRatings || 0}</div>
@@ -261,8 +277,16 @@ const Admin = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Comments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">💬 {stats?.totalComments || 0}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Sponsors</CardTitle>
-            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
@@ -271,8 +295,25 @@ const Admin = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Badges Deployed</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">🏅 {stats?.totalBadges || 0}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Verified MRR</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <img src="/images/launch-logo.png" alt="Launch" className="h-5" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
