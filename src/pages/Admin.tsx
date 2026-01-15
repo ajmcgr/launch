@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Shield, Calendar, Tags } from 'lucide-react';
+import { Calendar, Tags } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import { format } from 'date-fns';
 
@@ -216,10 +216,7 @@ const Admin = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-2 mb-8">
-        <Shield className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold">Admin Panel</h1>
-      </div>
+      <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <Card>
