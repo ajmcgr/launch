@@ -7,13 +7,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Zap, X } from 'lucide-react';
 
-interface AnnualPassOptionProps {
+interface PassOptionProps {
   onClose?: () => void;
   showClose?: boolean;
   variant?: 'inline' | 'modal';
 }
 
-export const AnnualPassOption = ({ onClose, showClose = false, variant = 'inline' }: AnnualPassOptionProps) => {
+export const PassOption = ({ onClose, showClose = false, variant = 'inline' }: PassOptionProps) => {
   const [loading, setLoading] = useState(false);
 
   const handlePurchase = async () => {
@@ -42,7 +42,7 @@ export const AnnualPassOption = ({ onClose, showClose = false, variant = 'inline
         throw new Error('No checkout URL returned');
       }
     } catch (error) {
-      console.error('Annual pass purchase error:', error);
+      console.error('Pass purchase error:', error);
       toast.error('Failed to initiate purchase');
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ export const AnnualPassOption = ({ onClose, showClose = false, variant = 'inline
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Zap className="h-5 w-5 text-primary" />
-          <CardTitle className="text-lg">Launch Annual Access</CardTitle>
+          <CardTitle className="text-lg">Launch Pass</CardTitle>
         </div>
         <CardDescription className="text-sm">
           For frequent builders
@@ -107,7 +107,7 @@ export const AnnualPassOption = ({ onClose, showClose = false, variant = 'inline
           className="w-full"
           variant="outline"
         >
-          {loading ? 'Processing...' : 'Get Annual Access'}
+          {loading ? 'Processing...' : 'Get Pass'}
         </Button>
       </CardContent>
     </Card>

@@ -18,8 +18,8 @@ import { format, addDays } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
-import { useAnnualPass } from '@/hooks/use-annual-pass';
-import { AnnualPassOption } from '@/components/AnnualPassOption';
+import { usePass } from '@/hooks/use-pass';
+import { PassOption } from '@/components/PassOption';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -115,9 +115,9 @@ const Submit = () => {
   const [newTagName, setNewTagName] = useState('');
   const [isCreatingTag, setIsCreatingTag] = useState(false);
   
-  // Annual pass status
-  const { data: annualPassStatus } = useAnnualPass(user?.id);
-  const hasActiveAnnualPass = annualPassStatus?.hasActivePass || false;
+  // Pass status
+  const { data: passStatus } = usePass(user?.id);
+  const hasActivePass = passStatus?.hasActivePass || false;
 
   // Save to localStorage whenever formData changes
   useEffect(() => {
@@ -891,9 +891,9 @@ const Submit = () => {
       const canReuseExistingPlan = hasExistingPlan && existingOrders[0].plan !== 'join';
       const isUpgrading = hasExistingPlan && existingOrders[0].plan === 'join' && formData.plan !== 'join';
       
-      // Check if user has active Annual Access Pass - bypass payment for non-advertising features
-      if (hasActiveAnnualPass && formData.plan !== 'free') {
-        toast.info('Processing with Annual Access...');
+      // Check if user has active Pass - bypass payment for non-advertising features
+      if (hasActivePass && formData.plan !== 'free') {
+        toast.info('Processing with Pass...');
         
         // Determine launch date
         let launchDate: Date;
@@ -1532,11 +1532,11 @@ const Submit = () => {
                           </p>
                         </div>
                       )}
-                      {hasActiveAnnualPass && (
+                      {hasActivePass && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4 flex items-center gap-3">
                           <Zap className="h-5 w-5 text-primary flex-shrink-0" />
                           <p className="text-sm font-medium">
-                            <span className="font-bold">Annual Access Active</span> — All launch options are included at no additional cost.
+                            <span className="font-bold">Pass Active</span> — All launch options are included at no additional cost.
                           </p>
                         </div>
                       )}
@@ -1588,11 +1588,11 @@ const Submit = () => {
                         );
                       })}
                       
-                      {/* Annual Pass Option - only show if not already active */}
-                      {!hasActiveAnnualPass && !isPaidPlan && (
+                      {/* Pass Option - only show if not already active */}
+                      {!hasActivePass && !isPaidPlan && (
                         <div className="mt-6 pt-6 border-t">
                           <p className="text-sm text-muted-foreground mb-4">For frequent builders</p>
-                          <AnnualPassOption />
+                          <PassOption />
                         </div>
                       )}
                   </>

@@ -6,17 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Check, Lock, Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useAnnualPass } from '@/hooks/use-annual-pass';
+import { usePass } from '@/hooks/use-pass';
 import stripeLogo from '@/assets/stripe-logo.png';
 
-const AnnualPass = () => {
+const Pass = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { data: passData, isLoading: passLoading } = useAnnualPass(userId);
+  const { data: passData, isLoading: passLoading } = usePass(userId);
   
-  const hasActiveAnnualPass = passData?.hasActivePass ?? false;
+  const hasActivePass = passData?.hasActivePass ?? false;
   const expiresAt = passData?.expiresAt;
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const AnnualPass = () => {
       if (!session) {
         toast({
           title: "Sign in required",
-          description: "Please sign in to purchase the Annual Pass.",
+          description: "Please sign in to purchase the Pass.",
           variant: "destructive",
         });
         navigate('/auth');
@@ -110,7 +110,7 @@ const AnnualPass = () => {
   return (
     <>
       <Helmet>
-        <title>Annual Pass - Launch</title>
+        <title>Pass - Launch</title>
         <meta name="description" content="Get unlimited access to all Launch features for one year. For frequent builders who launch multiple products." />
       </Helmet>
 
@@ -119,19 +119,19 @@ const AnnualPass = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <p className="text-sm font-medium text-muted-foreground mb-3">For frequent builders</p>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Annual Pass</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Pass</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Unlimited access to all Launch features for one year.
             </p>
           </div>
 
           {/* Active Pass Notice */}
-          {hasActiveAnnualPass && expiresAt && (
+          {hasActivePass && expiresAt && (
             <Card className="mb-8 border-primary bg-primary/5">
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center gap-2 text-primary font-medium mb-2">
                   <Check className="h-5 w-5" />
-                  <span>You have an active Annual Pass</span>
+                  <span>You have an active Pass</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Your pass is valid until {new Date(expiresAt).toLocaleDateString('en-US', { 
@@ -160,9 +160,9 @@ const AnnualPass = () => {
                   size="lg" 
                   className="text-lg px-8 py-6"
                   onClick={handlePurchase}
-                  disabled={isLoading || hasActiveAnnualPass}
+                  disabled={isLoading || hasActivePass}
                 >
-                  {isLoading ? 'Processing...' : hasActiveAnnualPass ? 'Already Active' : 'Get Annual Pass'}
+                  {isLoading ? 'Processing...' : hasActivePass ? 'Already Active' : 'Get Pass'}
                 </Button>
               </div>
             </CardContent>
@@ -234,13 +234,13 @@ const AnnualPass = () => {
                 <div>
                   <h3 className="font-semibold mb-2">What happens after 12 months?</h3>
                   <p className="text-sm text-muted-foreground">
-                    You'll return to standard pricing. You can purchase another Annual Pass at any time.
+                    You'll return to standard pricing. You can purchase another Pass at any time.
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2">Can I get a refund?</h3>
                   <p className="text-sm text-muted-foreground">
-                    Annual Pass purchases are non-refundable. If you have concerns, contact us before purchasing.
+                    Pass purchases are non-refundable. If you have concerns, contact us before purchasing.
                   </p>
                 </div>
                 <div>
@@ -265,4 +265,4 @@ const AnnualPass = () => {
   );
 };
 
-export default AnnualPass;
+export default Pass;

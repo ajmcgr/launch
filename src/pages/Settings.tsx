@@ -11,8 +11,8 @@ import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StripeConnectCard } from '@/components/StripeConnectCard';
-import { AnnualPassStatus } from '@/components/AnnualPassStatus';
-import { useAnnualPass } from '@/hooks/use-annual-pass';
+import { PassStatus } from '@/components/PassStatus';
+import { usePass } from '@/hooks/use-pass';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -39,8 +39,8 @@ const Settings = () => {
   });
   const [uploading, setUploading] = useState(false);
   
-  // Annual pass status
-  const { data: annualPassStatus } = useAnnualPass(user?.id);
+  // Pass status
+  const { data: passStatus } = usePass(user?.id);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -462,10 +462,10 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="billing" className="space-y-6">
-            {/* Annual Pass Status */}
-            <AnnualPassStatus 
-              hasActivePass={annualPassStatus?.hasActivePass || false}
-              expiresAt={annualPassStatus?.expiresAt || null}
+            {/* Pass Status */}
+            <PassStatus 
+              hasActivePass={passStatus?.hasActivePass || false}
+              expiresAt={passStatus?.expiresAt || null}
             />
             
             {/* Stripe Billing Portal */}
