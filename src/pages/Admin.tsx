@@ -256,70 +256,106 @@ const Admin = () => {
           </div>
         </div>
 
-        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden flex flex-col min-h-0">
-          <div className="container mx-auto px-4 py-2 flex-1 flex flex-col">
-            <div className="grid grid-cols-3 gap-3 flex-1" style={{ gridTemplateRows: 'repeat(3, 1fr)' }}>
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Products</span>
-                <div className="text-2xl font-bold">⚡ {stats?.totalProducts || 0}</div>
-                <Sparkline data={[12, 18, 24, 32, 45, 52, 68, 75, 88]} />
+        <TabsContent value="metrics" className="flex-1 mt-0 data-[state=inactive]:hidden flex flex-col min-h-0 overflow-auto">
+          <div className="container mx-auto px-4 py-4 md:py-6 flex-1 flex flex-col">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 flex-1 auto-rows-fr">
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Products</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
+                  <Sparkline data={[12, 18, 24, 32, 45, 52, 68, 75, 88]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Members</span>
-                <div className="text-2xl font-bold">🎉 {stats?.totalUsers || 0}</div>
-                <Sparkline data={[20, 35, 42, 55, 68, 82, 95, 110, 125]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Members</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
+                  <Sparkline data={[20, 35, 42, 55, 68, 82, 95, 110, 125]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Votes</span>
-                <div className="text-2xl font-bold">⬆ {stats?.totalVotes || 0}</div>
-                <Sparkline data={[50, 85, 120, 180, 240, 320, 380, 450, 520]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Votes</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
+                  <Sparkline data={[50, 85, 120, 180, 240, 320, 380, 450, 520]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Ratings</span>
-                <div className="text-2xl font-bold">⭐ {stats?.totalRatings || 0}</div>
-                <Sparkline data={[8, 15, 22, 35, 48, 62, 75, 88, 102]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Ratings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
+                  <Sparkline data={[8, 15, 22, 35, 48, 62, 75, 88, 102]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Comments</span>
-                <div className="text-2xl font-bold">💬 {stats?.totalComments || 0}</div>
-                <Sparkline data={[15, 28, 42, 58, 75, 92, 108, 125, 145]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Comments</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
+                  <Sparkline data={[15, 28, 42, 58, 75, 92, 108, 125, 145]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Sponsors</span>
-                <div className="text-2xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
-                <Sparkline data={[1, 2, 3, 4, 5, 6, 7, 8, 10]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Sponsors</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
+                  <Sparkline data={[1, 2, 3, 4, 5, 6, 7, 8, 10]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Badges</span>
-                <div className="text-2xl font-bold">🏅 {stats?.totalBadges || 0}</div>
-                <Sparkline data={[5, 12, 18, 28, 38, 48, 58, 68, 80]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Badges Awarded</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
+                  <Sparkline data={[5, 12, 18, 28, 38, 48, 58, 68, 80]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Verified MRR</span>
-                <div className="text-2xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
-                <Sparkline data={[500, 1200, 2500, 4000, 6500, 9000, 12000, 15000, 18500]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Verified MRR</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
+                  <Sparkline data={[500, 1200, 2500, 4000, 6500, 9000, 12000, 15000, 18500]} />
+                </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-xl flex flex-col justify-between p-3">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-2 right-2 h-5" />
-                <span className="text-sm font-medium text-muted-foreground">Revenue</span>
-                <div className="text-2xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
-                <Sparkline data={[100, 250, 450, 700, 950, 1200, 1500, 1850, 2200]} />
+              <Card className="relative overflow-hidden rounded-2xl">
+                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base font-medium text-muted-foreground">Revenue</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
+                  <Sparkline data={[100, 250, 450, 700, 950, 1200, 1500, 1850, 2200]} />
+                </CardContent>
               </Card>
             </div>
           </div>
