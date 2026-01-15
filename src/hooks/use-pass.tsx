@@ -1,16 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface AnnualPassStatus {
+export interface PassStatus {
   hasActivePass: boolean;
   expiresAt: Date | null;
   plan: string | null;
 }
 
-export const useAnnualPass = (userId: string | undefined) => {
+export const usePass = (userId: string | undefined) => {
   return useQuery({
-    queryKey: ['annual-pass', userId],
-    queryFn: async (): Promise<AnnualPassStatus> => {
+    queryKey: ['pass', userId],
+    queryFn: async (): Promise<PassStatus> => {
       if (!userId) {
         return { hasActivePass: false, expiresAt: null, plan: null };
       }

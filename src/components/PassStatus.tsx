@@ -2,14 +2,14 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Calendar } from 'lucide-react';
-import { AnnualPassOption } from './AnnualPassOption';
+import { PassOption } from './PassOption';
 
-interface AnnualPassStatusProps {
+interface PassStatusProps {
   hasActivePass: boolean;
   expiresAt: Date | null;
 }
 
-export const AnnualPassStatus = ({ hasActivePass, expiresAt }: AnnualPassStatusProps) => {
+export const PassStatus = ({ hasActivePass, expiresAt }: PassStatusProps) => {
   if (hasActivePass && expiresAt) {
     const daysRemaining = Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     
@@ -19,12 +19,12 @@ export const AnnualPassStatus = ({ hasActivePass, expiresAt }: AnnualPassStatusP
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="h-5 w-5 text-primary" />
-              <CardTitle>Annual Access</CardTitle>
+              <CardTitle>Launch Pass</CardTitle>
             </div>
             <Badge variant="default">Active</Badge>
           </div>
           <CardDescription>
-            Your annual pass is active
+            Your pass is active
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -43,5 +43,5 @@ export const AnnualPassStatus = ({ hasActivePass, expiresAt }: AnnualPassStatusP
     );
   }
 
-  return <AnnualPassOption />;
+  return <PassOption />;
 };
