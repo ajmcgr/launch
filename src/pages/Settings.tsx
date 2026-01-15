@@ -11,9 +11,12 @@ import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StripeConnectCard } from '@/components/StripeConnectCard';
+import { AnnualPassStatus } from '@/components/AnnualPassStatus';
+import { useAnnualPass } from '@/hooks/use-annual-pass';
 
 const Settings = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
@@ -35,6 +38,9 @@ const Settings = () => {
     notify_on_launch: true,
   });
   const [uploading, setUploading] = useState(false);
+  
+  // Annual pass status
+  const { data: annualPassStatus } = useAnnualPass(user?.id);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,9 +49,14 @@ const Settings = () => {
       } else {
         setUser(session.user);
         fetchProfile(session.user.id);
+        
+        // Show success toast for annual pass purchase
+        if (searchParams.get('success') === 'annual') {
+          toast.success('Annual Access activated! You now have unlimited access for 12 months.');
+        }
       }
     });
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
@@ -450,10 +461,17 @@ const Settings = () => {
             <StripeConnectCard userId={user.id} />
           </TabsContent>
 
-          <TabsContent value="billing">
+          <TabsContent value="billing" className="space-y-6">
+            {/* Annual Pass Status */}
+            <AnnualPassStatus 
+              hasActivePass={annualPassStatus?.hasActivePass || false}
+              expiresAt={annualPassStatus?.expiresAt || null}
+            />
+            
+            {/* Stripe Billing Portal */}
             <Card>
               <CardHeader>
-                <CardTitle>Billing</CardTitle>
+                <CardTitle>Payment History</CardTitle>
                 <CardDescription>
                   Manage your payment methods and view billing history
                 </CardDescription>
