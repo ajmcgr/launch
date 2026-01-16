@@ -52,19 +52,36 @@ serve(async (req) => {
       throw new Error('Beehiiv configuration is missing');
     }
 
-    // Fetch all users from auth.users
+    // Parse page from request body (default to 1)
+    let page = 1;
+    try {
+      const body = await req.json();
+      page = body.page || 1;
+    } catch {
+      // No body or invalid JSON, use default
+    }
+
+    const perPage = 100; // Process 100 users per call to stay within timeout
+
+    // Fetch users with pagination
     const { data: authUsers, error: authError } = await adminClient.auth.admin.listUsers({
-      perPage: 1000
+      page: page,
+      perPage: perPage
     });
 
     if (authError) {
       throw new Error(`Failed to fetch users: ${authError.message}`);
     }
 
-    console.log(`Found ${authUsers.users.length} users to sync`);
+    const totalUsers = authUsers.users.length;
+    const hasMore = totalUsers === perPage; // If we got a full page, there might be more
+
+    console.log(`Page ${page}: Found ${totalUsers} users to sync`);
 
     const results = {
-      total: authUsers.users.length,
+      page,
+      usersOnPage: totalUsers,
+      hasMore,
       success: 0,
       failed: 0,
       skipped: 0,
@@ -90,7 +107,7 @@ serve(async (req) => {
             body: JSON.stringify({
               email: authUser.email,
               reactivate_existing: false,
-              send_welcome_email: false, // Don't spam existing users
+              send_welcome_email: false,
             }),
           }
         );
@@ -100,7 +117,6 @@ serve(async (req) => {
           console.log(`Subscribed: ${authUser.email}`);
         } else {
           const errorText = await response.text();
-          // 409 means already subscribed, which is fine
           if (response.status === 409) {
             results.skipped++;
             console.log(`Already subscribed: ${authUser.email}`);
@@ -111,15 +127,15 @@ serve(async (req) => {
           }
         }
 
-        // Rate limiting - wait 100ms between requests
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Rate limiting - wait 50ms between requests (faster, still safe)
+        await new Promise(resolve => setTimeout(resolve, 50));
       } catch (error) {
         results.failed++;
         results.errors.push(`${authUser.email}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
 
-    console.log('Sync complete:', results);
+    console.log(`Page ${page} sync complete:`, results);
 
     return new Response(
       JSON.stringify({ success: true, results }),

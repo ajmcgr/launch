@@ -452,18 +452,35 @@ const Admin = () => {
                         disabled={syncingBeehiiv}
                         onClick={async () => {
                           setSyncingBeehiiv(true);
+                          let totalSuccess = 0;
+                          let totalSkipped = 0;
+                          let totalFailed = 0;
+                          let page = 1;
+                          let hasMore = true;
+                          
                           try {
-                            const { data, error } = await supabase.functions.invoke('sync-users-to-beehiiv');
-                            if (error) throw error;
-                            
-                            const results = data?.results;
-                            if (results) {
-                              toast.success(
-                                `Beehiiv sync complete: ${results.success} subscribed, ${results.skipped} already subscribed, ${results.failed} failed`
-                              );
-                            } else {
-                              toast.success('Beehiiv sync completed');
+                            while (hasMore) {
+                              toast.info(`Syncing page ${page}...`);
+                              const { data, error } = await supabase.functions.invoke('sync-users-to-beehiiv', {
+                                body: { page }
+                              });
+                              if (error) throw error;
+                              
+                              const results = data?.results;
+                              if (results) {
+                                totalSuccess += results.success;
+                                totalSkipped += results.skipped;
+                                totalFailed += results.failed;
+                                hasMore = results.hasMore;
+                                page++;
+                              } else {
+                                hasMore = false;
+                              }
                             }
+                            
+                            toast.success(
+                              `Beehiiv sync complete: ${totalSuccess} subscribed, ${totalSkipped} already subscribed, ${totalFailed} failed`
+                            );
                           } catch (error: any) {
                             console.error('Beehiiv sync error:', error);
                             toast.error(error.message || 'Failed to sync to Beehiiv');
