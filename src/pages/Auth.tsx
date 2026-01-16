@@ -140,20 +140,30 @@ const Auth = () => {
     }
   };
 
-  // Subscribe user to newsletter after successful signup
+  // Subscribe ALL new users to newsletter (email and OAuth signups)
+  useEffect(() => {
+    // Track signup intent when on signup mode
+    if (isSignUp) {
+      localStorage.setItem('pendingNewsletterSignup', 'true');
+    }
+  }, [isSignUp]);
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // Track signup intent in localStorage when user initiates signup
-      if (isSignUp && !session) {
-        localStorage.setItem('pendingNewsletterSignup', 'true');
-      }
-      
       // Handle newsletter subscription for new users
       if (event === 'SIGNED_IN' && session?.user?.email) {
         const isPendingSignup = localStorage.getItem('pendingNewsletterSignup') === 'true';
+        const subscribedKey = `beehiiv_subscribed_${session.user.id}`;
+        const alreadySubscribed = localStorage.getItem(subscribedKey) === 'true';
         
-        if (isPendingSignup) {
+        // Subscribe if: pending signup OR new user (check created_at is within last 5 minutes)
+        const userCreatedAt = new Date(session.user.created_at).getTime();
+        const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+        const isNewUser = userCreatedAt > fiveMinutesAgo;
+        
+        if ((isPendingSignup || isNewUser) && !alreadySubscribed) {
           localStorage.removeItem('pendingNewsletterSignup');
+          localStorage.setItem(subscribedKey, 'true');
           
           try {
             console.log('Subscribing new user to newsletter:', session.user.email);
@@ -174,7 +184,7 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [isSignUp]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4">
