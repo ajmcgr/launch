@@ -1,12 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const hookSecret = Deno.env.get("SEND_EMAIL_HOOK_SECRET");
 
 interface AuthEmailPayload {
   user: {
@@ -106,12 +103,23 @@ const getEmailContent = (type: string, confirmUrl: string, userName?: string) =>
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
   }
 
   try {
-    const payload: AuthEmailPayload = await req.json();
+    let payload: AuthEmailPayload;
+    
+    // Verify webhook signature if secret is configured
+    if (hookSecret) {
+      const payloadText = await req.text();
+      const headers = Object.fromEntries(req.headers);
+      const wh = new Webhook(hookSecret);
+      payload = wh.verify(payloadText, headers) as AuthEmailPayload;
+    } else {
+      payload = await req.json();
+    }
+    
     console.log("Auth email request:", JSON.stringify(payload, null, 2));
 
     const { user, email_data } = payload;
@@ -140,17 +148,17 @@ serve(async (req) => {
 
     console.log("Email sent successfully:", data);
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({}), {
       status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
     console.error("Error in send-auth-email:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: { http_code: error.code, message: error.message } }),
       {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        status: 401,
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
