@@ -516,7 +516,7 @@ const LaunchDetail = () => {
                       >
                         <Avatar className="h-9 w-9">
                           <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                          <AvatarFallback>{maker.username[0].toUpperCase()}</AvatarFallback>
+                          <AvatarFallback>{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm">@{maker.username}</p>
