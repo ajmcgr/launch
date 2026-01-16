@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.create-advertising-checkout]
 verify_jwt = false
+
+[functions.send-auth-email]
+verify_jwt = false
