@@ -230,7 +230,7 @@ const Products = () => {
           mrr_verified_at,
           product_media(url, type),
           product_category_map(category_id),
-          product_makers(user_id, users(username, avatar_url))
+          product_makers(user_id, public_profiles(username, avatar_url))
         `)
         .eq('status', 'launched')
         .gte('launch_date', dateRange.start)
@@ -275,8 +275,8 @@ const Products = () => {
         averageRating: ratingMap.get(p.id)?.avg || 0,
         ratingCount: ratingMap.get(p.id)?.count || 0,
         makers: p.product_makers?.map((m: any) => ({
-          username: m.users?.username || 'Anonymous',
-          avatar_url: m.users?.avatar_url || ''
+          username: m.public_profiles?.username || 'Anonymous',
+          avatar_url: m.public_profiles?.avatar_url || ''
         })) || []
       }));
 
@@ -349,7 +349,7 @@ const Products = () => {
           mrr_verified_at,
           product_media(url, type),
           product_category_map(category_id),
-          product_makers(user_id, users(username, avatar_url))
+          product_makers(user_id, public_profiles(username, avatar_url))
         `)
         .eq('status', 'launched')
         .gte('launch_date', startOfYear)
@@ -393,8 +393,8 @@ const Products = () => {
         averageRating: ratingMap.get(p.id)?.avg || 0,
         ratingCount: ratingMap.get(p.id)?.count || 0,
         makers: p.product_makers?.map((m: any) => ({
-          username: m.users?.username || 'Anonymous',
-          avatar_url: m.users?.avatar_url || ''
+          username: m.public_profiles?.username || 'Anonymous',
+          avatar_url: m.public_profiles?.avatar_url || ''
         })) || []
       }));
 

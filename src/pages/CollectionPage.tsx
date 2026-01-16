@@ -159,7 +159,7 @@ const CollectionPage = () => {
           mrr_verified_at,
           product_media(url, type),
           product_category_map(category_id),
-          product_makers(user_id, users(username, avatar_url))
+          product_makers(user_id, public_profiles(username, avatar_url))
         `)
         .eq('status', 'launched')
         .in('id', productIds);
@@ -215,8 +215,8 @@ const CollectionPage = () => {
         verifiedMrr: p.verified_mrr || null,
         mrrVerifiedAt: p.mrr_verified_at || null,
         makers: p.product_makers?.map((m: any) => ({
-          username: m.users?.username || 'Anonymous',
-          avatar_url: m.users?.avatar_url || ''
+          username: m.public_profiles?.username || 'Anonymous',
+          avatar_url: m.public_profiles?.avatar_url || ''
         })) || [],
         launch_date: p.launch_date
       }));
