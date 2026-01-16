@@ -16,7 +16,6 @@ const Admin = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [syncingBeehiiv, setSyncingBeehiiv] = useState(false);
   
   
 
@@ -446,61 +445,6 @@ const Admin = () => {
                         <CardTitle>Members</CardTitle>
                         <CardDescription>Manage member accounts and roles</CardDescription>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={syncingBeehiiv}
-                        onClick={async () => {
-                          setSyncingBeehiiv(true);
-                          let totalSuccess = 0;
-                          let totalSkipped = 0;
-                          let totalFailed = 0;
-                          let page = 1;
-                          let hasMore = true;
-                          
-                          try {
-                            while (hasMore) {
-                              toast.info(`Syncing page ${page}...`);
-                              const { data, error } = await supabase.functions.invoke('sync-users-to-beehiiv', {
-                                body: { page }
-                              });
-                              if (error) throw error;
-                              
-                              const results = data?.results;
-                              if (results) {
-                                totalSuccess += results.success;
-                                totalSkipped += results.skipped;
-                                totalFailed += results.failed;
-                                hasMore = results.hasMore;
-                                page++;
-                              } else {
-                                hasMore = false;
-                              }
-                            }
-                            
-                            toast.success(
-                              `Beehiiv sync complete: ${totalSuccess} subscribed, ${totalSkipped} already subscribed, ${totalFailed} failed`
-                            );
-                          } catch (error: any) {
-                            console.error('Beehiiv sync error:', error);
-                            toast.error(error.message || 'Failed to sync to Beehiiv');
-                          } finally {
-                            setSyncingBeehiiv(false);
-                          }
-                        }}
-                      >
-                        {syncingBeehiiv ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Syncing...
-                          </>
-                        ) : (
-                          <>
-                            <Mail className="h-4 w-4 mr-2" />
-                            Sync to Beehiiv
-                          </>
-                        )}
-                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent>
