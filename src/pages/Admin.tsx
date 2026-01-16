@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Calendar, Tags } from 'lucide-react';
+import { Calendar, Tags, Mail, Loader2 } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import Sparkline from '@/components/Sparkline';
 import { format } from 'date-fns';
@@ -16,6 +16,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [syncingBeehiiv, setSyncingBeehiiv] = useState(false);
   
   
 
@@ -440,8 +441,50 @@ const Admin = () => {
               <TabsContent value="users" className="space-y-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Members</CardTitle>
-                    <CardDescription>Manage member accounts and roles</CardDescription>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle>Members</CardTitle>
+                        <CardDescription>Manage member accounts and roles</CardDescription>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={syncingBeehiiv}
+                        onClick={async () => {
+                          setSyncingBeehiiv(true);
+                          try {
+                            const { data, error } = await supabase.functions.invoke('sync-users-to-beehiiv');
+                            if (error) throw error;
+                            
+                            const results = data?.results;
+                            if (results) {
+                              toast.success(
+                                `Beehiiv sync complete: ${results.success} subscribed, ${results.skipped} already subscribed, ${results.failed} failed`
+                              );
+                            } else {
+                              toast.success('Beehiiv sync completed');
+                            }
+                          } catch (error: any) {
+                            console.error('Beehiiv sync error:', error);
+                            toast.error(error.message || 'Failed to sync to Beehiiv');
+                          } finally {
+                            setSyncingBeehiiv(false);
+                          }
+                        }}
+                      >
+                        {syncingBeehiiv ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Syncing...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Sync to Beehiiv
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
