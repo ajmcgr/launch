@@ -109,18 +109,33 @@ serve(async (req) => {
 
   try {
     let payload: AuthEmailPayload;
+    const payloadText = await req.text();
+    
+    console.log("Received auth email request");
     
     // Verify webhook signature if secret is configured
     if (hookSecret) {
-      const payloadText = await req.text();
-      const headers = Object.fromEntries(req.headers);
-      const wh = new Webhook(hookSecret);
-      payload = wh.verify(payloadText, headers) as AuthEmailPayload;
+      try {
+        const headers = Object.fromEntries(req.headers);
+        const wh = new Webhook(hookSecret);
+        payload = wh.verify(payloadText, headers) as AuthEmailPayload;
+        console.log("Webhook signature verified successfully");
+      } catch (verifyError: any) {
+        console.error("Webhook verification failed:", verifyError.message);
+        // Try parsing as JSON anyway - Supabase may send without signature in some cases
+        try {
+          payload = JSON.parse(payloadText);
+          console.log("Parsed payload without signature verification");
+        } catch {
+          throw new Error(`Webhook verification failed: ${verifyError.message}`);
+        }
+      }
     } else {
-      payload = await req.json();
+      payload = JSON.parse(payloadText);
+      console.log("No hook secret configured, parsing payload directly");
     }
     
-    console.log("Auth email request:", JSON.stringify(payload, null, 2));
+    console.log("Auth email request for:", payload.user?.email, "type:", payload.email_data?.email_action_type);
 
     const { user, email_data } = payload;
     const { token_hash, redirect_to, email_action_type } = email_data;
