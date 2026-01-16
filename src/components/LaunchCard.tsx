@@ -195,7 +195,7 @@ export const LaunchCard = ({
               <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>{netVotes}</span>
             </Button>
             <div className="flex -space-x-2">
-              {makers.slice(0, 3).map((maker) => (
+              {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
                 <span
                   key={maker.username}
                   onClick={(e) => {
@@ -209,7 +209,7 @@ export const LaunchCard = ({
                   >
                     <Avatar className="h-6 w-6 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
                       <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                      <AvatarFallback className="text-xs">{maker.username[0].toUpperCase()}</AvatarFallback>
+                      <AvatarFallback className="text-xs">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
                     </Avatar>
                   </Link>
                 </span>

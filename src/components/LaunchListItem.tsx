@@ -157,7 +157,7 @@ export const LaunchListItem = ({
               
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-1.5">
-                  {makers.slice(0, 3).map((maker) => (
+                  {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
                     <span
                       key={maker.username}
                       onClick={(e) => {
@@ -171,7 +171,7 @@ export const LaunchListItem = ({
                       >
                         <Avatar className="h-5 w-5 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
                           <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                          <AvatarFallback className="text-[10px]">{maker.username[0].toUpperCase()}</AvatarFallback>
+                          <AvatarFallback className="text-[10px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
                         </Avatar>
                       </Link>
                     </span>
