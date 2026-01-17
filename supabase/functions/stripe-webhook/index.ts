@@ -31,6 +31,210 @@ Deno.serve(async (req) => {
 
     console.log('Webhook event type:', event.type);
 
+    // Handle subscription events
+    if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
+      const subscription = event.data.object as Stripe.Subscription;
+      const metadata = subscription.metadata;
+      
+      if (!metadata?.user_id) {
+        console.log('No user_id in subscription metadata, skipping');
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      }
+
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+
+      // Calculate expiry date based on current period end
+      const expiryDate = new Date(subscription.current_period_end * 1000);
+      
+      // Map Stripe status to our status
+      const statusMap: Record<string, string> = {
+        'active': 'active',
+        'past_due': 'past_due',
+        'canceled': 'canceled',
+        'unpaid': 'unpaid',
+        'trialing': 'active',
+      };
+
+      const { error: updateError } = await supabaseClient
+        .from('users')
+        .update({
+          plan: 'annual_access',
+          annual_access_expires_at: expiryDate.toISOString(),
+          stripe_subscription_id: subscription.id,
+          subscription_status: statusMap[subscription.status] || subscription.status,
+          subscription_cancel_at_period_end: subscription.cancel_at_period_end,
+        })
+        .eq('id', metadata.user_id);
+
+      if (updateError) {
+        console.error('Error updating user subscription:', updateError);
+        throw updateError;
+      }
+
+      console.log(`Subscription ${event.type} processed for user ${metadata.user_id}`);
+
+      // Send confirmation email for new subscriptions
+      if (event.type === 'customer.subscription.created') {
+        try {
+          const { data: authUser } = await supabaseClient.auth.admin.getUserById(metadata.user_id);
+          
+          if (authUser?.user?.email) {
+            const expiryFormatted = expiryDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            });
+            
+            const emailHtml = `
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+                    .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                    .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+                    .logo { height: 32px; }
+                    .content { padding: 30px; }
+                    .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
+                    .content p { margin: 0 0 16px 0; color: #4b5563; }
+                    .highlight { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #e5e7eb; }
+                    .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <div class="card">
+                      <div class="header">
+                        <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
+                      </div>
+                      <div class="content">
+                        <h1>Welcome to Launch Pass! 🎉</h1>
+                        <p>Thank you for subscribing to Launch Pass. You now have unlimited access to all Launch features.</p>
+                        <div class="highlight">
+                          <p style="font-weight: 600; margin: 0;">Your subscription renews on</p>
+                          <p style="font-size: 18px; font-weight: bold; color: #111; margin: 8px 0 0 0;">${expiryFormatted}</p>
+                        </div>
+                        <p><strong>What's included:</strong></p>
+                        <ul>
+                          <li>Unlimited product launches</li>
+                          <li>Unlimited relaunches</li>
+                          <li>Priority date scheduling</li>
+                          <li>All future non-advertising features</li>
+                        </ul>
+                        <p style="color: #6b7280; font-size: 14px;"><em>Your subscription will automatically renew each year. You can cancel anytime from your account settings.</em></p>
+                      </div>
+                      <div class="footer">
+                        <p>Thank you for being part of the Launch community.</p>
+                      </div>
+                    </div>
+                  </div>
+                </body>
+              </html>
+            `;
+            
+            await resend.emails.send({
+              from: 'Launch <notifications@trylaunch.ai>',
+              to: [authUser.user.email],
+              subject: 'Welcome to Launch Pass! 🚀',
+              html: emailHtml,
+            });
+            
+            console.log('Subscription confirmation email sent');
+          }
+        } catch (emailError) {
+          console.error('Error sending subscription confirmation email:', emailError);
+        }
+      }
+
+      return new Response(JSON.stringify({ received: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+
+    // Handle subscription cancellation
+    if (event.type === 'customer.subscription.deleted') {
+      const subscription = event.data.object as Stripe.Subscription;
+      const metadata = subscription.metadata;
+      
+      if (!metadata?.user_id) {
+        console.log('No user_id in subscription metadata, skipping');
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      }
+
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+
+      const { error: updateError } = await supabaseClient
+        .from('users')
+        .update({
+          plan: null,
+          subscription_status: 'canceled',
+          stripe_subscription_id: null,
+        })
+        .eq('id', metadata.user_id);
+
+      if (updateError) {
+        console.error('Error updating user after subscription deletion:', updateError);
+        throw updateError;
+      }
+
+      console.log(`Subscription deleted for user ${metadata.user_id}`);
+
+      return new Response(JSON.stringify({ received: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+
+    // Handle invoice payment for renewals
+    if (event.type === 'invoice.payment_succeeded') {
+      const invoice = event.data.object as Stripe.Invoice;
+      
+      if (invoice.billing_reason === 'subscription_cycle' && invoice.subscription) {
+        // This is a renewal payment
+        const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+        const metadata = subscription.metadata;
+        
+        if (metadata?.user_id) {
+          const supabaseClient = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+          );
+
+          const expiryDate = new Date(subscription.current_period_end * 1000);
+          
+          await supabaseClient
+            .from('users')
+            .update({
+              annual_access_expires_at: expiryDate.toISOString(),
+              subscription_status: 'active',
+            })
+            .eq('id', metadata.user_id);
+
+          console.log(`Subscription renewed for user ${metadata.user_id} until ${expiryDate.toISOString()}`);
+        }
+      }
+
+      return new Response(JSON.stringify({ received: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       const metadata = session.metadata;

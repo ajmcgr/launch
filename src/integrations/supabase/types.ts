@@ -972,6 +972,9 @@ export type Database = {
           notify_on_vote: boolean | null
           plan: string | null
           stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_cancel_at_period_end: boolean | null
+          subscription_status: string | null
           telegram: string | null
           twitter: string | null
           updated_at: string | null
@@ -995,6 +998,9 @@ export type Database = {
           notify_on_vote?: boolean | null
           plan?: string | null
           stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_cancel_at_period_end?: boolean | null
+          subscription_status?: string | null
           telegram?: string | null
           twitter?: string | null
           updated_at?: string | null
@@ -1018,6 +1024,9 @@ export type Database = {
           notify_on_vote?: boolean | null
           plan?: string | null
           stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_cancel_at_period_end?: boolean | null
+          subscription_status?: string | null
           telegram?: string | null
           twitter?: string | null
           updated_at?: string | null

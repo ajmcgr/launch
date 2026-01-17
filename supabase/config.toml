@@ -26,3 +26,12 @@ verify_jwt = false
 
 [functions.send-auth-email]
 verify_jwt = false
+
+[functions.cancel-subscription]
+verify_jwt = false
+
+[functions.reactivate-subscription]
+verify_jwt = false
+
+[functions.send-renewal-reminders]
+verify_jwt = false
