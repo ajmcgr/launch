@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/formatTime';
@@ -31,11 +31,22 @@ export const HomeLaunchListItem = ({
   userVote,
   onVote,
 }: HomeLaunchListItemProps) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('a') || target.closest('button')) {
+      return;
+    }
+    navigate(`/launch/${slug}`);
+  };
+
   return (
-    <Link to={`/launch/${slug}`} className="block">
-      <div 
-        className="group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
-      >
+    <div 
+      className="group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="flex items-start gap-3 flex-1">
         <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
           <IconComponent className="w-5 h-5 text-primary" />
@@ -89,7 +100,6 @@ export const HomeLaunchListItem = ({
           <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>{votes}</span>
         </Button>
       </div>
-      </div>
-    </Link>
+    </div>
   );
 };

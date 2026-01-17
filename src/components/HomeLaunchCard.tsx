@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
@@ -32,10 +32,23 @@ export const HomeLaunchCard = ({
   userVote,
   onVote,
 }: HomeLaunchCardProps) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('a') || target.closest('button')) {
+      return;
+    }
+    navigate(`/launch/${slug}`);
+  };
+
   return (
-    <Link to={`/launch/${slug}`} className="block">
-      <Card className="group/card overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
-        <div className="p-6">
+    <Card 
+      className="group/card overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+      onClick={handleCardClick}
+    >
+      <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <span className="text-xl font-bold text-muted-foreground">
             #{rank}
@@ -79,7 +92,7 @@ export const HomeLaunchCard = ({
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           )}
-          </div>
+        </div>
         <p className="text-sm text-muted-foreground text-center line-clamp-2">
           {tagline}
         </p>
@@ -90,7 +103,6 @@ export const HomeLaunchCard = ({
           </div>
         )}
       </div>
-      </Card>
-    </Link>
+    </Card>
   );
 };
