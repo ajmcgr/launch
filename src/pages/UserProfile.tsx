@@ -180,7 +180,7 @@ const UserProfile = () => {
             iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
             categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
             netVotes: voteCounts[product.id] || 0,
-            makers: product.product_makers?.map((m: any) => m.users) || [],
+            makers: product.product_makers?.map((m: any) => m.users).filter((u: any) => u && u.username) || [],
           }));
 
           setUpvotedProducts(formattedUpvotedProducts);
@@ -194,7 +194,7 @@ const UserProfile = () => {
         .eq('follower_id', profileData.id);
 
       if (followedUsersData) {
-        setFollowedUsers(followedUsersData.map(f => f.users));
+        setFollowedUsers(followedUsersData.map(f => f.users).filter(u => u && u.username));
       }
 
       // Fetch followers (people who follow this user)
@@ -204,7 +204,7 @@ const UserProfile = () => {
         .eq('followed_id', profileData.id);
 
       if (followersData) {
-        setFollowers(followersData.map(f => f.users));
+        setFollowers(followersData.map(f => f.users).filter(u => u && u.username));
       }
 
       // Fetch followed products
