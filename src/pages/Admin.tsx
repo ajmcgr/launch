@@ -48,6 +48,13 @@ const Admin = () => {
     checkAdminAccess();
   }, [navigate]);
 
+  // Scroll to top when loading completes
+  useEffect(() => {
+    if (!loading && isAdmin) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading, isAdmin]);
+
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
