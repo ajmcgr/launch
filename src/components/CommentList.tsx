@@ -83,19 +83,27 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
       const commentMap = new Map<string, Comment>();
       const rootComments: Comment[] = [];
 
-      // First pass: create all comment objects
+      // First pass: create all comment objects (filter out comments with null users)
       data?.forEach((comment: any) => {
+        // Skip comments where user data is null (deleted users)
+        if (!comment.user || !comment.user.username) {
+          console.warn('Skipping comment with missing user:', comment.id);
+          return;
+        }
         commentMap.set(comment.id, { ...comment, replies: [] });
       });
 
       // Second pass: organize into tree structure
-      data?.forEach((comment: any) => {
-        const commentObj = commentMap.get(comment.id)!;
-        if (comment.parent_comment_id) {
-          const parent = commentMap.get(comment.parent_comment_id);
+      commentMap.forEach((commentObj, commentId) => {
+        const originalComment = data?.find((c: any) => c.id === commentId);
+        if (originalComment?.parent_comment_id) {
+          const parent = commentMap.get(originalComment.parent_comment_id);
           if (parent) {
             parent.replies = parent.replies || [];
             parent.replies.push(commentObj);
+          } else {
+            // Parent doesn't exist (might be filtered), add as root
+            rootComments.push(commentObj);
           }
         } else {
           rootComments.push(commentObj);
@@ -149,108 +157,114 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
     }
   };
 
-  const CommentItem = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => (
-    <div className={`p-4 ${isReply ? 'ml-8 mt-3 border-l-2 border-muted' : 'border rounded-lg bg-card'} ${comment.pinned && !isReply ? 'border-primary/50 bg-primary/5' : ''}`}>
-      <div className="flex gap-3">
-        <Avatar className="h-10 w-10 flex-shrink-0">
-          <AvatarImage src={comment.user.avatar_url} alt={comment.user.username} />
-          <AvatarFallback>{comment.user.username[0].toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold">@{comment.user.username}</span>
-            {comment.pinned && (
-              <span className="flex items-center gap-1 text-xs text-primary font-medium">
-                <Pin className="h-3 w-3" />
-                Pinned
+  const CommentItem = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => {
+    // Safety check for null user
+    const username = comment.user?.username || 'Unknown';
+    const avatarUrl = comment.user?.avatar_url || '';
+    
+    return (
+      <div className={`p-4 ${isReply ? 'ml-8 mt-3 border-l-2 border-muted' : 'border rounded-lg bg-card'} ${comment.pinned && !isReply ? 'border-primary/50 bg-primary/5' : ''}`}>
+        <div className="flex gap-3">
+          <Avatar className="h-10 w-10 flex-shrink-0">
+            <AvatarImage src={avatarUrl} alt={username} />
+            <AvatarFallback>{username[0]?.toUpperCase() || '?'}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold">@{username}</span>
+              {comment.pinned && (
+                <span className="flex items-center gap-1 text-xs text-primary font-medium">
+                  <Pin className="h-3 w-3" />
+                  Pinned
+                </span>
+              )}
+              <span className="text-xs text-muted-foreground">
+                {formatTimeAgo(comment.created_at)}
               </span>
-            )}
-            <span className="text-xs text-muted-foreground">
-              {formatTimeAgo(comment.created_at)}
-            </span>
-          </div>
-          <p className="text-sm text-foreground whitespace-pre-wrap mb-2">{comment.content}</p>
-          <div className="flex items-center gap-2">
-            {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                className="h-8 text-xs"
-              >
-                Reply
-              </Button>
-            )}
-            {isProductOwner && !isReply && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handlePinComment(comment.id, comment.pinned)}
-                className="h-8 text-xs gap-1"
-              >
-                {comment.pinned ? (
-                  <>
-                    <PinOff className="h-3 w-3" />
-                    Unpin
-                  </>
-                ) : (
-                  <>
-                    <Pin className="h-3 w-3" />
-                    Pin
-                  </>
-                )}
-              </Button>
-            )}
-            {user?.id === comment.user_id && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 text-xs gap-1 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                    Delete
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete comment?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your comment.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleDeleteComment(comment.id)}>
+            </div>
+            <p className="text-sm text-foreground whitespace-pre-wrap mb-2">{comment.content}</p>
+            <div className="flex items-center gap-2">
+              {user && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                  className="h-8 text-xs"
+                >
+                  Reply
+                </Button>
+              )}
+              {isProductOwner && !isReply && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handlePinComment(comment.id, comment.pinned)}
+                  className="h-8 text-xs gap-1"
+                >
+                  {comment.pinned ? (
+                    <>
+                      <PinOff className="h-3 w-3" />
+                      Unpin
+                    </>
+                  ) : (
+                    <>
+                      <Pin className="h-3 w-3" />
+                      Pin
+                    </>
+                  )}
+                </Button>
+              )}
+              {user?.id === comment.user_id && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 text-xs gap-1 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-3 w-3" />
                       Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete comment?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your comment.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDeleteComment(comment.id)}>
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
           </div>
         </div>
+        {replyingTo === comment.id && (
+          <div className="mt-3">
+            <CommentForm
+              productId={productId}
+              parentCommentId={comment.id}
+              onCommentAdded={handleReplyAdded}
+              onCancel={() => setReplyingTo(null)}
+            />
+          </div>
+        )}
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="space-y-2 mt-2">
+            {comment.replies.map((reply) => (
+              <CommentItem key={reply.id} comment={reply} isReply />
+            ))}
+          </div>
+        )}
       </div>
-      {replyingTo === comment.id && (
-        <div className="mt-3">
-          <CommentForm
-            productId={productId}
-            parentCommentId={comment.id}
-            onCommentAdded={handleReplyAdded}
-            onCancel={() => setReplyingTo(null)}
-          />
-        </div>
-      )}
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="space-y-2 mt-2">
-          {comment.replies.map((reply) => (
-            <CommentItem key={reply.id} comment={reply} isReply />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   if (loading) {
     return (
