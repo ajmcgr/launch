@@ -74,6 +74,7 @@ const LaunchDetail = () => {
     }
   }, [product?.id]);
 
+  // Fetch product data (independent of user)
   useEffect(() => {
     const fetchProduct = async () => {
       if (!slug) return;
@@ -138,28 +139,6 @@ const LaunchDetail = () => {
           .eq('product_id', productData.id)
           .maybeSingle();
 
-        // Fetch user's vote if authenticated
-        if (user) {
-          const { data: userVoteData } = await supabase
-            .from('votes')
-            .select('value')
-            .eq('product_id', productData.id)
-            .eq('user_id', user.id)
-            .maybeSingle();
-          
-          setUserVote((userVoteData?.value as 1 | -1) || null);
-
-          // Check if user follows this product
-          const { data: followData } = await supabase
-            .from('product_follows')
-            .select('*')
-            .eq('follower_id', user.id)
-            .eq('product_id', productData.id)
-            .maybeSingle();
-          
-          setIsFollowing(!!followData);
-        }
-
         // Get follower count for this product
         const { count: followersCount } = await supabase
           .from('product_follows')
@@ -182,7 +161,38 @@ const LaunchDetail = () => {
     };
 
     fetchProduct();
-  }, [slug, navigate, user]);
+  }, [slug, navigate]);
+
+  // Fetch user-specific data (votes, follows) when user changes
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user || !product?.id) return;
+      
+      try {
+        const { data: userVoteData } = await supabase
+          .from('votes')
+          .select('value')
+          .eq('product_id', product.id)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        setUserVote((userVoteData?.value as 1 | -1) || null);
+
+        const { data: followData } = await supabase
+          .from('product_follows')
+          .select('*')
+          .eq('follower_id', user.id)
+          .eq('product_id', product.id)
+          .maybeSingle();
+        
+        setIsFollowing(!!followData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [user, product?.id]);
 
   const handleVote = async (value: 1 | -1) => {
     if (!user) {
