@@ -88,7 +88,7 @@ const LaunchDetail = () => {
             *,
             product_media(url, type),
             product_category_map(category_id),
-            product_makers(user_id, public_profiles(username, avatar_url, bio))
+            product_makers(user_id, users(username, avatar_url, bio))
           `)
           .eq('slug', slug)
           .single();
@@ -171,7 +171,7 @@ const LaunchDetail = () => {
         setProduct({
           ...productData,
           netVotes: voteData?.net_votes || 0,
-          makers: productData.product_makers?.map((m: any) => m.public_profiles).filter((maker: any) => maker && maker.username) || []
+          makers: productData.product_makers?.map((m: any) => m.users).filter((maker: any) => maker && maker.username) || []
         });
       } catch (error) {
         console.error('Error:', error);
