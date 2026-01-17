@@ -77,7 +77,7 @@ export const PassOption = ({ onClose, showClose = false, variant = 'inline' }: P
         </div>
         
         <p className="text-sm text-muted-foreground">
-          Unlimited access to all Launch features for one year.
+          Annual subscription for unlimited launches. Cancel anytime.
         </p>
         
         <ul className="text-sm space-y-2">
@@ -107,7 +107,7 @@ export const PassOption = ({ onClose, showClose = false, variant = 'inline' }: P
           className="w-full"
           variant="outline"
         >
-          {loading ? 'Processing...' : 'Get Pass'}
+          {loading ? 'Processing...' : 'Subscribe Now'}
         </Button>
       </CardContent>
     </Card>
