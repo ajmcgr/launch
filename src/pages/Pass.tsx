@@ -192,8 +192,8 @@ const Pass = () => {
   return (
     <>
       <Helmet>
-        <title>Launch Pass - Launch</title>
-        <meta name="description" content="Get unlimited access to all Launch features for one year. For frequent builders who launch multiple products." />
+        <title>Launch Pass Subscription - Launch</title>
+        <meta name="description" content="Subscribe to Launch Pass for unlimited product launches, relaunches, and all future features. $99/year, cancel anytime." />
       </Helmet>
 
       <div className="min-h-screen bg-background py-16">
@@ -202,7 +202,7 @@ const Pass = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Launch Pass</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Unlimited access to all Launch features for one year.
+              Annual subscription for unlimited launches. Cancel anytime.
             </p>
           </div>
 
@@ -292,7 +292,7 @@ const Pass = () => {
                   onClick={handlePurchase}
                   disabled={isLoading || hasActivePass}
                 >
-                  {isLoading ? 'Processing...' : hasActivePass ? 'Already Active' : 'Get Pass'}
+                  {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Subscribe Now'}
                 </Button>
               </div>
             </CardContent>
