@@ -49,11 +49,11 @@ serve(async (req) => {
     }
 
     // Plan pricing configuration (amounts in cents)
-    const planConfig: Record<string, { amount: number; name: string }> = {
+    const planConfig: Record<string, { amount: number; name: string; isSubscription?: boolean }> = {
       join: { amount: 900, name: 'Launch Lite - $9' },
       skip: { amount: 3900, name: 'Launch - $39' },
       relaunch: { amount: 1900, name: 'Relaunch - $19' },
-      annual_access: { amount: 9900, name: 'Launch Annual Access - $99' }
+      annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true }
     };
 
     const selectedPlan = planConfig[plan];
@@ -115,32 +115,94 @@ serve(async (req) => {
       ? `${productionUrl}/settings?tab=billing&canceled=true`
       : `${productionUrl}/submit?canceled=true`;
     
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: selectedPlan.name,
-            },
-            unit_amount: selectedPlan.amount,
+    let session;
+    
+    if (selectedPlan.isSubscription) {
+      // Create a subscription checkout for annual_access
+      // First, find or create a price for the subscription
+      let priceId: string;
+      
+      // Check if we have an existing price for this product
+      const prices = await stripe.prices.list({
+        lookup_keys: ['launch_pass_yearly'],
+        limit: 1,
+      });
+      
+      if (prices.data.length > 0) {
+        priceId = prices.data[0].id;
+      } else {
+        // Create the product and price if they don't exist
+        const product = await stripe.products.create({
+          name: 'Launch Pass',
+          description: 'Unlimited access to all Launch features for one year',
+        });
+        
+        const price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: selectedPlan.amount,
+          currency: 'usd',
+          recurring: {
+            interval: 'year',
           },
-          quantity: 1,
+          lookup_key: 'launch_pass_yearly',
+        });
+        
+        priceId = price.id;
+      }
+      
+      session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        mode: 'subscription',
+        allow_promotion_codes: true,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        subscription_data: {
+          metadata: {
+            user_id: user.id,
+            plan,
+          },
         },
-      ],
-      mode: 'payment',
-      allow_promotion_codes: true,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      metadata: {
-        user_id: user.id,
-        plan,
-        selected_date: selectedDate || '',
-        product_id: productId || '',
-      },
-    });
+        metadata: {
+          user_id: user.id,
+          plan,
+        },
+      });
+    } else {
+      // One-time payment for other plans
+      session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: selectedPlan.name,
+              },
+              unit_amount: selectedPlan.amount,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        allow_promotion_codes: true,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        metadata: {
+          user_id: user.id,
+          plan,
+          selected_date: selectedDate || '',
+          product_id: productId || '',
+        },
+      });
+    }
 
     return new Response(
       JSON.stringify({ sessionId: session.id, url: session.url }),

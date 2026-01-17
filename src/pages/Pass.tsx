@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Lock, Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
+import { Check, Lock, Rocket, RefreshCw, Zap, Calendar, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePass } from '@/hooks/use-pass';
+import { useQueryClient } from '@tanstack/react-query';
 import stripeLogo from '@/assets/stripe-logo.png';
 import {
   Accordion,
@@ -14,22 +15,48 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Pass = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [isReactivating, setIsReactivating] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { data: passData, isLoading: passLoading } = usePass(userId);
+  const queryClient = useQueryClient();
+  const { data: passData, isLoading: passLoading, refetch } = usePass(userId);
   
   const hasActivePass = passData?.hasActivePass ?? false;
   const expiresAt = passData?.expiresAt;
+  const cancelAtPeriodEnd = passData?.cancelAtPeriodEnd ?? false;
 
   useEffect(() => {
+    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserId(session?.user?.id);
     });
-  }, []);
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id);
+      if (session?.user?.id) {
+        refetch();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [refetch]);
 
   const handlePurchase = async () => {
     setIsLoading(true);
@@ -68,6 +95,60 @@ const Pass = () => {
     }
   };
 
+  const handleCancel = async () => {
+    setIsCancelling(true);
+    
+    try {
+      const { error } = await supabase.functions.invoke('cancel-subscription');
+
+      if (error) throw error;
+
+      toast({
+        title: "Subscription cancelled",
+        description: "Your subscription will end at the current billing period.",
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ['pass', userId] });
+      refetch();
+    } catch (error) {
+      console.error('Error cancelling subscription:', error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel subscription. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  const handleReactivate = async () => {
+    setIsReactivating(true);
+    
+    try {
+      const { error } = await supabase.functions.invoke('reactivate-subscription');
+
+      if (error) throw error;
+
+      toast({
+        title: "Subscription reactivated",
+        description: "Your subscription will continue automatically.",
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ['pass', userId] });
+      refetch();
+    } catch (error) {
+      console.error('Error reactivating subscription:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reactivate subscription. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsReactivating(false);
+    }
+  };
+
   const features = [
     {
       icon: Rocket,
@@ -86,8 +167,8 @@ const Pass = () => {
     },
     {
       icon: Calendar,
-      title: "12 Months Access",
-      description: "Full year of unlimited access from purchase date"
+      title: "Auto-Renewal",
+      description: "Subscription renews automatically each year. Cancel anytime."
     }
   ];
 
@@ -127,19 +208,68 @@ const Pass = () => {
 
           {/* Active Pass Notice */}
           {hasActivePass && expiresAt && (
-            <Card className="mb-8 border-primary bg-primary/5">
-              <CardContent className="p-6 text-center">
-                <div className="flex items-center justify-center gap-2 text-primary font-medium mb-2">
-                  <Check className="h-5 w-5" />
-                  <span>You have an active Pass</span>
+            <Card className={`mb-8 ${cancelAtPeriodEnd ? 'border-destructive bg-destructive/5' : 'border-primary bg-primary/5'}`}>
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <div className={`flex items-center gap-2 font-medium mb-2 ${cancelAtPeriodEnd ? 'text-destructive' : 'text-primary'}`}>
+                      {cancelAtPeriodEnd ? (
+                        <>
+                          <AlertCircle className="h-5 w-5" />
+                          <span>Subscription ending</span>
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-5 w-5" />
+                          <span>Active subscription</span>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {cancelAtPeriodEnd 
+                        ? `Your access ends on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                        : `Renews on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                      }
+                    </p>
+                  </div>
+                  
+                  {cancelAtPeriodEnd ? (
+                    <Button 
+                      variant="outline"
+                      onClick={handleReactivate}
+                      disabled={isReactivating}
+                    >
+                      {isReactivating ? 'Reactivating...' : 'Reactivate Subscription'}
+                    </Button>
+                  ) : (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          Cancel Subscription
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Cancel your subscription?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Your subscription will remain active until {new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. 
+                            After that, you'll return to standard pricing for launches.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={handleCancel}
+                            disabled={isCancelling}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {isCancelling ? 'Cancelling...' : 'Yes, Cancel'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Your pass is valid until {new Date(expiresAt).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </p>
               </CardContent>
             </Card>
           )}
@@ -153,7 +283,7 @@ const Pass = () => {
                     $99
                     <span className="text-lg font-normal text-muted-foreground"> / year</span>
                   </div>
-                  <p className="text-muted-foreground">One-time payment. No recurring charges.</p>
+                  <p className="text-muted-foreground">Billed annually. Cancel anytime.</p>
                 </div>
                 
                 <Button 
@@ -223,7 +353,16 @@ const Pass = () => {
                   What happens after 12 months?
                 </AccordionTrigger>
                 <AccordionContent>
-                  You'll return to standard pricing. You can purchase another Pass at any time.
+                  Your subscription automatically renews each year. You'll receive an email reminder 7 days before renewal. You can cancel anytime from your account settings.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="cancel" className="border rounded-lg px-6">
+                <AccordionTrigger className="text-left text-sm">
+                  How do I cancel?
+                </AccordionTrigger>
+                <AccordionContent>
+                  You can cancel your subscription anytime from this page or your account settings. You'll continue to have access until the end of your current billing period.
                 </AccordionContent>
               </AccordionItem>
 
