@@ -466,6 +466,14 @@ const Settings = () => {
             <PassStatus 
               hasActivePass={passStatus?.hasActivePass || false}
               expiresAt={passStatus?.expiresAt || null}
+              cancelAtPeriodEnd={passStatus?.cancelAtPeriodEnd || false}
+              subscriptionStatus={passStatus?.subscriptionStatus}
+              onStatusChange={() => {
+                // Refetch user data to update pass status
+                if (user?.id) {
+                  fetchProfile(user.id);
+                }
+              }}
             />
             
             {/* Stripe Billing Portal */}
