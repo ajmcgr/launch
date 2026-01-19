@@ -395,9 +395,6 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="text-3xl font-bold">🎯 {(stats?.totalPromotions || 0) + (stats?.totalSponsorships || 0)}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {stats?.totalPromotions || 0} promotions + {stats?.totalSponsorships || 0} ads
-                  </div>
                   <Sparkline data={stats?.sponsorsSparkline || []} />
                 </CardContent>
               </Card>
