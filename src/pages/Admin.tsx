@@ -166,6 +166,7 @@ const Admin = () => {
         totalVotes: votesRes.count || 0,
         totalRatings: ratingsRes.count || 0,
         totalSponsorships: sponsorships.length,
+        totalPromotions: orders.length,
         totalRevenue: totalRevenue,
         totalComments: commentsRes.count || 0,
         totalBadges: badgesRes.count || 0,
@@ -393,7 +394,10 @@ const Admin = () => {
                   <CardTitle className="text-base font-medium text-muted-foreground">Sponsors</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="text-3xl font-bold">🎯 {stats?.totalSponsorships || 0}</div>
+                  <div className="text-3xl font-bold">🎯 {(stats?.totalPromotions || 0) + (stats?.totalSponsorships || 0)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {stats?.totalPromotions || 0} promotions + {stats?.totalSponsorships || 0} ads
+                  </div>
                   <Sparkline data={stats?.sponsorsSparkline || []} />
                 </CardContent>
               </Card>
