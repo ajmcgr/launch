@@ -122,7 +122,7 @@ const Index = () => {
             users:user_id(username, avatar_url)
           )
         `)
-        .eq('status', 'published')
+        .eq('status', 'launched')
         .gte('launch_date', today.toISOString())
         .order('launch_date', { ascending: false });
 
