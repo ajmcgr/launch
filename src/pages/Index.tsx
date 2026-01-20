@@ -287,6 +287,7 @@ const Index = () => {
                 votes={launch.votes}
                 slug={launch.slug}
                 platforms={launch.platforms}
+                makers={launch.makers}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
