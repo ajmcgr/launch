@@ -429,7 +429,7 @@ const LaunchDetail = () => {
               
               {/* Mobile Makers - visible on mobile only */}
               {product.makers && product.makers.length > 0 && (
-                <div className="flex items-center gap-2 mt-4 lg:hidden">
+                <div className="flex items-center gap-2 mt-4 lg:hidden flex-wrap">
                   <span className="text-sm text-muted-foreground">by</span>
                   <div className="flex -space-x-2">
                     {product.makers.slice(0, 3).map((maker: any) => (
@@ -445,9 +445,19 @@ const LaunchDetail = () => {
                       </Link>
                     ))}
                   </div>
-                  <span className="text-sm font-medium">
-                    {product.makers.map((m: any) => `@${m.username}`).join(', ')}
-                  </span>
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {product.makers.map((maker: any, index: number) => (
+                      <span key={maker.username}>
+                        <Link 
+                          to={`/@${maker.username}`}
+                          className="text-sm font-medium hover:text-primary transition-colors"
+                        >
+                          @{maker.username}
+                        </Link>
+                        {index < product.makers.length - 1 && <span className="text-sm">, </span>}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
