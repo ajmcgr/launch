@@ -105,6 +105,9 @@ const LaunchDetail = () => {
           return;
         }
 
+        // Extract makers from the nested query result
+        const makers = productData.product_makers?.map((m: any) => m.users).filter((maker: any) => maker && maker.username) || [];
+
         // Fetch categories
         const categoryIds = productData.product_category_map?.map((m: any) => m.category_id) || [];
         if (categoryIds.length > 0) {
@@ -150,7 +153,7 @@ const LaunchDetail = () => {
         setProduct({
           ...productData,
           netVotes: voteData?.net_votes || 0,
-          makers: productData.product_makers?.map((m: any) => m.users).filter((maker: any) => maker && maker.username) || []
+          makers
         });
       } catch (error) {
         console.error('Error:', error);
