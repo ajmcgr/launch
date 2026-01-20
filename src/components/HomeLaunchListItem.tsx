@@ -1,6 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 
@@ -14,6 +15,7 @@ interface HomeLaunchListItemProps {
   domainUrl?: string;
   launchDate?: string;
   platforms?: Platform[];
+  makers?: Array<{ username: string; avatar_url?: string }>;
   userVote?: 1 | null;
   onVote: () => void;
 }
@@ -28,6 +30,7 @@ export const HomeLaunchListItem = ({
   domainUrl,
   launchDate,
   platforms,
+  makers = [],
   userVote,
   onVote,
 }: HomeLaunchListItemProps) => {
@@ -77,7 +80,26 @@ export const HomeLaunchListItem = ({
               </span>
             )}
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-1">{tagline}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-muted-foreground line-clamp-1 flex-1">{tagline}</p>
+            {makers.length > 0 && (
+              <div className="flex -space-x-1.5 flex-shrink-0">
+                {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
+                  <Link 
+                    key={maker.username}
+                    to={`/@${maker.username}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:z-10"
+                  >
+                    <Avatar className="h-5 w-5 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                      <AvatarFallback className="text-[10px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+                    </Avatar>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex items-start self-start">
