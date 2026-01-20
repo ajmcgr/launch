@@ -82,14 +82,13 @@ const LaunchDetail = () => {
       try {
         setLoading(true);
         
-        // Fetch product with media and makers
+        // Fetch product with media (without nested users - RLS blocks anonymous access)
         const { data: productData, error: productError } = await supabase
           .from('products')
           .select(`
             *,
             product_media(url, type),
-            product_category_map(category_id),
-            product_makers(user_id, users(username, avatar_url, bio))
+            product_category_map(category_id)
           `)
           .eq('slug', slug)
           .single();
@@ -105,8 +104,21 @@ const LaunchDetail = () => {
           return;
         }
 
-        // Extract makers from the nested query result
-        const makers = productData.product_makers?.map((m: any) => m.users).filter((maker: any) => maker && maker.username) || [];
+        // Fetch makers separately using public_profiles view (RLS-friendly)
+        const { data: makerLinks } = await supabase
+          .from('product_makers')
+          .select('user_id')
+          .eq('product_id', productData.id);
+        
+        let makers: any[] = [];
+        if (makerLinks && makerLinks.length > 0) {
+          const makerIds = makerLinks.map(m => m.user_id);
+          const { data: makersData } = await supabase
+            .from('public_profiles')
+            .select('id, username, avatar_url, bio')
+            .in('id', makerIds);
+          makers = makersData?.filter((m: any) => m && m.username) || [];
+        }
 
         // Fetch categories
         const categoryIds = productData.product_category_map?.map((m: any) => m.category_id) || [];
