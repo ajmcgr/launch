@@ -423,6 +423,30 @@ const LaunchDetail = () => {
             <div>
               <h1 className="text-4xl font-bold mb-3">{product.name}</h1>
               <p className="text-xl text-muted-foreground">{product.tagline}</p>
+              
+              {/* Mobile Makers - visible on mobile only */}
+              {product.makers && product.makers.length > 0 && (
+                <div className="flex items-center gap-2 mt-4 lg:hidden">
+                  <span className="text-sm text-muted-foreground">by</span>
+                  <div className="flex -space-x-2">
+                    {product.makers.slice(0, 3).map((maker: any) => (
+                      <Link
+                        key={maker.username}
+                        to={`/@${maker.username}`}
+                        className="hover:z-10"
+                      >
+                        <Avatar className="h-7 w-7 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                          <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                          <AvatarFallback className="text-xs">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+                        </Avatar>
+                      </Link>
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium">
+                    {product.makers.map((m: any) => `@${m.username}`).join(', ')}
+                  </span>
+                </div>
+              )}
             </div>
 
             {thumbnail && (
