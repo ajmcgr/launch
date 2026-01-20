@@ -87,30 +87,46 @@ export const CompactLaunchListItem = ({
           )}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          {metaBeforeMrr.length > 0 && (
-            <span className="truncate">{metaBeforeMrr.join(' · ')}</span>
+          {categories.length > 0 && (
+            <span className="truncate">{categories[0]}</span>
           )}
-          {hasMrr && metaBeforeMrr.length > 0 && <span>·</span>}
-          <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />
-          {hasMrr && metaAfterMrr.length > 0 && <span>·</span>}
-          {!hasMrr && metaBeforeMrr.length > 0 && metaAfterMrr.length > 0 && <span>·</span>}
-          <span className="truncate">{metaAfterMrr.join(' · ')}</span>
           {makers.length > 0 && (
-            <div className="flex -space-x-1 flex-shrink-0 ml-1">
-              {makers.filter(m => m && m.username).slice(0, 2).map((maker) => (
-                <Link 
-                  key={maker.username}
-                  to={`/@${maker.username}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="hover:z-10"
-                >
-                  <Avatar className="h-4 w-4 border border-background hover:ring-1 hover:ring-primary transition-all">
-                    <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                    <AvatarFallback className="text-[8px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
-                  </Avatar>
-                </Link>
-              ))}
-            </div>
+            <>
+              {categories.length > 0 && <span>·</span>}
+              <div className="flex -space-x-1 flex-shrink-0">
+                {makers.filter(m => m && m.username).slice(0, 2).map((maker) => (
+                  <Link 
+                    key={maker.username}
+                    to={`/@${maker.username}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:z-10"
+                  >
+                    <Avatar className="h-4 w-4 border border-background hover:ring-1 hover:ring-primary transition-all">
+                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                      <AvatarFallback className="text-[8px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+                    </Avatar>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+          {(platforms && platforms.length > 0) && (
+            <>
+              {(categories.length > 0 || makers.length > 0) && <span>·</span>}
+              <span className="truncate">{platforms.join(', ')}</span>
+            </>
+          )}
+          {hasMrr && (
+            <>
+              {(categories.length > 0 || makers.length > 0 || (platforms && platforms.length > 0)) && <span>·</span>}
+              <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} size="sm" />
+            </>
+          )}
+          {metaAfterMrr.length > 0 && (
+            <>
+              {(categories.length > 0 || makers.length > 0 || (platforms && platforms.length > 0) || hasMrr) && <span>·</span>}
+              <span className="truncate">{metaAfterMrr.join(' · ')}</span>
+            </>
           )}
         </div>
       </div>
