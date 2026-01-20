@@ -23,6 +23,7 @@ interface Launch {
   slug: string;
   launch_date?: string;
   platforms?: Platform[];
+  makers: Array<{ username: string; avatar_url?: string }>;
 }
 
 const Index = () => {
@@ -116,7 +117,10 @@ const Index = () => {
           slug,
           launch_date,
           platforms,
-          product_media(url, type)
+          product_media(url, type),
+          product_makers(
+            users:user_id(username, avatar_url)
+          )
         `)
         .eq('status', 'published')
         .gte('launch_date', today.toISOString())
@@ -141,7 +145,11 @@ const Index = () => {
           thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
           slug: p.slug,
           launch_date: p.launch_date,
-          platforms: (p.platforms || []) as Platform[]
+          platforms: (p.platforms || []) as Platform[],
+          makers: (p.product_makers || [])
+            .map((pm: any) => pm.users)
+            .filter((u: any) => u && u.username)
+            .map((u: any) => ({ username: u.username, avatar_url: u.avatar_url }))
         }));
 
       setLaunches(launches);
@@ -298,6 +306,7 @@ const Index = () => {
                 slug={launch.slug}
                 launchDate={launch.launch_date}
                 platforms={launch.platforms}
+                makers={launch.makers}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
