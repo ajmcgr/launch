@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronUp, ExternalLink } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
-
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 interface CompactLaunchListItemProps {
   rank: number;
   name: string;
@@ -38,12 +38,10 @@ export const CompactLaunchListItem = ({
   mrrVerifiedAt,
 }: CompactLaunchListItemProps) => {
   const navigate = useNavigate();
-  const firstMaker = makers[0];
   
   // Build meta parts - split into before and after MRR
   const metaBeforeMrr: string[] = [];
   if (categories.length > 0) metaBeforeMrr.push(categories[0]);
-  if (firstMaker) metaBeforeMrr.push(firstMaker.username);
   if (platforms && platforms.length > 0) {
     metaBeforeMrr.push(platforms.join(', '));
   }
@@ -97,6 +95,23 @@ export const CompactLaunchListItem = ({
           {hasMrr && metaAfterMrr.length > 0 && <span>·</span>}
           {!hasMrr && metaBeforeMrr.length > 0 && metaAfterMrr.length > 0 && <span>·</span>}
           <span className="truncate">{metaAfterMrr.join(' · ')}</span>
+          {makers.length > 0 && (
+            <div className="flex -space-x-1 flex-shrink-0 ml-1">
+              {makers.filter(m => m && m.username).slice(0, 2).map((maker) => (
+                <Link 
+                  key={maker.username}
+                  to={`/@${maker.username}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hover:z-10"
+                >
+                  <Avatar className="h-4 w-4 border border-background hover:ring-1 hover:ring-primary transition-all">
+                    <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                    <AvatarFallback className="text-[8px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+                  </Avatar>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       
