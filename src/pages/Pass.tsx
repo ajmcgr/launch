@@ -274,6 +274,17 @@ const Pass = () => {
             </Card>
           )}
 
+          {/* Video */}
+          <div className="mb-12 aspect-video rounded-lg overflow-hidden">
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/aPOlq3HvInA"
+              title="Launch Pass Overview"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+
           {/* Pricing Card */}
           <Card className="mb-12">
             <CardContent className="p-8 md:p-12">
