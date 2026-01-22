@@ -30,35 +30,10 @@ export const Header = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    // LAUNCH20 promo - 20% off, runs until March 30, 2025
-    const targetDate = new Date('2025-03-30T23:59:59').getTime();
-    
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-      
-      if (distance < 0) {
-        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-      
-      setCountdown({
-        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000)
-      });
-    };
-    
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
+  
+  // Check if we should show the Launch Pass promo (after Jan 26, 2026)
+  const showLaunchPassPromo = new Date() >= new Date('2026-01-26T00:00:00');
 
   // Use ref to track scroll state without causing re-renders during scroll
   const scrolledRef = useRef(false);
@@ -131,15 +106,16 @@ export const Header = () => {
           isScrolled ? 'max-h-0' : 'max-h-12'
         }`}
       >
-        <Link to="/pricing" className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground">
+        <Link 
+          to={showLaunchPassPromo ? "/pass" : "/pricing"} 
+          className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
+        >
           <div className="container mx-auto px-4 max-w-5xl">
             <p className="text-center text-sm font-medium">
-              Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span>
-              {(countdown.days > 0 || countdown.hours > 0 || countdown.minutes > 0 || countdown.seconds > 0) && (
-                <span className="ml-2">
-                  · Time left: {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
-                </span>
-              )}
+              {showLaunchPassPromo 
+                ? "Subscribe for unlimited launches. Cancel anytime. Buy now →"
+                : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
+              }
             </p>
           </div>
         </Link>
