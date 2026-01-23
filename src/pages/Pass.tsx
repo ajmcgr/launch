@@ -181,9 +181,9 @@ const Pass = () => {
   ];
 
   const stats = [
-    { icon: Users, value: "16,000+", label: "Active Users" },
-    { icon: TrendingUp, value: "$25K+", label: "Monthly Revenue" },
-    { icon: Star, value: "150+", label: "Sponsors Served" },
+    { value: "70K+", label: "Monthly Active Users" },
+    { value: "28K+", label: "Weekly Active Users" },
+    { value: "2K+", label: "Daily Active Users" },
   ];
 
   if (passLoading) {
