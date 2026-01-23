@@ -213,7 +213,7 @@ const Pass = () => {
           />
         </div>
 
-        <div className="container mx-auto px-4 max-w-2xl py-12 md:py-16">
+        <div className="container mx-auto px-4 max-w-3xl py-12 md:py-16">
           {/* Hero - Who, What, Why */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
