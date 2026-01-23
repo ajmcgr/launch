@@ -288,34 +288,37 @@ const Pass = () => {
             </div>
           )}
 
-          {/* Why Launch with Launch? */}
-          <div className="mb-12">
-            <h2 className="text-xl font-semibold mb-6 text-center">The Launch community in numbers</h2>
-            <div className="flex flex-col gap-4 max-w-xs mx-auto">
-              {stats.map((stat) => (
-                <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                  <span className="text-sm text-muted-foreground">{stat.label}</span>
-                  <span className="text-2xl font-bold tracking-tight">{stat.value}</span>
-                </div>
-              ))}
+          {/* Two Column Layout: Stats & Features */}
+          <div className="mb-12 grid md:grid-cols-2 gap-8 md:gap-12">
+            {/* The Launch community in numbers */}
+            <div>
+              <h2 className="text-xl font-semibold mb-6 text-center md:text-left">The Launch community in numbers</h2>
+              <div className="flex flex-col gap-4">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+                    <span className="text-sm text-muted-foreground">{stat.label}</span>
+                    <span className="text-2xl font-bold tracking-tight">{stat.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* What's Included */}
-          <div className="mb-12">
-            <h2 className="text-xl font-semibold mb-6 text-center">What's included</h2>
-            <div className="space-y-4">
-              {features.map((feature) => (
-                <div key={feature.title} className="flex items-start gap-4">
-                  <div className="p-2 rounded-md bg-primary/10 flex-shrink-0">
-                    <feature.icon className="h-5 w-5 text-primary" />
+            {/* What's Included */}
+            <div>
+              <h2 className="text-xl font-semibold mb-6 text-center md:text-left">What's included with Launch Pass</h2>
+              <div className="space-y-4">
+                {features.map((feature) => (
+                  <div key={feature.title} className="flex items-start gap-4">
+                    <div className="p-2 rounded-md bg-primary/10 flex-shrink-0">
+                      <feature.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">{feature.title}</h3>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-medium">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
