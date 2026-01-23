@@ -290,7 +290,7 @@ const Pass = () => {
 
           {/* Why Launch with Launch? */}
           <div className="mb-12">
-            <h2 className="text-xl font-semibold mb-6 text-center">The Launch community</h2>
+            <h2 className="text-xl font-semibold mb-6 text-center">The Launch community:</h2>
             <div className="flex flex-col gap-4 max-w-xs mx-auto">
               {stats.map((stat) => (
                 <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
