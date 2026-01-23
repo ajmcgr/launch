@@ -201,8 +201,19 @@ const Pass = () => {
         <meta name="description" content="For indie hackers who launch often. Replace per-launch fees with one flat rate. Subscribe to Launch Pass for unlimited product launches at $99/year." />
       </Helmet>
 
-      <div className="min-h-screen bg-background py-8 md:py-12">
-        <div className="container mx-auto px-4 max-w-4xl">
+      <div className="min-h-screen bg-background">
+        {/* Video - Full Width Edge to Edge */}
+        <div className="w-full aspect-video">
+          <iframe
+            className="w-full h-full"
+            src="https://www.youtube.com/embed/aPOlq3HvInA"
+            title="Launch Pass Overview"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+
+        <div className="container mx-auto px-4 max-w-4xl py-8 md:py-12">
           {/* Hero - Who, What, Why */}
           <div className="text-center mb-6">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Launch Pass</h1>
@@ -211,23 +222,11 @@ const Pass = () => {
             </p>
           </div>
 
-          {/* Price Comparison + Urgency */}
+          {/* Price Comparison */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-3 bg-muted/50 rounded-full px-5 py-2.5 text-sm">
               <span className="text-muted-foreground line-through">3 launches = $117</span>
               <span className="text-foreground font-semibold">Pass = $99/year</span>
-            </div>
-          </div>
-          
-          <div className="mb-10 -mx-4 md:mx-0">
-            <div className="aspect-video md:rounded-xl overflow-hidden shadow-lg">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/aPOlq3HvInA"
-                title="Launch Pass Overview"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
             </div>
           </div>
 
