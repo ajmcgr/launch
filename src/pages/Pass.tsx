@@ -213,195 +213,166 @@ const Pass = () => {
           />
         </div>
 
-        <div className="container mx-auto px-4 max-w-4xl py-8 md:py-12">
+        <div className="container mx-auto px-4 max-w-2xl py-12 md:py-16">
           {/* Hero - Who, What, Why */}
-          <div className="text-center mb-6">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Launch Pass</h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
+            <p className="text-lg text-muted-foreground leading-relaxed">
               For indie hackers who launch often. Replace per-launch fees with one flat rate. Lock in before prices go up.
             </p>
           </div>
 
-
-          {/* Why Launch with Launch? */}
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold">Why Launch with Launch?</h2>
-          </div>
-
           {/* Active Pass Notice */}
           {hasActivePass && expiresAt && (
-            <Card className={`mb-8 ${cancelAtPeriodEnd ? 'border-destructive bg-destructive/5' : 'border-primary bg-primary/5'}`}>
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <div className={`flex items-center gap-2 font-medium mb-2 ${cancelAtPeriodEnd ? 'text-destructive' : 'text-primary'}`}>
-                      {cancelAtPeriodEnd ? (
-                        <>
-                          <AlertCircle className="h-5 w-5" />
-                          <span>Subscription ending</span>
-                        </>
-                      ) : (
-                        <>
-                          <Check className="h-5 w-5" />
-                          <span>Active subscription</span>
-                        </>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {cancelAtPeriodEnd 
-                        ? `Your access ends on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
-                        : `Renews on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
-                      }
-                    </p>
+            <div className={`mb-12 p-6 rounded-lg ${cancelAtPeriodEnd ? 'bg-destructive/5 border border-destructive/20' : 'bg-primary/5 border border-primary/20'}`}>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <div className={`flex items-center gap-2 font-medium mb-1 ${cancelAtPeriodEnd ? 'text-destructive' : 'text-primary'}`}>
+                    {cancelAtPeriodEnd ? (
+                      <>
+                        <AlertCircle className="h-4 w-4" />
+                        <span>Subscription ending</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4" />
+                        <span>Active subscription</span>
+                      </>
+                    )}
                   </div>
-                  
-                  {cancelAtPeriodEnd ? (
-                    <Button 
-                      variant="outline"
-                      onClick={handleReactivate}
-                      disabled={isReactivating}
-                    >
-                      {isReactivating ? 'Reactivating...' : 'Reactivate Subscription'}
-                    </Button>
-                  ) : (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          Cancel Subscription
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Cancel your subscription?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Your subscription will remain active until {new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. 
-                            After that, you'll return to standard pricing for launches.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={handleCancel}
-                            disabled={isCancelling}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            {isCancelling ? 'Cancelling...' : 'Yes, Cancel'}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
+                  <p className="text-sm text-muted-foreground">
+                    {cancelAtPeriodEnd 
+                      ? `Your access ends on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                      : `Renews on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                    }
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
+                
+                {cancelAtPeriodEnd ? (
+                  <Button 
+                    variant="outline"
+                    onClick={handleReactivate}
+                    disabled={isReactivating}
+                  >
+                    {isReactivating ? 'Reactivating...' : 'Reactivate Subscription'}
+                  </Button>
+                ) : (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        Cancel Subscription
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Cancel your subscription?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Your subscription will remain active until {new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. 
+                          After that, you'll return to standard pricing for launches.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={handleCancel}
+                          disabled={isCancelling}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          {isCancelling ? 'Cancelling...' : 'Yes, Cancel'}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
+            </div>
           )}
 
-          {/* Stats - Enhanced Visual */}
-          <div className="mb-10">
-            <div className="grid grid-cols-3 gap-3 md:gap-6">
+          {/* Why Launch with Launch? */}
+          <div className="mb-12">
+            <h2 className="text-xl font-semibold mb-6 text-center">Why Launch with Launch?</h2>
+            <div className="flex justify-center gap-8 md:gap-12 text-center">
               {stats.map((stat) => (
-                <div 
-                  key={stat.label} 
-                  className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-b from-muted/50 to-muted/20 border border-border/50"
-                >
-                  <div className="text-2xl md:text-3xl font-bold tracking-tight">{stat.value}</div>
-                  <div className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</div>
+                <div key={stat.label}>
+                  <div className="text-3xl md:text-4xl font-bold tracking-tight">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Testimonial */}
-          <div className="mb-10 p-6 md:p-8 rounded-xl bg-gradient-to-br from-muted/40 to-transparent border border-border/50">
-            <div className="flex flex-col md:flex-row gap-5 items-start">
-              <Avatar className="h-14 w-14 flex-shrink-0">
-                <AvatarImage src={yogeshAvatar} alt="Yogesh" />
-                <AvatarFallback>YA</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="text-base md:text-lg mb-4 leading-relaxed text-foreground/90">
-                  "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
-                </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-semibold">Yogesh</span>
-                  <span className="text-muted-foreground">·</span>
-                  <span className="text-muted-foreground">Supalytics</span>
-                  <a 
-                    href="https://x.com/yogesharc" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline inline-flex items-center gap-1 ml-1"
-                  >
-                    @yogesharc
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
+          <div className="mb-12">
+            <blockquote className="text-center">
+              <p className="text-lg md:text-xl leading-relaxed text-foreground/90 mb-6">
+                "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+              </p>
+              <footer className="flex items-center justify-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={yogeshAvatar} alt="Yogesh" />
+                  <AvatarFallback>YA</AvatarFallback>
+                </Avatar>
+                <div className="text-sm text-left">
+                  <div className="font-medium">Yogesh</div>
+                  <div className="text-muted-foreground">
+                    Supalytics · <a 
+                      href="https://x.com/yogesharc" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >@yogesharc</a>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </footer>
+            </blockquote>
           </div>
 
-          {/* Pricing Card - Enhanced CTA */}
-          <Card className="mb-12 border-2 border-primary">
-            <CardContent className="p-8 md:p-12">
-              <div className="flex flex-col items-center text-center gap-6">
-                <div>
-                  <div className="text-5xl md:text-6xl font-bold mb-2">
-                    $99
-                    <span className="text-lg font-normal text-muted-foreground"> / year</span>
-                  </div>
-                  <p className="text-muted-foreground">Billed annually. Cancel anytime.</p>
-                </div>
-                
-                <Button 
-                  size="lg" 
-                  className="text-lg px-12 py-6 w-full md:w-auto"
-                  onClick={handlePurchase}
-                  disabled={isLoading || hasActivePass}
-                >
-                  {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass Now →'}
-                </Button>
-                
-                <p className="text-xs text-muted-foreground">
-                  Join 200+ indie hackers already launching unlimited
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-            {features.map((feature) => (
-              <Card key={feature.title}>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <feature.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1">{feature.title}</h3>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          {/* Pricing */}
+          <div className="mb-12 text-center py-10 border-y border-border">
+            <div className="text-5xl md:text-6xl font-bold tracking-tight mb-2">
+              $99
+              <span className="text-xl font-normal text-muted-foreground"> / year</span>
+            </div>
+            <p className="text-muted-foreground mb-8">Billed annually. Cancel anytime.</p>
+            
+            <Button 
+              size="lg" 
+              className="text-base px-10 py-6"
+              onClick={handlePurchase}
+              disabled={isLoading || hasActivePass}
+            >
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass →'}
+            </Button>
           </div>
 
           {/* What's Included */}
           <div className="mb-12">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4 text-lg">What's included</h3>
-                <ul className="space-y-3">
-                  {includedItems.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <h2 className="text-xl font-semibold mb-6 text-center">What's included</h2>
+            <div className="space-y-4">
+              {features.map((feature) => (
+                <div key={feature.title} className="flex items-start gap-4">
+                  <div className="p-2 rounded-md bg-primary/10 flex-shrink-0">
+                    <feature.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Checklist */}
+          <div className="mb-12 py-8 px-6 bg-muted/30 rounded-lg">
+            <ul className="space-y-3">
+              {includedItems.map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span className="text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* FAQ Section */}
