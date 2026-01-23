@@ -308,14 +308,9 @@ const Pass = () => {
               <h2 className="text-xl font-semibold mb-6 text-center md:text-left">What's included with Launch Pass</h2>
               <div className="space-y-4">
                 {features.map((feature) => (
-                  <div key={feature.title} className="flex items-start gap-4">
-                    <div className="p-2 rounded-md bg-primary/10 flex-shrink-0">
-                      <feature.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{feature.title}</h3>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
-                    </div>
+                  <div key={feature.title}>
+                    <h3 className="font-medium">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
                   </div>
                 ))}
               </div>
