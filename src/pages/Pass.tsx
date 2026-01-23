@@ -293,7 +293,7 @@ const Pass = () => {
           <div className="mb-12 grid md:grid-cols-2 gap-8 md:gap-12">
             {/* The Launch community in numbers */}
             <div>
-              <h2 className="text-xl font-semibold mb-6 text-center md:text-left">The Launch community in numbers</h2>
+              <h2 className="text-xl font-semibold mb-6 text-center md:text-left">The community in numbers</h2>
               <div className="flex flex-col gap-4">
                 {stats.map((stat) => (
                   <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
@@ -306,7 +306,7 @@ const Pass = () => {
 
             {/* What's Included */}
             <div>
-              <h2 className="text-xl font-semibold mb-6 text-center md:text-left">What's included with Launch Pass</h2>
+              <h2 className="text-xl font-semibold mb-6 text-center md:text-left">What's included with Pass</h2>
               <div className="space-y-4">
                 {features.map((feature) => (
                   <div key={feature.title}>
