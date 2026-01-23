@@ -363,17 +363,6 @@ const Pass = () => {
             </div>
           </div>
 
-          {/* Checklist */}
-          <div className="mb-12 py-8 px-6 bg-muted/30 rounded-lg">
-            <ul className="space-y-3">
-              {includedItems.map((item) => (
-                <li key={item} className="flex items-center gap-3">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span className="text-sm">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
 
           {/* FAQ Section */}
           <div className="mb-12">
