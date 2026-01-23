@@ -304,9 +304,6 @@ const Pass = () => {
                   key={stat.label} 
                   className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-b from-muted/50 to-muted/20 border border-border/50"
                 >
-                  <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 mb-3">
-                    <stat.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                  </div>
                   <div className="text-2xl md:text-3xl font-bold tracking-tight">{stat.value}</div>
                   <div className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</div>
                 </div>
@@ -317,7 +314,7 @@ const Pass = () => {
           {/* Testimonial */}
           <div className="mb-10 p-6 md:p-8 rounded-xl bg-gradient-to-br from-muted/40 to-transparent border border-border/50">
             <div className="flex flex-col md:flex-row gap-5 items-start">
-              <Avatar className="h-14 w-14 ring-2 ring-primary/20 ring-offset-2 ring-offset-background flex-shrink-0">
+              <Avatar className="h-14 w-14 flex-shrink-0">
                 <AvatarImage src={yogeshAvatar} alt="Yogesh" />
                 <AvatarFallback>YA</AvatarFallback>
               </Avatar>
