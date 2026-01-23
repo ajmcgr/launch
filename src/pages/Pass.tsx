@@ -218,7 +218,7 @@ const Pass = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              For indie hackers who launch often. Replace per-launch fees with one flat rate. Lock in before prices go up.
+              For makers who launch often. Replace per-launch fees with one flat rate.
             </p>
           </div>
 
