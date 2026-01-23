@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Lock, Rocket, RefreshCw, Zap, Calendar, AlertCircle } from 'lucide-react';
+import { Check, Lock, Rocket, RefreshCw, Zap, Calendar, AlertCircle, TrendingUp, Users, Star, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePass } from '@/hooks/use-pass';
@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Pass = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,12 +43,10 @@ const Pass = () => {
   const cancelAtPeriodEnd = passData?.cancelAtPeriodEnd ?? false;
 
   useEffect(() => {
-    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserId(session?.user?.id);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserId(session?.user?.id);
       if (session?.user?.id) {
@@ -180,6 +179,11 @@ const Pass = () => {
     "Priority support"
   ];
 
+  const stats = [
+    { icon: Users, value: "16,000+", label: "Active Users" },
+    { icon: TrendingUp, value: "$25K+", label: "Monthly Revenue" },
+    { icon: Star, value: "150+", label: "Sponsors Served" },
+  ];
 
   if (passLoading) {
     return (
@@ -192,17 +196,34 @@ const Pass = () => {
   return (
     <>
       <Helmet>
-        <title>Launch Pass Subscription - Launch</title>
-        <meta name="description" content="Subscribe to Launch Pass for unlimited product launches, relaunches, and all future features. $99/year, cancel anytime." />
+        <title>Launch Pass - Unlimited Product Launches for $99/year</title>
+        <meta name="description" content="For indie hackers who launch often. Replace per-launch fees with one flat rate. Subscribe to Launch Pass for unlimited product launches at $99/year." />
       </Helmet>
 
       <div className="min-h-screen bg-background py-16">
         <div className="container mx-auto px-4 max-w-4xl">
-          {/* Header */}
-          <div className="text-center mb-12">
+          {/* Hero - Who, What, Why */}
+          <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Launch Pass</h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Annual subscription for unlimited launches. Cancel anytime.
+            <p className="text-xl md:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
+              For indie hackers who launch often. <br className="hidden md:block" />
+              Replace per-launch fees with one flat rate. <br className="hidden md:block" />
+              Lock in before prices go up.
+            </p>
+          </div>
+
+          {/* Price Comparison */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-4 bg-muted/50 rounded-full px-6 py-3 text-sm md:text-base">
+              <span className="text-muted-foreground line-through">3 launches = $117</span>
+              <span className="text-foreground font-semibold">Pass = $99/year</span>
+            </div>
+          </div>
+
+          {/* Urgency */}
+          <div className="text-center mb-12">
+            <p className="text-sm text-primary font-medium animate-pulse">
+              🚀 Launch pricing ends soon — 47 passes claimed this week
             </p>
           </div>
 
@@ -274,6 +295,19 @@ const Pass = () => {
             </Card>
           )}
 
+          {/* Stats Cards */}
+          <div className="grid grid-cols-3 gap-4 mb-12">
+            {stats.map((stat) => (
+              <Card key={stat.label} className="text-center">
+                <CardContent className="p-4 md:p-6">
+                  <stat.icon className="h-5 w-5 md:h-6 md:w-6 mx-auto mb-2 text-primary" />
+                  <div className="text-xl md:text-2xl font-bold">{stat.value}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{stat.label}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
           {/* Video */}
           <div className="mb-12 aspect-video rounded-lg overflow-hidden">
             <iframe
@@ -285,12 +319,43 @@ const Pass = () => {
             />
           </div>
 
-          {/* Pricing Card */}
-          <Card className="mb-12">
+          {/* Testimonial */}
+          <Card className="mb-12 bg-muted/30">
+            <CardContent className="p-6 md:p-8">
+              <div className="flex flex-col md:flex-row gap-6 items-start">
+                <Avatar className="h-16 w-16 flex-shrink-0">
+                  <AvatarImage src="https://pbs.twimg.com/profile_images/1818287952222445568/RJPxC-d-_400x400.jpg" alt="Yogesh" />
+                  <AvatarFallback>YA</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="text-lg md:text-xl mb-4 leading-relaxed">
+                    "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">Yogesh</span>
+                    <span className="text-muted-foreground">·</span>
+                    <span className="text-muted-foreground">Supalytics</span>
+                    <a 
+                      href="https://x.com/yogesharc" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline inline-flex items-center gap-1 ml-1"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      @yogesharc
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Pricing Card - Enhanced CTA */}
+          <Card className="mb-12 border-2 border-primary">
             <CardContent className="p-8 md:p-12">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              <div className="flex flex-col items-center text-center gap-6">
                 <div>
-                  <div className="text-5xl font-bold mb-2">
+                  <div className="text-5xl md:text-6xl font-bold mb-2">
                     $99
                     <span className="text-lg font-normal text-muted-foreground"> / year</span>
                   </div>
@@ -299,18 +364,22 @@ const Pass = () => {
                 
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6"
+                  className="text-lg px-12 py-6 w-full md:w-auto"
                   onClick={handlePurchase}
                   disabled={isLoading || hasActivePass}
                 >
-                  {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Subscribe Now'}
+                  {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass Now →'}
                 </Button>
+                
+                <p className="text-xs text-muted-foreground">
+                  Join 200+ indie hackers already launching unlimited
+                </p>
               </div>
             </CardContent>
           </Card>
 
           {/* Features Grid */}
-          <div className="grid grid-cols-1 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             {features.map((feature) => (
               <Card key={feature.title}>
                 <CardContent className="p-6">
