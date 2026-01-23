@@ -291,11 +291,11 @@ const Pass = () => {
           {/* Why Launch with Launch? */}
           <div className="mb-12">
             <h2 className="text-xl font-semibold mb-6 text-center">Why Launch with Launch?</h2>
-            <div className="flex justify-center gap-8 md:gap-12 text-center">
+            <div className="flex flex-col gap-4 max-w-xs mx-auto">
               {stats.map((stat) => (
-                <div key={stat.label}>
-                  <div className="text-3xl md:text-4xl font-bold tracking-tight">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
+                <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+                  <span className="text-sm text-muted-foreground">{stat.label}</span>
+                  <span className="text-2xl font-bold tracking-tight">{stat.value}</span>
                 </div>
               ))}
             </div>
