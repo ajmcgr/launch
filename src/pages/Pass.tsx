@@ -290,12 +290,30 @@ const Pass = () => {
 
           {/* Why Launch with Launch? */}
           <div className="mb-12">
-            <h2 className="text-xl font-semibold mb-6 text-center">The Launch community:</h2>
+            <h2 className="text-xl font-semibold mb-6 text-center">The Launch community in numbers</h2>
             <div className="flex flex-col gap-4 max-w-xs mx-auto">
               {stats.map((stat) => (
                 <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
                   <span className="text-sm text-muted-foreground">{stat.label}</span>
                   <span className="text-2xl font-bold tracking-tight">{stat.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* What's Included */}
+          <div className="mb-12">
+            <h2 className="text-xl font-semibold mb-6 text-center">What's included</h2>
+            <div className="space-y-4">
+              {features.map((feature) => (
+                <div key={feature.title} className="flex items-start gap-4">
+                  <div className="p-2 rounded-md bg-primary/10 flex-shrink-0">
+                    <feature.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -343,24 +361,6 @@ const Pass = () => {
                 </div>
               </footer>
             </blockquote>
-          </div>
-
-          {/* What's Included */}
-          <div className="mb-12">
-            <h2 className="text-xl font-semibold mb-6 text-center">What's included</h2>
-            <div className="space-y-4">
-              {features.map((feature) => (
-                <div key={feature.title} className="flex items-start gap-4">
-                  <div className="p-2 rounded-md bg-primary/10 flex-shrink-0">
-                    <feature.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
 
@@ -414,6 +414,18 @@ const Pass = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="mb-12 text-center">
+            <Button 
+              size="lg" 
+              className="text-base px-10 py-6"
+              onClick={handlePurchase}
+              disabled={isLoading || hasActivePass}
+            >
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass →'}
+            </Button>
           </div>
 
           {/* Stripe Badge */}
