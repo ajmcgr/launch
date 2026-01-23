@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { usePass } from '@/hooks/use-pass';
 import { useQueryClient } from '@tanstack/react-query';
 import stripeLogo from '@/assets/stripe-logo.png';
+import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import {
   Accordion,
   AccordionContent,
@@ -200,31 +201,41 @@ const Pass = () => {
         <meta name="description" content="For indie hackers who launch often. Replace per-launch fees with one flat rate. Subscribe to Launch Pass for unlimited product launches at $99/year." />
       </Helmet>
 
-      <div className="min-h-screen bg-background py-16">
+      <div className="min-h-screen bg-background py-8 md:py-12">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Hero - Who, What, Why */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Launch Pass</h1>
-            <p className="text-xl md:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed">
-              For indie hackers who launch often. <br className="hidden md:block" />
-              Replace per-launch fees with one flat rate. <br className="hidden md:block" />
-              Lock in before prices go up.
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              For indie hackers who launch often. Replace per-launch fees with one flat rate. Lock in before prices go up.
             </p>
           </div>
 
-          {/* Price Comparison */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-4 bg-muted/50 rounded-full px-6 py-3 text-sm md:text-base">
+          {/* Price Comparison + Urgency */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-3 bg-muted/50 rounded-full px-5 py-2.5 text-sm">
               <span className="text-muted-foreground line-through">3 launches = $117</span>
               <span className="text-foreground font-semibold">Pass = $99/year</span>
             </div>
           </div>
-
-          {/* Urgency */}
-          <div className="text-center mb-12">
-            <p className="text-sm text-primary font-medium animate-pulse">
+          
+          <div className="text-center mb-8">
+            <p className="text-sm text-primary font-medium">
               🚀 Launch pricing ends soon — 47 passes claimed this week
             </p>
+          </div>
+
+          {/* Video - Full Width at Top */}
+          <div className="mb-10 -mx-4 md:mx-0">
+            <div className="aspect-video md:rounded-xl overflow-hidden shadow-lg">
+              <iframe
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/aPOlq3HvInA"
+                title="Launch Pass Overview"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </div>
 
           {/* Active Pass Notice */}
@@ -295,60 +306,52 @@ const Pass = () => {
             </Card>
           )}
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-3 gap-4 mb-12">
-            {stats.map((stat) => (
-              <Card key={stat.label} className="text-center">
-                <CardContent className="p-4 md:p-6">
-                  <stat.icon className="h-5 w-5 md:h-6 md:w-6 mx-auto mb-2 text-primary" />
-                  <div className="text-xl md:text-2xl font-bold">{stat.value}</div>
-                  <div className="text-xs md:text-sm text-muted-foreground">{stat.label}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Video */}
-          <div className="mb-12 aspect-video rounded-lg overflow-hidden">
-            <iframe
-              className="w-full h-full"
-              src="https://www.youtube.com/embed/aPOlq3HvInA"
-              title="Launch Pass Overview"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+          {/* Stats - Enhanced Visual */}
+          <div className="mb-10">
+            <div className="grid grid-cols-3 gap-3 md:gap-6">
+              {stats.map((stat) => (
+                <div 
+                  key={stat.label} 
+                  className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-b from-muted/50 to-muted/20 border border-border/50"
+                >
+                  <div className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 mb-3">
+                    <stat.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                  </div>
+                  <div className="text-2xl md:text-3xl font-bold tracking-tight">{stat.value}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Testimonial */}
-          <Card className="mb-12 bg-muted/30">
-            <CardContent className="p-6 md:p-8">
-              <div className="flex flex-col md:flex-row gap-6 items-start">
-                <Avatar className="h-16 w-16 flex-shrink-0">
-                  <AvatarImage src="https://pbs.twimg.com/profile_images/1818287952222445568/RJPxC-d-_400x400.jpg" alt="Yogesh" />
-                  <AvatarFallback>YA</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-lg md:text-xl mb-4 leading-relaxed">
-                    "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">Yogesh</span>
-                    <span className="text-muted-foreground">·</span>
-                    <span className="text-muted-foreground">Supalytics</span>
-                    <a 
-                      href="https://x.com/yogesharc" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline inline-flex items-center gap-1 ml-1"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      @yogesharc
-                    </a>
-                  </div>
+          <div className="mb-10 p-6 md:p-8 rounded-xl bg-gradient-to-br from-muted/40 to-transparent border border-border/50">
+            <div className="flex flex-col md:flex-row gap-5 items-start">
+              <Avatar className="h-14 w-14 ring-2 ring-primary/20 ring-offset-2 ring-offset-background flex-shrink-0">
+                <AvatarImage src={yogeshAvatar} alt="Yogesh" />
+                <AvatarFallback>YA</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <p className="text-base md:text-lg mb-4 leading-relaxed text-foreground/90">
+                  "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+                </p>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-semibold">Yogesh</span>
+                  <span className="text-muted-foreground">·</span>
+                  <span className="text-muted-foreground">Supalytics</span>
+                  <a 
+                    href="https://x.com/yogesharc" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline inline-flex items-center gap-1 ml-1"
+                  >
+                    @yogesharc
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Pricing Card - Enhanced CTA */}
           <Card className="mb-12 border-2 border-primary">
