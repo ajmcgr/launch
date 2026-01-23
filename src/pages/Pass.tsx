@@ -222,13 +222,6 @@ const Pass = () => {
             </p>
           </div>
 
-          {/* Price Comparison */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-3 bg-muted/50 rounded-full px-5 py-2.5 text-sm">
-              <span className="text-muted-foreground line-through">3 launches = $117</span>
-              <span className="text-foreground font-semibold">Pass = $99/year</span>
-            </div>
-          </div>
 
           {/* Why Launch with Launch? */}
           <div className="text-center mb-10">
