@@ -231,6 +231,11 @@ const Pass = () => {
             </div>
           </div>
 
+          {/* Why Launch with Launch? */}
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold">Why Launch with Launch?</h2>
+          </div>
+
           {/* Active Pass Notice */}
           {hasActivePass && expiresAt && (
             <Card className={`mb-8 ${cancelAtPeriodEnd ? 'border-destructive bg-destructive/5' : 'border-primary bg-primary/5'}`}>
