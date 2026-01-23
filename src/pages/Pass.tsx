@@ -219,13 +219,6 @@ const Pass = () => {
             </div>
           </div>
           
-          <div className="text-center mb-8">
-            <p className="text-sm text-primary font-medium">
-              🚀 Launch pricing ends soon — 47 passes claimed this week
-            </p>
-          </div>
-
-          {/* Video - Full Width at Top */}
           <div className="mb-10 -mx-4 md:mx-0">
             <div className="aspect-video md:rounded-xl overflow-hidden shadow-lg">
               <iframe
