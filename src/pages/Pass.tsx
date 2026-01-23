@@ -183,7 +183,7 @@ const Pass = () => {
   const stats = [
     { value: "70K+", label: "Monthly Active Users" },
     { value: "28K+", label: "Weekly Active Users" },
-    { value: "2K+", label: "Daily Active Users" },
+    { value: "500K+", label: "Product Views Monthly" },
   ];
 
   if (passLoading) {
