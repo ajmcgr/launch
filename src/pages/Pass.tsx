@@ -301,6 +301,24 @@ const Pass = () => {
             </div>
           </div>
 
+          {/* Pricing */}
+          <div className="mb-12 text-center py-10 border-y border-border">
+            <div className="text-5xl md:text-6xl font-bold tracking-tight mb-2">
+              $99
+              <span className="text-xl font-normal text-muted-foreground"> / year</span>
+            </div>
+            <p className="text-muted-foreground mb-8">Billed annually. Cancel anytime.</p>
+            
+            <Button 
+              size="lg" 
+              className="text-base px-10 py-6"
+              onClick={handlePurchase}
+              disabled={isLoading || hasActivePass}
+            >
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass →'}
+            </Button>
+          </div>
+
           {/* Testimonial */}
           <div className="mb-12">
             <blockquote className="text-center">
@@ -325,24 +343,6 @@ const Pass = () => {
                 </div>
               </footer>
             </blockquote>
-          </div>
-
-          {/* Pricing */}
-          <div className="mb-12 text-center py-10 border-y border-border">
-            <div className="text-5xl md:text-6xl font-bold tracking-tight mb-2">
-              $99
-              <span className="text-xl font-normal text-muted-foreground"> / year</span>
-            </div>
-            <p className="text-muted-foreground mb-8">Billed annually. Cancel anytime.</p>
-            
-            <Button 
-              size="lg" 
-              className="text-base px-10 py-6"
-              onClick={handlePurchase}
-              disabled={isLoading || hasActivePass}
-            >
-              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass →'}
-            </Button>
           </div>
 
           {/* What's Included */}
