@@ -326,16 +326,7 @@ const Pass = () => {
               $99
               <span className="text-xl font-normal text-muted-foreground"> / year</span>
             </div>
-            <p className="text-muted-foreground mb-8">Billed annually. Cancel anytime.</p>
-            
-            <Button 
-              size="lg" 
-              className="text-base px-10 py-6"
-              onClick={handlePurchase}
-              disabled={isLoading || hasActivePass}
-            >
-              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass →'}
-            </Button>
+            <p className="text-muted-foreground">Billed annually. Cancel anytime.</p>
           </div>
 
           {/* Testimonials */}
@@ -387,6 +378,18 @@ const Pass = () => {
                 </div>
               </footer>
             </blockquote>
+          </div>
+
+          {/* CTA after testimonials */}
+          <div className="mb-12 text-center">
+            <Button 
+              size="lg" 
+              className="text-base px-10 py-6"
+              onClick={handlePurchase}
+              disabled={isLoading || hasActivePass}
+            >
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass — $99/year →'}
+            </Button>
           </div>
 
 
