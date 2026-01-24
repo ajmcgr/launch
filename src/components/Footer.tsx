@@ -201,6 +201,26 @@ export const Footer = () => {
                   Reddit
                 </a>
               </li>
+              <li>
+                <a 
+                  href="https://instagram.com/trylaunch" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.youtube.com/channel/UCiWIdnazQN7JqkioVROrblQ/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  YouTube
+                </a>
+              </li>
             </ul>
           </div>
         </div>
