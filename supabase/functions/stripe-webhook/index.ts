@@ -275,8 +275,9 @@ Deno.serve(async (req) => {
             const monthStrings = selectedMonthsStr.split(', ').filter(Boolean);
             
             for (const monthStr of monthStrings) {
-              // Parse "January 2025" format
-              const monthDate = new Date(monthStr);
+              // Parse "January 2025" format - use Date.parse with "1 " prefix for reliable parsing
+              // e.g., "1 January 2025" is reliably parsed across all browsers
+              const monthDate = new Date(`1 ${monthStr}`);
               if (!isNaN(monthDate.getTime())) {
                 const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
                 const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
@@ -347,15 +348,14 @@ Deno.serve(async (req) => {
                     <div class="header">
                       <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
                     </div>
-                    <div class="content">
-                      <h1>Sponsorship Payment Confirmed</h1>
-                      <p>Thank you for your sponsorship purchase, ${metadata.name}!</p>
-                      <div class="highlight">
-                        <p><strong>Package:</strong> ${metadata.sponsorship_type === 'combined' ? 'Combined Package' : metadata.sponsorship_type === 'website' ? 'Website Placement' : 'Newsletter Sponsorship'}</p>
-                        <p><strong>Company:</strong> ${metadata.company}</p>
-                        <p><strong>Months:</strong> ${metadata.selected_months || metadata.months + ' month(s)'}</p>
-                        ${metadata.launch_url ? `<p><strong>Product:</strong> ${metadata.launch_url}</p>` : ''}
-                      </div>
+                      <div class="content">
+                        <h1>Sponsorship Payment Confirmed</h1>
+                        <p>Thank you for your sponsorship purchase!</p>
+                        <div class="highlight">
+                          <p><strong>Package:</strong> ${metadata.sponsorship_type === 'combined' ? 'Combined Package' : metadata.sponsorship_type === 'website' ? 'Website Placement' : 'Newsletter Sponsorship'}</p>
+                          <p><strong>Months:</strong> ${metadata.selected_months || metadata.months + ' month(s)'}</p>
+                          ${metadata.launch_url ? `<p><strong>Product:</strong> ${metadata.launch_url}</p>` : ''}
+                        </div>
                       <p>Your sponsorship has been activated. If you selected website placement, your product will appear in the sponsored section on our homepage during your selected months.</p>
                       <p>If you have any questions, please reply to this email.</p>
                     </div>
