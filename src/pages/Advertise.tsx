@@ -877,7 +877,7 @@ const Advertise = () => {
                   <Button 
                     type="submit" 
                     size="lg" 
-                    disabled={isSubmitting || selectedMonths.length === 0} 
+                    disabled={isSubmitting || selectedMonths.length === 0 || !selectedProductId} 
                     className="w-full"
                   >
                     {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
