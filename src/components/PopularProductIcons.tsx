@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
@@ -75,7 +76,8 @@ export const PopularProductIcons = () => {
             )}
           >
             {row.map((product, index) => (
-              <div
+              <Link
+                to={`/launch/${product.slug}`}
                 key={product.id}
                 className="group relative"
                 style={{
@@ -96,7 +98,7 @@ export const PopularProductIcons = () => {
                     {product.name}
                   </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ))}
