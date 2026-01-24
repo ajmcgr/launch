@@ -504,13 +504,8 @@ const Advertise = () => {
             </div>
 
 
-            {/* Popular Product Icons */}
-            <div className="my-16">
-              <PopularProductIcons />
-            </div>
-
             {/* Testimonials */}
-            <div className="max-w-3xl mx-auto mb-16">
+            <div className="max-w-3xl mx-auto mb-8">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold mb-2">Trusted by Advertisers</h3>
                 <p className="text-muted-foreground">See what other founders are saying about advertising on Launch</p>
@@ -564,6 +559,11 @@ const Advertise = () => {
                   </footer>
                 </blockquote>
               </div>
+            </div>
+
+            {/* Popular Product Icons */}
+            <div className="my-16">
+              <PopularProductIcons />
             </div>
 
             {/* Stats & Features - Two Column Layout */}
