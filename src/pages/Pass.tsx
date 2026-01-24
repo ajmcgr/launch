@@ -230,10 +230,10 @@ const Pass = () => {
           </div>
 
           {/* Testimonials - Social proof early */}
-          <div className="mb-12 space-y-10">
+          <div className="mb-16 space-y-8">
             {/* Jake's Testimonial */}
             <blockquote className="text-center">
-              <p className="text-base md:text-lg leading-relaxed text-foreground/90 mb-6">
+              <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
                 "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
               </p>
               <footer className="flex items-center justify-center gap-3">
@@ -257,7 +257,7 @@ const Pass = () => {
 
             {/* Yogesh's Testimonial */}
             <blockquote className="text-center">
-              <p className="text-base md:text-lg leading-relaxed text-foreground/90 mb-6">
+              <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
                 "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
               </p>
               <footer className="flex items-center justify-center gap-3">
@@ -281,7 +281,9 @@ const Pass = () => {
           </div>
 
           {/* Popular Product Icons */}
-          <PopularProductIcons />
+          <div className="my-16">
+            <PopularProductIcons />
+          </div>
 
           {/* Active Pass Notice */}
           {hasActivePass && expiresAt && (

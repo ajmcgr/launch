@@ -12,8 +12,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useNavigate } from 'react-router-dom';
-import { Testimonials } from '@/components/Testimonials';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
+import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
+import jakeAvatar from '@/assets/jake-avatar.jpg';
 
 interface LaunchedProduct {
   id: string;
@@ -514,12 +517,100 @@ const Advertise = () => {
               </p>
             </div>
 
-            <Testimonials 
-              variant="compact"
-              title="Trusted by Makers"
-              subtitle="See what other founders are saying about advertising on Launch"
-              maxItems={2}
-            />
+            {/* Testimonials */}
+            <div className="max-w-3xl mx-auto mb-16">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold mb-2">Trusted by Makers</h3>
+                <p className="text-muted-foreground">See what other founders are saying about Launch</p>
+              </div>
+              <div className="space-y-8">
+                {/* Jake's Testimonial */}
+                <blockquote className="text-center">
+                  <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+                    "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
+                  </p>
+                  <footer className="flex items-center justify-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={jakeAvatar} alt="Jake" />
+                      <AvatarFallback>JH</AvatarFallback>
+                    </Avatar>
+                    <div className="text-sm text-left">
+                      <div className="font-medium">Jake</div>
+                      <div className="text-muted-foreground">
+                        AdGenerator · <a 
+                          href="https://x.com/jakeh2792" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
+                        >@jakeh2792</a>
+                      </div>
+                    </div>
+                  </footer>
+                </blockquote>
+
+                {/* Yogesh's Testimonial */}
+                <blockquote className="text-center">
+                  <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+                    "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+                  </p>
+                  <footer className="flex items-center justify-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={yogeshAvatar} alt="Yogesh" />
+                      <AvatarFallback>YA</AvatarFallback>
+                    </Avatar>
+                    <div className="text-sm text-left">
+                      <div className="font-medium">Yogesh</div>
+                      <div className="text-muted-foreground">
+                        Supalytics · <a 
+                          href="https://x.com/yogesharc" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
+                        >@yogesharc</a>
+                      </div>
+                    </div>
+                  </footer>
+                </blockquote>
+              </div>
+            </div>
+
+            {/* Stats & Features - Two Column Layout */}
+            <div className="max-w-3xl mx-auto mb-16 grid md:grid-cols-2 gap-8 md:gap-12">
+              {/* The Launch community in numbers */}
+              <div>
+                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">The community in numbers</h2>
+                <div className="flex flex-col gap-4">
+                  {[
+                    { value: "70K+", label: "Monthly Active Users" },
+                    { value: "28K+", label: "Weekly Active Users" },
+                    { value: "500K+", label: "Product Views Monthly" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+                      <span className="text-sm text-muted-foreground">{stat.label}</span>
+                      <span className="text-2xl font-bold tracking-tight">{stat.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* What's Included */}
+              <div>
+                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">What's included</h2>
+                <div className="space-y-4">
+                  {[
+                    { icon: Rocket, title: "High Visibility", description: "Prominent placement reaching thousands of builders" },
+                    { icon: RefreshCw, title: "Flexible Duration", description: "Book for one month or multiple months at once" },
+                    { icon: Zap, title: "Engaged Audience", description: "Founders and makers who actively discover new tools" },
+                    { icon: Calendar, title: "Easy Scheduling", description: "Select your preferred months and we handle the rest" }
+                  ].map((feature) => (
+                    <div key={feature.title}>
+                      <h3 className="font-medium">{feature.title}</h3>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {/* Placement Preview Section */}
             <div className="max-w-4xl mx-auto mb-12">
