@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Lock, Rocket, RefreshCw, Zap, Calendar, AlertCircle, TrendingUp, Users, Star, ExternalLink } from 'lucide-react';
+import { Check, Lock, Rocket, RefreshCw, Zap, Calendar, AlertCircle } from 'lucide-react';
+import PopularProductIcons from '@/components/PopularProductIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePass } from '@/hooks/use-pass';
@@ -205,6 +206,9 @@ const Pass = () => {
       <div className="min-h-screen bg-background">
 
         <div className="container mx-auto px-4 max-w-3xl py-12 md:py-16">
+          {/* Popular Product Icons */}
+          <PopularProductIcons />
+          
           {/* Hero - Who, What, Why */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
