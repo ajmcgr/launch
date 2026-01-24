@@ -209,16 +209,22 @@ const Pass = () => {
           {/* Hero - Who, What, Why */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
               For makers who launch often. Replace per-launch fees with one flat rate.
             </p>
+            <div className="mb-6">
+              <div className="text-3xl md:text-4xl font-bold tracking-tight">
+                $99<span className="text-lg font-normal text-muted-foreground"> / year</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">Billed annually. Cancel anytime.</p>
+            </div>
             <Button 
               size="lg" 
               className="text-base px-10 py-6"
               onClick={handlePurchase}
               disabled={isLoading || hasActivePass}
             >
-              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass — $99/year →'}
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass'}
             </Button>
           </div>
 
@@ -384,7 +390,7 @@ const Pass = () => {
               onClick={handlePurchase}
               disabled={isLoading || hasActivePass}
             >
-              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass — $99/year →'}
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass'}
             </Button>
           </div>
 
@@ -449,7 +455,7 @@ const Pass = () => {
               onClick={handlePurchase}
               disabled={isLoading || hasActivePass}
             >
-              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass →'}
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass'}
             </Button>
           </div>
 
