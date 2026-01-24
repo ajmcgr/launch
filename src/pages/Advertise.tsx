@@ -520,8 +520,8 @@ const Advertise = () => {
             {/* Testimonials */}
             <div className="max-w-3xl mx-auto mb-16">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold mb-2">Trusted by Makers</h3>
-                <p className="text-muted-foreground">See what other founders are saying about Launch</p>
+                <h3 className="text-2xl font-bold mb-2">Trusted by Advertisers</h3>
+                <p className="text-muted-foreground">See what other founders are saying about advertising on Launch</p>
               </div>
               <div className="space-y-8">
                 {/* Jake's Testimonial */}
@@ -576,14 +576,14 @@ const Advertise = () => {
 
             {/* Stats & Features - Two Column Layout */}
             <div className="max-w-3xl mx-auto mb-16 grid md:grid-cols-2 gap-8 md:gap-12">
-              {/* The Launch community in numbers */}
+              {/* Your reach */}
               <div>
-                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">The community in numbers</h2>
+                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">Your reach</h2>
                 <div className="flex flex-col gap-4">
                   {[
-                    { value: "70K+", label: "Monthly Active Users" },
-                    { value: "28K+", label: "Weekly Active Users" },
-                    { value: "500K+", label: "Product Views Monthly" },
+                    { value: "70K+", label: "Monthly Impressions" },
+                    { value: "2K+", label: "Newsletter Subscribers" },
+                    { value: "25%", label: "Email Open Rate" },
                   ].map((stat) => (
                     <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
                       <span className="text-sm text-muted-foreground">{stat.label}</span>
@@ -593,15 +593,15 @@ const Advertise = () => {
                 </div>
               </div>
 
-              {/* What's Included */}
+              {/* Why advertise with us */}
               <div>
-                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">What's included</h2>
+                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">Why advertise with us</h2>
                 <div className="space-y-4">
                   {[
-                    { icon: Rocket, title: "High Visibility", description: "Prominent placement reaching thousands of builders" },
-                    { icon: RefreshCw, title: "Flexible Duration", description: "Book for one month or multiple months at once" },
-                    { icon: Zap, title: "Engaged Audience", description: "Founders and makers who actively discover new tools" },
-                    { icon: Calendar, title: "Easy Scheduling", description: "Select your preferred months and we handle the rest" }
+                    { icon: Rocket, title: "Premium Placement", description: "Top-of-page visibility with no competing ads" },
+                    { icon: RefreshCw, title: "Targeted Audience", description: "Founders and builders actively seeking new tools" },
+                    { icon: Zap, title: "High Intent Traffic", description: "Users ready to discover and try new products" },
+                    { icon: Calendar, title: "Flexible Booking", description: "Choose your months and cancel anytime" }
                   ].map((feature) => (
                     <div key={feature.title}>
                       <h3 className="font-medium">{feature.title}</h3>
