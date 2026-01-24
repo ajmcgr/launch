@@ -207,7 +207,7 @@ const Pass = () => {
         <div className="w-full aspect-video">
           <iframe
             className="w-full h-full"
-            src="https://www.youtube.com/embed/aPOlq3HvInA?rel=0&modestbranding=1&showinfo=0&iv_load_policy=3"
+            src="https://www.youtube.com/embed/3SE77k3FJWw?rel=0&modestbranding=1&showinfo=0&iv_load_policy=3"
             title="Launch Pass Overview"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
