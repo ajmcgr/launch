@@ -24,7 +24,7 @@ const fetchPopularProducts = async (): Promise<ProductIcon[]> => {
     `)
     .eq('type', 'icon')
     .not('url', 'is', null)
-    .limit(60);
+    .limit(80);
 
   if (error) throw error;
 
@@ -42,7 +42,7 @@ const fetchPopularProducts = async (): Promise<ProductIcon[]> => {
       slug: item.products.slug,
       icon_url: item.url,
     }))
-    .slice(0, 45);
+    .slice(0, 60);
 };
 
 export const PopularProductIcons = () => {
@@ -56,11 +56,11 @@ export const PopularProductIcons = () => {
     return null;
   }
 
-  // Create three rows with staggered animation - 15 icons per row
+  // Create three rows with staggered animation - 20 icons per row
   const rows = [
-    products.slice(0, 15),
-    products.slice(15, 30),
-    products.slice(30, 45),
+    products.slice(0, 20),
+    products.slice(20, 40),
+    products.slice(40, 60),
   ].filter(row => row.length > 0);
 
   return (
