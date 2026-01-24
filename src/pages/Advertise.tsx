@@ -143,7 +143,7 @@ const Advertise = () => {
           product_media!inner(url, type)
         `)
         .eq('owner_id', user.id)
-        .eq('status', 'launched')
+        .in('status', ['launched', 'scheduled'])
         .eq('product_media.type', 'icon')
         .order('name');
 
@@ -154,7 +154,7 @@ const Advertise = () => {
           .from('products')
           .select('id, name, slug, tagline')
           .eq('owner_id', user.id)
-          .eq('status', 'launched')
+          .in('status', ['launched', 'scheduled'])
           .order('name');
         
         setLaunchedProducts((fallbackData || []).map(p => ({ ...p, iconUrl: null })));
