@@ -222,6 +222,57 @@ const Pass = () => {
             </Button>
           </div>
 
+          {/* Testimonials - Social proof early */}
+          <div className="mb-12 space-y-10">
+            {/* Jake's Testimonial */}
+            <blockquote className="text-center">
+              <p className="text-lg md:text-xl leading-relaxed text-foreground/90 mb-6">
+                "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
+              </p>
+              <footer className="flex items-center justify-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={jakeAvatar} alt="Jake" />
+                  <AvatarFallback>JH</AvatarFallback>
+                </Avatar>
+                <div className="text-sm text-left">
+                  <div className="font-medium">Jake</div>
+                  <div className="text-muted-foreground">
+                    AdGenerator · <a 
+                      href="https://x.com/jakeh2792" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >@jakeh2792</a>
+                  </div>
+                </div>
+              </footer>
+            </blockquote>
+
+            {/* Yogesh's Testimonial */}
+            <blockquote className="text-center">
+              <p className="text-lg md:text-xl leading-relaxed text-foreground/90 mb-6">
+                "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+              </p>
+              <footer className="flex items-center justify-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={yogeshAvatar} alt="Yogesh" />
+                  <AvatarFallback>YA</AvatarFallback>
+                </Avatar>
+                <div className="text-sm text-left">
+                  <div className="font-medium">Yogesh</div>
+                  <div className="text-muted-foreground">
+                    Supalytics · <a 
+                      href="https://x.com/yogesharc" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >@yogesharc</a>
+                  </div>
+                </div>
+              </footer>
+            </blockquote>
+          </div>
+
           {/* Popular Product Icons */}
           <PopularProductIcons />
 
@@ -320,68 +371,13 @@ const Pass = () => {
             </div>
           </div>
 
-          {/* Pricing */}
+          {/* Pricing with CTA */}
           <div className="mb-12 text-center py-10 border-y border-border">
             <div className="text-5xl md:text-6xl font-bold tracking-tight mb-2">
               $99
               <span className="text-xl font-normal text-muted-foreground"> / year</span>
             </div>
-            <p className="text-muted-foreground">Billed annually. Cancel anytime.</p>
-          </div>
-
-          {/* Testimonials */}
-          <div className="mb-12 space-y-10">
-            {/* Jake's Testimonial */}
-            <blockquote className="text-center">
-              <p className="text-lg md:text-xl leading-relaxed text-foreground/90 mb-6">
-                "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
-              </p>
-              <footer className="flex items-center justify-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={jakeAvatar} alt="Jake" />
-                  <AvatarFallback>JH</AvatarFallback>
-                </Avatar>
-                <div className="text-sm text-left">
-                  <div className="font-medium">Jake</div>
-                  <div className="text-muted-foreground">
-                    AdGenerator · <a 
-                      href="https://x.com/jakeh2792" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >@jakeh2792</a>
-                  </div>
-                </div>
-              </footer>
-            </blockquote>
-
-            {/* Yogesh's Testimonial */}
-            <blockquote className="text-center">
-              <p className="text-lg md:text-xl leading-relaxed text-foreground/90 mb-6">
-                "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
-              </p>
-              <footer className="flex items-center justify-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={yogeshAvatar} alt="Yogesh" />
-                  <AvatarFallback>YA</AvatarFallback>
-                </Avatar>
-                <div className="text-sm text-left">
-                  <div className="font-medium">Yogesh</div>
-                  <div className="text-muted-foreground">
-                    Supalytics · <a 
-                      href="https://x.com/yogesharc" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >@yogesharc</a>
-                  </div>
-                </div>
-              </footer>
-            </blockquote>
-          </div>
-
-          {/* CTA after testimonials */}
-          <div className="mb-12 text-center">
+            <p className="text-muted-foreground mb-8">Billed annually. Cancel anytime.</p>
             <Button 
               size="lg" 
               className="text-base px-10 py-6"
