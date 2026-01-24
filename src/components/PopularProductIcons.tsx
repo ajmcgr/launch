@@ -64,7 +64,7 @@ export const PopularProductIcons = () => {
   ].filter(row => row.length > 0);
 
   return (
-    <div className="py-12 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+    <div className="pt-4 pb-12 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
       <div className="flex flex-col items-center gap-3 md:gap-4 px-4">
         {rows.map((row, rowIndex) => (
           <div
