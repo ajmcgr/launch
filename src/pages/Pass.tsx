@@ -203,18 +203,6 @@ const Pass = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        {/* Video - Premium Width */}
-        <div className="container mx-auto px-4 pt-8 md:pt-12">
-          <div className="max-w-4xl mx-auto aspect-video rounded-xl overflow-hidden shadow-2xl">
-            <iframe
-              className="w-full h-full"
-            src="https://www.youtube.com/embed/3SE77k3FJWw?rel=0&modestbranding=1&showinfo=0&iv_load_policy=3"
-            title="Launch Pass Overview"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-          </div>
-        </div>
 
         <div className="container mx-auto px-4 max-w-3xl py-12 md:py-16">
           {/* Hero - Who, What, Why */}
