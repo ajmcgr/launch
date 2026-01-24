@@ -281,53 +281,41 @@ Deno.serve(async (req) => {
                 const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
                 const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
                 
-                // Bump all existing sponsors down by 1 position to make room at position 1
+                // Get existing sponsors for this period to find next available position
                 const { data: existingSponsors } = await supabaseClient
                   .from('sponsored_products')
-                  .select('id, position')
+                  .select('id, position, end_date')
                   .lte('start_date', endDate.toISOString().split('T')[0])
                   .gte('end_date', startDate.toISOString().split('T')[0])
                   .order('position', { ascending: true });
 
-                // Shift existing sponsors down (increment their positions)
-                if (existingSponsors && existingSponsors.length > 0) {
-                  // Update in reverse order (highest position first) to avoid conflicts
-                  const sortedDesc = [...existingSponsors].sort((a, b) => b.position - a.position);
-                  for (const sponsor of sortedDesc) {
-                    const newPosition = sponsor.position + 1;
-                    // Only keep sponsors in positions 1-4, remove if pushed beyond
-                    if (newPosition <= 4) {
-                      await supabaseClient
-                        .from('sponsored_products')
-                        .update({ position: newPosition })
-                        .eq('id', sponsor.id);
-                      console.log(`Bumped sponsor ${sponsor.id} from position ${sponsor.position} to ${newPosition}`);
-                    } else {
-                      // Remove sponsor pushed beyond position 4
-                      await supabaseClient
-                        .from('sponsored_products')
-                        .delete()
-                        .eq('id', sponsor.id);
-                      console.log(`Removed sponsor ${sponsor.id} as it was pushed beyond position 4`);
-                    }
-                  }
+                // Find next available position (2-4, skip position 1 reserved for permanent sponsors)
+                const occupiedPositions = new Set(existingSponsors?.map(s => s.position) || []);
+                let nextPosition = 2; // Start at 2 since position 1 is for permanent sponsors
+                while (occupiedPositions.has(nextPosition) && nextPosition <= 4) {
+                  nextPosition++;
                 }
 
-                // Insert new sponsor at position 1
-                const { error: insertError } = await supabaseClient
-                  .from('sponsored_products')
-                  .insert({
-                    product_id: product.id,
-                    position: 1,
-                    sponsorship_type: metadata.sponsorship_type,
-                    start_date: startDate.toISOString().split('T')[0],
-                    end_date: endDate.toISOString().split('T')[0],
-                  });
-
-                if (insertError) {
-                  console.error('Error creating sponsored product:', insertError);
+                if (nextPosition > 4) {
+                  console.log(`No available positions for ${monthStr} - all slots (2-4) are filled`);
+                  // Still record the sponsorship but log the issue
                 } else {
-                  console.log(`Created sponsored product for ${product.name} at position 1 for ${monthStr}`);
+                  // Insert new sponsor at the next available position
+                  const { error: insertError } = await supabaseClient
+                    .from('sponsored_products')
+                    .insert({
+                      product_id: product.id,
+                      position: nextPosition,
+                      sponsorship_type: metadata.sponsorship_type,
+                      start_date: startDate.toISOString().split('T')[0],
+                      end_date: endDate.toISOString().split('T')[0],
+                    });
+
+                  if (insertError) {
+                    console.error('Error creating sponsored product:', insertError);
+                  } else {
+                    console.log(`Created sponsored product for ${product.name} at position ${nextPosition} for ${monthStr}`);
+                  }
                 }
               }
             }
