@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
+import PopularProductIcons from '@/components/PopularProductIcons';
 
 interface LaunchedProduct {
   id: string;
@@ -508,20 +509,15 @@ const Advertise = () => {
               <img src={stripeLogo} alt="Stripe" className="h-6" />
             </div>
 
-            <div className="mt-6 text-center mb-12">
-              <p className="text-muted-foreground">
-                All plans include support from our team. Questions?{' '}
-                <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
-                  Contact us
-                </a>
-              </p>
-            </div>
 
             {/* Testimonials */}
             <div className="max-w-3xl mx-auto mb-16">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold mb-2">Trusted by Advertisers</h3>
                 <p className="text-muted-foreground">See what other founders are saying about advertising on Launch</p>
+              </div>
+              <div className="overflow-x-hidden pt-4 my-8">
+                <PopularProductIcons />
               </div>
               <div className="space-y-8">
                 {/* Jake's Testimonial */}
