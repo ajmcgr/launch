@@ -213,10 +213,11 @@ const Pass = () => {
               For makers who launch often. Replace per-launch fees with one flat rate.
             </p>
             <div className="mb-6">
-              <div className="text-3xl md:text-4xl font-bold tracking-tight">
-                $99<span className="text-lg font-normal text-muted-foreground"> / year</span>
+              <div className="text-5xl md:text-6xl font-bold tracking-tight mb-2">
+                $99
+                <span className="text-xl font-normal text-muted-foreground"> / year</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">Billed annually. Cancel anytime.</p>
+              <p className="text-muted-foreground">Billed annually. Cancel anytime.</p>
             </div>
             <Button 
               size="lg" 
@@ -232,7 +233,7 @@ const Pass = () => {
           <div className="mb-12 space-y-10">
             {/* Jake's Testimonial */}
             <blockquote className="text-center">
-              <p className="text-lg md:text-xl leading-relaxed text-foreground/90 mb-6">
+              <p className="text-base md:text-lg leading-relaxed text-foreground/90 mb-6">
                 "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
               </p>
               <footer className="flex items-center justify-center gap-3">
@@ -256,7 +257,7 @@ const Pass = () => {
 
             {/* Yogesh's Testimonial */}
             <blockquote className="text-center">
-              <p className="text-lg md:text-xl leading-relaxed text-foreground/90 mb-6">
+              <p className="text-base md:text-lg leading-relaxed text-foreground/90 mb-6">
                 "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
               </p>
               <footer className="flex items-center justify-center gap-3">
