@@ -212,9 +212,17 @@ const Pass = () => {
           {/* Hero - Who, What, Why */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
               For makers who launch often. Replace per-launch fees with one flat rate.
             </p>
+            <Button 
+              size="lg" 
+              className="text-base px-10 py-6"
+              onClick={handlePurchase}
+              disabled={isLoading || hasActivePass}
+            >
+              {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass — $99/year →'}
+            </Button>
           </div>
 
           {/* Active Pass Notice */}
