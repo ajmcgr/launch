@@ -64,13 +64,13 @@ export const PopularProductIcons = () => {
   ].filter(row => row.length > 0);
 
   return (
-    <div className="py-12 overflow-hidden -mx-4 md:-mx-8 lg:-mx-16">
-      <div className="flex flex-col items-center gap-3 md:gap-4">
+    <div className="py-12 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+      <div className="flex flex-col items-center gap-3 md:gap-4 px-4">
         {rows.map((row, rowIndex) => (
           <div
             key={rowIndex}
             className={cn(
-              "flex items-center justify-center gap-2 md:gap-3 lg:gap-4 w-full",
+              "flex items-center justify-center gap-2 md:gap-3 lg:gap-4 flex-wrap",
               // Offset middle row for honeycomb effect
               rowIndex === 1 && "ml-6 md:ml-10"
             )}
