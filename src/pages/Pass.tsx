@@ -206,11 +206,8 @@ const Pass = () => {
       <div className="min-h-screen bg-background">
 
         <div className="container mx-auto px-4 max-w-3xl py-12 md:py-16">
-          {/* Popular Product Icons */}
-          <PopularProductIcons />
-          
           {/* Hero - Who, What, Why */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
               For makers who launch often. Replace per-launch fees with one flat rate.
@@ -224,6 +221,9 @@ const Pass = () => {
               {isLoading ? 'Processing...' : hasActivePass ? 'Already Subscribed' : 'Get Launch Pass — $99/year →'}
             </Button>
           </div>
+
+          {/* Popular Product Icons */}
+          <PopularProductIcons />
 
           {/* Active Pass Notice */}
           {hasActivePass && expiresAt && (
