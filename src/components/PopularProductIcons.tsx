@@ -63,15 +63,15 @@ export const PopularProductIcons = () => {
   ].filter(row => row.length > 0);
 
   return (
-    <div className="py-12 overflow-hidden">
-      <div className="flex flex-col items-center gap-4">
+    <div className="py-12 overflow-hidden -mx-4 md:-mx-8 lg:-mx-16">
+      <div className="flex flex-col items-center gap-3 md:gap-4">
         {rows.map((row, rowIndex) => (
           <div
             key={rowIndex}
             className={cn(
-              "flex items-center justify-center gap-3 md:gap-4",
+              "flex items-center justify-center gap-2 md:gap-3 lg:gap-4 w-full",
               // Offset middle row for honeycomb effect
-              rowIndex === 1 && "ml-8"
+              rowIndex === 1 && "ml-6 md:ml-10"
             )}
           >
             {row.map((product, index) => (
