@@ -203,7 +203,7 @@ const Pass = () => {
         <meta name="description" content="For indie hackers who launch often. Replace per-launch fees with one flat rate. Subscribe to Launch Pass for unlimited product launches at $99/year." />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background overflow-x-hidden">
 
         <div className="container mx-auto px-4 max-w-3xl py-12 md:py-16">
           {/* Hero - Who, What, Why */}
