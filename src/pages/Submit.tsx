@@ -1515,13 +1515,16 @@ const Submit = () => {
 
             {step === 4 && (() => {
               // Allow upgrading from 'join' plan to paid plans
-              // Only restrict if user has a paid plan ('skip' or 'relaunch')
-              const isPaidPlan = existingPlan === 'skip' || existingPlan === 'relaunch';
+              // Only restrict if user has a paid plan ('skip')
+              const isPaidPlan = existingPlan === 'skip';
               const canUpgrade = existingPlan === 'join'; // Allow upgrade from free 'join' plan
               
+              // Filter out relaunch plan - users should use the other three options
+              const availablePlans = PRICING_PLANS.filter(plan => plan.id !== 'relaunch');
+              
               const filteredPlans = isPaidPlan
-                ? PRICING_PLANS.filter(plan => plan.id === existingPlan)
-                : PRICING_PLANS;
+                ? availablePlans.filter(plan => plan.id === existingPlan)
+                : availablePlans;
               
               return (
                 <div className="space-y-6">
@@ -1545,8 +1548,7 @@ const Submit = () => {
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                           <p className="text-sm font-medium">
                             You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan. 
-                            {existingPlan === 'skip' && ' You can choose any available date and time below.'}
-                            {existingPlan === 'relaunch' && ' Your relaunch date will be automatically assigned.'}
+                            You can choose any available date and time below.
                           </p>
                         </div>
                       )}
