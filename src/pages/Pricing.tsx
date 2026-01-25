@@ -155,12 +155,6 @@ const Pricing = () => {
           <p className="text-muted-foreground">
             Maximum 1 launch per week across all plans
           </p>
-          <p className="text-sm text-muted-foreground">
-            Need to relaunch an existing product?{' '}
-            <Link to="/my-products" className="text-primary hover:underline">
-              Go to My Products
-            </Link>
-          </p>
         </div>
 
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-6">
