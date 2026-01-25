@@ -29,20 +29,18 @@ const Pricing = () => {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {PRICING_PLANS.map((plan) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {PRICING_PLANS.filter(plan => plan.id !== 'relaunch').map((plan) => (
             <Card 
               key={plan.id} 
               className={`relative hover:shadow-lg transition-shadow ${
-                plan.highlight ? 'border-primary shadow-md ring-2 ring-primary' : ''
+                plan.highlight ? 'border-primary shadow-md' : ''
               }`}
             >
               {plan.badge && (
-                <div className="absolute top-0 right-0">
-                  <div className="bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-bl-lg">
-                    {plan.badge}
-                  </div>
-                </div>
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  {plan.badge}
+                </Badge>
               )}
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl">
@@ -104,9 +102,15 @@ const Pricing = () => {
           ))}
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 text-center space-y-2">
           <p className="text-muted-foreground">
             Maximum 1 launch per week across all plans
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Need to relaunch an existing product?{' '}
+            <Link to="/my-products" className="text-primary hover:underline">
+              Go to My Products
+            </Link>
           </p>
         </div>
 
