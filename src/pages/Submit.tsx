@@ -1542,20 +1542,36 @@ const Submit = () => {
                   {isLoadingProduct ? (
                     <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
                   ) : isRescheduling ? (
-                    /* Simplified reschedule UI - just date picker */
+                    /* Simplified reschedule UI */
                     <>
-                      {isPaidPlan && (
-                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                      {/* Skip plan or Pass users can choose date */}
+                      {(existingPlan === 'skip' || hasActivePass) && (
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
+                          {hasActivePass && <Zap className="h-5 w-5 text-primary flex-shrink-0" />}
                           <p className="text-sm font-medium">
-                            Your <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan is ready. Choose your new launch date below.
+                            {hasActivePass 
+                              ? <><span className="font-bold">Pass Active</span> — Choose your launch date below.</>
+                              : <>Your <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan is ready. Choose your new launch date below.</>
+                            }
                           </p>
                         </div>
                       )}
-                      {hasActivePass && (
-                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
-                          <Zap className="h-5 w-5 text-primary flex-shrink-0" />
-                          <p className="text-sm font-medium">
-                            <span className="font-bold">Pass Active</span> — Choose your launch date below.
+                      
+                      {/* Free or Join plan - auto-assigned, just confirm */}
+                      {!hasActivePass && existingPlan !== 'skip' && (
+                        <div className="space-y-4">
+                          <div className="bg-muted/50 rounded-lg p-6 text-center">
+                            <p className="text-sm font-medium mb-2">
+                              Your <span className="font-bold">{existingPlan === 'join' ? 'Launch Lite' : 'Free'}</span> plan will be auto-scheduled.
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {existingPlan === 'join' 
+                                ? 'Your launch will be scheduled approximately 7 days from now.'
+                                : 'Free launches are queued after paid launches.'}
+                            </p>
+                          </div>
+                          <p className="text-sm text-muted-foreground text-center">
+                            Want to choose your launch date? <a href="/pass" className="text-primary hover:underline">Get Launch Pass</a> for full control.
                           </p>
                         </div>
                       )}
@@ -1634,7 +1650,8 @@ const Submit = () => {
                     </>
                   )}
                 
-                {!isLoadingProduct && (formData.plan === 'skip' || isRescheduling) && (
+                {/* Date picker - only for 'skip' plan OR (rescheduling with skip/pass) */}
+                {!isLoadingProduct && (formData.plan === 'skip' || (isRescheduling && (existingPlan === 'skip' || hasActivePass))) && (
                   <div className="space-y-4 mt-6">
                     {/* Launch Now Option */}
                     <div className="p-4 border rounded-lg bg-primary/5 border-primary/20">
