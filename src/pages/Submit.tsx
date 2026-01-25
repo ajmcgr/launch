@@ -1593,15 +1593,6 @@ const Submit = () => {
                         })}
                       </div>
                       
-                      {/* Comparison hint */}
-                      {!isPaidPlan && formData.plan === 'free' && (
-                        <div className="text-center p-4 border border-dashed rounded-lg bg-muted/20">
-                          <p className="text-sm text-muted-foreground">
-                            💡 <span className="font-medium">Tip:</span> Launch Lite ($9) gets you social promotion to 5K+ followers
-                          </p>
-                        </div>
-                      )}
-                      
                       {/* Pass Option - only show if not already active */}
                       {!hasActivePass && !isPaidPlan && (
                         <div className="mt-4 pt-6 border-t">
