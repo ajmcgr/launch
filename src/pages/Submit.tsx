@@ -1568,9 +1568,13 @@ const Submit = () => {
                         </div>
                       )}
                       
-                      {/* Plan cards grid */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filteredPlans.map((plan) => {
+                      {/* Plan cards grid - 3 columns with Launch in center */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Reorder: Free | Launch (center) | Launch Lite */}
+                        {['free', 'skip', 'join'].map((planId) => {
+                          const plan = filteredPlans.find(p => p.id === planId);
+                          if (!plan) return null;
+                          
                           const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
                           const isSelected = formData.plan === plan.id;
                           const isDisabled = isPaidPlan && !isCurrentPaidPlan;
