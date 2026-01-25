@@ -225,6 +225,12 @@ const Submit = () => {
           videoUrl: product.product_media?.find((m: any) => m.type === 'video')?.url || '',
         };
 
+        // Check if the original launch date is in the past - if so, clear it
+        const originalLaunchDate = product.launch_date ? new Date(product.launch_date) : null;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const isLaunchDateInPast = originalLaunchDate && originalLaunchDate < today;
+
         // Set the form data with the paid plan FIRST
         setFormData({
           name: product.name || '',
@@ -239,7 +245,7 @@ const Submit = () => {
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
           plan: planValue, // Use the order plan
-          selectedDate: product.launch_date || null,
+          selectedDate: isLaunchDateInPast ? null : product.launch_date, // Clear past dates
         });
 
         // Then set the reschedule state AFTER formData is set
@@ -259,6 +265,12 @@ const Submit = () => {
           videoUrl: product.product_media?.find((m: any) => m.type === 'video')?.url || '',
         };
 
+        // Check if the original launch date is in the past - if so, clear it
+        const draftLaunchDate = product.launch_date ? new Date(product.launch_date) : null;
+        const todayDraft = new Date();
+        todayDraft.setHours(0, 0, 0, 0);
+        const isDraftDateInPast = draftLaunchDate && draftLaunchDate < todayDraft;
+
         setFormData({
           name: product.name || '',
           tagline: product.tagline || '',
@@ -272,7 +284,7 @@ const Submit = () => {
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
           plan: 'join',
-          selectedDate: product.launch_date || null,
+          selectedDate: isDraftDateInPast ? null : product.launch_date, // Clear past dates
         });
 
         setUploadedMedia(media);
