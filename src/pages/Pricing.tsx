@@ -29,7 +29,7 @@ const Pricing = () => {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {PRICING_PLANS.filter(plan => plan.id !== 'relaunch').map((plan) => (
             <Card 
               key={plan.id} 
@@ -100,6 +100,55 @@ const Pricing = () => {
               </CardContent>
             </Card>
           ))}
+
+          {/* Pass Card */}
+          <Card className="relative hover:shadow-lg transition-shadow border-primary shadow-md">
+            <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
+              Best Value
+            </Badge>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl">Pass</CardTitle>
+              <CardDescription className="text-sm">Unlimited launches</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-3xl font-bold">
+                $99<span className="text-sm font-normal text-muted-foreground"> / year</span>
+              </div>
+
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Unlimited launches</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Unlimited relaunches</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Skip the queue</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>All future features</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>12 months access</span>
+                </li>
+              </ul>
+
+              <div className="pt-2 border-t">
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">Save 60%+</span> vs per-launch pricing
+                </p>
+              </div>
+
+              <Button asChild className="w-full" size="lg">
+                <Link to="/pass">Get Pass</Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="mt-8 text-center space-y-2">
@@ -173,71 +222,6 @@ const Pricing = () => {
           </blockquote>
         </div>
 
-        {/* Pass Section */}
-        <div className="mt-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Launch Pass</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Unlimited launches for a full year — one simple price
-            </p>
-          </div>
-
-          <Card className="max-w-lg mx-auto relative hover:shadow-lg transition-shadow border-primary shadow-md">
-            <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
-              Best for Power Launchers
-            </Badge>
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Pass</CardTitle>
-              <CardDescription>12 months of unlimited access</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-center">
-                <div className="text-5xl font-bold">
-                  $99<span className="text-base font-normal text-muted-foreground"> / year</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-2">One-time payment</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
-                  <Rocket className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Unlimited Launches</span>
-                </div>
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
-                  <RefreshCw className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Unlimited Relaunches</span>
-                </div>
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
-                  <Zap className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Future Features</span>
-                </div>
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
-                  <Calendar className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">12 Months Access</span>
-                </div>
-              </div>
-
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Skip the queue on all your launches</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Perfect for agencies & serial builders</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">All future non-advertising features included</span>
-                </li>
-              </ul>
-
-              <Button asChild className="w-full" size="lg">
-                <Link to="/pass">Get Your Pass</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Advertising Section */}
         <div className="mt-20">
