@@ -1206,42 +1206,53 @@ const Submit = () => {
             {isRescheduling ? 'Reschedule Launch' : 'Submit Your Product'}
           </h1>
           <p className="text-muted-foreground">
-            {isRescheduling ? 'Update your launch date' : 'Launch your product to thousands of founders'}
+            {isRescheduling ? 'Choose a new launch date for your product' : 'Launch your product to thousands of founders'}
           </p>
         </div>
 
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <div key={s} className="flex items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    s <= step ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                  }`}
-                >
-                  {s}
+        {/* Only show step indicator when not rescheduling */}
+        {!isRescheduling && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <div key={s} className="flex items-center">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      s <= step ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                    }`}
+                  >
+                    {s}
+                  </div>
+                  {s < 5 && <div className="w-12 h-0.5 bg-muted mx-2" />}
                 </div>
-                {s < 5 && <div className="w-12 h-0.5 bg-muted mx-2" />}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <Card>
           <CardHeader>
             <CardTitle>
-              {step === 1 && 'Basic Information'}
-              {step === 2 && 'Media & Assets'}
-              {step === 3 && 'Product Details'}
-              {step === 4 && 'Choose Your Plan'}
-              {step === 5 && 'Review & Submit'}
+              {isRescheduling ? 'Select New Date' : (
+                <>
+                  {step === 1 && 'Basic Information'}
+                  {step === 2 && 'Media & Assets'}
+                  {step === 3 && 'Product Details'}
+                  {step === 4 && 'Choose Your Plan'}
+                  {step === 5 && 'Review & Submit'}
+                </>
+              )}
             </CardTitle>
             <CardDescription>
-              {step === 1 && 'Tell us about your product'}
-              {step === 2 && 'Upload images and media'}
-              {step === 3 && 'Provide detailed information'}
-              {step === 4 && 'Select when you want to launch'}
-              {step === 5 && 'Review your submission before payment'}
+              {isRescheduling ? 'Pick when you want to go live' : (
+                <>
+                  {step === 1 && 'Tell us about your product'}
+                  {step === 2 && 'Upload images and media'}
+                  {step === 3 && 'Provide detailed information'}
+                  {step === 4 && 'Select when you want to launch'}
+                  {step === 5 && 'Review your submission before payment'}
+                </>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -1530,9 +1541,28 @@ const Submit = () => {
                 <div className="space-y-6">
                   {isLoadingProduct ? (
                     <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
-                  ) : (
+                  ) : isRescheduling ? (
+                    /* Simplified reschedule UI - just date picker */
                     <>
-                      
+                      {isPaidPlan && (
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                          <p className="text-sm font-medium">
+                            Your <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan is ready. Choose your new launch date below.
+                          </p>
+                        </div>
+                      )}
+                      {hasActivePass && (
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
+                          <Zap className="h-5 w-5 text-primary flex-shrink-0" />
+                          <p className="text-sm font-medium">
+                            <span className="font-bold">Pass Active</span> — Choose your launch date below.
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    /* Full submission UI with plan selection */
+                    <>
                       {isPaidPlan && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                           <p className="text-sm font-medium">
@@ -1583,7 +1613,7 @@ const Submit = () => {
                       </div>
                       
                       {/* Social proof banner - below cards */}
-                      {!isPaidPlan && (
+                      {!isPaidPlan && !isRescheduling && (
                         <div className="bg-muted/50 rounded-lg p-4 text-center">
                           <p className="text-sm font-medium">
                             <span className="text-primary">87% of top launches</span> use paid promotion plans
@@ -1594,17 +1624,17 @@ const Submit = () => {
                         </div>
                       )}
                       
-                      {/* Pass Option - only show if not already active */}
-                      {!hasActivePass && !isPaidPlan && (
+                      {/* Pass Option - only show if not already active and not rescheduling */}
+                      {!hasActivePass && !isPaidPlan && !isRescheduling && (
                         <div className="mt-4 pt-6 border-t">
                           <p className="text-sm text-muted-foreground mb-4">Launching multiple products?</p>
                           <PassOption />
                         </div>
                       )}
-                  </>
-                )}
+                    </>
+                  )}
                 
-                {!isLoadingProduct && formData.plan === 'skip' && (
+                {!isLoadingProduct && (formData.plan === 'skip' || isRescheduling) && (
                   <div className="space-y-4 mt-6">
                     {/* Launch Now Option */}
                     <div className="p-4 border rounded-lg bg-primary/5 border-primary/20">
