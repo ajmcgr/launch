@@ -1532,17 +1532,6 @@ const Submit = () => {
                     <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
                   ) : (
                     <>
-                      {/* Social proof banner */}
-                      {!isPaidPlan && (
-                        <div className="bg-muted/50 rounded-lg p-4 text-center">
-                          <p className="text-sm font-medium">
-                            <span className="text-primary">87% of top launches</span> use paid promotion plans
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Get 5-10x more visibility with social & newsletter promotion
-                          </p>
-                        </div>
-                      )}
                       
                       {isPaidPlan && (
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
@@ -1592,6 +1581,18 @@ const Submit = () => {
                           );
                         })}
                       </div>
+                      
+                      {/* Social proof banner - below cards */}
+                      {!isPaidPlan && (
+                        <div className="bg-muted/50 rounded-lg p-4 text-center">
+                          <p className="text-sm font-medium">
+                            <span className="text-primary">87% of top launches</span> use paid promotion plans
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Get 5-10x more visibility with social & newsletter promotion
+                          </p>
+                        </div>
+                      )}
                       
                       {/* Pass Option - only show if not already active */}
                       {!hasActivePass && !isPaidPlan && (
