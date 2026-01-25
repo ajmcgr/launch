@@ -5,7 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Check, X, Lock, Rocket, RefreshCw, Zap, Calendar, TrendingUp, Mail, Award } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import stripeLogo from '@/assets/stripe-logo.png';
-import { Testimonials } from '@/components/Testimonials';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import jakeAvatar from '@/assets/jake-avatar.jpg';
+import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 
 const FEATURE_CONFIG = [
   { key: 'listing', label: 'Homepage listing', icon: TrendingUp },
@@ -26,15 +28,6 @@ const Pricing = () => {
           </p>
         </div>
 
-        {/* Social proof banner */}
-        <div className="bg-muted/50 rounded-lg p-4 text-center max-w-2xl mx-auto mb-8">
-          <p className="text-sm font-medium">
-            <span className="text-primary">87% of top launches</span> use paid promotion plans
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Get 5-10x more visibility with social & newsletter promotion
-          </p>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {PRICING_PLANS.map((plan) => (
@@ -123,12 +116,58 @@ const Pricing = () => {
           <img src={stripeLogo} alt="Stripe" className="h-6" />
         </div>
 
-        <Testimonials 
-          variant="compact"
-          title="What Makers Are Saying"
-          subtitle="Join hundreds of founders who've launched successfully on Launch"
-          maxItems={2}
-        />
+        {/* Testimonials */}
+        <div className="mt-16 max-w-3xl mx-auto space-y-8">
+          <h2 className="text-2xl font-bold text-center mb-8">What Makers Are Saying</h2>
+          
+          {/* Jake's Testimonial */}
+          <blockquote className="text-center">
+            <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+              "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
+            </p>
+            <footer className="flex items-center justify-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={jakeAvatar} alt="Jake" />
+                <AvatarFallback>JH</AvatarFallback>
+              </Avatar>
+              <div className="text-sm text-left">
+                <div className="font-medium">Jake</div>
+                <div className="text-muted-foreground">
+                  AdGenerator · <a 
+                    href="https://x.com/jakeh2792" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >@jakeh2792</a>
+                </div>
+              </div>
+            </footer>
+          </blockquote>
+
+          {/* Yogesh's Testimonial */}
+          <blockquote className="text-center">
+            <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+              "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+            </p>
+            <footer className="flex items-center justify-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={yogeshAvatar} alt="Yogesh" />
+                <AvatarFallback>YA</AvatarFallback>
+              </Avatar>
+              <div className="text-sm text-left">
+                <div className="font-medium">Yogesh</div>
+                <div className="text-muted-foreground">
+                  Supalytics · <a 
+                    href="https://x.com/yogesharc" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >@yogesharc</a>
+                </div>
+              </div>
+            </footer>
+          </blockquote>
+        </div>
 
         {/* Pass Section */}
         <div className="mt-20">
