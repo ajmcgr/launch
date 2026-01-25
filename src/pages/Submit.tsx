@@ -12,7 +12,8 @@ import { X, CalendarIcon, Plus, Zap } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
-import { CATEGORIES, PRICING_PLANS } from '@/lib/constants';
+import { CATEGORIES, PRICING_PLANS, PLAN_FEATURE_LABELS } from '@/lib/constants';
+import { PlanComparisonCard } from '@/components/PlanComparisonCard';
 import { toast } from 'sonner';
 import { format, addDays } from 'date-fns';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
@@ -1511,13 +1512,25 @@ const Submit = () => {
                 : PRICING_PLANS;
               
               return (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {isLoadingProduct ? (
                     <div className="text-center py-8 text-muted-foreground">Loading product details...</div>
                   ) : (
                     <>
+                      {/* Social proof banner */}
+                      {!isPaidPlan && (
+                        <div className="bg-muted/50 rounded-lg p-4 text-center">
+                          <p className="text-sm font-medium">
+                            <span className="text-primary">87% of top launches</span> use paid promotion plans
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Get 5-10x more visibility with social & newsletter promotion
+                          </p>
+                        </div>
+                      )}
+                      
                       {isPaidPlan && (
-                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                           <p className="text-sm font-medium">
                             You've already purchased the <span className="font-bold">{PRICING_PLANS.find(p => p.id === existingPlan)?.name}</span> plan. 
                             {existingPlan === 'skip' && ' You can choose any available date and time below.'}
@@ -1526,72 +1539,55 @@ const Submit = () => {
                         </div>
                       )}
                       {canUpgrade && (
-                        <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4 mb-4">
+                        <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4">
                           <p className="text-sm font-medium">
-                            You currently have the <span className="font-bold">Join The Live</span> plan selected. You can upgrade to the <span className="font-bold">Launch</span> plan to choose your preferred launch date and time.
+                            You currently have the <span className="font-bold">Launch Lite</span> plan. Upgrade to <span className="font-bold">Launch</span> for newsletter feature + choose your date.
                           </p>
                         </div>
                       )}
                       {hasActivePass && (
-                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4 flex items-center gap-3">
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
                           <Zap className="h-5 w-5 text-primary flex-shrink-0" />
                           <p className="text-sm font-medium">
                             <span className="font-bold">Pass Active</span> — All launch options are included at no additional cost.
                           </p>
                         </div>
                       )}
-                      {filteredPlans.map((plan) => {
-                        const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
-                        const isSelected = formData.plan === plan.id;
-                        const isDisabled = isPaidPlan && !isCurrentPaidPlan;
-                        const isClickable = !isPaidPlan; // Can click if no paid plan or can upgrade
-                        
-                        return (
-                          <Card
-                            key={plan.id}
-                            className={`transition-all ${
-                              isCurrentPaidPlan || isSelected
-                                ? 'border-primary ring-2 ring-primary bg-primary/5' 
-                                : isDisabled
-                                ? 'opacity-40 cursor-not-allowed'
-                                : 'cursor-pointer hover:border-primary/50'
-                            }`}
-                            onClick={() => isClickable && handleInputChange('plan', plan.id)}
-                          >
-                            <CardHeader>
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <CardTitle className="flex items-center gap-2">
-                                    {plan.name}
-                                    {isCurrentPaidPlan && (
-                                      <span className="text-xs font-normal px-2 py-1 rounded-full bg-primary text-primary-foreground">
-                                        Your Plan
-                                      </span>
-                                    )}
-                                    {!isPaidPlan && isSelected && (
-                                      <span className="text-xs font-normal px-2 py-1 rounded-full bg-secondary text-secondary-foreground">
-                                        Selected
-                                      </span>
-                                    )}
-                                  </CardTitle>
-                                  <CardDescription>
-                                    {plan.description}
-                                    {plan.id === 'join' && <span className="block mt-1 text-xs">Scheduled before free but not before launch & relaunch</span>}
-                                    {plan.id === 'skip' && <span className="block mt-1 text-xs">Choose any available date and time within the calendar year (Pacific Time)</span>}
-                                    {plan.id === 'relaunch' && <span className="block mt-1 text-xs">Auto-assigned to first available date &gt;30 days out (12:01 AM PST)</span>}
-                                  </CardDescription>
-                                </div>
-                                <div className="text-2xl font-bold">${plan.price}<span className="text-sm font-normal text-muted-foreground"> / USD</span></div>
-                              </div>
-                            </CardHeader>
-                          </Card>
-                        );
-                      })}
+                      
+                      {/* Plan cards grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {filteredPlans.map((plan) => {
+                          const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
+                          const isSelected = formData.plan === plan.id;
+                          const isDisabled = isPaidPlan && !isCurrentPaidPlan;
+                          
+                          return (
+                            <PlanComparisonCard
+                              key={plan.id}
+                              plan={plan}
+                              isSelected={isSelected}
+                              isDisabled={isDisabled}
+                              isCurrentPlan={isCurrentPaidPlan}
+                              hasActivePass={hasActivePass}
+                              onClick={() => handleInputChange('plan', plan.id)}
+                            />
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Comparison hint */}
+                      {!isPaidPlan && formData.plan === 'free' && (
+                        <div className="text-center p-4 border border-dashed rounded-lg bg-muted/20">
+                          <p className="text-sm text-muted-foreground">
+                            💡 <span className="font-medium">Tip:</span> Launch Lite ($9) gets you social promotion to 5K+ followers
+                          </p>
+                        </div>
+                      )}
                       
                       {/* Pass Option - only show if not already active */}
                       {!hasActivePass && !isPaidPlan && (
-                        <div className="mt-6 pt-6 border-t">
-                          <p className="text-sm text-muted-foreground mb-4">For frequent builders</p>
+                        <div className="mt-4 pt-6 border-t">
+                          <p className="text-sm text-muted-foreground mb-4">Launching multiple products?</p>
                           <PassOption />
                         </div>
                       )}

@@ -2,10 +2,18 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Lock, Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
+import { Check, X, Lock, Rocket, RefreshCw, Zap, Calendar, TrendingUp, Mail, Award } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import stripeLogo from '@/assets/stripe-logo.png';
 import { Testimonials } from '@/components/Testimonials';
+
+const FEATURE_CONFIG = [
+  { key: 'listing', label: 'Homepage listing', icon: TrendingUp },
+  { key: 'socialPromotion', label: 'Social media promotion', icon: Zap },
+  { key: 'newsletter', label: 'Newsletter feature', icon: Mail },
+  { key: 'chooseDate', label: 'Choose launch date', icon: Calendar },
+  { key: 'badge', label: 'Verified badge', icon: Award },
+] as const;
 
 const Pricing = () => {
   return (
@@ -14,101 +22,89 @@ const Pricing = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Launch Your Product</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Get your product in front of thousands technologists, marketers and other founders
+            Get your product in front of thousands of technologists, marketers and founders
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        {/* Social proof banner */}
+        <div className="bg-muted/50 rounded-lg p-4 text-center max-w-2xl mx-auto mb-8">
+          <p className="text-sm font-medium">
+            <span className="text-primary">87% of top launches</span> use paid promotion plans
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Get 5-10x more visibility with social & newsletter promotion
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {PRICING_PLANS.map((plan) => (
             <Card 
               key={plan.id} 
               className={`relative hover:shadow-lg transition-shadow ${
-                plan.id === 'skip' ? 'border-primary shadow-md' : ''
+                plan.highlight ? 'border-primary shadow-md ring-2 ring-primary' : ''
               }`}
             >
-              {plan.id === 'skip' && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  Most Popular
-                </Badge>
+              {plan.badge && (
+                <div className="absolute top-0 right-0">
+                  <div className="bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-bl-lg">
+                    {plan.badge}
+                  </div>
+                </div>
               )}
-              <CardHeader>
-                <CardTitle className="text-2xl">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl">
                   {plan.name}
                 </CardTitle>
-                <CardDescription>{plan.description}</CardDescription>
+                <CardDescription className="text-sm">{plan.description}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="text-4xl font-bold">
-                  ${plan.price}<span className="text-base font-normal text-muted-foreground"> / USD</span>
+              <CardContent className="space-y-4">
+                <div className="text-3xl font-bold">
+                  ${plan.price}<span className="text-sm font-normal text-muted-foreground"> USD</span>
                 </div>
 
-                <ul className="space-y-3">
-                  {plan.id === 'free' ? (
-                    <>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Get a Backlink from a DR website to boost your SEO</span>
+                <ul className="space-y-2">
+                  {FEATURE_CONFIG.map(({ key, label }) => {
+                    const hasFeature = plan.features[key as keyof typeof plan.features];
+                    return (
+                      <li key={key} className="flex items-center gap-2 text-sm">
+                        {hasFeature ? (
+                          <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                        ) : (
+                          <X className="h-4 w-4 text-muted-foreground/40 flex-shrink-0" />
+                        )}
+                        <span className={!hasFeature ? 'text-muted-foreground/60' : ''}>
+                          {label}
+                        </span>
                       </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Audience of founders, technologists, marketers and more</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Featured on homepage launch day</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Permanent product listing</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">User voting & comments</span>
-                      </li>
-                    </>
-                  ) : (
-                    <>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Get a Backlink from a DR website to boost your SEO</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Audience of founders, technologists, marketers and more</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Featured on homepage launch day</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Social media promotion</span>
-                      </li>
-                      {plan.id === 'skip' && (
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                          <span className="text-sm">Featured in the weekly Launch email newsletter</span>
-                        </li>
-                      )}
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Permanent product listing</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">User voting & comments</span>
-                      </li>
-                    </>
-                  )}
+                    );
+                  })}
                 </ul>
+
+                {/* Value callout */}
+                {plan.id === 'skip' && (
+                  <div className="pt-2 border-t">
+                    <p className="text-xs text-muted-foreground">
+                      <span className="font-medium text-foreground">70K+ impressions</span> • Best visibility
+                    </p>
+                  </div>
+                )}
+                {plan.id === 'join' && (
+                  <div className="pt-2 border-t">
+                    <p className="text-xs text-muted-foreground">
+                      <span className="font-medium text-foreground">5x more views</span> than free
+                    </p>
+                  </div>
+                )}
 
                 <Button 
                   asChild
                   className="w-full" 
                   size="lg"
-                  variant={plan.id === 'skip' ? 'default' : 'outline'}
+                  variant={plan.highlight ? 'default' : 'outline'}
                 >
-                  <Link to={plan.id === 'free' ? '/submit?plan=free' : '/submit'}>Get Started</Link>
+                  <Link to={plan.id === 'free' ? '/submit?plan=free' : '/submit'}>
+                    {plan.price === 0 ? 'Start Free' : 'Get Started'}
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
