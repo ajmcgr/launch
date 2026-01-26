@@ -192,68 +192,53 @@ export const Footer = () => {
 
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Connect</h3>
-            <ul className="space-y-2">
-              <li>
-                <a 
-                  href="https://x.com/trylaunchai" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                  aria-label="Follow us on X"
-                >
-                  <XIcon className="h-4 w-4" />
-                  <span className="text-sm">X</span>
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://t.me/trylaunch" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                  aria-label="Join us on Telegram"
-                >
-                  <TelegramIcon className="h-4 w-4" />
-                  <span className="text-sm">Telegram</span>
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://www.reddit.com/r/TryLaunch/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                  aria-label="Join us on Reddit"
-                >
-                  <RedditIcon className="h-4 w-4" />
-                  <span className="text-sm">Reddit</span>
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://instagram.com/trylaunch" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                  aria-label="Follow us on Instagram"
-                >
-                  <Instagram className="h-4 w-4" />
-                  <span className="text-sm">Instagram</span>
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://www.youtube.com/channel/UCiWIdnazQN7JqkioVROrblQ/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                  aria-label="Subscribe on YouTube"
-                >
-                  <Youtube className="h-4 w-4" />
-                  <span className="text-sm">YouTube</span>
-                </a>
-              </li>
-            </ul>
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://x.com/trylaunchai" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Follow us on X"
+              >
+                <XIcon className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://t.me/trylaunch" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Join us on Telegram"
+              >
+                <TelegramIcon className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.reddit.com/r/TryLaunch/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Join us on Reddit"
+              >
+                <RedditIcon className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://instagram.com/trylaunch" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Follow us on Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.youtube.com/channel/UCiWIdnazQN7JqkioVROrblQ/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Subscribe on YouTube"
+              >
+                <Youtube className="h-5 w-5" />
+              </a>
+            </div>
           </div>
         </div>
 
