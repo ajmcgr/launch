@@ -52,7 +52,7 @@ export const PRICING_PLANS = [
   },
   {
     id: 'skip',
-    name: 'Launch',
+    name: 'Launch Pro',
     price: 39,
     description: 'Full promotion',
     features: {
