@@ -37,7 +37,7 @@ export const PRICING_PLANS = [
   },
   {
     id: 'join',
-    name: 'Launch Lite',
+    name: 'Lite',
     price: 9,
     description: 'Social boost',
     features: {
@@ -52,7 +52,7 @@ export const PRICING_PLANS = [
   },
   {
     id: 'skip',
-    name: 'Launch Pro',
+    name: 'Pro',
     price: 39,
     description: 'Full promotion',
     features: {
