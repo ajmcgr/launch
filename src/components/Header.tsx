@@ -109,7 +109,7 @@ export const Header = () => {
           <div className="container mx-auto px-4 max-w-5xl">
             <p className="text-center text-sm font-medium">
               {showLaunchPassPromo 
-                ? "Subscribe for unlimited launches. Cancel anytime. Get Pass →"
+                ? "Subscribe for unlimited launches. Get Launch Pass →"
                 : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
               }
             </p>
