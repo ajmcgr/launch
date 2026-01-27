@@ -201,6 +201,14 @@ const Pass = () => {
       <Helmet>
         <title>Launch Pass - Unlimited Product Launches for $99/year</title>
         <meta name="description" content="For indie hackers who launch often. Replace per-launch fees with one flat rate. Subscribe to Launch Pass for unlimited product launches at $99/year." />
+        <meta property="og:title" content="Launch Pass - Unlimited Product Launches for $99/year" />
+        <meta property="og:description" content="For makers who launch often. Replace per-launch fees with one flat rate." />
+        <meta property="og:image" content="https://trylaunch.lovable.app/images/pass-og.png" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Launch Pass - Unlimited Product Launches for $99/year" />
+        <meta name="twitter:description" content="For makers who launch often. Replace per-launch fees with one flat rate." />
+        <meta name="twitter:image" content="https://trylaunch.lovable.app/images/pass-og.png" />
       </Helmet>
 
       <div className="min-h-screen bg-background overflow-x-hidden">
