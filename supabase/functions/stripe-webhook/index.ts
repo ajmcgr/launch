@@ -49,8 +49,22 @@ Deno.serve(async (req) => {
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       );
 
-      // Calculate expiry date based on current period end
-      const expiryDate = new Date(subscription.current_period_end * 1000);
+      // Calculate expiry date based on current period end with validation
+      let expiryDateIso: string | null = null;
+      if (subscription.current_period_end && typeof subscription.current_period_end === 'number') {
+        const expiryDate = new Date(subscription.current_period_end * 1000);
+        if (!isNaN(expiryDate.getTime())) {
+          expiryDateIso = expiryDate.toISOString();
+        } else {
+          console.error('Invalid current_period_end value:', subscription.current_period_end);
+        }
+      } else {
+        // Fallback: set expiry to 1 year from now
+        const fallbackExpiry = new Date();
+        fallbackExpiry.setFullYear(fallbackExpiry.getFullYear() + 1);
+        expiryDateIso = fallbackExpiry.toISOString();
+        console.log('Using fallback expiry date (1 year from now)');
+      }
       
       // Map Stripe status to our status
       const statusMap: Record<string, string> = {
@@ -61,14 +75,17 @@ Deno.serve(async (req) => {
         'trialing': 'active',
       };
 
+      const subscriptionStatus = statusMap[subscription.status] || subscription.status || 'active';
+      console.log('Setting subscription_status to:', subscriptionStatus, 'from Stripe status:', subscription.status);
+
       const { error: updateError } = await supabaseClient
         .from('users')
         .update({
           plan: 'annual_access',
-          annual_access_expires_at: expiryDate.toISOString(),
+          annual_access_expires_at: expiryDateIso,
           stripe_subscription_id: subscription.id,
-          subscription_status: statusMap[subscription.status] || subscription.status,
-          subscription_cancel_at_period_end: subscription.cancel_at_period_end,
+          subscription_status: subscriptionStatus,
+          subscription_cancel_at_period_end: subscription.cancel_at_period_end ?? false,
         })
         .eq('id', metadata.user_id);
 
@@ -77,7 +94,7 @@ Deno.serve(async (req) => {
         throw updateError;
       }
 
-      console.log(`Subscription ${event.type} processed for user ${metadata.user_id}`);
+      console.log(`Subscription ${event.type} processed for user ${metadata.user_id}, status: ${subscriptionStatus}`);
 
       // Send confirmation email for new subscriptions
       if (event.type === 'customer.subscription.created') {
@@ -85,12 +102,14 @@ Deno.serve(async (req) => {
           const { data: authUser } = await supabaseClient.auth.admin.getUserById(metadata.user_id);
           
           if (authUser?.user?.email) {
-            const expiryFormatted = expiryDate.toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            });
+            const expiryFormatted = expiryDateIso 
+              ? new Date(expiryDateIso).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              : 'one year from now';
             
             const emailHtml = `
               <!DOCTYPE html>
