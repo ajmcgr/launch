@@ -234,17 +234,32 @@ Deno.serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
           );
 
-          const expiryDate = new Date(subscription.current_period_end * 1000);
+          // Validate expiry date before using
+          let expiryDateIso: string | null = null;
+          if (subscription.current_period_end && typeof subscription.current_period_end === 'number') {
+            const expiryDate = new Date(subscription.current_period_end * 1000);
+            if (!isNaN(expiryDate.getTime())) {
+              expiryDateIso = expiryDate.toISOString();
+            }
+          }
+          
+          // Fallback if date is invalid
+          if (!expiryDateIso) {
+            const fallback = new Date();
+            fallback.setFullYear(fallback.getFullYear() + 1);
+            expiryDateIso = fallback.toISOString();
+            console.log('Using fallback expiry for renewal');
+          }
           
           await supabaseClient
             .from('users')
             .update({
-              annual_access_expires_at: expiryDate.toISOString(),
+              annual_access_expires_at: expiryDateIso,
               subscription_status: 'active',
             })
             .eq('id', metadata.user_id);
 
-          console.log(`Subscription renewed for user ${metadata.user_id} until ${expiryDate.toISOString()}`);
+          console.log(`Subscription renewed for user ${metadata.user_id} until ${expiryDateIso}`);
         }
       }
 
