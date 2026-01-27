@@ -12,7 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StripeConnectCard } from '@/components/StripeConnectCard';
 import { PassStatus } from '@/components/PassStatus';
-import { usePass } from '@/hooks/use-pass';
+import { usePass, useInvalidatePassStatus } from '@/hooks/use-pass';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -40,7 +41,9 @@ const Settings = () => {
   const [uploading, setUploading] = useState(false);
   
   // Pass status
-  const { data: passStatus } = usePass(user?.id);
+  const { data: passStatus, refetch: refetchPassStatus } = usePass(user?.id);
+  const invalidatePassStatus = useInvalidatePassStatus();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -50,13 +53,16 @@ const Settings = () => {
         setUser(session.user);
         fetchProfile(session.user.id);
         
-        // Show success toast for annual pass purchase
+        // Show success toast and refetch pass status for annual pass purchase
         if (searchParams.get('success') === 'annual') {
           toast.success('Annual Access activated! You now have unlimited access for 12 months.');
+          // Invalidate and refetch pass status to show updated state
+          invalidatePassStatus(session.user.id);
+          queryClient.invalidateQueries({ queryKey: ['pass', session.user.id] });
         }
       }
     });
-  }, [navigate, searchParams]);
+  }, [navigate, searchParams, invalidatePassStatus, queryClient]);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
@@ -469,9 +475,10 @@ const Settings = () => {
               cancelAtPeriodEnd={passStatus?.cancelAtPeriodEnd || false}
               subscriptionStatus={passStatus?.subscriptionStatus}
               onStatusChange={() => {
-                // Refetch user data to update pass status
+                // Refetch user data and pass status
                 if (user?.id) {
                   fetchProfile(user.id);
+                  refetchPassStatus();
                 }
               }}
             />
