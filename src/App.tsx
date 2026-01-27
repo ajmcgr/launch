@@ -36,6 +36,7 @@ import CategoryPage from "./pages/CategoryPage";
 import Categories from "./pages/Categories";
 import CollectionPage from "./pages/CollectionPage";
 import Pass from "./pages/Pass";
+import PassGraphic from "./pages/PassGraphic";
 
 import DiscourseSso from "./pages/DiscourseSso";
 
@@ -86,6 +87,7 @@ const AppContent = () => {
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/collections/:slug" element={<CollectionPage />} />
           <Route path="/pass" element={<Pass />} />
+          <Route path="/pass/graphic" element={<PassGraphic />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />
