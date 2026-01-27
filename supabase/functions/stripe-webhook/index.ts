@@ -667,8 +667,8 @@ Deno.serve(async (req) => {
                         <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
                       </div>
                       <div class="content">
-                        <h1>Annual Access Activated! 🎉</h1>
-                        <p>Thank you for purchasing Launch Annual Access. You now have unlimited access to all Launch features for one year.</p>
+                        <h1>Launch Pass Annual Access Activated! 🎉</h1>
+                        <p>Thank you for purchasing Launch Pass Annual Access. You now have unlimited access to all Launch features for one year.</p>
                         <div class="highlight">
                           <p style="font-weight: 600; margin: 0;">Your access expires on</p>
                           <p style="font-size: 18px; font-weight: bold; color: #111; margin: 8px 0 0 0;">${expiryFormatted}</p>
