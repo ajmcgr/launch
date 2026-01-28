@@ -27,6 +27,7 @@ import {
 import { Link } from 'react-router-dom';
 import { Loader2, Search } from 'lucide-react';
 import { CommunityCallout } from '@/components/CommunityCallout';
+import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
 
 interface Product {
   id: string;
@@ -741,8 +742,19 @@ const Home = () => {
     );
   };
 
+  const homepageFaqs = [
+    { question: 'What is Launch?', answer: 'Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.' },
+    { question: 'How do I submit my product?', answer: 'Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!' },
+    { question: 'How does voting work?', answer: 'Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.' },
+    { question: 'What are Top Products and Archives?', answer: 'Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners.' },
+    { question: 'How do notifications work?', answer: 'Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.' },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <OrganizationSchema />
+      <WebSiteSchema />
+      <FAQSchema faqs={homepageFaqs} />
       <div className="container mx-auto px-4 py-3 md:py-4 max-w-5xl">
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-4 -mx-1 sm:mx-0 px-1 sm:px-0">

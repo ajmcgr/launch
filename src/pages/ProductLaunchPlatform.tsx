@@ -51,6 +51,19 @@ const ProductLaunchPlatform = () => {
         />
         <meta name="keywords" content="product launch platform, startup launch, saas launch platform, product discovery, ai product launch" />
         <link rel="canonical" href="https://trylaunch.ai/product-launch-platform" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Product Launch Platform - Launch Your Startup | Launch" />
+        <meta property="og:description" content="Launch is the product launch platform for AI startups and SaaS products. Submit your product, reach early adopters, and grow your user base." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://trylaunch.ai/product-launch-platform" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Product Launch Platform - Launch Your Startup | Launch" />
+        <meta name="twitter:description" content="Launch is the product launch platform for AI startups and SaaS products." />
+        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png" />
       </Helmet>
 
       <div className="min-h-screen bg-background">
