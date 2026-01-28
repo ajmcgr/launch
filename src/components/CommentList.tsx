@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -165,13 +166,17 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
     return (
       <div className={`p-4 ${isReply ? 'ml-8 mt-3 border-l-2 border-muted' : 'border rounded-lg bg-card'} ${comment.pinned && !isReply ? 'border-primary/50 bg-primary/5' : ''}`}>
         <div className="flex gap-3">
-          <Avatar className="h-10 w-10 flex-shrink-0">
-            <AvatarImage src={avatarUrl} alt={username} />
-            <AvatarFallback>{username[0]?.toUpperCase() || '?'}</AvatarFallback>
-          </Avatar>
+          <Link to={`/@${username}`} className="flex-shrink-0">
+            <Avatar className="h-10 w-10 hover:ring-2 hover:ring-primary/50 transition-all">
+              <AvatarImage src={avatarUrl} alt={username} />
+              <AvatarFallback>{username[0]?.toUpperCase() || '?'}</AvatarFallback>
+            </Avatar>
+          </Link>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold">@{username}</span>
+              <Link to={`/@${username}`} className="font-semibold hover:text-primary transition-colors">
+                @{username}
+              </Link>
               {comment.pinned && (
                 <span className="flex items-center gap-1 text-xs text-primary font-medium">
                   <Pin className="h-3 w-3" />
