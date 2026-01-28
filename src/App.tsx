@@ -39,6 +39,7 @@ import Pass from "./pages/Pass";
 import PassGraphic from "./pages/PassGraphic";
 import ProductHuntAlternative from "./pages/ProductHuntAlternative";
 import ProductLaunchPlatform from "./pages/ProductLaunchPlatform";
+import ProductLaunchStrategy from "./pages/ProductLaunchStrategy";
 
 import DiscourseSso from "./pages/DiscourseSso";
 
@@ -92,6 +93,7 @@ const AppContent = () => {
           <Route path="/pass/graphic" element={<PassGraphic />} />
           <Route path="/product-hunt-alternative" element={<ProductHuntAlternative />} />
           <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
+          <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />
