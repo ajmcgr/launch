@@ -37,6 +37,8 @@ import Categories from "./pages/Categories";
 import CollectionPage from "./pages/CollectionPage";
 import Pass from "./pages/Pass";
 import PassGraphic from "./pages/PassGraphic";
+import ProductHuntAlternative from "./pages/ProductHuntAlternative";
+import ProductLaunchPlatform from "./pages/ProductLaunchPlatform";
 
 import DiscourseSso from "./pages/DiscourseSso";
 
@@ -88,8 +90,11 @@ const AppContent = () => {
           <Route path="/collections/:slug" element={<CollectionPage />} />
           <Route path="/pass" element={<Pass />} />
           <Route path="/pass/graphic" element={<PassGraphic />} />
+          <Route path="/product-hunt-alternative" element={<ProductHuntAlternative />} />
+          <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
+          <Route path="/:username" element={<UserProfile />} />
           <Route path="/:username" element={<UserProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
