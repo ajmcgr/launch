@@ -141,16 +141,6 @@ export const Footer = () => {
                   FAQ
                 </Link>
               </li>
-              <li>
-                <Link to="/product-hunt-alternative" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Product Hunt Alternative
-                </Link>
-              </li>
-              <li>
-                <Link to="/product-launch-platform" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Product Launch Platform
-                </Link>
-              </li>
             </ul>
           </div>
 
