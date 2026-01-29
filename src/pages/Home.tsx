@@ -757,7 +757,7 @@ const Home = () => {
       <FAQSchema faqs={homepageFaqs} />
       <div className="container mx-auto px-4 py-3 md:py-4 max-w-5xl">
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
-          <div className="flex flex-row items-center justify-between gap-2 mb-4 -mx-1 sm:mx-0 px-1 sm:px-0">
+          <div className="flex flex-row items-center justify-between gap-2 mb-4">
             <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
               <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Today</TabsTrigger>
               <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Week</TabsTrigger>
