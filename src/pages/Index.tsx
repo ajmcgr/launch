@@ -252,9 +252,9 @@ const Index = () => {
         </div>
 
         <div className="mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h2 className="text-2xl font-semibold text-foreground">Today's Top Launches</h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <PlatformFilter 
                 selectedPlatforms={selectedPlatforms} 
                 onPlatformToggle={(p) => setSelectedPlatforms(prev => 
