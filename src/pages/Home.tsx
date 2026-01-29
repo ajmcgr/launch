@@ -801,6 +801,9 @@ const Home = () => {
             {renderProductList(products)}
           </TabsContent>
         </Tabs>
+        
+        {/* Sponsor Banner - Below leaderboard */}
+        <SponsorBanner className="mt-6" />
       </div>
 
       <CommunityCallout />
