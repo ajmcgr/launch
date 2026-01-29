@@ -19,7 +19,7 @@ export const SponsorBanner = ({ className }: SponsorBannerProps) => {
           className="max-w-full h-auto rounded-lg shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:opacity-95"
           style={{ maxHeight: '91px' }}
         />
-        <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground opacity-60">
+        <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground opacity-60">
           Sponsored
         </span>
       </a>
