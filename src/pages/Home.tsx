@@ -667,6 +667,15 @@ const Home = () => {
           );
         }
         
+        // Insert sponsor banner after product 5
+        if (productIndex === 5) {
+          items.push(
+            <div key="sponsor-banner-inline" className="py-4">
+              <SponsorBanner />
+            </div>
+          );
+        }
+        
         // Check if there's a sponsored product for the next position (skip for compact)
         // Position 2 = after 10 products, Position 3 = after 20 products, etc.
         if (viewMode !== 'compact') {
@@ -757,8 +766,6 @@ const Home = () => {
       <WebSiteSchema />
       <FAQSchema faqs={homepageFaqs} />
       <div className="container mx-auto px-4 py-3 md:py-4 max-w-5xl">
-        {/* Sponsor Banner - Top of content */}
-        <SponsorBanner className="mb-4" />
         
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-4">
