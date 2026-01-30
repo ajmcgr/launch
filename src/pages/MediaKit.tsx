@@ -25,11 +25,8 @@ const MediaKit = () => {
 
           {/* Intro */}
           <div className="mb-6">
-            <h2 className="text-3xl font-bold mb-4 text-foreground">
-              Reach 73,000+ Developers & Founders
-            </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Launch is the #1 discovery platform for indie makers to share, vote, and discover the next big thing. 
+              <span className="font-bold text-foreground">Launch is the #1 discovery platform</span> for indie makers to share, vote, and discover the next big thing. 
               Our highly engaged audience of entrepreneurs, developers, and early adopters are actively seeking new tools and products.
             </p>
           </div>
