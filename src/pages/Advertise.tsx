@@ -384,7 +384,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
-                    $99<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $99<span className="text-base font-normal text-muted-foreground"> / listing</span>
                   </div>
                 <ul className="space-y-3 flex-1">
                   <li className="flex items-start gap-2">
@@ -469,7 +469,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
-                    $199<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $199
                   </div>
                   <ul className="space-y-3 flex-1">
                     <li className="flex items-start gap-2">
