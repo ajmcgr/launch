@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import PassSocialGraphic from '@/components/PassSocialGraphic';
 
 const MediaKit = () => {
   return (
@@ -9,7 +10,7 @@ const MediaKit = () => {
       </Helmet>
       
       <div className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="max-w-2xl mx-auto px-4 py-12">
           
           {/* Header */}
           <div className="text-center mb-12">
@@ -24,7 +25,7 @@ const MediaKit = () => {
           {/* Intro */}
           <div className="mb-12">
             <h2 className="text-3xl font-bold mb-4 text-foreground">
-              Reach 73,000+ Indie Makers & Founders
+              Reach 73,000+ Developers & Founders
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Launch is the #1 discovery platform for indie makers to share, vote, and discover the next big thing. 
@@ -32,8 +33,13 @@ const MediaKit = () => {
             </p>
           </div>
 
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          {/* Product Icons */}
+          <div className="mb-12 rounded-xl overflow-hidden border border-border">
+            <PassSocialGraphic variant="twitter" />
+          </div>
+
+          {/* Key Metrics */}
+          <div className="space-y-4 mb-12">
             <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
               <p className="text-4xl font-bold text-primary">73K+</p>
               <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
@@ -52,78 +58,75 @@ const MediaKit = () => {
             </div>
           </div>
 
-          {/* Two Column: Audience + Traffic */}
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* Audience Demographics */}
-            <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
-              <h3 className="text-xl font-bold mb-4 text-foreground">
-                🌍 Audience by Country
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">🇬🇧 United Kingdom</span>
-                  <span className="font-semibold text-foreground">45%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">🇺🇸 United States</span>
-                  <span className="font-semibold text-foreground">17%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">🇮🇳 India</span>
-                  <span className="font-semibold text-foreground">8%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">🇨🇳 China</span>
-                  <span className="font-semibold text-foreground">6%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">🌍 EU & Others</span>
-                  <span className="font-semibold text-foreground">24%</span>
-                </div>
+          {/* Audience Demographics */}
+          <div className="bg-card rounded-xl p-6 border border-border shadow-sm mb-6">
+            <h3 className="text-xl font-bold mb-4 text-foreground">
+              🌍 Audience by Country
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">🇬🇧 United Kingdom</span>
+                <span className="font-semibold text-foreground">45%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">🇺🇸 United States</span>
+                <span className="font-semibold text-foreground">17%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">🇮🇳 India</span>
+                <span className="font-semibold text-foreground">8%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">🇨🇳 China</span>
+                <span className="font-semibold text-foreground">6%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">🌍 EU & Others</span>
+                <span className="font-semibold text-foreground">24%</span>
               </div>
             </div>
+          </div>
 
-            {/* Traffic Sources */}
-            <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
-              <h3 className="text-xl font-bold mb-4 text-foreground">
-                📊 Traffic Sources
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-muted-foreground">Direct</span>
-                    <span className="font-semibold text-foreground">55%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-primary h-2 rounded-full" style={{ width: '55%' }}></div>
-                  </div>
+          {/* Traffic Sources */}
+          <div className="bg-card rounded-xl p-6 border border-border shadow-sm mb-12">
+            <h3 className="text-xl font-bold mb-4 text-foreground">
+              📊 Traffic Sources
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-muted-foreground">Direct</span>
+                  <span className="font-semibold text-foreground">55%</span>
                 </div>
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-muted-foreground">Organic Social</span>
-                    <span className="font-semibold text-foreground">25%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-primary h-2 rounded-full" style={{ width: '25%' }}></div>
-                  </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: '55%' }}></div>
                 </div>
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-muted-foreground">Organic Search</span>
-                    <span className="font-semibold text-foreground">15%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-primary h-2 rounded-full" style={{ width: '15%' }}></div>
-                  </div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-muted-foreground">Organic Social</span>
+                  <span className="font-semibold text-foreground">25%</span>
                 </div>
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-muted-foreground">Referral</span>
-                    <span className="font-semibold text-foreground">5%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-primary h-2 rounded-full" style={{ width: '5%' }}></div>
-                  </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: '25%' }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-muted-foreground">Organic Search</span>
+                  <span className="font-semibold text-foreground">15%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: '15%' }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-muted-foreground">Referral</span>
+                  <span className="font-semibold text-foreground">5%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: '5%' }}></div>
                 </div>
               </div>
             </div>
@@ -134,7 +137,7 @@ const MediaKit = () => {
             <h3 className="text-2xl font-bold mb-6 text-foreground text-center">
               Advertising Options
             </h3>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-6">
               <div className="bg-card border-2 border-border rounded-xl p-6 hover:border-primary transition-colors">
                 <div className="flex justify-between items-start mb-4">
                   <h4 className="font-bold text-xl text-foreground">Homepage Banner</h4>
@@ -178,14 +181,16 @@ const MediaKit = () => {
             </div>
             
             {/* Combined Package */}
-            <div className="mt-6 bg-primary text-primary-foreground rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-              <div>
-                <h4 className="font-bold text-2xl">Combined Package</h4>
-                <p className="text-primary-foreground/80">Homepage Banner + Newsletter Sponsorship</p>
-              </div>
-              <div className="text-center md:text-right">
-                <span className="text-3xl font-bold">$400/mo</span>
-                <p className="text-primary-foreground/80">Save $50/month</p>
+            <div className="mt-6 bg-primary text-primary-foreground rounded-xl p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div>
+                  <h4 className="font-bold text-2xl">Combined Package</h4>
+                  <p className="text-primary-foreground/80">Homepage Banner + Newsletter Sponsorship</p>
+                </div>
+                <div className="text-center sm:text-right">
+                  <span className="text-3xl font-bold">$400/mo</span>
+                  <p className="text-primary-foreground/80">Save $50/month</p>
+                </div>
               </div>
             </div>
           </div>
