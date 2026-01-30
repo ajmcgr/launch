@@ -42,6 +42,7 @@ import ProductLaunchPlatform from "./pages/ProductLaunchPlatform";
 import ProductLaunchStrategy from "./pages/ProductLaunchStrategy";
 
 import DiscourseSso from "./pages/DiscourseSso";
+import MediaKit from "./pages/MediaKit";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +95,7 @@ const AppContent = () => {
           <Route path="/product-hunt-alternative" element={<ProductHuntAlternative />} />
           <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
           <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
+          <Route path="/media-kit" element={<MediaKit />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />
