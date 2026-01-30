@@ -371,7 +371,7 @@ const Advertise = () => {
         {step === 1 && (
           <>
             {/* Sponsorship Options */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-6">
               <Card 
                 className={`hover:shadow-lg transition-shadow cursor-pointer ${
                   selectedType === 'website' ? 'border-primary shadow-md ring-2 ring-primary' : ''
@@ -501,8 +501,10 @@ const Advertise = () => {
                   </Button>
                 </CardContent>
               </Card>
+            </div>
 
-              {/* Custom Card */}
+            {/* Custom Package Card - Below */}
+            <div className="max-w-md mx-auto mb-12">
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="text-xl">Custom Package</CardTitle>
