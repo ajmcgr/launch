@@ -5,6 +5,11 @@ interface SponsorBannerProps {
 }
 
 export const SponsorBanner = ({ className }: SponsorBannerProps) => {
+  // Temporarily disabled until Taskade confirms go-live
+  const isEnabled = false;
+  
+  if (!isEnabled) return null;
+  
   return (
     <div className={`w-full flex justify-center py-3 ${className || ''}`}>
       <a 
