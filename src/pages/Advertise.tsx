@@ -208,9 +208,9 @@ const Advertise = () => {
 
   const getPrice = () => {
     switch (selectedType) {
-      case 'website': return 250;
-      case 'newsletter': return 200;
-      case 'combined': return 400;
+      case 'website': return 99;
+      case 'newsletter': return 149;
+      case 'combined': return 199;
       default: return 0;
     }
   };
@@ -371,7 +371,7 @@ const Advertise = () => {
         {step === 1 && (
           <>
             {/* Sponsorship Options */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto mb-12">
               <Card 
                 className={`hover:shadow-lg transition-shadow cursor-pointer ${
                   selectedType === 'website' ? 'border-primary shadow-md ring-2 ring-primary' : ''
@@ -384,7 +384,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $250<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $99<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
@@ -425,7 +425,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $200<span className="text-base font-normal text-muted-foreground"> / issue</span>
+                    $149<span className="text-base font-normal text-muted-foreground"> / issue</span>
                   </div>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
@@ -469,7 +469,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    $400<span className="text-base font-normal text-muted-foreground"> / month</span>
+                    $199<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
@@ -486,7 +486,7 @@ const Advertise = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Save $50 vs. buying separately</span>
+                      <span className="text-sm">Save $49 vs. buying separately</span>
                     </li>
                   </ul>
                   <Button 
@@ -496,6 +496,45 @@ const Advertise = () => {
                       e.stopPropagation();
                       handleGetStarted('combined');
                     }}
+                  >
+                    Get Started
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Custom Card */}
+              <Card className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl">Custom</CardTitle>
+                  <CardDescription>Tailored campaigns for your brand</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="text-4xl font-bold">
+                    Let's talk
+                  </div>
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Fully managed campaigns</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Display or multi-channel campaigns</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Newsletters, events, or other promoted content</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Customized to meet your campaign goals</span>
+                    </li>
+                  </ul>
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    variant="outline"
+                    onClick={() => navigate('/media-kit')}
                   >
                     Get Started
                   </Button>
