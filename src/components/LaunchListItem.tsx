@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, MessageSquare, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import { useIsMobile } from '@/hooks/use-mobile';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
@@ -164,19 +164,18 @@ export const LaunchListItem = ({
             {makers.length > 0 && (
               <>
                 <span>·</span>
-                <div className="flex -space-x-1.5">
-                  {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
-                    <Link 
-                      key={maker.username}
-                      to={`/@${maker.username}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="hover:z-10"
-                    >
-                      <Avatar className="h-5 w-5 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
-                        <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                        <AvatarFallback className="text-[10px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
-                      </Avatar>
-                    </Link>
+                <div className="flex items-center gap-1">
+                  {makers.filter(m => m && m.username).slice(0, 2).map((maker, index, arr) => (
+                    <span key={maker.username} className="text-xs text-muted-foreground">
+                      <Link 
+                        to={`/@${maker.username}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-primary transition-colors"
+                      >
+                        @{maker.username}
+                      </Link>
+                      {index < arr.length - 1 && ','}
+                    </span>
                   ))}
                 </div>
               </>
