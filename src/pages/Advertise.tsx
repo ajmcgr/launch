@@ -512,7 +512,7 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    Inquire
+                    Let's Talk
                   </div>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
