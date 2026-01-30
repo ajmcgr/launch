@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, MessageSquare, ExternalLink } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import defaultProductIcon from '@/assets/default-product-icon.png';
@@ -149,16 +149,17 @@ export const LaunchListItem = ({
           </p>
           
           <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-            {categories.slice(0, isMobile ? 1 : 3).map((category) => (
-              <Link 
-                key={category}
-                to={`/products?category=${encodeURIComponent(category)}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
+            {categories.slice(0, isMobile ? 1 : 3).map((category, index, arr) => (
+              <span key={category}>
+                <Link 
+                  to={`/products?category=${encodeURIComponent(category)}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hover:text-primary transition-colors"
+                >
                   {category}
-                </Badge>
-              </Link>
+                </Link>
+                {index < arr.length - 1 && ', '}
+              </span>
             ))}
             
             {makers.length > 0 && (
