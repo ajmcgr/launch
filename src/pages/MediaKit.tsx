@@ -207,35 +207,32 @@ const MediaKit = () => {
 
           {/* Logo Downloads */}
           <div className="mb-12">
-            <h3 className="text-2xl font-bold mb-6 text-foreground text-center">
+            <h3 className="text-xl font-medium mb-6 text-foreground text-center">
               Logo Downloads
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {logos.map((logo) => (
-                <div key={logo.name} className="bg-card border border-border rounded-xl overflow-hidden">
-                  <div className={`${logo.bg} p-6 flex items-center justify-center h-24`}>
-                    <img src={logo.png} alt={logo.name} className="max-h-12 max-w-full object-contain" />
+                <div key={logo.name} className="text-center">
+                  <div className={`${logo.bg} rounded-lg p-4 flex items-center justify-center h-16 mb-3`}>
+                    <img src={logo.png} alt={logo.name} className="max-h-8 max-w-full object-contain" />
                   </div>
-                  <div className="p-4 border-t border-border">
-                    <p className="text-sm font-medium text-foreground mb-2">{logo.name}</p>
-                    <div className="flex gap-2">
-                      <a
-                        href={logo.png}
-                        download
-                        className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 rounded-md transition-colors"
-                      >
-                        <Download className="h-3 w-3" />
-                        PNG
-                      </a>
-                      <a
-                        href={logo.svg}
-                        download
-                        className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 rounded-md transition-colors"
-                      >
-                        <Download className="h-3 w-3" />
-                        SVG
-                      </a>
-                    </div>
+                  <p className="text-xs text-muted-foreground mb-2">{logo.name}</p>
+                  <div className="flex justify-center gap-2">
+                    <a
+                      href={logo.png}
+                      download
+                      className="text-xs text-primary hover:underline"
+                    >
+                      PNG
+                    </a>
+                    <span className="text-muted-foreground">·</span>
+                    <a
+                      href={logo.svg}
+                      download
+                      className="text-xs text-primary hover:underline"
+                    >
+                      SVG
+                    </a>
                   </div>
                 </div>
               ))}
@@ -243,7 +240,7 @@ const MediaKit = () => {
           </div>
 
           {/* CTA */}
-          <div className="text-center bg-card rounded-xl p-8 border border-border">
+          <div className="text-center bg-card rounded-xl p-8">
             <h3 className="text-2xl font-bold text-foreground mb-2">Ready to reach our audience?</h3>
             <p className="text-muted-foreground mb-6">Get in touch to discuss opportunities</p>
             <a 
