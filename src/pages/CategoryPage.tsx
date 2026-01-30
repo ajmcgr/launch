@@ -9,7 +9,7 @@ import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { notifyProductVote } from '@/lib/notifications';
+
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
 
@@ -301,17 +301,8 @@ const CategoryPage = () => {
       if (existingVote) {
         await supabase.from('votes').delete().eq('id', existingVote.id);
       } else {
+        // Notification is handled by database trigger
         await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
-        
-        const { data: userData } = await supabase
-          .from('users')
-          .select('username')
-          .eq('id', user.id)
-          .single();
-
-        if (userData?.username) {
-          notifyProductVote(productId, userData.username);
-        }
       }
     } catch (error) {
       console.error('Error voting:', error);
