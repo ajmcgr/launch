@@ -40,77 +40,23 @@ const MediaKit = () => {
 
         <div className="max-w-4xl mx-auto px-4">
 
-          {/* Two Column Layout - Metrics & Testimonials */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            {/* Left Column - Key Metrics */}
-            <div className="space-y-4">
-              <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">73K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
-              </div>
-              <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">70K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Impressions</p>
-              </div>
-              <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">2.5K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Newsletter Subs</p>
-              </div>
-              <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">25%</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Email Open Rate</p>
-              </div>
+          {/* Key Metrics */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">73K+</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
             </div>
-
-            {/* Right Column - Testimonials */}
-            <div className="space-y-6">
-              {/* Jake's Testimonial */}
-              <blockquote className="text-center">
-                <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
-                  "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
-                </p>
-                <footer className="flex items-center justify-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={jakeAvatar} alt="Jake" />
-                    <AvatarFallback>JH</AvatarFallback>
-                  </Avatar>
-                  <div className="text-sm text-left">
-                    <div className="font-medium">Jake</div>
-                    <div className="text-muted-foreground">
-                      AdGenerator · <a 
-                        href="https://x.com/jakeh2792" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >@jakeh2792</a>
-                    </div>
-                  </div>
-                </footer>
-              </blockquote>
-
-              {/* Yogesh's Testimonial */}
-              <blockquote className="text-center">
-                <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
-                  "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
-                </p>
-                <footer className="flex items-center justify-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={yogeshAvatar} alt="Yogesh" />
-                    <AvatarFallback>YA</AvatarFallback>
-                  </Avatar>
-                  <div className="text-sm text-left">
-                    <div className="font-medium">Yogesh</div>
-                    <div className="text-muted-foreground">
-                      Supalytics · <a 
-                        href="https://x.com/yogesharc" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >@yogesharc</a>
-                    </div>
-                  </div>
-                </footer>
-              </blockquote>
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">70K+</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Impressions</p>
+            </div>
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">2.5K+</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Newsletter Subs</p>
+            </div>
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">25%</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Email Open Rate</p>
             </div>
           </div>
 
@@ -189,6 +135,57 @@ const MediaKit = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Testimonials */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {/* Jake's Testimonial */}
+            <blockquote className="text-center">
+              <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+                "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
+              </p>
+              <footer className="flex items-center justify-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={jakeAvatar} alt="Jake" />
+                  <AvatarFallback>JH</AvatarFallback>
+                </Avatar>
+                <div className="text-sm text-left">
+                  <div className="font-medium">Jake</div>
+                  <div className="text-muted-foreground">
+                    AdGenerator · <a 
+                      href="https://x.com/jakeh2792" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >@jakeh2792</a>
+                  </div>
+                </div>
+              </footer>
+            </blockquote>
+
+            {/* Yogesh's Testimonial */}
+            <blockquote className="text-center">
+              <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+                "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+              </p>
+              <footer className="flex items-center justify-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={yogeshAvatar} alt="Yogesh" />
+                  <AvatarFallback>YA</AvatarFallback>
+                </Avatar>
+                <div className="text-sm text-left">
+                  <div className="font-medium">Yogesh</div>
+                  <div className="text-muted-foreground">
+                    Supalytics · <a 
+                      href="https://x.com/yogesharc" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >@yogesharc</a>
+                  </div>
+                </div>
+              </footer>
+            </blockquote>
           </div>
 
         </div>
