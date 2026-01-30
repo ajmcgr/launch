@@ -148,65 +148,66 @@ export const LaunchListItem = ({
             {tagline}
           </p>
           
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex flex-wrap items-center gap-1.5">
-              {categories.slice(0, isMobile ? 1 : 3).map((category) => (
-                <Link 
-                  key={category}
-                  to={`/products?category=${encodeURIComponent(category)}`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
-                    {category}
-                  </Badge>
-                </Link>
-              ))}
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            {categories.slice(0, isMobile ? 1 : 3).map((category) => (
+              <Link 
+                key={category}
+                to={`/products?category=${encodeURIComponent(category)}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
+                  {category}
+                </Badge>
+              </Link>
+            ))}
+            
+            {makers.length > 0 && (
+              <>
+                <span>·</span>
+                <div className="flex -space-x-1.5">
+                  {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
+                    <Link 
+                      key={maker.username}
+                      to={`/@${maker.username}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="hover:z-10"
+                    >
+                      <Avatar className="h-5 w-5 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
+                        <AvatarImage src={maker.avatar_url} alt={maker.username} />
+                        <AvatarFallback className="text-[10px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
+                      </Avatar>
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+            
+            {platforms && platforms.length > 0 && (
+              <>
+                <span>·</span>
+                <PlatformIcons platforms={platforms} size="sm" />
+              </>
+            )}
+            
+            {verifiedMrr !== null && verifiedMrr !== undefined && (
+              <>
+                <span>·</span>
+                <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
+              </>
+            )}
+            
+            <span>·</span>
+            <div className="flex items-center gap-0.5 hover:text-primary transition-all hover:scale-105">
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span>{commentCount}</span>
             </div>
             
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <div className="flex -space-x-1.5">
-                {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
-                  <Link 
-                    key={maker.username}
-                    to={`/@${maker.username}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="hover:z-10"
-                  >
-                    <Avatar className="h-5 w-5 border-2 border-background hover:ring-2 hover:ring-primary transition-all">
-                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                      <AvatarFallback className="text-[10px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
-                    </Avatar>
-                  </Link>
-                ))}
-              </div>
-              
-              {platforms && platforms.length > 0 && (
-                <>
-                  <span>·</span>
-                  <PlatformIcons platforms={platforms} size="sm" />
-                </>
-              )}
-              
-              {verifiedMrr !== null && verifiedMrr !== undefined && (
-                <>
-                  <span>·</span>
-                  <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
-                </>
-              )}
-              
-              <span>·</span>
-              <div className="flex items-center gap-0.5 hover:text-primary transition-all hover:scale-105">
-                <MessageSquare className="h-3.5 w-3.5" />
-                <span>{commentCount}</span>
-              </div>
-              
-              {launch_date && (
-                <>
-                  <span>·</span>
-                  <span>{formatTimeAgo(launch_date)}</span>
-                </>
-              )}
-            </div>
+            {launch_date && (
+              <>
+                <span>·</span>
+                <span>{formatTimeAgo(launch_date)}</span>
+              </>
+            )}
           </div>
         </div>
 
