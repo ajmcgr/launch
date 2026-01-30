@@ -373,7 +373,7 @@ const Advertise = () => {
             {/* Sponsorship Options */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-6">
               <Card 
-                className={`hover:shadow-lg transition-shadow cursor-pointer ${
+                className={`hover:shadow-lg transition-shadow cursor-pointer flex flex-col ${
                   selectedType === 'website' ? 'border-primary shadow-md ring-2 ring-primary' : ''
                 }`}
                 onClick={() => setSelectedType('website')}
@@ -382,11 +382,11 @@ const Advertise = () => {
                 <CardTitle className="text-xl">Website Placement</CardTitle>
                 <CardDescription>Sponsored listing on the Launch homepage</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
                     $99<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
-                <ul className="space-y-3">
+                <ul className="space-y-3 flex-1">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <span className="text-sm">Sponsored listing on Launch homepage</span>
@@ -414,7 +414,7 @@ const Advertise = () => {
               </Card>
 
               <Card 
-                className={`hover:shadow-lg transition-shadow cursor-pointer ${
+                className={`hover:shadow-lg transition-shadow cursor-pointer flex flex-col ${
                   selectedType === 'newsletter' ? 'border-primary shadow-md ring-2 ring-primary' : ''
                 }`}
                 onClick={() => setSelectedType('newsletter')}
@@ -423,11 +423,11 @@ const Advertise = () => {
                   <CardTitle className="text-xl">Newsletter Sponsorship</CardTitle>
                   <CardDescription>Featured sponsor in our weekly newsletter</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
                     $149<span className="text-base font-normal text-muted-foreground"> / issue</span>
                   </div>
-                <ul className="space-y-3">
+                <ul className="space-y-3 flex-1">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <span className="text-sm">Featured sponsor section in one weekly newsletter</span>
@@ -455,7 +455,7 @@ const Advertise = () => {
               </Card>
 
               <Card 
-                className={`relative hover:shadow-lg transition-shadow cursor-pointer border-primary shadow-md ${
+                className={`relative hover:shadow-lg transition-shadow cursor-pointer border-primary shadow-md flex flex-col ${
                   selectedType === 'combined' ? 'ring-2 ring-primary' : ''
                 }`}
                 onClick={() => setSelectedType('combined')}
@@ -467,11 +467,11 @@ const Advertise = () => {
                   <CardTitle className="text-xl">Combined Package</CardTitle>
                   <CardDescription>Website + Newsletter bundle</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
                     $199<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
-                  <ul className="space-y-3">
+                  <ul className="space-y-3 flex-1">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-sm">Homepage sponsorship (1 month)</span>
