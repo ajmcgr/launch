@@ -31,7 +31,7 @@ const MediaKit = () => {
           </div>
 
           {/* Intro */}
-          <div className="mb-12">
+          <div className="mb-6">
             <h2 className="text-3xl font-bold mb-4 text-foreground">
               Reach 73,000+ Developers & Founders
             </h2>
@@ -40,6 +40,15 @@ const MediaKit = () => {
               Our highly engaged audience of entrepreneurs, developers, and early adopters are actively seeking new tools and products.
             </p>
           </div>
+
+        </div>
+
+        {/* Product Icons - Full Width */}
+        <div className="my-12">
+          <PopularProductIcons />
+        </div>
+
+        <div className="max-w-2xl mx-auto px-4">
 
           {/* Key Metrics */}
           <div className="space-y-4 mb-12">
@@ -186,11 +195,6 @@ const MediaKit = () => {
             </div>
           </div>
 
-        </div>
-
-        {/* Product Icons - Full Width */}
-        <div className="my-12">
-          <PopularProductIcons />
         </div>
 
         <div className="max-w-2xl mx-auto px-4 pb-12">
