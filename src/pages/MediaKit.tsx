@@ -235,20 +235,28 @@ const MediaKit = () => {
               </div>
             </div>
             
-            {/* Combined Package */}
-            <div className="mt-6 bg-primary text-primary-foreground rounded-xl p-6">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div>
-                  <h4 className="font-bold text-2xl">Combined Package</h4>
-                  <p className="text-primary-foreground/80">Homepage Banner + Newsletter Sponsorship</p>
+              {/* Combined Package */}
+              <div className="bg-card border-2 border-border rounded-xl p-6 hover:border-primary transition-colors">
+                <div className="flex justify-between items-start mb-4">
+                  <h4 className="font-bold text-xl text-foreground">Combined Package</h4>
+                  <span className="text-2xl font-bold text-primary">$400/mo</span>
                 </div>
-                <div className="text-center sm:text-right">
-                  <span className="text-3xl font-bold">$400/mo</span>
-                  <p className="text-primary-foreground/80">Save $50/month</p>
-                </div>
+                <ul className="text-muted-foreground space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-primary">✓</span> Homepage Banner + Newsletter Sponsorship
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-primary">✓</span> Save $50/month
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-primary">✓</span> Maximum visibility across all channels
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-primary">✓</span> Priority placement
+                  </li>
+                </ul>
               </div>
             </div>
-          </div>
 
           {/* CTA */}
           <div className="text-center bg-card rounded-xl p-8 border border-border">
