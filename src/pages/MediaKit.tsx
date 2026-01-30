@@ -34,7 +34,7 @@ const MediaKit = () => {
         </div>
 
         {/* Product Icons - Full Width */}
-        <div className="my-12">
+        <div className="mb-12">
           <PopularProductIcons />
         </div>
 
