@@ -341,6 +341,9 @@ const LaunchDetail = () => {
   const screenshots = product.product_media?.filter((m: any) => m.type === 'screenshot').map((m: any) => m.url) || [];
   const videoUrl = product.product_media?.find((m: any) => m.type === 'video')?.url;
   
+  // Use first screenshot as social sharing image, fallback to thumbnail, then default
+  const socialImage = screenshots[0] || thumbnail || 'https://trylaunch.ai/social-card.png';
+  
   // Extract YouTube video ID if it's a YouTube URL
   const getYouTubeEmbedUrl = (url: string) => {
     if (!url) return null;
@@ -408,13 +411,13 @@ const LaunchDetail = () => {
         <meta name="description" content={product.tagline || product.description?.substring(0, 160)} />
         <meta property="og:title" content={`${product.name} - Launch AI`} />
         <meta property="og:description" content={product.tagline || product.description?.substring(0, 160)} />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content={socialImage} />
         <meta property="og:url" content={`https://trylaunch.ai/launch/${product.slug}`} />
         <meta property="og:type" content="product" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${product.name} - Launch AI`} />
         <meta name="twitter:description" content={product.tagline || product.description?.substring(0, 160)} />
-        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png" />
+        <meta name="twitter:image" content={socialImage} />
         <link rel="canonical" href={`https://trylaunch.ai/launch/${product.slug}`} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
