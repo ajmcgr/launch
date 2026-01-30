@@ -73,11 +73,17 @@ export const HomeLaunchListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
-            {(launchDate || (platforms && platforms.length > 0)) && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                {launchDate && <span>· {formatTimeAgo(launchDate)}</span>}
+            {platforms && platforms.length > 0 && (
+              <>
+                <span className="text-xs text-muted-foreground">·</span>
                 <PlatformIcons platforms={platforms} size="sm" />
-              </span>
+              </>
+            )}
+            {launchDate && (
+              <>
+                <span className="text-xs text-muted-foreground">·</span>
+                <span className="text-xs text-muted-foreground">{formatTimeAgo(launchDate)}</span>
+              </>
             )}
           </div>
           <div className="flex items-center gap-2">

@@ -163,7 +163,7 @@ export const LaunchListItem = ({
               ))}
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <div className="flex -space-x-1.5">
                 {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
                   <Link 
@@ -180,19 +180,31 @@ export const LaunchListItem = ({
                 ))}
               </div>
               
-              <PlatformIcons platforms={platforms} size="sm" />
+              {platforms && platforms.length > 0 && (
+                <>
+                  <span>·</span>
+                  <PlatformIcons platforms={platforms} size="sm" />
+                </>
+              )}
               
-              <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
+              {verifiedMrr !== null && verifiedMrr !== undefined && (
+                <>
+                  <span>·</span>
+                  <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
+                </>
+              )}
               
-              <div className="flex items-center gap-0.5 text-muted-foreground hover:text-primary transition-all hover:scale-105">
+              <span>·</span>
+              <div className="flex items-center gap-0.5 hover:text-primary transition-all hover:scale-105">
                 <MessageSquare className="h-3.5 w-3.5" />
-                <span className="text-xs">{commentCount}</span>
+                <span>{commentCount}</span>
               </div>
               
               {launch_date && (
-                <span className="text-xs text-muted-foreground">
-                  {formatTimeAgo(launch_date)}
-                </span>
+                <>
+                  <span>·</span>
+                  <span>{formatTimeAgo(launch_date)}</span>
+                </>
               )}
             </div>
           </div>
