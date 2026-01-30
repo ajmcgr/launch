@@ -44,9 +44,10 @@ const fetchPopularProducts = async (): Promise<ProductIcon[]> => {
 
 interface PassSocialGraphicProps {
   variant?: 'twitter' | 'linkedin';
+  hideLogo?: boolean;
 }
 
-export const PassSocialGraphic = ({ variant = 'twitter' }: PassSocialGraphicProps) => {
+export const PassSocialGraphic = ({ variant = 'twitter', hideLogo = false }: PassSocialGraphicProps) => {
   const { data: products, isLoading } = useQuery({
     queryKey: ['popular-product-icons'],
     queryFn: fetchPopularProducts,
@@ -121,12 +122,16 @@ export const PassSocialGraphic = ({ variant = 'twitter' }: PassSocialGraphicProp
       </div>
 
       {/* Gradient overlay at bottom for logo visibility */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/90 to-transparent" />
+      {!hideLogo && (
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/90 to-transparent" />
+      )}
 
       {/* Logo watermark */}
-      <div className="absolute bottom-4 right-6">
-        <img src={logo} alt="Launch" className="h-8 opacity-80" />
-      </div>
+      {!hideLogo && (
+        <div className="absolute bottom-4 right-6">
+          <img src={logo} alt="Launch" className="h-8 opacity-80" />
+        </div>
+      )}
     </div>
   );
 };
