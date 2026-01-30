@@ -196,13 +196,15 @@ const MediaKit = () => {
         <div className="max-w-2xl mx-auto px-4 pb-12">
 
           {/* Logo Downloads */}
-          <div className="mb-12 text-center">
+          <div className="text-center bg-card rounded-xl p-8 mb-12">
+            <h3 className="text-2xl font-bold text-foreground mb-2">Download our logo</h3>
+            <p className="text-muted-foreground mb-6">Download the Launch logo.</p>
             <a 
-              href="/media-kit/launch-logo-black.png" 
+              href="/media-kit/launch.zip" 
               download
-              className="text-sm text-primary hover:underline"
+              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
-              Download Logos (PNG & SVG)
+              Download
             </a>
           </div>
 
