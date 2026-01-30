@@ -14,12 +14,9 @@ const MediaKit = () => {
           
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
+            <h1 className="text-4xl md:text-5xl font-reckless font-bold text-foreground">
               Media Kit
             </h1>
-            <p className="text-xl text-muted-foreground">
-              January 2025
-            </p>
           </div>
 
           {/* Intro */}
@@ -33,10 +30,14 @@ const MediaKit = () => {
             </p>
           </div>
 
-          {/* Product Icons */}
-          <div className="mb-12 rounded-xl overflow-hidden border border-border">
-            <PassSocialGraphic variant="twitter" />
-          </div>
+        </div>
+
+        {/* Product Icons - Full Width */}
+        <div className="mb-12">
+          <PassSocialGraphic variant="twitter" hideLogo />
+        </div>
+
+        <div className="max-w-2xl mx-auto px-4 pb-12">
 
           {/* Key Metrics */}
           <div className="space-y-4 mb-12">
@@ -199,22 +200,14 @@ const MediaKit = () => {
           <div className="text-center bg-card rounded-xl p-8 border border-border">
             <h3 className="text-2xl font-bold text-foreground mb-2">Ready to reach our audience?</h3>
             <p className="text-muted-foreground mb-6">Get in touch to discuss sponsorship opportunities</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="mailto:alex@trylaunch.ai" 
-                className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-              >
-                Email alex@trylaunch.ai
-              </a>
-              <a 
-                href="/advertise" 
-                className="inline-flex items-center justify-center px-6 py-3 bg-muted text-foreground rounded-lg font-medium hover:bg-muted/80 transition-colors"
-              >
-                View Advertise Page
-              </a>
-            </div>
+            <a 
+              href="mailto:alex@trylaunch.ai" 
+              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            >
+              Email alex@trylaunch.ai
+            </a>
             <p className="text-xs text-muted-foreground mt-6">
-              Data source: Google Analytics • Updated January 2025
+              Data source: Google Analytics. Updated January 2026
             </p>
           </div>
         </div>
