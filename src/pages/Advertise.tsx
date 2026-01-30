@@ -511,9 +511,6 @@ const Advertise = () => {
                   <CardDescription>Tailored campaigns for your brand</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="text-4xl font-bold">
-                    Let's Talk
-                  </div>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
