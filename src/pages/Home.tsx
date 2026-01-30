@@ -670,9 +670,7 @@ const Home = () => {
         // Insert sponsor banner after product 5
         if (productIndex === 5) {
           items.push(
-            <div key="sponsor-banner-inline" className="py-4">
-              <SponsorBanner />
-            </div>
+            <SponsorBanner key="sponsor-banner-inline" />
           );
         }
         
