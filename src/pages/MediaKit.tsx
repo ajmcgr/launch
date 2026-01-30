@@ -1,17 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import PopularProductIcons from '@/components/PopularProductIcons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Download } from 'lucide-react';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
 
 const MediaKit = () => {
-  const logos = [
-    { name: 'Black Logo', png: '/media-kit/launch-logo-black.png', svg: '/media-kit/launch-logo-black.svg', bg: 'bg-white' },
-    { name: 'Gray Logo', png: '/media-kit/launch-logo-gray.png', svg: '/media-kit/launch-logo-gray.svg', bg: 'bg-white' },
-    { name: 'Gray with Background', png: '/media-kit/launch-logo-gray-bg.png', svg: '/media-kit/launch-logo-gray-bg.svg', bg: 'bg-white' },
-    { name: 'White Logo', png: '/media-kit/launch-logo-white.png', svg: '/media-kit/launch-logo-white.svg', bg: 'bg-gray-800' },
-  ];
 
   return (
     <>
@@ -206,37 +199,14 @@ const MediaKit = () => {
         <div className="max-w-2xl mx-auto px-4 pb-12">
 
           {/* Logo Downloads */}
-          <div className="mb-12">
-            <h3 className="text-xl font-medium mb-6 text-foreground text-center">
-              Logo Downloads
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {logos.map((logo) => (
-                <div key={logo.name} className="text-center">
-                  <div className={`${logo.bg} rounded-lg p-4 flex items-center justify-center h-16 mb-3`}>
-                    <img src={logo.png} alt={logo.name} className="max-h-8 max-w-full object-contain" />
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-2">{logo.name}</p>
-                  <div className="flex justify-center gap-2">
-                    <a
-                      href={logo.png}
-                      download
-                      className="text-xs text-primary hover:underline"
-                    >
-                      PNG
-                    </a>
-                    <span className="text-muted-foreground">·</span>
-                    <a
-                      href={logo.svg}
-                      download
-                      className="text-xs text-primary hover:underline"
-                    >
-                      SVG
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="mb-12 text-center">
+            <a 
+              href="/media-kit/launch-logo-black.png" 
+              download
+              className="text-sm text-primary hover:underline"
+            >
+              Download Logos (PNG & SVG)
+            </a>
           </div>
 
           {/* CTA */}
