@@ -235,7 +235,7 @@ const MediaKit = () => {
           {/* CTA */}
           <div className="text-center bg-card rounded-xl p-8 border border-border">
             <h3 className="text-2xl font-bold text-foreground mb-2">Ready to reach our audience?</h3>
-            <p className="text-muted-foreground mb-6">Get in touch to discuss sponsorship opportunities</p>
+            <p className="text-muted-foreground mb-6">Get in touch to discuss opportunities</p>
             <a 
               href="mailto:alex@trylaunch.ai" 
               className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
