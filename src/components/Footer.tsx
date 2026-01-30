@@ -185,12 +185,12 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="mailto:alex@trymedia.ai"
+                <Link 
+                  to="/media-kit"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Managed
-                </a>
+                  Media Kit
+                </Link>
               </li>
             </ul>
           </div>
