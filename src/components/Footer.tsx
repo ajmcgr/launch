@@ -141,11 +141,6 @@ export const Footer = () => {
                   FAQ
                 </Link>
               </li>
-              <li>
-                <Link to="/media-kit" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Media Kit
-                </Link>
-              </li>
             </ul>
           </div>
 
