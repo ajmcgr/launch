@@ -43,7 +43,7 @@ const MediaKit = () => {
           {/* Metrics and Demographics Side by Side */}
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             {/* Left Column - Key Metrics */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
                 <p className="text-4xl font-bold text-primary">73K+</p>
                 <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
@@ -195,18 +195,6 @@ const MediaKit = () => {
 
         <div className="max-w-2xl mx-auto px-4 pb-12">
 
-          {/* Logo Downloads */}
-          <div className="text-center bg-card rounded-xl p-8 mb-12">
-            <h3 className="text-2xl font-bold text-foreground mb-2">Looking for our logo?</h3>
-            <p className="text-muted-foreground mb-6">Download the Launch logo.</p>
-            <a 
-              href="/media-kit/launch.zip" 
-              download
-              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              Download
-            </a>
-          </div>
 
           {/* CTA */}
           <div className="text-center bg-card rounded-xl p-8">
