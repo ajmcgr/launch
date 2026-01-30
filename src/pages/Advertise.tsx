@@ -505,12 +505,12 @@ const Advertise = () => {
               {/* Custom Card */}
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-xl">Custom</CardTitle>
+                  <CardTitle className="text-xl">Custom Package</CardTitle>
                   <CardDescription>Tailored campaigns for your brand</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-4xl font-bold">
-                    Let's talk
+                    Inquire
                   </div>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-2">
