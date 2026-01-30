@@ -1,5 +1,8 @@
 import { Helmet } from 'react-helmet-async';
-import PassSocialGraphic from '@/components/PassSocialGraphic';
+import PopularProductIcons from '@/components/PopularProductIcons';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
+import jakeAvatar from '@/assets/jake-avatar.jpg';
 
 const MediaKit = () => {
   return (
@@ -9,7 +12,7 @@ const MediaKit = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background overflow-x-hidden">
         <div className="max-w-2xl mx-auto px-4 py-12">
           
           {/* Header */}
@@ -30,11 +33,62 @@ const MediaKit = () => {
             </p>
           </div>
 
+          {/* Testimonials */}
+          <div className="mb-12 space-y-8">
+            {/* Jake's Testimonial */}
+            <blockquote className="text-center">
+              <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+                "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
+              </p>
+              <footer className="flex items-center justify-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={jakeAvatar} alt="Jake" />
+                  <AvatarFallback>JH</AvatarFallback>
+                </Avatar>
+                <div className="text-sm text-left">
+                  <div className="font-medium">Jake</div>
+                  <div className="text-muted-foreground">
+                    AdGenerator · <a 
+                      href="https://x.com/jakeh2792" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >@jakeh2792</a>
+                  </div>
+                </div>
+              </footer>
+            </blockquote>
+
+            {/* Yogesh's Testimonial */}
+            <blockquote className="text-center">
+              <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
+                "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
+              </p>
+              <footer className="flex items-center justify-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={yogeshAvatar} alt="Yogesh" />
+                  <AvatarFallback>YA</AvatarFallback>
+                </Avatar>
+                <div className="text-sm text-left">
+                  <div className="font-medium">Yogesh</div>
+                  <div className="text-muted-foreground">
+                    Supalytics · <a 
+                      href="https://x.com/yogesharc" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >@yogesharc</a>
+                  </div>
+                </div>
+              </footer>
+            </blockquote>
+          </div>
+
         </div>
 
         {/* Product Icons - Full Width */}
-        <div className="mb-12">
-          <PassSocialGraphic variant="twitter" hideLogo />
+        <div className="my-12">
+          <PopularProductIcons />
         </div>
 
         <div className="max-w-2xl mx-auto px-4 pb-12">
