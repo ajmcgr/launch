@@ -1,10 +1,18 @@
 import { Helmet } from 'react-helmet-async';
 import PopularProductIcons from '@/components/PopularProductIcons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Download } from 'lucide-react';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
 
 const MediaKit = () => {
+  const logos = [
+    { name: 'Black Logo', png: '/media-kit/launch-logo-black.png', svg: '/media-kit/launch-logo-black.svg', bg: 'bg-white' },
+    { name: 'Gray Logo', png: '/media-kit/launch-logo-gray.png', svg: '/media-kit/launch-logo-gray.svg', bg: 'bg-white' },
+    { name: 'Gray with Background', png: '/media-kit/launch-logo-gray-bg.png', svg: '/media-kit/launch-logo-gray-bg.svg', bg: 'bg-white' },
+    { name: 'White Logo', png: '/media-kit/launch-logo-white.png', svg: '/media-kit/launch-logo-white.svg', bg: 'bg-gray-800' },
+  ];
+
   return (
     <>
       <Helmet>
@@ -31,6 +39,26 @@ const MediaKit = () => {
               Launch is the #1 discovery platform for indie makers to share, vote, and discover the next big thing. 
               Our highly engaged audience of entrepreneurs, developers, and early adopters are actively seeking new tools and products.
             </p>
+          </div>
+
+          {/* Key Metrics */}
+          <div className="space-y-4 mb-12">
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">73K+</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
+            </div>
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">70K+</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Impressions</p>
+            </div>
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">2.5K+</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Newsletter Subs</p>
+            </div>
+            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+              <p className="text-4xl font-bold text-primary">25%</p>
+              <p className="text-sm text-muted-foreground font-medium mt-1">Email Open Rate</p>
+            </div>
           </div>
 
           {/* Testimonials */}
@@ -82,35 +110,6 @@ const MediaKit = () => {
                 </div>
               </footer>
             </blockquote>
-          </div>
-
-        </div>
-
-        {/* Product Icons - Full Width */}
-        <div className="my-12">
-          <PopularProductIcons />
-        </div>
-
-        <div className="max-w-2xl mx-auto px-4 pb-12">
-
-          {/* Key Metrics */}
-          <div className="space-y-4 mb-12">
-            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-              <p className="text-4xl font-bold text-primary">73K+</p>
-              <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
-            </div>
-            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-              <p className="text-4xl font-bold text-primary">70K+</p>
-              <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Impressions</p>
-            </div>
-            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-              <p className="text-4xl font-bold text-primary">2.5K+</p>
-              <p className="text-sm text-muted-foreground font-medium mt-1">Newsletter Subs</p>
-            </div>
-            <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-              <p className="text-4xl font-bold text-primary">25%</p>
-              <p className="text-sm text-muted-foreground font-medium mt-1">Email Open Rate</p>
-            </div>
           </div>
 
           {/* Audience Demographics */}
@@ -187,76 +186,51 @@ const MediaKit = () => {
             </div>
           </div>
 
-          {/* Advertising Options */}
+        </div>
+
+        {/* Product Icons - Full Width */}
+        <div className="my-12">
+          <PopularProductIcons />
+        </div>
+
+        <div className="max-w-2xl mx-auto px-4 pb-12">
+
+          {/* Logo Downloads */}
           <div className="mb-12">
             <h3 className="text-2xl font-bold mb-6 text-foreground text-center">
-              Advertising Options
+              Logo Downloads
             </h3>
-            <div className="space-y-6">
-              <div className="bg-card border-2 border-border rounded-xl p-6 hover:border-primary transition-colors">
-                <div className="flex justify-between items-start mb-4">
-                  <h4 className="font-bold text-xl text-foreground">Homepage Banner</h4>
-                  <span className="text-2xl font-bold text-primary">$250/mo</span>
+            <div className="grid grid-cols-2 gap-4">
+              {logos.map((logo) => (
+                <div key={logo.name} className="bg-card border border-border rounded-xl overflow-hidden">
+                  <div className={`${logo.bg} p-6 flex items-center justify-center h-24`}>
+                    <img src={logo.png} alt={logo.name} className="max-h-12 max-w-full object-contain" />
+                  </div>
+                  <div className="p-4 border-t border-border">
+                    <p className="text-sm font-medium text-foreground mb-2">{logo.name}</p>
+                    <div className="flex gap-2">
+                      <a
+                        href={logo.png}
+                        download
+                        className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 rounded-md transition-colors"
+                      >
+                        <Download className="h-3 w-3" />
+                        PNG
+                      </a>
+                      <a
+                        href={logo.svg}
+                        download
+                        className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium bg-muted hover:bg-muted/80 rounded-md transition-colors"
+                      >
+                        <Download className="h-3 w-3" />
+                        SVG
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <ul className="text-muted-foreground space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Featured in product leaderboard
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> 70K+ monthly impressions
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Premium above-fold placement
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Detailed analytics reporting
-                  </li>
-                </ul>
-              </div>
-              <div className="bg-card border-2 border-border rounded-xl p-6 hover:border-primary transition-colors">
-                <div className="flex justify-between items-start mb-4">
-                  <h4 className="font-bold text-xl text-foreground">Newsletter Sponsorship</h4>
-                  <span className="text-2xl font-bold text-primary">$200/mo</span>
-                </div>
-                <ul className="text-muted-foreground space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Featured in weekly digest
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> 2,500+ subscribers
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> 25% average open rate
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Direct link to your product
-                  </li>
-                </ul>
-              </div>
+              ))}
             </div>
-            
-              {/* Combined Package */}
-              <div className="bg-card border-2 border-border rounded-xl p-6 hover:border-primary transition-colors">
-                <div className="flex justify-between items-start mb-4">
-                  <h4 className="font-bold text-xl text-foreground">Combined Package</h4>
-                  <span className="text-2xl font-bold text-primary">$400/mo</span>
-                </div>
-                <ul className="text-muted-foreground space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Homepage Banner + Newsletter Sponsorship
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Save $50/month
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Maximum visibility across all channels
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">✓</span> Priority placement
-                  </li>
-                </ul>
-              </div>
-            </div>
+          </div>
 
           {/* CTA */}
           <div className="text-center bg-card rounded-xl p-8 border border-border">
