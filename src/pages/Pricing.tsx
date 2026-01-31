@@ -230,7 +230,7 @@ const Pricing = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-xl">Website Placement</CardTitle>
-                <CardDescription>Sponsored listing on the Launch homepage</CardDescription>
+                <CardDescription>30-day sponsored listing on homepage</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-4xl font-bold">
