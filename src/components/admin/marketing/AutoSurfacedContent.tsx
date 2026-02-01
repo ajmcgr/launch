@@ -175,8 +175,10 @@ export const AutoSurfacedContent = () => {
   const startOfDay = todayUTC.toISOString();
   const endOfDay = new Date(todayUTC.getTime() + 24 * 60 * 60 * 1000).toISOString();
   
-  // Get this week's date range (last 7 days) - use 14 days to ensure we catch weekly data
+  // Date ranges for various queries
+  const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
 
   // Launch of the Day - top voted product today
   const { data: launchOfDay, isLoading: launchLoading } = useQuery({
@@ -335,7 +337,6 @@ export const AutoSurfacedContent = () => {
   });
 
   // 3 Products You Missed This Week - top products from 7-14 days ago
-  const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo],
     queryFn: async () => {
@@ -368,7 +369,6 @@ export const AutoSurfacedContent = () => {
   });
 
   // New & Noteworthy - newest launches with at least 1 vote
-  const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
   const { data: newNoteworthy, isLoading: newNoteworthyLoading } = useQuery({
     queryKey: ['auto-new-noteworthy', threeDaysAgo],
     queryFn: async () => {
