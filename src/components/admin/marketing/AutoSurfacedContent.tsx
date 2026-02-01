@@ -169,13 +169,14 @@ const CopyAllBuildersButton = ({ builders, title }: { builders: SurfacedBuilder[
 };
 
 export const AutoSurfacedContent = () => {
-  // Get today's date range
-  const today = new Date();
-  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
-  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
+  // Get today's date range in UTC
+  const now = new Date();
+  const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const startOfDay = todayUTC.toISOString();
+  const endOfDay = new Date(todayUTC.getTime() + 24 * 60 * 60 * 1000).toISOString();
   
-  // Get this week's date range (last 7 days)
-  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  // Get this week's date range (last 7 days) - use 14 days to ensure we catch weekly data
+  const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
   // Launch of the Day - top voted product today
   const { data: launchOfDay, isLoading: launchLoading } = useQuery({
@@ -212,16 +213,16 @@ export const AutoSurfacedContent = () => {
 
   // Weekly Winners - top voted products this week
   const { data: weeklyWinners, isLoading: weeklyLoading, error: weeklyError } = useQuery({
-    queryKey: ['auto-weekly-winners', weekAgo],
+    queryKey: ['auto-weekly-winners', twoWeeksAgo],
     queryFn: async () => {
-      console.log('Fetching weekly winners, weekAgo:', weekAgo);
+      console.log('Fetching weekly winners, twoWeeksAgo:', twoWeeksAgo);
       // Fetch products and votes separately since product_vote_counts is a VIEW
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
           .select('id, name, tagline, slug')
           .eq('status', 'launched')
-          .gte('launch_date', weekAgo),
+          .gte('launch_date', twoWeeksAgo),
         supabase
           .from('product_vote_counts')
           .select('product_id, net_votes')
@@ -258,7 +259,7 @@ export const AutoSurfacedContent = () => {
     queryKey: ['auto-hidden-gems'],
     queryFn: async () => {
       // Get products from last 30 days with lower vote counts
-      const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const thirtyDaysAgo = new Date(todayUTC.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
       
       // Fetch products and votes separately since product_vote_counts is a VIEW
       const [productsRes, votesRes] = await Promise.all([
