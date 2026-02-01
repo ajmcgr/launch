@@ -146,6 +146,28 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
   );
 };
 
+const CopyAllBuildersButton = ({ builders, title }: { builders: SurfacedBuilder[]; title: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAll = async () => {
+    const text = builders
+      .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.lovable.app/@${b.username}`)
+      .join('\n\n');
+    
+    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    setCopied(true);
+    toast.success('All builders copied!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={handleCopyAll} className="gap-2">
+      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+      Copy All
+    </Button>
+  );
+};
+
 export const AutoSurfacedContent = () => {
   // Get today's date range
   const today = new Date();
@@ -354,6 +376,9 @@ export const AutoSurfacedContent = () => {
                 </div>
                 {section.products && section.products.length > 0 && (
                   <CopyAllButton products={section.products} title={section.title} />
+                )}
+                {section.builders && section.builders.length > 0 && (
+                  <CopyAllBuildersButton builders={section.builders} title={section.title} />
                 )}
               </div>
               <CardDescription>{section.description}</CardDescription>
