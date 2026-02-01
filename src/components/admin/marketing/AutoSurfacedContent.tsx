@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check, ExternalLink, Trophy, TrendingUp, Gem, Users } from 'lucide-react';
+import { Copy, Check, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -55,7 +55,7 @@ const CopyButton = ({ text, label }: { text: string; label: string }) => {
 };
 
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
-  const productUrl = `https://trylaunch.lovable.app/launches/${product.slug}`;
+  const productUrl = `https://trylaunch.ai/launches/${product.slug}`;
   const copyText = `${product.name} - ${product.tagline || 'No tagline'}\n${productUrl}`;
 
   return (
@@ -92,7 +92,7 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 };
 
 const BuilderCard = ({ builder }: { builder: SurfacedBuilder }) => {
-  const profileUrl = `https://trylaunch.lovable.app/@${builder.username}`;
+  const profileUrl = `https://trylaunch.ai/@${builder.username}`;
   const copyText = `${builder.name || builder.username} (@${builder.username})\n${profileUrl}`;
 
   return (
@@ -129,7 +129,7 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
 
   const handleCopyAll = async () => {
     const text = products
-      .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.lovable.app/launches/${p.slug}`)
+      .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launches/${p.slug}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
@@ -151,7 +151,7 @@ const CopyAllBuildersButton = ({ builders, title }: { builders: SurfacedBuilder[
 
   const handleCopyAll = async () => {
     const text = builders
-      .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.lovable.app/@${b.username}`)
+      .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
@@ -337,28 +337,28 @@ export const AutoSurfacedContent = () => {
     {
       title: "🏆 Launch of the Day",
       description: "Top voted product(s) launched today",
-      icon: <Trophy className="h-5 w-5 text-amber-500" />,
+      icon: null,
       products: launchOfDay,
       isLoading: launchLoading,
     },
     {
       title: "📈 Launch Weekly Winners",
       description: "Top 5 products from the past week",
-      icon: <TrendingUp className="h-5 w-5 text-green-500" />,
+      icon: null,
       products: weeklyWinners,
       isLoading: weeklyLoading,
     },
     {
       title: "💎 Launch Hidden Gems",
       description: "Quality products that deserve more attention",
-      icon: <Gem className="h-5 w-5 text-purple-500" />,
+      icon: null,
       products: hiddenGems,
       isLoading: gemsLoading,
     },
     {
       title: "👀 Launch Builders to Watch",
       description: "Prolific builders with multiple products",
-      icon: <Users className="h-5 w-5 text-blue-500" />,
+      icon: null,
       builders: buildersToWatch,
       isLoading: buildersLoading,
     },
@@ -381,10 +381,7 @@ export const AutoSurfacedContent = () => {
           <Card key={section.title}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {section.icon}
-                  <CardTitle className="text-base">{section.title}</CardTitle>
-                </div>
+                <CardTitle className="text-base">{section.title}</CardTitle>
                 {section.products && section.products.length > 0 && (
                   <CopyAllButton products={section.products} title={section.title} />
                 )}
