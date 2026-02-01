@@ -334,6 +334,73 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // 3 Products You Missed This Week - top products from 7-14 days ago
+  const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: missedProducts, isLoading: missedLoading } = useQuery({
+    queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo],
+    queryFn: async () => {
+      const [productsRes, votesRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id, name, tagline, slug')
+          .eq('status', 'launched')
+          .gte('launch_date', twoWeeksAgo)
+          .lt('launch_date', oneWeekAgo),
+        supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes')
+      ]);
+      
+      if (productsRes.error) throw productsRes.error;
+      
+      const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
+      
+      const mapped = (productsRes.data || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        tagline: p.tagline,
+        slug: p.slug,
+        net_votes: votesMap.get(p.id) || 0,
+      }));
+      
+      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 3);
+    },
+  });
+
+  // New & Noteworthy - newest launches with at least 1 vote
+  const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: newNoteworthy, isLoading: newNoteworthyLoading } = useQuery({
+    queryKey: ['auto-new-noteworthy', threeDaysAgo],
+    queryFn: async () => {
+      const [productsRes, votesRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id, name, tagline, slug')
+          .eq('status', 'launched')
+          .gte('launch_date', threeDaysAgo)
+          .order('launch_date', { ascending: false }),
+        supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes')
+      ]);
+      
+      if (productsRes.error) throw productsRes.error;
+      
+      const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
+      
+      const mapped = (productsRes.data || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        tagline: p.tagline,
+        slug: p.slug,
+        net_votes: votesMap.get(p.id) || 0,
+      }));
+      
+      // Filter to products with at least 1 vote
+      return mapped.filter((p) => (p.net_votes || 0) >= 1).slice(0, 5);
+    },
+  });
+
   const sections: ContentSection[] = [
     {
       title: "🏆 Launch of the Day",
@@ -348,6 +415,20 @@ export const AutoSurfacedContent = () => {
       icon: null,
       products: weeklyWinners,
       isLoading: weeklyLoading,
+    },
+    {
+      title: "🕐 3 Products You Missed This Week",
+      description: "Top performers from 7-14 days ago",
+      icon: null,
+      products: missedProducts,
+      isLoading: missedLoading,
+    },
+    {
+      title: "✨ New & Noteworthy",
+      description: "Fresh launches gaining traction",
+      icon: null,
+      products: newNoteworthy,
+      isLoading: newNoteworthyLoading,
     },
     {
       title: "💎 Launch Hidden Gems",
