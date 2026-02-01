@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Calendar, Tags, Mail, Loader2 } from 'lucide-react';
+import { Calendar, Tags, Mail, Loader2, Megaphone } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
+import AdminMarketingTab from '@/components/admin/AdminMarketingTab';
 import Sparkline from '@/components/Sparkline';
 import { format } from 'date-fns';
 
@@ -325,6 +326,7 @@ const Admin = () => {
               <TabsList>
                 <TabsTrigger value="metrics">Metrics</TabsTrigger>
                 <TabsTrigger value="manage">Ops</TabsTrigger>
+                <TabsTrigger value="marketing">Marketing</TabsTrigger>
               </TabsList>
             </div>
           </div>
@@ -624,6 +626,12 @@ const Admin = () => {
                 <AdminSeoTab />
               </TabsContent>
             </Tabs>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="marketing" className="mt-0">
+          <div className="container mx-auto px-4 py-8">
+            <AdminMarketingTab />
           </div>
         </TabsContent>
       </Tabs>

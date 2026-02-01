@@ -185,6 +185,45 @@ export type Database = {
           },
         ]
       }
+      content_formats: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          product_count: number | null
+          slug: string
+          sort_order: number | null
+          template_hint: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          product_count?: number | null
+          slug: string
+          sort_order?: number | null
+          template_hint?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          product_count?: number | null
+          slug?: string
+          sort_order?: number | null
+          template_hint?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string | null
@@ -228,6 +267,142 @@ export type Database = {
             columns: ["follower_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_content: {
+        Row: {
+          body: string | null
+          created_at: string | null
+          created_by: string
+          format_id: string
+          id: string
+          published_at: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string | null
+          created_by: string
+          format_id: string
+          id?: string
+          published_at?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string | null
+          created_by?: string
+          format_id?: string
+          id?: string
+          published_at?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_content_format_id_fkey"
+            columns: ["format_id"]
+            isOneToOne: false
+            referencedRelation: "content_formats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_content_builders: {
+        Row: {
+          commentary: string | null
+          content_id: string
+          id: string
+          position: number | null
+          user_id: string
+        }
+        Insert: {
+          commentary?: string | null
+          content_id: string
+          id?: string
+          position?: number | null
+          user_id: string
+        }
+        Update: {
+          commentary?: string | null
+          content_id?: string
+          id?: string
+          position?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_content_builders_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_content_builders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_content_builders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_content_products: {
+        Row: {
+          commentary: string | null
+          content_id: string
+          id: string
+          position: number | null
+          product_id: string
+        }
+        Insert: {
+          commentary?: string | null
+          content_id: string
+          id?: string
+          position?: number | null
+          product_id: string
+        }
+        Update: {
+          commentary?: string | null
+          content_id?: string
+          id?: string
+          position?: number | null
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_content_products_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_content_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_content_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "public_products"
             referencedColumns: ["id"]
           },
         ]
