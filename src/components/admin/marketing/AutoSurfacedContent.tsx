@@ -211,9 +211,10 @@ export const AutoSurfacedContent = () => {
   });
 
   // Weekly Winners - top voted products this week
-  const { data: weeklyWinners, isLoading: weeklyLoading } = useQuery({
+  const { data: weeklyWinners, isLoading: weeklyLoading, error: weeklyError } = useQuery({
     queryKey: ['auto-weekly-winners', weekAgo],
     queryFn: async () => {
+      console.log('Fetching weekly winners, weekAgo:', weekAgo);
       // Fetch products and votes separately since product_vote_counts is a VIEW
       const [productsRes, votesRes] = await Promise.all([
         supabase
@@ -226,7 +227,11 @@ export const AutoSurfacedContent = () => {
           .select('product_id, net_votes')
       ]);
       
+      console.log('Weekly winners productsRes:', productsRes);
+      console.log('Weekly winners votesRes:', votesRes);
+      
       if (productsRes.error) throw productsRes.error;
+      if (votesRes.error) throw votesRes.error;
       
       const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
       
@@ -238,9 +243,15 @@ export const AutoSurfacedContent = () => {
         net_votes: votesMap.get(p.id) || 0,
       }));
       
+      console.log('Weekly winners mapped:', mapped.slice(0, 5));
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
     },
   });
+  
+  // Log weekly error if any
+  if (weeklyError) {
+    console.error('Weekly winners error:', weeklyError);
+  }
 
   // Hidden Gems - recent products with fewer votes but launched
   const { data: hiddenGems, isLoading: gemsLoading } = useQuery({
