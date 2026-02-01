@@ -159,28 +159,32 @@ export const AutoSurfacedContent = () => {
   const { data: launchOfDay, isLoading: launchLoading } = useQuery({
     queryKey: ['auto-launch-of-day', startOfDay],
     queryFn: async () => {
-      const { data: products, error } = await supabase
-        .from('products')
-        .select(`
-          id, name, tagline, slug,
-          product_vote_counts(net_votes)
-        `)
-        .eq('status', 'launched')
-        .gte('launch_date', startOfDay)
-        .lt('launch_date', endOfDay)
-        .limit(3);
+      // Fetch products and votes separately since product_vote_counts is a VIEW
+      const [productsRes, votesRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id, name, tagline, slug')
+          .eq('status', 'launched')
+          .gte('launch_date', startOfDay)
+          .lt('launch_date', endOfDay),
+        supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes')
+      ]);
       
-      if (error) throw error;
+      if (productsRes.error) throw productsRes.error;
       
-      const mapped = (products || []).map((p: any) => ({
+      const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
+      
+      const mapped = (productsRes.data || []).map((p: any) => ({
         id: p.id,
         name: p.name,
         tagline: p.tagline,
         slug: p.slug,
-        net_votes: p.product_vote_counts?.[0]?.net_votes || 0,
+        net_votes: votesMap.get(p.id) || 0,
       }));
       
-      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0));
+      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 3);
     },
   });
 
@@ -188,24 +192,28 @@ export const AutoSurfacedContent = () => {
   const { data: weeklyWinners, isLoading: weeklyLoading } = useQuery({
     queryKey: ['auto-weekly-winners', weekAgo],
     queryFn: async () => {
-      const { data: products, error } = await supabase
-        .from('products')
-        .select(`
-          id, name, tagline, slug,
-          product_vote_counts(net_votes)
-        `)
-        .eq('status', 'launched')
-        .gte('launch_date', weekAgo)
-        .limit(10);
+      // Fetch products and votes separately since product_vote_counts is a VIEW
+      const [productsRes, votesRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id, name, tagline, slug')
+          .eq('status', 'launched')
+          .gte('launch_date', weekAgo),
+        supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes')
+      ]);
       
-      if (error) throw error;
+      if (productsRes.error) throw productsRes.error;
       
-      const mapped = (products || []).map((p: any) => ({
+      const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
+      
+      const mapped = (productsRes.data || []).map((p: any) => ({
         id: p.id,
         name: p.name,
         tagline: p.tagline,
         slug: p.slug,
-        net_votes: p.product_vote_counts?.[0]?.net_votes || 0,
+        net_votes: votesMap.get(p.id) || 0,
       }));
       
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
@@ -219,25 +227,30 @@ export const AutoSurfacedContent = () => {
       // Get products from last 30 days with lower vote counts
       const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
       
-      const { data: products, error } = await supabase
-        .from('products')
-        .select(`
-          id, name, tagline, slug,
-          product_vote_counts(net_votes)
-        `)
-        .eq('status', 'launched')
-        .gte('launch_date', thirtyDaysAgo)
-        .order('launch_date', { ascending: false })
-        .limit(50);
+      // Fetch products and votes separately since product_vote_counts is a VIEW
+      const [productsRes, votesRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id, name, tagline, slug')
+          .eq('status', 'launched')
+          .gte('launch_date', thirtyDaysAgo)
+          .order('launch_date', { ascending: false })
+          .limit(50),
+        supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes')
+      ]);
       
-      if (error) throw error;
+      if (productsRes.error) throw productsRes.error;
       
-      const mapped = (products || []).map((p: any) => ({
+      const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
+      
+      const mapped = (productsRes.data || []).map((p: any) => ({
         id: p.id,
         name: p.name,
         tagline: p.tagline,
         slug: p.slug,
-        net_votes: p.product_vote_counts?.[0]?.net_votes || 0,
+        net_votes: votesMap.get(p.id) || 0,
       }));
       
       // Filter to products with 1-10 votes (hidden gems)
