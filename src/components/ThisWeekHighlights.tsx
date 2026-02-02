@@ -655,6 +655,15 @@ export const ThisWeekHighlights = () => {
             </div>
           ))}
         </div>
+
+        <div className="flex justify-center mt-8">
+          <Link
+            to="/products"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            View all products →
+          </Link>
+        </div>
       </div>
     </section>
   );
