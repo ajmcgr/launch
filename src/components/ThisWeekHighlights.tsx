@@ -176,25 +176,45 @@ const BuilderItem = ({ builder, rank }: { builder: SurfacedBuilder; rank: number
 
   return (
     <div 
-      className="group/card flex items-center gap-3 py-2 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+      className="group/card hover:bg-muted/30 transition-colors cursor-pointer"
       onClick={handleClick}
     >
-      <span className="text-sm font-bold text-muted-foreground w-5 text-right flex-shrink-0">
-        {rank}.
-      </span>
-      <Avatar className="h-8 w-8 flex-shrink-0">
-        <AvatarImage src={builder.avatar_url} alt={builder.name || builder.username} />
-        <AvatarFallback className="text-xs">
-          {(builder.name || builder.username).slice(0, 2).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-sm text-foreground truncate">
-          {builder.name || builder.username}
-        </h3>
-        <p className="text-xs text-muted-foreground">
-          @{builder.username} · {builder.product_count} product{builder.product_count !== 1 ? 's' : ''}
-        </p>
+      <div className="flex items-start gap-3 py-3 px-2">
+        <div className="flex-shrink-0">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={builder.avatar_url} alt={builder.name || builder.username} />
+            <AvatarFallback className="text-sm">
+              {(builder.name || builder.username).slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-bold text-muted-foreground">
+              {rank}.
+            </span>
+            <h3 className="font-semibold text-base hover:text-primary transition-colors">
+              {builder.name || builder.username}
+            </h3>
+          </div>
+          
+          <p className="text-sm text-muted-foreground mb-1.5">
+            Building in public
+          </p>
+          
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            <Link 
+              to={`/@${builder.username}`}
+              onClick={(e) => e.stopPropagation()}
+              className="hover:text-primary transition-colors"
+            >
+              @{builder.username}
+            </Link>
+            <span>·</span>
+            <span>{builder.product_count} product{builder.product_count !== 1 ? 's' : ''}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
