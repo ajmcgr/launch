@@ -9,6 +9,7 @@ import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { toast } from 'sonner';
+import { ProductSkeleton } from '@/components/ProductSkeleton';
 
 interface SurfacedProduct {
   id: string;
@@ -636,11 +637,7 @@ export const ThisWeekHighlights = () => {
             <div key={section.title}>
               <h3 className="text-lg font-semibold mb-4">{section.title}</h3>
               {section.isLoading ? (
-                <div className="space-y-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-12 bg-muted animate-pulse rounded-lg" />
-                  ))}
-                </div>
+                <ProductSkeleton view="list" count={3} />
               ) : !section.products?.length ? (
                 <p className="text-sm text-muted-foreground py-3">Nothing to show yet</p>
               ) : (
