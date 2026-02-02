@@ -505,7 +505,7 @@ export const AutoSurfacedContent = () => {
       const paidText = paidLaunches
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`💰 Paid Launches\n\n${paidText}`);
+      sections.push(`💰 Sponsored Launches\n\n${paidText}`);
     }
     
     // Weekly Winners
@@ -557,7 +557,7 @@ export const AutoSurfacedContent = () => {
 
   const sections: ContentSection[] = [
     {
-      title: "💰 Paid Launches",
+      title: "💰 Sponsored Launches",
       description: "Currently active sponsored products",
       icon: null,
       sponsoredProducts: paidLaunches,
