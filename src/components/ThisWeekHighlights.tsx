@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUp, MessageSquare, ExternalLink, Globe } from 'lucide-react';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import defaultProductIcon from '@/assets/default-product-icon.png';
+import { toast } from 'sonner';
 
 interface SurfacedProduct {
   id: string;
@@ -16,6 +18,7 @@ interface SurfacedProduct {
   iconUrl?: string;
   domainUrl?: string;
   net_votes?: number;
+  userVote?: 1 | null;
   categories?: string[];
   platforms?: Platform[];
   makers?: Array<{ username: string; avatar_url?: string }>;
@@ -31,7 +34,15 @@ interface SurfacedBuilder {
   product_count: number;
 }
 
-const ProductListItem = ({ product, rank }: { product: SurfacedProduct; rank: number }) => {
+const ProductListItem = ({ 
+  product, 
+  rank,
+  onVote 
+}: { 
+  product: SurfacedProduct; 
+  rank: number;
+  onVote: (productId: string) => void;
+}) => {
   const navigate = useNavigate();
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -153,11 +164,17 @@ const ProductListItem = ({ product, rank }: { product: SurfacedProduct; rank: nu
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              onVote(product.id);
             }}
-            className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 transition-colors touch-manipulation border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary"
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onVote(product.id);
+            }}
+            className={`group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 transition-colors touch-manipulation active:scale-95 border-2 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary ${product.userVote === 1 ? 'border-primary bg-primary/10' : 'border-muted-foreground/20'}`}
           >
-            <ArrowUp className="h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground" strokeWidth={2.5} />
-            <span className="font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground">{product.net_votes || 0}</span>
+            <ArrowUp className={`h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground ${product.userVote === 1 ? 'text-primary' : ''}`} strokeWidth={2.5} />
+            <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${product.userVote === 1 ? 'text-primary' : ''}`}>{product.net_votes || 0}</span>
           </Button>
         </div>
       </div>
@@ -221,11 +238,130 @@ const BuilderItem = ({ builder, rank }: { builder: SurfacedBuilder; rank: number
 };
 
 export const ThisWeekHighlights = () => {
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState<any>(null);
+  const [userVotes, setUserVotes] = useState<Map<string, 1>>(new Map());
+  const [localVoteChanges, setLocalVoteChanges] = useState<Map<string, { voted: boolean; delta: number }>>(new Map());
+  
   const now = new Date();
   const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
   const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
+
+  // Fetch user and their votes
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        const { data: votes } = await supabase
+          .from('votes')
+          .select('product_id')
+          .eq('user_id', session.user.id)
+          .eq('value', 1);
+        
+        const voteMap = new Map<string, 1>();
+        votes?.forEach(v => voteMap.set(v.product_id, 1));
+        setUserVotes(voteMap);
+      }
+    };
+    
+    fetchUser();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (!session?.user) {
+        setUserVotes(new Map());
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleVote = async (productId: string) => {
+    if (!user) {
+      toast.error('Please login to vote');
+      return;
+    }
+
+    const currentVoted = userVotes.has(productId) || localVoteChanges.get(productId)?.voted;
+    const newVoted = !currentVoted;
+    const delta = newVoted ? 1 : -1;
+
+    // Optimistic update
+    setLocalVoteChanges(prev => {
+      const newMap = new Map(prev);
+      const existing = newMap.get(productId);
+      newMap.set(productId, {
+        voted: newVoted,
+        delta: (existing?.delta || 0) + delta
+      });
+      return newMap;
+    });
+
+    // Update userVotes for immediate UI feedback
+    setUserVotes(prev => {
+      const newMap = new Map(prev);
+      if (newVoted) {
+        newMap.set(productId, 1);
+      } else {
+        newMap.delete(productId);
+      }
+      return newMap;
+    });
+
+    try {
+      const { data: existingVote } = await supabase
+        .from('votes')
+        .select('id')
+        .eq('product_id', productId)
+        .eq('user_id', user.id)
+        .eq('value', 1)
+        .maybeSingle();
+
+      if (existingVote) {
+        await supabase.from('votes').delete().eq('id', existingVote.id);
+      } else {
+        await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
+      }
+    } catch (error) {
+      console.error('Error voting:', error);
+      toast.error('Failed to record vote');
+      // Revert optimistic update on error
+      setLocalVoteChanges(prev => {
+        const newMap = new Map(prev);
+        const existing = newMap.get(productId);
+        if (existing) {
+          newMap.set(productId, {
+            voted: !newVoted,
+            delta: existing.delta - delta
+          });
+        }
+        return newMap;
+      });
+      setUserVotes(prev => {
+        const newMap = new Map(prev);
+        if (!newVoted) {
+          newMap.set(productId, 1);
+        } else {
+          newMap.delete(productId);
+        }
+        return newMap;
+      });
+    }
+  };
+
+  // Helper to get product with local vote changes applied
+  const applyLocalVoteChanges = (product: SurfacedProduct): SurfacedProduct => {
+    const changes = localVoteChanges.get(product.id);
+    return {
+      ...product,
+      net_votes: (product.net_votes || 0) + (changes?.delta || 0),
+      userVote: userVotes.has(product.id) ? 1 : null,
+    };
+  };
 
   // Weekly Winners
   const { data: weeklyWinners, isLoading: weeklyLoading } = useQuery({
@@ -510,7 +646,12 @@ export const ThisWeekHighlights = () => {
               ) : (
                 <div>
                   {section.products.map((product, index) => (
-                    <ProductListItem key={product.id} product={product} rank={index + 1} />
+                    <ProductListItem 
+                      key={product.id} 
+                      product={applyLocalVoteChanges(product)} 
+                      rank={index + 1} 
+                      onVote={handleVote}
+                    />
                   ))}
                 </div>
               )}
