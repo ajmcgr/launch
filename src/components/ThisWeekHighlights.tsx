@@ -437,7 +437,7 @@ export const ThisWeekHighlights = () => {
 
   return (
     <section className="py-6 bg-background">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-5xl">
         <h2 className="text-2xl font-bold text-center mb-8">This Week on Launch</h2>
 
         <div className="space-y-8">
@@ -461,25 +461,6 @@ export const ThisWeekHighlights = () => {
               )}
             </div>
           ))}
-
-          <div>
-            <h3 className="text-lg font-semibold mb-2">👀 Builders to Watch</h3>
-            {buildersLoading ? (
-              <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-12 bg-muted animate-pulse rounded-lg" />
-                ))}
-              </div>
-            ) : !buildersToWatch?.length ? (
-              <p className="text-sm text-muted-foreground py-3">Nothing to show yet</p>
-            ) : (
-              <div>
-                {buildersToWatch.map((builder, index) => (
-                  <BuilderItem key={builder.id} builder={builder} rank={index + 1} />
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </section>
