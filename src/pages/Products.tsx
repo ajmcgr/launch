@@ -452,9 +452,6 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <h1 className="text-4xl font-bold mb-8 text-center">
-          {selectedArchiveYear ? `All Products ${selectedArchiveYear}` : 'All Products'}
-        </h1>
 
         {/* Filters Row - matching homepage style */}
         <div className="mb-6">
@@ -506,6 +503,17 @@ const Products = () => {
             </div>
           </div>
         </div>
+
+        <h2 className="text-2xl font-bold text-center mb-8">
+          {selectedArchiveYear 
+            ? `${selectedArchiveYear} Archive`
+            : topPeriod === 'today' ? "Today's Launches"
+            : topPeriod === 'week' ? "This Week's Launches"
+            : topPeriod === 'month' ? "This Month's Launches"
+            : topPeriod === 'year' ? "This Year's Launches"
+            : "All-Time Launches"
+          }
+        </h2>
 
         {/* Selected categories tags */}
         {selectedCategories.length > 0 && (
