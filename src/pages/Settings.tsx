@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -483,23 +483,47 @@ const Settings = () => {
               }}
             />
             
-            {/* Stripe Billing Portal */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment History</CardTitle>
-                <CardDescription>
-                  Manage your payment methods and view billing history
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  View and manage your billing information through Stripe
-                </p>
-                <Button onClick={handleManageBilling} disabled={loading}>
-                  {loading ? 'Loading...' : 'Manage Billing'}
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Stripe Billing Portal - only show if user has billing history */}
+            {profile.stripe_customer_id ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Payment History</CardTitle>
+                  <CardDescription>
+                    Manage your payment methods and view billing history
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">
+                    View and manage your billing information through Stripe
+                  </p>
+                  <Button onClick={handleManageBilling} disabled={loading}>
+                    {loading ? 'Loading...' : 'Manage Billing'}
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Upgrade Your Account</CardTitle>
+                  <CardDescription>
+                    Choose a plan to unlock more features
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Get more visibility for your products with our paid plans, or subscribe to Launch Pass for unlimited launches.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Button asChild variant="default">
+                      <Link to="/pass">Get Launch Pass</Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link to="/pricing">View All Plans</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
