@@ -616,17 +616,14 @@ export const AutoSurfacedContent = () => {
             Auto-surfaced products and builders ready to copy & paste
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button 
-            onClick={handleMasterCopy} 
-            className="gap-2"
-            variant="default"
-          >
-            {masterCopied ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
-            Copy All for Newsletter
-          </Button>
-          <Badge variant="outline">Auto-updated</Badge>
-        </div>
+        <Button 
+          onClick={handleMasterCopy} 
+          className="gap-2"
+          variant="default"
+        >
+          {masterCopied ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+          Copy All for Newsletter
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
