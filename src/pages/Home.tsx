@@ -29,6 +29,7 @@ import { Loader2, Search } from 'lucide-react';
 import { CommunityCallout } from '@/components/CommunityCallout';
 import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
 import { SponsorBanner } from '@/components/SponsorBanner';
+import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
 
 interface Product {
   id: string;
@@ -800,6 +801,8 @@ const Home = () => {
         {/* Sponsor Banner - Below leaderboard */}
         <SponsorBanner className="mt-6" />
       </div>
+
+      <ThisWeekHighlights />
 
       <CommunityCallout />
 
