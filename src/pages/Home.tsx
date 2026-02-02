@@ -802,9 +802,9 @@ const Home = () => {
         <SponsorBanner className="mt-6" />
       </div>
 
-      <ThisWeekHighlights />
-
       <CommunityCallout />
+
+      <ThisWeekHighlights />
 
       <CategoryCloud />
 
