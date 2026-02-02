@@ -47,7 +47,7 @@ const ProductListItem = ({ product, rank }: { product: SurfacedProduct; rank: nu
       className="group/card hover:bg-muted/30 transition-colors cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="flex items-start gap-3 py-3 px-2">
+      <div className="flex items-start gap-3 py-4 px-2">
         <div className="flex-shrink-0">
           <div className="w-10 h-10 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
             {product.iconUrl ? (
