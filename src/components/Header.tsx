@@ -102,26 +102,25 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner - smoothly hide when scrolled */}
       <div 
-        className={`grid transition-all duration-200 ease-out ${
-          isScrolled ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'
+        className={`overflow-hidden transition-all duration-200 ease-out ${
+          isScrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
         }`}
+        aria-hidden={isScrolled}
       >
-        <div className="overflow-hidden">
-          <Link 
-            to={showLaunchPassPromo ? "/pass" : "/pricing"} 
-            className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
-            tabIndex={isScrolled ? -1 : 0}
-          >
-            <div className="container mx-auto px-4 max-w-5xl">
-              <p className="text-center text-sm font-medium">
-                {showLaunchPassPromo 
-                  ? "Subscribe for unlimited launches. Get Launch Pass →"
-                  : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
-                }
-              </p>
-            </div>
-          </Link>
-        </div>
+        <Link 
+          to={showLaunchPassPromo ? "/pass" : "/pricing"} 
+          className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
+          tabIndex={isScrolled ? -1 : 0}
+        >
+          <div className="container mx-auto px-4 max-w-5xl">
+            <p className="text-center text-sm font-medium">
+              {showLaunchPassPromo 
+                ? "Subscribe for unlimited launches. Get Launch Pass →"
+                : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
+              }
+            </p>
+          </div>
+        </Link>
       </div>
       
       <div className="container mx-auto px-4 max-w-5xl">

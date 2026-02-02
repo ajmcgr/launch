@@ -761,12 +761,18 @@ const Home = () => {
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-center mb-8">
-            {currentPeriod === 'today' && "Today's Launches"}
-            {currentPeriod === 'week' && "This Week's Launches"}
-            {currentPeriod === 'month' && "This Month's Launches"}
-            {currentPeriod === 'year' && "This Year's Launches"}
-          </h2>
+          {/* Value Proposition */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold mb-2">
+              {currentPeriod === 'today' && "Today's Launches"}
+              {currentPeriod === 'week' && "This Week's Launches"}
+              {currentPeriod === 'month' && "This Month's Launches"}
+              {currentPeriod === 'year' && "This Year's Launches"}
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-lg mx-auto">
+              7-day visibility window • Newsletter & social promotion built-in • Faster discovery for indie makers
+            </p>
+          </div>
 
           <TabsContent value="today" className="space-y-6">
             {renderProductList(products)}
