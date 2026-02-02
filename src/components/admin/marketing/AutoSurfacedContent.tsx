@@ -113,7 +113,12 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
           <span className="font-medium truncate">{product.name}</span>
           <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
             {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
-             product.sponsorship_type === 'website' ? 'Website' : 'Newsletter'}
+             product.sponsorship_type === 'website' ? 'Website' : 
+             product.sponsorship_type === 'newsletter' ? 'Newsletter' :
+             product.sponsorship_type.toLowerCase() === 'lite' ? 'Lite' :
+             product.sponsorship_type.toLowerCase() === 'pro' ? 'Pro' :
+             product.sponsorship_type.toLowerCase().includes('pass') ? 'Pass' :
+             product.sponsorship_type}
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground truncate mt-0.5">
@@ -251,29 +256,44 @@ export const AutoSurfacedContent = () => {
   const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
   const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Paid Launches - currently active sponsored products
+  // Paid Launches - currently active sponsored products + Lite/Pro/Pass orders from past week
   const { data: paidLaunches, isLoading: paidLoading } = useQuery({
-    queryKey: ['auto-paid-launches', todayUTC.toISOString()],
+    queryKey: ['auto-paid-launches', todayUTC.toISOString(), oneWeekAgo],
     queryFn: async () => {
       const today = todayUTC.toISOString().split('T')[0];
       
-      const { data, error } = await supabase
-        .from('sponsored_products')
-        .select(`
-          id,
-          sponsorship_type,
-          start_date,
-          end_date,
-          position,
-          products(id, name, tagline, slug)
-        `)
-        .lte('start_date', today)
-        .gte('end_date', today)
-        .order('position', { ascending: true });
+      // Fetch sponsored products and orders in parallel
+      const [sponsoredRes, ordersRes] = await Promise.all([
+        supabase
+          .from('sponsored_products')
+          .select(`
+            id,
+            sponsorship_type,
+            start_date,
+            end_date,
+            position,
+            products(id, name, tagline, slug)
+          `)
+          .lte('start_date', today)
+          .gte('end_date', today)
+          .order('position', { ascending: true }),
+        supabase
+          .from('orders')
+          .select(`
+            id,
+            plan,
+            created_at,
+            product_id,
+            products(id, name, tagline, slug)
+          `)
+          .gte('created_at', oneWeekAgo)
+          .not('product_id', 'is', null)
+      ]);
       
-      if (error) throw error;
+      if (sponsoredRes.error) throw sponsoredRes.error;
       
-      return (data || []).map((sp: any) => ({
+      // Map sponsored products
+      const sponsored = (sponsoredRes.data || []).map((sp: any) => ({
         id: sp.products?.id || sp.id,
         name: sp.products?.name || 'Unknown',
         tagline: sp.products?.tagline,
@@ -282,6 +302,35 @@ export const AutoSurfacedContent = () => {
         start_date: sp.start_date,
         end_date: sp.end_date,
       }));
+      
+      // Map orders (Lite, Pro, Pass)
+      const orderProducts = (ordersRes.data || [])
+        .filter((o: any) => {
+          const plan = (o.plan || '').toLowerCase();
+          return plan === 'lite' || plan === 'pro' || plan.includes('pass');
+        })
+        .map((o: any) => ({
+          id: o.products?.id || o.product_id,
+          name: o.products?.name || 'Unknown',
+          tagline: o.products?.tagline,
+          slug: o.products?.slug || '',
+          sponsorship_type: o.plan,
+          start_date: o.created_at?.split('T')[0] || '',
+          end_date: '',
+        }));
+      
+      // Combine and deduplicate by product id
+      const allProducts = [...sponsored];
+      const existingIds = new Set(sponsored.map((p: any) => p.id));
+      
+      orderProducts.forEach((p: any) => {
+        if (!existingIds.has(p.id)) {
+          allProducts.push(p);
+          existingIds.add(p.id);
+        }
+      });
+      
+      return allProducts;
     },
   });
 
