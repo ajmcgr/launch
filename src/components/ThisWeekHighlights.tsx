@@ -433,7 +433,7 @@ export const ThisWeekHighlights = () => {
               ) : !section.products?.length ? (
                 <p className="text-sm text-muted-foreground py-3">Nothing to show yet</p>
               ) : (
-                <div className="divide-y divide-border/50">
+                <div>
                   {section.products.map((product, index) => (
                     <ProductListItem key={product.id} product={product} rank={index + 1} />
                   ))}
@@ -453,7 +453,7 @@ export const ThisWeekHighlights = () => {
             ) : !buildersToWatch?.length ? (
               <p className="text-sm text-muted-foreground py-3">Nothing to show yet</p>
             ) : (
-              <div className="divide-y divide-border/50">
+              <div>
                 {buildersToWatch.map((builder, index) => (
                   <BuilderItem key={builder.id} builder={builder} rank={index + 1} />
                 ))}
