@@ -115,9 +115,10 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
             {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
              product.sponsorship_type === 'website' ? 'Website' : 
              product.sponsorship_type === 'newsletter' ? 'Newsletter' :
+             product.sponsorship_type.toLowerCase() === 'skip' ? 'Pro' :
+             product.sponsorship_type.toLowerCase() === 'join' ? 'Lite' :
              product.sponsorship_type.toLowerCase() === 'lite' ? 'Lite' :
              product.sponsorship_type.toLowerCase() === 'pro' ? 'Pro' :
-             product.sponsorship_type.toLowerCase() === 'skip' ? 'Skip the Line' :
              product.sponsorship_type.toLowerCase().includes('pass') ? 'Pass' :
              product.sponsorship_type}
           </Badge>
