@@ -261,7 +261,7 @@ export const ThisWeekHighlights = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <h2 className="text-2xl font-bold text-center mb-8">This Week on Launch</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="space-y-4">
           <SectionCard 
             title="📈 Weekly Winners"
             isLoading={weeklyLoading}
