@@ -218,7 +218,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
                     className="flex-1"
                     onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
                   >
-                    {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                    {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Embed</>}
                   </Button>
                   <Button
                     variant="outline"
@@ -245,7 +245,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
                     className="flex-1"
                     onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
                   >
-                    {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                    {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Embed</>}
                   </Button>
                   <Button
                     variant="outline"
@@ -279,7 +279,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
                   className="flex-1"
                   onClick={() => copyToClipboard(generateBasicBadgeHTML(theme), 'basic', theme)}
                 >
-                  {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                  {copiedBasic === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Embed</>}
                 </Button>
                 <Button
                   variant="outline"
@@ -313,7 +313,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
                     className="flex-1"
                     onClick={() => copyToClipboard(generateCategoryBadgeHTML(theme), 'category', theme)}
                   >
-                    {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Copy</>}
+                    {copiedWithCategories === theme ? <><Check className="h-3 w-3 mr-2" />Copied!</> : <><Copy className="h-3 w-3 mr-2" />Embed</>}
                   </Button>
                   <Button
                     variant="outline"
