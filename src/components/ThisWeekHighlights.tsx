@@ -436,14 +436,14 @@ export const ThisWeekHighlights = () => {
   ];
 
   return (
-    <section className="bg-background">
+    <section className="py-6 bg-background">
       <div className="container mx-auto px-4 max-w-5xl">
-        <h2 className="text-2xl font-bold text-center mb-6">This Week on Launch</h2>
+        <h2 className="text-2xl font-bold text-center mb-8">This Week on Launch</h2>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {sections.map((section) => (
             <div key={section.title}>
-              <h3 className="text-lg font-semibold mb-0">{section.title}</h3>
+              <h3 className="text-lg font-semibold mb-4">{section.title}</h3>
               {section.isLoading ? (
                 <div className="space-y-2">
                   {[1, 2, 3].map((i) => (
