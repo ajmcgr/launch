@@ -755,6 +755,7 @@ const Home = () => {
       <WebSiteSchema />
       <FAQSchema faqs={homepageFaqs} />
       <div className="container mx-auto px-4 py-3 md:py-4 max-w-5xl">
+        <h2 className="text-2xl font-bold text-center mb-8">Today on Launch</h2>
         
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-4">
