@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { ChevronUp, Trophy, Sparkles, Clock, Gem, Users } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface SurfacedProduct {
@@ -70,21 +69,18 @@ const BuilderItem = ({ builder }: { builder: SurfacedBuilder }) => (
 
 const SectionCard = ({ 
   title, 
-  icon: Icon, 
   children, 
   isLoading,
   isEmpty 
 }: { 
   title: string; 
-  icon: React.ElementType; 
   children: React.ReactNode;
   isLoading: boolean;
   isEmpty: boolean;
 }) => (
   <Card className="bg-card/50">
     <CardHeader className="pb-2 pt-4 px-4">
-      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-        <Icon className="h-4 w-4 text-primary" />
+      <CardTitle className="text-sm font-semibold">
         {title}
       </CardTitle>
     </CardHeader>
@@ -100,7 +96,7 @@ const SectionCard = ({
           Nothing to show yet
         </p>
       ) : (
-        <div className="divide-y divide-border/50">
+        <div className="space-y-1">
           {children}
         </div>
       )}
@@ -261,19 +257,13 @@ export const ThisWeekHighlights = () => {
   });
 
   return (
-    <div className="py-8 bg-muted/30">
-      <div className="container mx-auto px-4 max-w-5xl">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-foreground">This Week on Launch</h2>
-          <p className="text-sm text-muted-foreground">
-            Trending products and active builders
-          </p>
-        </div>
+    <section className="py-6 bg-background">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <h2 className="text-2xl font-bold text-center mb-8">This Week on Launch</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <SectionCard 
-            title="Weekly Winners" 
-            icon={Trophy}
+            title="📈 Weekly Winners"
             isLoading={weeklyLoading}
             isEmpty={!weeklyWinners?.length}
           >
@@ -283,8 +273,7 @@ export const ThisWeekHighlights = () => {
           </SectionCard>
 
           <SectionCard 
-            title="New & Noteworthy" 
-            icon={Sparkles}
+            title="✨ New & Noteworthy"
             isLoading={newNoteworthyLoading}
             isEmpty={!newNoteworthy?.length}
           >
@@ -294,8 +283,7 @@ export const ThisWeekHighlights = () => {
           </SectionCard>
 
           <SectionCard 
-            title="Hidden Gems" 
-            icon={Gem}
+            title="💎 Hidden Gems"
             isLoading={gemsLoading}
             isEmpty={!hiddenGems?.length}
           >
@@ -305,8 +293,7 @@ export const ThisWeekHighlights = () => {
           </SectionCard>
 
           <SectionCard 
-            title="Builders to Watch" 
-            icon={Users}
+            title="👀 Builders to Watch"
             isLoading={buildersLoading}
             isEmpty={!buildersToWatch?.length}
           >
@@ -316,6 +303,6 @@ export const ThisWeekHighlights = () => {
           </SectionCard>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
