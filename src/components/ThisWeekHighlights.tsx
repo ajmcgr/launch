@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronUp, MessageSquare } from 'lucide-react';
+import { ArrowUp, MessageSquare, ExternalLink, Globe } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import defaultProductIcon from '@/assets/default-product-icon.png';
@@ -13,6 +14,7 @@ interface SurfacedProduct {
   tagline: string | null;
   slug: string;
   iconUrl?: string;
+  domainUrl?: string;
   net_votes?: number;
   categories?: string[];
   platforms?: Platform[];
@@ -42,93 +44,122 @@ const ProductListItem = ({ product, rank }: { product: SurfacedProduct; rank: nu
 
   return (
     <div 
-      className="group/card flex items-start gap-3 py-2 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+      className="group/card hover:bg-muted/30 transition-colors cursor-pointer"
       onClick={handleCardClick}
     >
-      <span className="text-sm font-bold text-muted-foreground w-5 text-right flex-shrink-0 pt-1">
-        {rank}.
-      </span>
-      
-      <div className="w-8 h-8 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-        {product.iconUrl ? (
-          <img 
-            src={product.iconUrl} 
-            alt={product.name} 
-            className="w-full h-full object-cover rounded-lg"
-            onError={(e) => {
-              e.currentTarget.src = defaultProductIcon;
-            }}
-          />
-        ) : (
-          <img 
-            src={defaultProductIcon} 
-            alt={product.name} 
-            className="w-full h-full object-cover rounded-lg"
-          />
-        )}
-      </div>
-      
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-sm text-foreground truncate">
-          {product.name}
-        </h3>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          {product.categories && product.categories.length > 0 && (
-            <Link 
-              to={`/products?category=${encodeURIComponent(product.categories[0])}`}
-              onClick={(e) => e.stopPropagation()}
-              className="hover:text-primary transition-colors truncate"
-            >
-              {product.categories[0]}
-            </Link>
-          )}
-          
-          {product.makers && product.makers.length > 0 && (
-            <>
-              {product.categories && product.categories.length > 0 && <span>·</span>}
-              <div className="flex -space-x-1 flex-shrink-0">
-                {product.makers.filter(m => m && m.username).slice(0, 2).map((maker) => (
-                  <Link 
-                    key={maker.username}
-                    to={`/@${maker.username}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="hover:z-10"
-                  >
-                    <Avatar className="h-4 w-4 border border-background hover:ring-1 hover:ring-primary transition-all">
-                      <AvatarImage src={maker.avatar_url} alt={maker.username} />
-                      <AvatarFallback className="text-[8px]">{maker.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
-                    </Avatar>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-          
-          {product.platforms && product.platforms.length > 0 && (
-            <>
-              <span>·</span>
-              <PlatformIcons platforms={product.platforms} size="sm" />
-            </>
-          )}
-          
-          <span>·</span>
-          <div className="flex items-center gap-0.5">
-            <MessageSquare className="h-3 w-3" />
-            <span>{product.commentCount || 0}</span>
+      <div className="flex items-start gap-3 py-3 px-2">
+        <div className="flex-shrink-0">
+          <div className="w-10 h-10 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            {product.iconUrl ? (
+              <img 
+                src={product.iconUrl} 
+                alt={product.name} 
+                className="w-full h-full object-cover rounded-lg"
+                onError={(e) => {
+                  e.currentTarget.src = defaultProductIcon;
+                }}
+              />
+            ) : (
+              <img 
+                src={defaultProductIcon} 
+                alt={product.name} 
+                className="w-full h-full object-cover rounded-lg"
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-bold text-muted-foreground">
+              {rank}.
+            </span>
+            <h3 className="font-semibold text-base hover:text-primary transition-colors">
+              {product.name}
+            </h3>
+            {product.domainUrl && (
+              <a
+                href={product.domainUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            )}
           </div>
           
-          {product.launch_date && (
-            <>
-              <span>·</span>
-              <span className="truncate">{formatTimeAgo(product.launch_date)}</span>
-            </>
-          )}
+          <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1">
+            {product.tagline}
+          </p>
+          
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            {product.categories && product.categories.slice(0, 3).map((category, index, arr) => (
+              <span key={category}>
+                <Link 
+                  to={`/products?category=${encodeURIComponent(category)}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="hover:text-primary transition-colors"
+                >
+                  {category}
+                </Link>
+                {index < arr.length - 1 && ', '}
+              </span>
+            ))}
+            
+            {product.makers && product.makers.length > 0 && (
+              <>
+                <span>·</span>
+                <div className="flex items-center gap-1">
+                  {product.makers.filter(m => m && m.username).slice(0, 2).map((maker, index, arr) => (
+                    <span key={maker.username} className="text-xs text-muted-foreground">
+                      <Link 
+                        to={`/@${maker.username}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-primary transition-colors"
+                      >
+                        @{maker.username}
+                      </Link>
+                      {index < arr.length - 1 && ','}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+            
+            <span>·</span>
+            <Globe className="h-3.5 w-3.5" />
+            
+            <span>·</span>
+            <div className="flex items-center gap-0.5">
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span>{product.commentCount || 0}</span>
+            </div>
+            
+            {product.launch_date && (
+              <>
+                <span>·</span>
+                <span>{formatTimeAgo(product.launch_date)}</span>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-      
-      <div className="flex items-center gap-0.5 text-sm text-muted-foreground flex-shrink-0 pt-0.5">
-        <ChevronUp className="h-4 w-4" />
-        <span className="font-medium text-xs">{product.net_votes || 0}</span>
+
+        <div className="flex items-start self-start">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 transition-colors touch-manipulation border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary"
+          >
+            <ArrowUp className="h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground" strokeWidth={2.5} />
+            <span className="font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground">{product.net_votes || 0}</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -183,7 +214,7 @@ export const ThisWeekHighlights = () => {
         supabase
           .from('products')
           .select(`
-            id, name, tagline, slug, platforms, launch_date,
+            id, name, tagline, slug, platforms, launch_date, domain_url,
             product_media(url, type),
             product_category_map(category_id),
             product_makers(user_id, users(username, avatar_url))
@@ -210,6 +241,7 @@ export const ThisWeekHighlights = () => {
         tagline: p.tagline,
         slug: p.slug,
         iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url,
+        domainUrl: p.domain_url,
         net_votes: votesMap.get(p.id) || 0,
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
         platforms: (p.platforms || []) as Platform[],
@@ -236,7 +268,7 @@ export const ThisWeekHighlights = () => {
         supabase
           .from('products')
           .select(`
-            id, name, tagline, slug, platforms, launch_date,
+            id, name, tagline, slug, platforms, launch_date, domain_url,
             product_media(url, type),
             product_category_map(category_id),
             product_makers(user_id, users(username, avatar_url))
@@ -265,6 +297,7 @@ export const ThisWeekHighlights = () => {
         tagline: p.tagline,
         slug: p.slug,
         iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url,
+        domainUrl: p.domain_url,
         net_votes: votesMap.get(p.id) || 0,
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
         platforms: (p.platforms || []) as Platform[],
@@ -291,7 +324,7 @@ export const ThisWeekHighlights = () => {
         supabase
           .from('products')
           .select(`
-            id, name, tagline, slug, platforms, launch_date,
+            id, name, tagline, slug, platforms, launch_date, domain_url,
             product_media(url, type),
             product_category_map(category_id),
             product_makers(user_id, users(username, avatar_url))
@@ -319,6 +352,7 @@ export const ThisWeekHighlights = () => {
         tagline: p.tagline,
         slug: p.slug,
         iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url,
+        domainUrl: p.domain_url,
         net_votes: votesMap.get(p.id) || 0,
         categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
         platforms: (p.platforms || []) as Platform[],
