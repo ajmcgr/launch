@@ -657,11 +657,10 @@ export const ThisWeekHighlights = () => {
         </div>
 
         <div className="flex justify-center mt-8">
-          <Link
-            to="/products"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            View all products →
+          <Link to="/products">
+            <Button variant="outline" className="border-2 border-muted-foreground/20">
+              View all products →
+            </Button>
           </Link>
         </div>
       </div>
