@@ -781,10 +781,10 @@ const Home = () => {
           </div>
 
           <h2 className="text-2xl font-bold text-center mb-8">
-            {currentPeriod === 'today' && 'Today on Launch'}
-            {currentPeriod === 'week' && 'This Week on Launch'}
-            {currentPeriod === 'month' && 'This Month on Launch'}
-            {currentPeriod === 'year' && 'This Year on Launch'}
+            {currentPeriod === 'today' && "Today's Launches"}
+            {currentPeriod === 'week' && "This Week's Launches"}
+            {currentPeriod === 'month' && "This Month's Launches"}
+            {currentPeriod === 'year' && "This Year's Launches"}
           </h2>
 
           <TabsContent value="today" className="space-y-6">
