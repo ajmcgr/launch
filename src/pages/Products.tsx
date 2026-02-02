@@ -501,7 +501,7 @@ const Products = () => {
                 selectedPlatforms={selectedPlatforms} 
                 onPlatformToggle={handlePlatformToggle} 
               />
-              <SortToggle sort={sort} onSortChange={setSort} showRevenue={true} />
+              <SortToggle sort={sort} onSortChange={setSort} iconOnly={isMobile} showRevenue={true} />
               {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
             </div>
           </div>
