@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check, ExternalLink } from 'lucide-react';
+import { Copy, Check, ExternalLink, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -13,6 +13,16 @@ interface SurfacedProduct {
   tagline: string | null;
   slug: string;
   net_votes?: number;
+}
+
+interface SponsoredProduct {
+  id: string;
+  name: string;
+  tagline: string | null;
+  slug: string;
+  sponsorship_type: string;
+  start_date: string;
+  end_date: string;
 }
 
 interface SurfacedBuilder {
@@ -28,6 +38,7 @@ interface ContentSection {
   icon: React.ReactNode;
   products?: SurfacedProduct[];
   builders?: SurfacedBuilder[];
+  sponsoredProducts?: SponsoredProduct[];
   isLoading: boolean;
 }
 
@@ -55,7 +66,7 @@ const CopyButton = ({ text, label }: { text: string; label: string }) => {
 };
 
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
-  const productUrl = `https://trylaunch.ai/launches/${product.slug}`;
+  const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const copyText = `${product.name} - ${product.tagline || 'No tagline'}\n${productUrl}`;
 
   return (
@@ -82,7 +93,43 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
           className="h-8 px-2"
           asChild
         >
-          <a href={`/launches/${product.slug}`} target="_blank" rel="noopener noreferrer">
+          <a href={`/launch/${product.slug}`} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
+  const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
+  const copyText = `${product.name} - ${product.tagline || 'No tagline'}\n${productUrl}`;
+
+  return (
+    <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium truncate">{product.name}</span>
+          <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
+            {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
+             product.sponsorship_type === 'website' ? 'Website' : 'Newsletter'}
+          </Badge>
+        </div>
+        <p className="text-sm text-muted-foreground truncate mt-0.5">
+          {product.tagline || 'No tagline'}
+        </p>
+        <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
+      </div>
+      <div className="flex items-center gap-1 ml-2">
+        <CopyButton text={copyText} label="product" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 px-2"
+          asChild
+        >
+          <a href={`/launch/${product.slug}`} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-4 w-4" />
           </a>
         </Button>
@@ -129,7 +176,29 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
 
   const handleCopyAll = async () => {
     const text = products
-      .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launches/${p.slug}`)
+      .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+      .join('\n\n');
+    
+    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    setCopied(true);
+    toast.success('All products copied!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={handleCopyAll} className="gap-2">
+      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+      Copy All
+    </Button>
+  );
+};
+
+const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduct[]; title: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAll = async () => {
+    const text = products
+      .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
@@ -169,6 +238,8 @@ const CopyAllBuildersButton = ({ builders, title }: { builders: SurfacedBuilder[
 };
 
 export const AutoSurfacedContent = () => {
+  const [masterCopied, setMasterCopied] = useState(false);
+  
   // Get today's date range in UTC
   const now = new Date();
   const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
@@ -179,6 +250,40 @@ export const AutoSurfacedContent = () => {
   const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
   const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
+
+  // Paid Launches - currently active sponsored products
+  const { data: paidLaunches, isLoading: paidLoading } = useQuery({
+    queryKey: ['auto-paid-launches', todayUTC.toISOString()],
+    queryFn: async () => {
+      const today = todayUTC.toISOString().split('T')[0];
+      
+      const { data, error } = await supabase
+        .from('sponsored_products')
+        .select(`
+          id,
+          sponsorship_type,
+          start_date,
+          end_date,
+          position,
+          products(id, name, tagline, slug)
+        `)
+        .lte('start_date', today)
+        .gte('end_date', today)
+        .order('position', { ascending: true });
+      
+      if (error) throw error;
+      
+      return (data || []).map((sp: any) => ({
+        id: sp.products?.id || sp.id,
+        name: sp.products?.name || 'Unknown',
+        tagline: sp.products?.tagline,
+        slug: sp.products?.slug || '',
+        sponsorship_type: sp.sponsorship_type,
+        start_date: sp.start_date,
+        end_date: sp.end_date,
+      }));
+    },
+  });
 
   // Launch of the Day - top voted product today
   const { data: launchOfDay, isLoading: launchLoading } = useQuery({
@@ -326,7 +431,7 @@ export const AutoSurfacedContent = () => {
     },
   });
 
-  // 3 Products You Missed This Week - top products from 7-14 days ago
+  // 5 Products You Missed This Week - top products from 7-14 days ago
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo],
     queryFn: async () => {
@@ -391,7 +496,73 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // Master copy function for all newsletter content
+  const handleMasterCopy = async () => {
+    const sections: string[] = [];
+    
+    // Paid Launches
+    if (paidLaunches && paidLaunches.length > 0) {
+      const paidText = paidLaunches
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+        .join('\n\n');
+      sections.push(`💰 Paid Launches\n\n${paidText}`);
+    }
+    
+    // Weekly Winners
+    if (weeklyWinners && weeklyWinners.length > 0) {
+      const winnersText = weeklyWinners
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+        .join('\n\n');
+      sections.push(`📈 Launch Weekly Winners\n\n${winnersText}`);
+    }
+    
+    // New & Noteworthy
+    if (newNoteworthy && newNoteworthy.length > 0) {
+      const newText = newNoteworthy
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+        .join('\n\n');
+      sections.push(`✨ New & Noteworthy\n\n${newText}`);
+    }
+    
+    // Hidden Gems
+    if (hiddenGems && hiddenGems.length > 0) {
+      const gemsText = hiddenGems
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+        .join('\n\n');
+      sections.push(`💎 Launch Hidden Gems\n\n${gemsText}`);
+    }
+    
+    // Products You Missed
+    if (missedProducts && missedProducts.length > 0) {
+      const missedText = missedProducts
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+        .join('\n\n');
+      sections.push(`🕐 5 Products You Missed This Week\n\n${missedText}`);
+    }
+    
+    // Builders to Watch
+    if (buildersToWatch && buildersToWatch.length > 0) {
+      const buildersText = buildersToWatch
+        .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
+        .join('\n\n');
+      sections.push(`👀 Launch Builders to Watch\n\n${buildersText}`);
+    }
+    
+    const fullContent = sections.join('\n\n---\n\n');
+    await navigator.clipboard.writeText(fullContent);
+    setMasterCopied(true);
+    toast.success('All newsletter content copied!');
+    setTimeout(() => setMasterCopied(false), 2000);
+  };
+
   const sections: ContentSection[] = [
+    {
+      title: "💰 Paid Launches",
+      description: "Currently active sponsored products",
+      icon: null,
+      sponsoredProducts: paidLaunches,
+      isLoading: paidLoading,
+    },
     {
       title: "🏆 Launch of the Day",
       description: "Top voted product(s) launched today",
@@ -445,17 +616,30 @@ export const AutoSurfacedContent = () => {
             Auto-surfaced products and builders ready to copy & paste
           </p>
         </div>
-        <Badge variant="outline">Auto-updated</Badge>
+        <div className="flex items-center gap-3">
+          <Button 
+            onClick={handleMasterCopy} 
+            className="gap-2"
+            variant="default"
+          >
+            {masterCopied ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+            Copy All for Newsletter
+          </Button>
+          <Badge variant="outline">Auto-updated</Badge>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {sections.map((section) => (
-          <Card key={section.title}>
+          <Card key={section.title} className={section.sponsoredProducts ? 'border-amber-500/30' : ''}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">{section.title}</CardTitle>
                 {section.products && section.products.length > 0 && (
                   <CopyAllButton products={section.products} title={section.title} />
+                )}
+                {section.sponsoredProducts && section.sponsoredProducts.length > 0 && (
+                  <CopyAllSponsoredButton products={section.sponsoredProducts} title={section.title} />
                 )}
                 {section.builders && section.builders.length > 0 && (
                   <CopyAllBuildersButton builders={section.builders} title={section.title} />
@@ -470,6 +654,16 @@ export const AutoSurfacedContent = () => {
                     <div key={i} className="h-16 bg-muted animate-pulse rounded-lg" />
                   ))}
                 </div>
+              ) : section.sponsoredProducts ? (
+                section.sponsoredProducts.length > 0 ? (
+                  section.sponsoredProducts.map((product) => (
+                    <SponsoredProductCard key={product.id} product={product} />
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    No active sponsored products
+                  </p>
+                )
               ) : section.products ? (
                 section.products.length > 0 ? (
                   section.products.map((product) => (
