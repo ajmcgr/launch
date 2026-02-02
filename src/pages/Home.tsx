@@ -67,7 +67,7 @@ const Home = () => {
     const saved = localStorage.getItem('productView');
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
-  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('today');
+  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('week');
   const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
@@ -135,11 +135,11 @@ const Home = () => {
           }
         });
         
-        // Check if all 14 days have 20+ launches
-        const allDaysHave20Plus = dailyCounts.size >= 14 && 
-          Array.from(dailyCounts.values()).every(count => count >= 20);
+        // Check if all 14 days have 10+ launches consistently
+        const allDaysHave10Plus = dailyCounts.size >= 14 && 
+          Array.from(dailyCounts.values()).every(count => count >= 10);
         
-        if (allDaysHave20Plus) {
+        if (allDaysHave10Plus) {
           setCurrentPeriod('today');
         }
       } catch (err) {
@@ -478,8 +478,8 @@ const Home = () => {
         launch_date: p.launch_date
       }));
 
-      // If "today" has too few products (less than 5) and this isn't already a fallback retry, switch to "week"
-      const MIN_PRODUCTS_THRESHOLD = 5;
+      // If "today" has too few products (less than 10) and this isn't already a fallback retry, switch to "week"
+      const MIN_PRODUCTS_THRESHOLD = 10;
       if (reset && period === 'today' && formattedProducts.length < MIN_PRODUCTS_THRESHOLD && !isRetryWithFallback) {
         console.log(`Only ${formattedProducts.length} products launched today (< ${MIN_PRODUCTS_THRESHOLD}), falling back to week view`);
         setCurrentPeriod('week');
