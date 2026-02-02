@@ -769,9 +769,6 @@ const Home = () => {
               {currentPeriod === 'month' && "This Month's Launches"}
               {currentPeriod === 'year' && "This Year's Launches"}
             </h2>
-            <p className="text-sm text-muted-foreground max-w-lg mx-auto">
-              7-day visibility window • Newsletter & social promotion built-in • Faster discovery for indie makers
-            </p>
           </div>
 
           <TabsContent value="today" className="space-y-6">
