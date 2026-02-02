@@ -354,7 +354,7 @@ export const AutoSurfacedContent = () => {
         net_votes: votesMap.get(p.id) || 0,
       }));
       
-      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 3);
+      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
     },
   });
 
@@ -407,7 +407,7 @@ export const AutoSurfacedContent = () => {
       isLoading: weeklyLoading,
     },
     {
-      title: "🕐 3 Products You Missed This Week",
+      title: "🕐 5 Products You Missed This Week",
       description: "Top performers from 7-14 days ago",
       icon: null,
       products: missedProducts,

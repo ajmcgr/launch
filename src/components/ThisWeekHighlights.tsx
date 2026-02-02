@@ -223,6 +223,7 @@ const BuilderItem = ({ builder, rank }: { builder: SurfacedBuilder; rank: number
 export const ThisWeekHighlights = () => {
   const now = new Date();
   const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
   const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -429,10 +430,64 @@ export const ThisWeekHighlights = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Products You Missed (7-14 days ago)
+  const { data: missedProducts, isLoading: missedLoading } = useQuery({
+    queryKey: ['home-missed-products', oneWeekAgo, twoWeeksAgo],
+    queryFn: async () => {
+      const [productsRes, votesRes, categoriesRes, commentsRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select(`
+            id, name, tagline, slug, platforms, launch_date, domain_url,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          `)
+          .eq('status', 'launched')
+          .gte('launch_date', twoWeeksAgo)
+          .lt('launch_date', oneWeekAgo),
+        supabase.from('product_vote_counts').select('product_id, net_votes'),
+        supabase.from('product_categories').select('id, name'),
+        supabase.from('comments').select('product_id')
+      ]);
+      
+      if (productsRes.error) throw productsRes.error;
+      
+      const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
+      const categoryMap = new Map((categoriesRes.data || []).map((c: any) => [c.id, c.name]));
+      const commentMap = new Map<string, number>();
+      (commentsRes.data || []).forEach((c: any) => {
+        commentMap.set(c.product_id, (commentMap.get(c.product_id) || 0) + 1);
+      });
+      
+      const mapped = (productsRes.data || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        tagline: p.tagline,
+        slug: p.slug,
+        iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url,
+        domainUrl: p.domain_url,
+        net_votes: votesMap.get(p.id) || 0,
+        categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+        platforms: (p.platforms || []) as Platform[],
+        makers: (p.product_makers || [])
+          .map((pm: any) => pm.users)
+          .filter((u: any) => u && u.username)
+          .map((u: any) => ({ username: u.username, avatar_url: u.avatar_url })),
+        commentCount: commentMap.get(p.id) || 0,
+        launch_date: p.launch_date,
+      }));
+      
+      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   const sections = [
     { title: '📈 Weekly Winners', products: weeklyWinners, isLoading: weeklyLoading },
     { title: '✨ New & Noteworthy', products: newNoteworthy, isLoading: newNoteworthyLoading },
     { title: '💎 Hidden Gems', products: hiddenGems, isLoading: gemsLoading },
+    { title: '🕐 5 Products You Missed This Week', products: missedProducts, isLoading: missedLoading },
   ];
 
   return (
