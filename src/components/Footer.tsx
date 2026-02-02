@@ -129,7 +129,7 @@ export const Footer = () => {
         {/* Footer Links */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-6 border-t">
           <div>
-            <h3 className="font-semibold mb-4 text-foreground">Launch</h3>
+            <h3 className="font-semibold mb-4 text-foreground">About</h3>
             <ul className="space-y-1">
               <li>
                 <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
