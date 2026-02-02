@@ -117,6 +117,7 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
              product.sponsorship_type === 'newsletter' ? 'Newsletter' :
              product.sponsorship_type.toLowerCase() === 'lite' ? 'Lite' :
              product.sponsorship_type.toLowerCase() === 'pro' ? 'Pro' :
+             product.sponsorship_type.toLowerCase() === 'skip' ? 'Skip the Line' :
              product.sponsorship_type.toLowerCase().includes('pass') ? 'Pass' :
              product.sponsorship_type}
           </Badge>
@@ -303,11 +304,11 @@ export const AutoSurfacedContent = () => {
         end_date: sp.end_date,
       }));
       
-      // Map orders (Lite, Pro, Pass)
+      // Map orders (any paid plan - exclude 'free')
       const orderProducts = (ordersRes.data || [])
         .filter((o: any) => {
           const plan = (o.plan || '').toLowerCase();
-          return plan === 'lite' || plan === 'pro' || plan.includes('pass');
+          return plan !== 'free' && plan !== '';
         })
         .map((o: any) => ({
           id: o.products?.id || o.product_id,
