@@ -25,7 +25,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from 'react-router-dom';
-import { Loader2, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { CommunityCallout } from '@/components/CommunityCallout';
 import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
 import { SponsorBanner } from '@/components/SponsorBanner';
@@ -50,8 +50,8 @@ interface Product {
   launch_date?: string;
 }
 
-const ITEMS_PER_PAGE = 30;
-const MAX_HOMEPAGE_PRODUCTS = 100;
+const ITEMS_PER_PAGE = 15;
+const MAX_HOMEPAGE_PRODUCTS = 15;
 
 const Home = () => {
   const isMobile = useIsMobile();
@@ -708,32 +708,13 @@ const Home = () => {
           </div>
         )}
         
-        {/* Load More button */}
-        {canLoadMore && (
+        {/* View all link */}
+        {filteredList.length > 0 && (
           <div className="flex justify-center pt-6">
-            <Button 
-              variant="outline" 
-              onClick={loadMore}
-              disabled={loadingMore}
-              className="border-2 border-muted-foreground/20"
-            >
-              {loadingMore ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Loading...
-                </>
-              ) : (
-                'Load More'
-              )}
-            </Button>
-          </div>
-        )}
-        
-        {/* View all link when limit reached or no more products */}
-        {(!canLoadMore && filteredList.length > 0) && (
-          <div className="flex justify-center pt-4">
-            <Link to={`/products?period=${currentPeriod}`}>
-              <Button variant="outline" className="border-2 border-muted-foreground/20">View all {currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} products</Button>
+            <Link to={`/products`}>
+              <Button variant="outline" className="border-2 border-muted-foreground/20">
+                View all {currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} launches →
+              </Button>
             </Link>
           </div>
         )}
