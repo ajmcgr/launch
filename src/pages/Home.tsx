@@ -478,9 +478,10 @@ const Home = () => {
         launch_date: p.launch_date
       }));
 
-      // If "today" has no products and this isn't already a fallback retry, switch to "week"
-      if (reset && period === 'today' && formattedProducts.length === 0 && !isRetryWithFallback) {
-        console.log('No products launched today, falling back to week view');
+      // If "today" has too few products (less than 5) and this isn't already a fallback retry, switch to "week"
+      const MIN_PRODUCTS_THRESHOLD = 5;
+      if (reset && period === 'today' && formattedProducts.length < MIN_PRODUCTS_THRESHOLD && !isRetryWithFallback) {
+        console.log(`Only ${formattedProducts.length} products launched today (< ${MIN_PRODUCTS_THRESHOLD}), falling back to week view`);
         setCurrentPeriod('week');
         // Retry with week period
         return fetchProducts('week', currentSort, 0, true, true);
