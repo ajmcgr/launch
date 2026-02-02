@@ -556,7 +556,7 @@ export const AutoSurfacedContent = () => {
       const paidText = paidLaunches
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`💰 Sponsored Launches\n\n${paidText}`);
+      sections.push(`## 💰 Sponsored Launches\n\n${paidText}`);
     }
     
     // Weekly Winners
@@ -564,7 +564,7 @@ export const AutoSurfacedContent = () => {
       const winnersText = weeklyWinners
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`📈 Launch Weekly Winners\n\n${winnersText}`);
+      sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
     }
     
     // New & Noteworthy
@@ -572,7 +572,7 @@ export const AutoSurfacedContent = () => {
       const newText = newNoteworthy
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`✨ New & Noteworthy\n\n${newText}`);
+      sections.push(`## ✨ New & Noteworthy\n\n${newText}`);
     }
     
     // Hidden Gems
@@ -580,7 +580,7 @@ export const AutoSurfacedContent = () => {
       const gemsText = hiddenGems
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`💎 Launch Hidden Gems\n\n${gemsText}`);
+      sections.push(`## 💎 Launch Hidden Gems\n\n${gemsText}`);
     }
     
     // Products You Missed
@@ -588,7 +588,7 @@ export const AutoSurfacedContent = () => {
       const missedText = missedProducts
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`🕐 5 Products You Missed This Week\n\n${missedText}`);
+      sections.push(`## 🕐 5 Products You Missed This Week\n\n${missedText}`);
     }
     
     // Builders to Watch
@@ -596,7 +596,7 @@ export const AutoSurfacedContent = () => {
       const buildersText = buildersToWatch
         .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
         .join('\n\n');
-      sections.push(`👀 Launch Builders to Watch\n\n${buildersText}`);
+      sections.push(`## 👀 Launch Builders to Watch\n\n${buildersText}`);
     }
     
     const fullContent = sections.join('\n\n---\n\n');
