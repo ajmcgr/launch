@@ -780,7 +780,12 @@ const Home = () => {
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-center mb-8">Today on Launch</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">
+            {currentPeriod === 'today' && 'Today on Launch'}
+            {currentPeriod === 'week' && 'This Week on Launch'}
+            {currentPeriod === 'month' && 'This Month on Launch'}
+            {currentPeriod === 'year' && 'This Year on Launch'}
+          </h2>
 
           <TabsContent value="today" className="space-y-6">
             {renderProductList(products)}
