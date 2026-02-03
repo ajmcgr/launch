@@ -22,13 +22,13 @@ const Terms = () => {
             <ul className="list-disc pl-6 space-y-2">
               <li><strong>Account</strong> means a unique account created for You to access our Service or parts of our Service.</li>
               <li><strong>Country</strong> refers to: The United States of America</li>
-              <li><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Works App, Inc. 651 N Broad St, Suite 201, Middletown, DE 19709 US.</li>
+              <li><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Works App, Inc. 447 Sutter St, Ste 405 #3, San Francisco, CA 94108.</li>
               <li><strong>Content</strong> refers to content such as text, images, or other information that can be posted, uploaded, linked to or otherwise made available by You, regardless of the form of that content.</li>
               <li><strong>Device</strong> means any device that can access the Service such as a computer, a cellphone or a digital tablet.</li>
               <li><strong>Service</strong> refers to the Website.</li>
               <li><strong>Subscriptions</strong> refer to the services or access to the Service offered on a subscription basis by the Company to You.</li>
               <li><strong>Terms and Conditions</strong> (also referred as "Terms") mean these Terms and Conditions that form the entire agreement between You and the Company regarding the use of the Service.</li>
-              <li><strong>Website</strong> refers to Launch, accessible from {window.location.origin}</li>
+              <li><strong>Website</strong> refers to Launch, accessible from trylaunch.ai</li>
               <li><strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</li>
             </ul>
           </section>
@@ -102,9 +102,8 @@ const Terms = () => {
             <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
             <address className="not-italic">
               Works App, Inc.<br />
-              651 N Broad St, Suite 201<br />
-              Middletown, DE 19709<br />
-              US
+              447 Sutter St, Ste 405 #3<br />
+              San Francisco, CA 94108
             </address>
           </section>
         </div>

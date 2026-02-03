@@ -8,7 +8,7 @@ const Privacy = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Who we are</h2>
             <p>
-              We are Works App, Inc., doing business as Launch. Our website address is: {window.location.origin}
+              We are Works App, Inc., doing business as Launch. Our website address is: trylaunch.ai
             </p>
           </section>
 
@@ -90,11 +90,10 @@ const Privacy = () => {
             <h2 className="text-2xl font-bold mb-4">Our contact address</h2>
             <address className="not-italic">
               Works App, Inc.<br />
-              651 N Broad St,<br />
-              Suite 201,<br />
-              Middletown,<br />
-              DE 19709<br />
-              US
+              447 Sutter St,<br />
+              Ste 405 #3,<br />
+              San Francisco,<br />
+              CA 94108
             </address>
           </section>
         </div>
