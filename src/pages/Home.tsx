@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/accordion";
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
+import { format, getWeek } from 'date-fns';
 import { CommunityCallout } from '@/components/CommunityCallout';
 import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
 import { SponsorBanner } from '@/components/SponsorBanner';
@@ -583,6 +584,24 @@ const Home = () => {
 
   // Products are now sorted from the database/fetch, no need for client-side sorting
 
+  // Generate link for "View all" button based on current period
+  const getViewAllLink = () => {
+    const now = new Date();
+    switch (currentPeriod) {
+      case 'today':
+        return `/launches/${format(now, 'yyyy-MM-dd')}`;
+      case 'week': {
+        const year = now.getFullYear();
+        const week = getWeek(now, { weekStartsOn: 1 });
+        return `/launches/${year}/w${week.toString().padStart(2, '0')}`;
+      }
+      case 'month':
+      case 'year':
+      default:
+        return `/products?period=${currentPeriod}`;
+    }
+  };
+
   const renderProductList = (productList: Product[]) => {
     // Filter by selected platforms
     const filteredList = selectedPlatforms.length > 0 
@@ -716,7 +735,7 @@ const Home = () => {
         {/* View all link */}
         {filteredList.length > 0 && (
           <div className="flex justify-center pt-6">
-            <Link to={`/products`}>
+            <Link to={getViewAllLink()}>
               <Button variant="outline" className="border-2 border-muted-foreground/20">
                 View all {currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} launches →
               </Button>
