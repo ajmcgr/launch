@@ -245,11 +245,12 @@ export const ThisWeekHighlights = () => {
   const [userVotes, setUserVotes] = useState<Map<string, 1>>(new Map());
   const [localVoteChanges, setLocalVoteChanges] = useState<Map<string, { voted: boolean; delta: number }>>(new Map());
   
+  // Use simple date math to avoid timezone issues
   const now = new Date();
-  const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
-  const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
   // Fetch user and their votes
   useEffect(() => {
@@ -421,7 +422,6 @@ export const ThisWeekHighlights = () => {
   const { data: hiddenGems, isLoading: gemsLoading } = useQuery({
     queryKey: ['home-hidden-gems'],
     queryFn: async () => {
-      const thirtyDaysAgo = new Date(todayUTC.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
       
       const [productsRes, votesRes, categoriesRes, commentsRes] = await Promise.all([
         supabase
