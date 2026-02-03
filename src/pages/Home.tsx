@@ -32,7 +32,6 @@ import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonL
 import { SponsorBanner } from '@/components/SponsorBanner';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
-import roachBanner from '@/assets/sponsors/roach-banner.png';
 
 interface Product {
   id: string;
@@ -745,9 +744,8 @@ const Home = () => {
           </div>
         )}
         
-        {/* Sponsor Banners */}
-        <div className="flex flex-col items-center gap-4 pt-6">
-          {/* Media Banner */}
+        {/* Media Banner */}
+        <div className="flex flex-col items-center pt-6">
           <div className="relative">
             <a 
               href="https://trymedia.ai/" 
@@ -758,28 +756,8 @@ const Home = () => {
               <img 
                 src={mediaBanner} 
                 alt="Media - Any Journalist or Creator Email. Instantly." 
-                className="max-w-full h-auto rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:opacity-95"
-                style={{ maxHeight: '91px' }}
-              />
-            </a>
-            <Link to="/media-kit" className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground opacity-60 hover:opacity-100">
-              Sponsored
-            </Link>
-          </div>
-          
-          {/* Roach Banner */}
-          <div className="relative">
-            <a 
-              href="https://roachclo.com/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block"
-            >
-              <img 
-                src={roachBanner} 
-                alt="Roach - Survive. Thrive. Shop Roach." 
-                className="max-w-full h-auto rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:opacity-95"
-                style={{ maxHeight: '91px' }}
+                className="max-w-full h-auto transition-all duration-200 hover:opacity-95"
+                style={{ width: '728px', height: '91px', borderRadius: 0 }}
               />
             </a>
             <Link to="/media-kit" className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground opacity-60 hover:opacity-100">
