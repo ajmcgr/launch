@@ -32,6 +32,7 @@ import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonL
 import { SponsorBanner } from '@/components/SponsorBanner';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
+import bioBanner from '@/assets/sponsors/bio-banner.png';
 
 interface Product {
   id: string;
@@ -897,6 +898,26 @@ const Home = () => {
         <div className="text-center mt-8">
           <Link to="/faq">
             <Button variant="outline">View All FAQs</Button>
+          </Link>
+        </div>
+
+        {/* Bio Sponsor Banner */}
+        <div className="mt-8 flex flex-col items-center">
+          <a 
+            href="https://trybio.ai" 
+            target="_blank" 
+            rel="noopener noreferrer sponsored"
+            className="block"
+          >
+            <img 
+              src={bioBanner} 
+              alt="Bio - Link in Bio" 
+              className="w-full max-w-[728px] h-auto"
+              style={{ borderRadius: 0 }}
+            />
+          </a>
+          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 mt-1">
+            Sponsored
           </Link>
         </div>
       </div>
