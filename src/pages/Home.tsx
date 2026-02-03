@@ -151,12 +151,14 @@ const Home = () => {
   }, []);
 
   // Fetch products only once when user state is first determined
+  // Note: Don't include currentPeriod in deps - handlePeriodChange calls fetchProducts directly
   useEffect(() => {
     if (userLoaded) {
       fetchProducts(currentPeriod, sort, 0, true);
       fetchSponsoredProducts();
     }
-  }, [userLoaded, currentPeriod]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userLoaded]);
 
   const fetchSponsoredProducts = async () => {
     try {
