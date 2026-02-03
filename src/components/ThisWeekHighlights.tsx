@@ -10,6 +10,7 @@ import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { toast } from 'sonner';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
+import { getWeek } from 'date-fns';
 
 interface SurfacedProduct {
   id: string;
@@ -657,9 +658,9 @@ export const ThisWeekHighlights = () => {
         </div>
 
         <div className="flex justify-center mt-8">
-          <Link to="/products">
+          <Link to={`/launches/${new Date().getFullYear()}/w${getWeek(new Date(), { weekStartsOn: 1 }).toString().padStart(2, '0')}`}>
             <Button variant="outline" className="border-2 border-muted-foreground/20">
-              View all products →
+              View all this week's launches →
             </Button>
           </Link>
         </div>
