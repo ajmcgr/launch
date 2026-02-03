@@ -244,13 +244,7 @@ export const ThisWeekHighlights = () => {
   const [user, setUser] = useState<any>(null);
   const [userVotes, setUserVotes] = useState<Map<string, 1>>(new Map());
   const [localVoteChanges, setLocalVoteChanges] = useState<Map<string, { voted: boolean; delta: number }>>(new Map());
-  
-  // Use simple date math to avoid timezone issues
-  const now = new Date();
-  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
-  const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  // Date calculations are now done inside each query function to ensure stability
 
   // Fetch user and their votes
   useEffect(() => {
@@ -366,10 +360,12 @@ export const ThisWeekHighlights = () => {
     };
   };
 
-  // Weekly Winners
+  // Weekly Winners - products from last 14 days with highest votes
   const { data: weeklyWinners, isLoading: weeklyLoading } = useQuery({
-    queryKey: ['home-weekly-winners', twoWeeksAgo],
+    queryKey: ['home-weekly-winners'],
     queryFn: async () => {
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+      
       const [productsRes, votesRes, categoriesRes, commentsRes] = await Promise.all([
         supabase
           .from('products')
@@ -380,7 +376,8 @@ export const ThisWeekHighlights = () => {
             product_makers(user_id, users(username, avatar_url))
           `)
           .eq('status', 'launched')
-          .gte('launch_date', twoWeeksAgo),
+          .gte('launch_date', fourteenDaysAgo)
+          .order('launch_date', { ascending: false }),
         supabase.from('product_vote_counts').select('product_id, net_votes'),
         supabase.from('product_categories').select('id, name'),
         supabase.from('comments').select('product_id')
@@ -413,15 +410,20 @@ export const ThisWeekHighlights = () => {
         launch_date: p.launch_date,
       }));
       
-      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
+      // Sort by votes and return top 5 with at least 1 vote
+      return mapped
+        .filter((p) => (p.net_votes || 0) >= 1)
+        .sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0))
+        .slice(0, 5);
     },
     staleTime: 5 * 60 * 1000,
   });
 
-  // Hidden Gems
+  // Hidden Gems - products with moderate engagement from last 30 days
   const { data: hiddenGems, isLoading: gemsLoading } = useQuery({
     queryKey: ['home-hidden-gems'],
     queryFn: async () => {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       
       const [productsRes, votesRes, categoriesRes, commentsRes] = await Promise.all([
         supabase
@@ -475,10 +477,12 @@ export const ThisWeekHighlights = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // New & Noteworthy
+  // New & Noteworthy - most recent products from last 3 days
   const { data: newNoteworthy, isLoading: newNoteworthyLoading } = useQuery({
-    queryKey: ['home-new-noteworthy', threeDaysAgo],
+    queryKey: ['home-new-noteworthy'],
     queryFn: async () => {
+      const threeDays = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+      
       const [productsRes, votesRes, categoriesRes, commentsRes] = await Promise.all([
         supabase
           .from('products')
@@ -489,7 +493,7 @@ export const ThisWeekHighlights = () => {
             product_makers(user_id, users(username, avatar_url))
           `)
           .eq('status', 'launched')
-          .gte('launch_date', threeDaysAgo)
+          .gte('launch_date', threeDays)
           .order('launch_date', { ascending: false }),
         supabase.from('product_vote_counts').select('product_id, net_votes'),
         supabase.from('product_categories').select('id, name'),
@@ -523,7 +527,8 @@ export const ThisWeekHighlights = () => {
         launch_date: p.launch_date,
       }));
       
-      return mapped.filter((p) => (p.net_votes || 0) >= 1).slice(0, 5);
+      // Return newest products, no minimum vote requirement
+      return mapped.slice(0, 5);
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -570,8 +575,11 @@ export const ThisWeekHighlights = () => {
 
   // Products You Missed (7-14 days ago)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
-    queryKey: ['home-missed-products', oneWeekAgo, twoWeeksAgo],
+    queryKey: ['home-missed-products'],
     queryFn: async () => {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+      
       const [productsRes, votesRes, categoriesRes, commentsRes] = await Promise.all([
         supabase
           .from('products')
@@ -582,8 +590,8 @@ export const ThisWeekHighlights = () => {
             product_makers(user_id, users(username, avatar_url))
           `)
           .eq('status', 'launched')
-          .gte('launch_date', twoWeeksAgo)
-          .lt('launch_date', oneWeekAgo),
+          .gte('launch_date', fourteenDaysAgo)
+          .lt('launch_date', sevenDaysAgo),
         supabase.from('product_vote_counts').select('product_id, net_votes'),
         supabase.from('product_categories').select('id, name'),
         supabase.from('comments').select('product_id')
@@ -616,6 +624,7 @@ export const ThisWeekHighlights = () => {
         launch_date: p.launch_date,
       }));
       
+      // Sort by votes and return top 5
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
     },
     staleTime: 5 * 60 * 1000,
