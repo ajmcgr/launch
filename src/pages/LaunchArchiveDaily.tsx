@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
-import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, getWeek, getYear, setWeek, setYear, isFuture, isThisWeek } from 'date-fns';
+import { format, parse, isValid, addDays, subDays, isToday, isFuture } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
@@ -37,9 +37,9 @@ interface Product {
   launch_date?: string;
 }
 
-const LaunchArchiveWeekly = () => {
-  const { year, period } = useParams<{ year: string; period: string }>();
-  const week = period; // period comes as "w06" format
+const LaunchArchiveDaily = () => {
+  const { param } = useParams<{ param: string }>();
+  const date = param; // param is the date in YYYY-MM-DD format
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
@@ -71,37 +71,24 @@ const LaunchArchiveWeekly = () => {
     }
   };
 
-  // Parse year and week (week comes as "w06" format)
-  const parsedYear = parseInt(year || '', 10);
-  const weekNumber = week?.startsWith('w') ? week.slice(1) : week;
-  const parsedWeek = parseInt(weekNumber || '', 10);
-  const isValidParams = !isNaN(parsedYear) && !isNaN(parsedWeek) && parsedWeek >= 1 && parsedWeek <= 53;
+  // Handle "today" redirect and date parsing
+  useEffect(() => {
+    if (date === 'today') {
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      navigate(`/launches/${todayStr}`, { replace: true });
+      return;
+    }
+  }, [date, navigate]);
 
-  // Get the date for this week
-  const getWeekDate = () => {
-    if (!isValidParams) return new Date();
-    let date = new Date(parsedYear, 0, 1);
-    date = setYear(date, parsedYear);
-    date = setWeek(date, parsedWeek, { weekStartsOn: 1 });
-    return date;
-  };
+  // Parse the date from URL
+  const parsedDate = date && date !== 'today' ? parse(date, 'yyyy-MM-dd', new Date()) : new Date();
+  const isValidDate = isValid(parsedDate);
+  const isFutureDate = isValidDate && isFuture(parsedDate) && !isToday(parsedDate);
 
-  const weekDate = getWeekDate();
-  const weekStart = startOfWeek(weekDate, { weekStartsOn: 1 });
-  const weekEnd = endOfWeek(weekDate, { weekStartsOn: 1 });
-  const isFutureWeek = isValidParams && isFuture(weekStart) && !isThisWeek(weekDate, { weekStartsOn: 1 });
-  const isCurrentWeek = isThisWeek(weekDate, { weekStartsOn: 1 });
-
-  // Navigation
-  const prevWeekDate = subWeeks(weekDate, 1);
-  const nextWeekDate = addWeeks(weekDate, 1);
-  const canGoNext = !isFuture(startOfWeek(nextWeekDate, { weekStartsOn: 1 })) || isThisWeek(nextWeekDate, { weekStartsOn: 1 });
-
-  const formatWeekUrl = (date: Date) => {
-    const y = getYear(date);
-    const w = getWeek(date, { weekStartsOn: 1 });
-    return `/launches/${y}/w${w.toString().padStart(2, '0')}`;
-  };
+  // Navigation dates
+  const prevDate = isValidDate ? subDays(parsedDate, 1) : null;
+  const nextDate = isValidDate ? addDays(parsedDate, 1) : null;
+  const canGoNext = nextDate && (isToday(nextDate) || !isFuture(nextDate));
 
   useEffect(() => {
     localStorage.setItem('productView', view);
@@ -120,23 +107,26 @@ const LaunchArchiveWeekly = () => {
   }, []);
 
   useEffect(() => {
-    if (!isValidParams || isFutureWeek) return;
+    if (date === 'today' || !isValidDate || isFutureDate) return;
     fetchProducts();
-  }, [year, week, isValidParams, isFutureWeek, user]);
+  }, [date, isValidDate, isFutureDate, user]);
 
   const fetchProducts = async () => {
+    if (!isValidDate) return;
+    
     setLoading(true);
     try {
-      const startDate = new Date(Date.UTC(
-        weekStart.getFullYear(),
-        weekStart.getMonth(),
-        weekStart.getDate(),
+      // Get start and end of the day in UTC
+      const startOfDay = new Date(Date.UTC(
+        parsedDate.getFullYear(),
+        parsedDate.getMonth(),
+        parsedDate.getDate(),
         0, 0, 0, 0
       ));
-      const endDate = new Date(Date.UTC(
-        weekEnd.getFullYear(),
-        weekEnd.getMonth(),
-        weekEnd.getDate(),
+      const endOfDay = new Date(Date.UTC(
+        parsedDate.getFullYear(),
+        parsedDate.getMonth(),
+        parsedDate.getDate(),
         23, 59, 59, 999
       ));
 
@@ -157,8 +147,8 @@ const LaunchArchiveWeekly = () => {
           product_makers(user_id, users(username, avatar_url))
         `)
         .eq('status', 'launched')
-        .gte('launch_date', startDate.toISOString())
-        .lte('launch_date', endDate.toISOString())
+        .gte('launch_date', startOfDay.toISOString())
+        .lte('launch_date', endOfDay.toISOString())
         .order('launch_date', { ascending: false });
 
       if (error) throw error;
@@ -170,12 +160,6 @@ const LaunchArchiveWeekly = () => {
         .from('product_vote_counts')
         .select('product_id, net_votes');
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
-
-      // Fetch rating stats
-      const { data: ratingStats } = await supabase
-        .from('product_rating_stats')
-        .select('product_id, average_rating, rating_count');
-      const ratingMap = new Map(ratingStats?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
 
       // Fetch categories
       const { data: categories } = await supabase
@@ -244,8 +228,9 @@ const LaunchArchiveWeekly = () => {
         return b.netVotes - a.netVotes;
       } else if (newSort === 'latest') {
         return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
+      } else if (newSort === 'revenue') {
+        return (b.verifiedMrr || 0) - (a.verifiedMrr || 0);
       } else if (newSort === 'rated') {
-        // For rated, we'd need rating data - fallback to votes
         return b.netVotes - a.netVotes;
       }
       return 0;
@@ -300,12 +285,12 @@ const LaunchArchiveWeekly = () => {
     }
   };
 
-  if (!isValidParams) {
+  if (!isValidDate) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-12 max-w-5xl text-center">
-          <h1 className="text-2xl font-bold mb-4">Invalid Week</h1>
-          <p className="text-muted-foreground mb-6">The URL format should be /launches/YYYY/wWW (e.g., /launches/2025/w05)</p>
+          <h1 className="text-2xl font-bold mb-4">Invalid Date</h1>
+          <p className="text-muted-foreground mb-6">The date format should be YYYY-MM-DD (e.g., 2025-01-15)</p>
           <Link to="/launches/today">
             <Button>View Today's Launches</Button>
           </Link>
@@ -314,14 +299,12 @@ const LaunchArchiveWeekly = () => {
     );
   }
 
-  if (isFutureWeek) {
+  if (isFutureDate) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-12 max-w-5xl text-center">
-          <h1 className="text-2xl font-bold mb-4">Future Week</h1>
-          <p className="text-muted-foreground mb-6">
-            Week {parsedWeek} of {parsedYear} hasn't started yet. Check back later!
-          </p>
+          <h1 className="text-2xl font-bold mb-4">Future Date</h1>
+          <p className="text-muted-foreground mb-6">Check back on {format(parsedDate, 'MMMM d, yyyy')} to see launches!</p>
           <Link to="/launches/today">
             <Button>View Today's Launches</Button>
           </Link>
@@ -330,11 +313,11 @@ const LaunchArchiveWeekly = () => {
     );
   }
 
-  const dateRange = `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
-  const pageTitle = isCurrentWeek 
-    ? "This Week's Launches" 
-    : `Week ${parsedWeek}, ${parsedYear} Launches`;
-  const metaDescription = `Discover the top product launches from Week ${parsedWeek} of ${parsedYear} (${dateRange}). Vote for your favorites and explore the best new tools and apps.`;
+  const formattedDate = format(parsedDate, 'MMMM d, yyyy');
+  const pageTitle = isToday(parsedDate) 
+    ? "Today's Launches" 
+    : `${formattedDate}`;
+  const metaDescription = `Discover the top product launches from ${formattedDate}. See what products launched, vote for your favorites, and explore the best new tools and apps.`;
 
   // Filter products by platform
   const filteredProducts = selectedPlatforms.length > 0 
@@ -349,7 +332,7 @@ const LaunchArchiveWeekly = () => {
     if (filteredProducts.length === 0) {
       return (
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No launches during this week.</p>
+          <p className="text-muted-foreground mb-4">No launches on this day.</p>
           <Link to="/launches/today">
             <Button variant="outline">View Today's Launches</Button>
           </Link>
@@ -418,10 +401,10 @@ const LaunchArchiveWeekly = () => {
       <Helmet>
         <title>{pageTitle} | Launch</title>
         <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={`https://trylaunch.ai/launches/${year}/w${week?.replace('w', '')}`} />
+        <link rel="canonical" href={`https://trylaunch.ai/launches/${date}`} />
         <meta property="og:title" content={`${pageTitle} | Launch`} />
         <meta property="og:description" content={metaDescription} />
-        <meta property="og:url" content={`https://trylaunch.ai/launches/${year}/w${week?.replace('w', '')}`} />
+        <meta property="og:url" content={`https://trylaunch.ai/launches/${date}`} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${pageTitle} | Launch`} />
@@ -432,25 +415,25 @@ const LaunchArchiveWeekly = () => {
         items={[
           { name: 'Home', url: 'https://trylaunch.ai' },
           { name: 'Launches', url: 'https://trylaunch.ai/products' },
-          { name: `Week ${parsedWeek}, ${parsedYear}`, url: `https://trylaunch.ai/launches/${year}/w${week?.replace('w', '')}` }
+          { name: formattedDate, url: `https://trylaunch.ai/launches/${date}` }
         ]} 
       />
 
       <div className="container mx-auto px-4 py-6 max-w-5xl">
         {/* Filter bar - matching homepage exactly */}
         <div className="flex flex-row items-center justify-between gap-2 mb-6">
-          {/* Week Navigation on the left */}
+          {/* Date Navigation on the left */}
           <div className="flex items-center gap-1 border rounded-md p-1 h-9">
-            <Link to={formatWeekUrl(prevWeekDate)}>
+            <Link to={`/launches/${format(prevDate!, 'yyyy-MM-dd')}`}>
               <Button variant="ghost" size="sm" className="h-7 px-2 gap-1">
                 <ChevronLeft className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-xs">Week {getWeek(prevWeekDate, { weekStartsOn: 1 })}</span>
+                <span className="hidden sm:inline text-xs">{format(prevDate!, 'MMM d')}</span>
               </Button>
             </Link>
             {canGoNext && (
-              <Link to={formatWeekUrl(nextWeekDate)}>
+              <Link to={`/launches/${format(nextDate!, 'yyyy-MM-dd')}`}>
                 <Button variant="ghost" size="sm" className="h-7 px-2 gap-1">
-                  <span className="hidden sm:inline text-xs">Week {getWeek(nextWeekDate, { weekStartsOn: 1 })}</span>
+                  <span className="hidden sm:inline text-xs">{format(nextDate!, 'MMM d')}</span>
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
               </Link>
@@ -475,21 +458,23 @@ const LaunchArchiveWeekly = () => {
           </div>
         </div>
 
-        {/* Title - matching homepage */}
+        {/* Title - matching weekly format */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Reckless, serif' }}>
-            {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
+            {pageTitle}
           </h2>
-          <p className="text-sm text-muted-foreground">{dateRange}</p>
+          <p className="text-sm text-muted-foreground">
+            {formattedDate}
+          </p>
         </div>
 
         {/* Product list */}
         {renderProductList()}
-
+        
         {/* Stats */}
         {!loading && filteredProducts.length > 0 && (
           <div className="text-center text-sm text-muted-foreground mt-8">
-            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} launched during Week {parsedWeek}, {parsedYear}
+            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} launched on {formattedDate}
           </div>
         )}
       </div>
@@ -497,4 +482,4 @@ const LaunchArchiveWeekly = () => {
   );
 };
 
-export default LaunchArchiveWeekly;
+export default LaunchArchiveDaily;

@@ -41,8 +41,7 @@ import ProductHuntAlternative from "./pages/ProductHuntAlternative";
 import ProductLaunchPlatform from "./pages/ProductLaunchPlatform";
 import ProductLaunchStrategy from "./pages/ProductLaunchStrategy";
 import LaunchArchive from "./pages/LaunchArchive";
-import LaunchArchiveWeekly from "./pages/LaunchArchiveWeekly";
-import LaunchArchiveMonthly from "./pages/LaunchArchiveMonthly";
+import LaunchArchivePeriod from "./pages/LaunchArchivePeriod";
 import LaunchArchiveYearly from "./pages/LaunchArchiveYearly";
 
 import DiscourseSso from "./pages/DiscourseSso";
@@ -101,10 +100,8 @@ const AppContent = () => {
           <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
           <Route path="/media-kit" element={<MediaKit />} />
           <Route path="/launches/today" element={<LaunchArchive />} />
-          <Route path="/launches/:date" element={<LaunchArchive />} />
-          <Route path="/launches/:year/:week" element={<LaunchArchiveWeekly />} />
-          <Route path="/launches/:year/:month" element={<LaunchArchiveMonthly />} />
-          <Route path="/launches/:year" element={<LaunchArchiveYearly />} />
+          <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
+          <Route path="/launches/:param" element={<LaunchArchive />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />
