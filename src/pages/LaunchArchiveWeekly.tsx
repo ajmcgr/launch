@@ -302,12 +302,9 @@ const LaunchArchiveWeekly = () => {
           </Link>
           
           <div className="text-center">
-            <div className="flex items-center justify-center gap-2">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-                {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
-              </h1>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-reckless font-bold text-foreground">
+              {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">{dateRange}</p>
           </div>
 
@@ -323,9 +320,12 @@ const LaunchArchiveWeekly = () => {
           )}
         </div>
 
-        {/* Filters */}
+        {/* Section title and filters - matching homepage */}
         <div className="mb-6">
-          <div className="flex items-center gap-2 justify-center sm:justify-start">
+          <h2 className="text-2xl font-semibold text-foreground sm:text-left text-center mb-3">
+            {isCurrentWeek ? "This Week's Launches" : `${dateRange}`}
+          </h2>
+          <div className="flex items-center gap-2 sm:justify-start justify-center">
             <PlatformFilter 
               selectedPlatforms={selectedPlatforms} 
               onPlatformToggle={(p) => setSelectedPlatforms(prev => 
