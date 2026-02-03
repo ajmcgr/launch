@@ -597,10 +597,15 @@ const Home = () => {
         const week = getWeek(now, { weekStartsOn: 1 });
         return `/launches/${year}/w${week.toString().padStart(2, '0')}`;
       }
-      case 'month':
+      case 'month': {
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        return `/launches/${year}/m${month}`;
+      }
       case 'year':
+        return `/launches/${now.getFullYear()}`;
       default:
-        return `/products?period=${currentPeriod}`;
+        return `/products`;
     }
   };
 
