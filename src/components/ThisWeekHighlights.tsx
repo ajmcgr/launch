@@ -667,7 +667,7 @@ export const ThisWeekHighlights = () => {
           ))}
         </div>
 
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-6">
           <Link to={`/launches/${new Date().getFullYear()}/w${getWeek(new Date(), { weekStartsOn: 1 }).toString().padStart(2, '0')}`}>
             <Button variant="outline" className="border-2 border-muted-foreground/20">
               View all this week's launches →
