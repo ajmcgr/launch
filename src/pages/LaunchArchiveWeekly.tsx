@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, getWeek, getYear, setWeek, setYear, isFuture, isThisWeek } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
@@ -38,6 +39,7 @@ interface Product {
 
 const LaunchArchiveWeekly = () => {
   const { year, week } = useParams<{ year: string; week: string }>();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   
   const [products, setProducts] = useState<Product[]>([]);
@@ -49,6 +51,7 @@ const LaunchArchiveWeekly = () => {
   });
   const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const effectiveView = view;
 
@@ -58,6 +61,13 @@ const LaunchArchiveWeekly = () => {
         ? prev.filter(p => p !== platform)
         : [...prev, platform]
     );
+  };
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
   };
 
   // Parse year and week (week comes as "w06" format)
@@ -448,6 +458,16 @@ const LaunchArchiveWeekly = () => {
           
           {/* Filters on the right */}
           <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
+            <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
+              <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5" />
+              <Input
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                className="pl-7 h-full !text-[11px] sm:!text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+            </div>
             <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
             <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={false} />
             <ViewToggle view={view} onViewChange={setView} />
