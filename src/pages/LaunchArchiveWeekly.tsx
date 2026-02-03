@@ -1,51 +1,64 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Rocket, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, getWeek, getYear, setWeek, setYear, isFuture, isThisWeek } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
-import { HomeLaunchListItem } from '@/components/HomeLaunchListItem';
-import { HomeLaunchCard } from '@/components/HomeLaunchCard';
+import { LaunchListItem } from '@/components/LaunchListItem';
+import { LaunchCard } from '@/components/LaunchCard';
 import { ViewToggle } from '@/components/ViewToggle';
 import { SortToggle } from '@/components/SortToggle';
 import { PlatformFilter } from '@/components/PlatformFilter';
 import { Platform } from '@/components/PlatformIcons';
 import { BreadcrumbSchema } from '@/components/JsonLd';
+import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-interface Launch {
+interface Product {
   id: string;
-  rank: number;
+  slug: string;
   name: string;
   tagline: string;
-  icon: any;
-  votes: number;
-  thumbnail?: string;
-  slug: string;
-  launch_date?: string;
+  thumbnail: string;
+  iconUrl?: string;
+  domainUrl?: string;
+  categories: string[];
   platforms?: Platform[];
+  netVotes: number;
+  userVote?: 1 | null;
+  commentCount: number;
+  verifiedMrr?: number | null;
+  mrrVerifiedAt?: string | null;
   makers: Array<{ username: string; avatar_url?: string }>;
+  launch_date?: string;
 }
 
 const LaunchArchiveWeekly = () => {
   const { year, week } = useParams<{ year: string; week: string }>();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
   
-  const [launches, setLaunches] = useState<Launch[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [view, setView] = useState<'list' | 'grid' | 'compact'>(() => {
-    const savedView = localStorage.getItem('archiveViewPreference');
+    const savedView = localStorage.getItem('productView');
     return (savedView === 'grid' || savedView === 'list' || savedView === 'compact') ? savedView : 'list';
   });
   const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   
-  const effectiveView = isMobile ? 'compact' : view;
+  const effectiveView = view;
+
+  const handlePlatformToggle = (platform: Platform) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platform) 
+        ? prev.filter(p => p !== platform)
+        : [...prev, platform]
+    );
+  };
 
   // Parse year and week (week comes as "w06" format)
   const parsedYear = parseInt(year || '', 10);
@@ -80,7 +93,7 @@ const LaunchArchiveWeekly = () => {
   };
 
   useEffect(() => {
-    localStorage.setItem('archiveViewPreference', view);
+    localStorage.setItem('productView', view);
   }, [view]);
 
   useEffect(() => {
@@ -97,24 +110,10 @@ const LaunchArchiveWeekly = () => {
 
   useEffect(() => {
     if (!isValidParams || isFutureWeek) return;
-    fetchLaunches();
-  }, [year, week, isValidParams, isFutureWeek]);
+    fetchProducts();
+  }, [year, week, isValidParams, isFutureWeek, user]);
 
-  useEffect(() => {
-    if (launches.length === 0) return;
-    
-    const sorted = [...launches].sort((a, b) => {
-      if (sort === 'popular') {
-        return b.votes - a.votes;
-      } else {
-        return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
-      }
-    }).map((p, index) => ({ ...p, rank: index + 1 }));
-    
-    setLaunches(sorted);
-  }, [sort]);
-
-  const fetchLaunches = async () => {
+  const fetchProducts = async () => {
     setLoading(true);
     try {
       const startDate = new Date(Date.UTC(
@@ -130,19 +129,21 @@ const LaunchArchiveWeekly = () => {
         23, 59, 59, 999
       ));
 
-      const { data: products, error } = await supabase
+      const { data: productsData, error } = await supabase
         .from('products')
         .select(`
           id,
+          slug,
           name,
           tagline,
-          slug,
           launch_date,
+          domain_url,
           platforms,
+          verified_mrr,
+          mrr_verified_at,
           product_media(url, type),
-          product_makers(
-            users:user_id(username, avatar_url)
-          )
+          product_category_map(category_id),
+          product_makers(user_id, users(username, avatar_url))
         `)
         .eq('status', 'launched')
         .gte('launch_date', startDate.toISOString())
@@ -151,91 +152,147 @@ const LaunchArchiveWeekly = () => {
 
       if (error) throw error;
 
+      const productIds = (productsData || []).map(p => p.id);
+
+      // Fetch vote counts
       const { data: voteCounts } = await supabase
         .from('product_vote_counts')
         .select('product_id, net_votes');
-
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
 
-      const launchData: Launch[] = (products || [])
-        .map((p) => ({
-          id: p.id,
-          rank: 0,
-          name: p.name,
-          tagline: p.tagline,
-          icon: Rocket,
-          votes: voteMap.get(p.id) || 0,
-          thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
-          slug: p.slug,
-          launch_date: p.launch_date,
-          platforms: (p.platforms || []) as Platform[],
-          makers: (p.product_makers || [])
-            .map((pm: any) => pm.users)
-            .filter((u: any) => u && u.username)
-            .map((u: any) => ({ username: u.username, avatar_url: u.avatar_url }))
-        }))
-        .sort((a, b) => b.votes - a.votes)
-        .map((p, index) => ({ ...p, rank: index + 1 }));
+      // Fetch rating stats
+      const { data: ratingStats } = await supabase
+        .from('product_rating_stats')
+        .select('product_id, average_rating, rating_count');
+      const ratingMap = new Map(ratingStats?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
 
-      setLaunches(launchData);
+      // Fetch categories
+      const { data: categories } = await supabase
+        .from('product_categories')
+        .select('id, name');
+      const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
+
+      // Fetch user votes if logged in
+      const { data: userVotes } = user ? await supabase
+        .from('votes')
+        .select('product_id, value')
+        .eq('user_id', user.id)
+        .eq('value', 1) : { data: null };
+      const userVoteMap = new Map(userVotes?.map(v => [v.product_id, 1 as const]) || []);
+
+      // Fetch comment counts
+      const { data: allComments } = await supabase
+        .from('comments')
+        .select('product_id')
+        .in('product_id', productIds);
+      const commentMap = new Map<string, number>();
+      allComments?.forEach(comment => {
+        const currentCount = commentMap.get(comment.product_id) || 0;
+        commentMap.set(comment.product_id, currentCount + 1);
+      });
+
+      const formattedProducts: Product[] = (productsData || []).map((p: any) => ({
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        tagline: p.tagline,
+        thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+        iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+        domainUrl: p.domain_url || '',
+        categories: p.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+        platforms: (p.platforms || []) as Platform[],
+        netVotes: voteMap.get(p.id) || 0,
+        userVote: userVoteMap.get(p.id) || null,
+        commentCount: commentMap.get(p.id) || 0,
+        verifiedMrr: p.verified_mrr || null,
+        mrrVerifiedAt: p.mrr_verified_at || null,
+        makers: p.product_makers?.map((m: any) => ({
+          username: m.users?.username || 'Anonymous',
+          avatar_url: m.users?.avatar_url || ''
+        })).filter((m: any) => m.username !== 'Anonymous') || [],
+        launch_date: p.launch_date,
+      }));
+
+      // Sort by votes (popular) by default
+      const sortedProducts = formattedProducts.sort((a, b) => b.netVotes - a.netVotes);
+
+      setProducts(sortedProducts);
     } catch (error) {
-      console.error('Error fetching launches:', error);
-      toast.error('Failed to load launches');
+      console.error('Error fetching products:', error);
+      toast.error('Failed to load products');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVote = async (launchId: string) => {
+  const handleSortChange = (newSort: 'rated' | 'popular' | 'latest' | 'revenue') => {
+    setSort(newSort);
+    
+    const sorted = [...products].sort((a, b) => {
+      if (newSort === 'popular') {
+        return b.netVotes - a.netVotes;
+      } else if (newSort === 'latest') {
+        return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
+      } else if (newSort === 'rated') {
+        // For rated, we'd need rating data - fallback to votes
+        return b.netVotes - a.netVotes;
+      }
+      return 0;
+    });
+    
+    setProducts(sorted);
+  };
+
+  const handleVote = async (productId: string) => {
     if (!user) {
-      window.location.href = '/auth';
+      toast.error('Please login to vote');
       return;
     }
+
+    // Optimistic update
+    setProducts(prev => prev.map(p => {
+      if (p.id === productId) {
+        const currentVote = p.userVote;
+        let newNetVotes = p.netVotes;
+        let newUserVote: 1 | null = null;
+
+        if (currentVote === 1) {
+          newNetVotes -= 1;
+          newUserVote = null;
+        } else {
+          newNetVotes += 1;
+          newUserVote = 1;
+        }
+
+        return { ...p, netVotes: newNetVotes, userVote: newUserVote };
+      }
+      return p;
+    }));
 
     try {
       const { data: existingVote } = await supabase
         .from('votes')
-        .select('*')
-        .eq('product_id', launchId)
+        .select('id')
+        .eq('product_id', productId)
         .eq('user_id', user.id)
-        .single();
+        .eq('value', 1)
+        .maybeSingle();
 
       if (existingVote) {
-        await supabase
-          .from('votes')
-          .delete()
-          .eq('id', existingVote.id);
-        
-        setLaunches(prev => 
-          prev.map(launch => 
-            launch.id === launchId 
-              ? { ...launch, votes: launch.votes - 1 }
-              : launch
-          )
-        );
+        await supabase.from('votes').delete().eq('id', existingVote.id);
       } else {
-        await supabase
-          .from('votes')
-          .insert({ product_id: launchId, user_id: user.id, value: 1 });
-        
-        setLaunches(prev => 
-          prev.map(launch => 
-            launch.id === launchId 
-              ? { ...launch, votes: launch.votes + 1 }
-              : launch
-          )
-        );
+        await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
       }
     } catch (error) {
       console.error('Error voting:', error);
-      toast.error('Failed to vote');
+      toast.error('Failed to record vote');
     }
   };
 
   if (!isValidParams) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-12 max-w-4xl text-center">
+        <div className="container mx-auto px-4 py-12 max-w-5xl text-center">
           <h1 className="text-2xl font-bold mb-4">Invalid Week</h1>
           <p className="text-muted-foreground mb-6">The URL format should be /launches/YYYY/wWW (e.g., /launches/2025/w05)</p>
           <Link to="/launches/today">
@@ -249,7 +306,7 @@ const LaunchArchiveWeekly = () => {
   if (isFutureWeek) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-12 max-w-4xl text-center">
+        <div className="container mx-auto px-4 py-12 max-w-5xl text-center">
           <h1 className="text-2xl font-bold mb-4">Future Week</h1>
           <p className="text-muted-foreground mb-6">
             Week {parsedWeek} of {parsedYear} hasn't started yet. Check back later!
@@ -267,6 +324,83 @@ const LaunchArchiveWeekly = () => {
     ? "This Week's Launches" 
     : `Week ${parsedWeek}, ${parsedYear} Launches`;
   const metaDescription = `Discover the top product launches from Week ${parsedWeek} of ${parsedYear} (${dateRange}). Vote for your favorites and explore the best new tools and apps.`;
+
+  // Filter products by platform
+  const filteredProducts = selectedPlatforms.length > 0 
+    ? products.filter(p => p.platforms?.some(platform => selectedPlatforms.includes(platform)))
+    : products;
+
+  const renderProductList = () => {
+    if (loading) {
+      return <ProductSkeleton view={effectiveView} count={5} />;
+    }
+
+    if (filteredProducts.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">No launches during this week.</p>
+          <Link to="/launches/today">
+            <Button variant="outline">View Today's Launches</Button>
+          </Link>
+        </div>
+      );
+    }
+
+    if (effectiveView === 'compact') {
+      return (
+        <div className="space-y-0">
+          {filteredProducts.map((product, idx) => (
+            <CompactLaunchListItem
+              key={product.id}
+              rank={idx + 1}
+              name={product.name}
+              votes={product.netVotes}
+              slug={product.slug}
+              userVote={product.userVote}
+              onVote={() => handleVote(product.id)}
+              launchDate={product.launch_date}
+              commentCount={product.commentCount}
+              makers={product.makers}
+              domainUrl={product.domainUrl}
+              categories={product.categories}
+              platforms={product.platforms}
+              verifiedMrr={product.verifiedMrr}
+              mrrVerifiedAt={product.mrrVerifiedAt}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    if (effectiveView === 'list') {
+      return (
+        <div className="space-y-2">
+          {filteredProducts.map((product, idx) => (
+            <LaunchListItem
+              key={product.id}
+              {...product}
+              rank={idx + 1}
+              onVote={handleVote}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    // Grid view
+    return (
+      <div className="space-y-4">
+        {filteredProducts.map((product, idx) => (
+          <LaunchCard
+            key={product.id}
+            {...product}
+            rank={idx + 1}
+            onVote={handleVote}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -291,132 +425,50 @@ const LaunchArchiveWeekly = () => {
         ]} 
       />
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {/* Hero title - matching homepage */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
-            {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            {dateRange}
-          </p>
-        </div>
-
-        {/* Section title and filters - matching homepage exactly */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-foreground sm:text-left text-center mb-3">
-            {isCurrentWeek ? "This Week's Launches" : dateRange}
-          </h2>
-          <div className="flex items-center gap-2 sm:justify-start justify-center">
-            <PlatformFilter 
-              selectedPlatforms={selectedPlatforms} 
-              onPlatformToggle={(p) => setSelectedPlatforms(prev => 
-                prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]
-              )} 
-            />
-            <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
-            {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
-          </div>
-        </div>
-
-        {/* Week Navigation */}
-        <div className="flex items-center justify-between mb-6">
-          <Link to={formatWeekUrl(prevWeekDate)}>
-            <Button variant="ghost" size="sm" className="gap-1">
-              <ChevronLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Week {getWeek(prevWeekDate, { weekStartsOn: 1 })}</span>
-            </Button>
-          </Link>
-          
-          {canGoNext ? (
-            <Link to={formatWeekUrl(nextWeekDate)}>
-              <Button variant="ghost" size="sm" className="gap-1">
-                <span className="hidden sm:inline">Week {getWeek(nextWeekDate, { weekStartsOn: 1 })}</span>
-                <ChevronRight className="h-4 w-4" />
+      <div className="container mx-auto px-4 py-6 max-w-5xl">
+        {/* Filter bar - matching homepage exactly */}
+        <div className="flex flex-row items-center justify-between gap-2 mb-6">
+          {/* Week Navigation on the left */}
+          <div className="flex items-center gap-1 border rounded-md p-1 h-9">
+            <Link to={formatWeekUrl(prevWeekDate)}>
+              <Button variant="ghost" size="sm" className="h-7 px-2 gap-1">
+                <ChevronLeft className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline text-xs">Week {getWeek(prevWeekDate, { weekStartsOn: 1 })}</span>
               </Button>
             </Link>
-          ) : (
-            <div className="w-20" />
-          )}
+            {canGoNext && (
+              <Link to={formatWeekUrl(nextWeekDate)}>
+                <Button variant="ghost" size="sm" className="h-7 px-2 gap-1">
+                  <span className="hidden sm:inline text-xs">Week {getWeek(nextWeekDate, { weekStartsOn: 1 })}</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
+            )}
+          </div>
+          
+          {/* Filters on the right */}
+          <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
+            <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
+            <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={false} />
+            <ViewToggle view={view} onViewChange={setView} />
+          </div>
         </div>
 
-        {/* Content */}
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading launches...</p>
-          </div>
-        ) : launches.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">No launches during this week.</p>
-            <Link to="/launches/today">
-              <Button variant="outline">View Today's Launches</Button>
-            </Link>
-          </div>
-        ) : effectiveView === 'compact' ? (
-          <div className="space-y-0 mb-8">
-            {launches
-              .filter(l => selectedPlatforms.length === 0 || l.platforms?.some(p => selectedPlatforms.includes(p)))
-              .map((launch) => (
-              <CompactLaunchListItem
-                key={launch.id}
-                rank={launch.rank}
-                name={launch.name}
-                votes={launch.votes}
-                slug={launch.slug}
-                platforms={launch.platforms}
-                makers={launch.makers}
-                launchDate={launch.launch_date}
-                onVote={() => handleVote(launch.id)}
-              />
-            ))}
-          </div>
-        ) : effectiveView === 'list' ? (
-          <div className="divide-y mb-8">
-            {launches
-              .filter(l => selectedPlatforms.length === 0 || l.platforms?.some(p => selectedPlatforms.includes(p)))
-              .map((launch) => (
-              <HomeLaunchListItem
-                key={launch.id}
-                rank={launch.rank}
-                name={launch.name}
-                tagline={launch.tagline}
-                icon={launch.icon}
-                votes={launch.votes}
-                slug={launch.slug}
-                launchDate={launch.launch_date}
-                platforms={launch.platforms}
-                makers={launch.makers}
-                onVote={() => handleVote(launch.id)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {launches
-                .filter(l => selectedPlatforms.length === 0 || l.platforms?.some(p => selectedPlatforms.includes(p)))
-                .map((launch) => (
-                <HomeLaunchCard
-                  key={launch.id}
-                  rank={launch.rank}
-                  name={launch.name}
-                  tagline={launch.tagline}
-                  icon={launch.icon}
-                  votes={launch.votes}
-                  slug={launch.slug}
-                  launchDate={launch.launch_date}
-                  platforms={launch.platforms}
-                  onVote={() => handleVote(launch.id)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Title - matching homepage */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2">
+            {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
+          </h2>
+          <p className="text-sm text-muted-foreground">{dateRange}</p>
+        </div>
+
+        {/* Product list */}
+        {renderProductList()}
 
         {/* Stats */}
-        {!loading && launches.length > 0 && (
-          <div className="text-center text-sm text-muted-foreground">
-            {launches.length} product{launches.length !== 1 ? 's' : ''} launched during Week {parsedWeek}, {parsedYear}
+        {!loading && filteredProducts.length > 0 && (
+          <div className="text-center text-sm text-muted-foreground mt-8">
+            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} launched during Week {parsedWeek}, {parsedYear}
           </div>
         )}
       </div>
