@@ -38,7 +38,8 @@ interface Product {
 }
 
 const LaunchArchiveMonthly = () => {
-  const { year, month } = useParams<{ year: string; month: string }>();
+  const { year, period } = useParams<{ year: string; period: string }>();
+  const month = period?.startsWith('m') ? period.slice(1) : period; // period comes as "m02" format
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   

@@ -38,7 +38,8 @@ interface Product {
 }
 
 const LaunchArchiveYearly = () => {
-  const { year } = useParams<{ year: string }>();
+  const { param } = useParams<{ param: string }>();
+  const year = param; // param is the year in YYYY format
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
