@@ -268,7 +268,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false) => {
+  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false, skipFallback: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -478,13 +478,14 @@ const Home = () => {
         launch_date: p.launch_date
       }));
 
-      // If "today" has too few products (less than 10) and this isn't already a fallback retry, switch to "week"
+      // If "today" has too few products (less than 10) and this isn't already a fallback retry or user-initiated, switch to "week"
+      // skipFallback is true when user manually clicks "Today" - they should be allowed to see sparse results
       const MIN_PRODUCTS_THRESHOLD = 10;
-      if (reset && period === 'today' && formattedProducts.length < MIN_PRODUCTS_THRESHOLD && !isRetryWithFallback) {
+      if (reset && period === 'today' && formattedProducts.length < MIN_PRODUCTS_THRESHOLD && !isRetryWithFallback && !skipFallback) {
         console.log(`Only ${formattedProducts.length} products launched today (< ${MIN_PRODUCTS_THRESHOLD}), falling back to week view`);
         setCurrentPeriod('week');
         // Retry with week period
-        return fetchProducts('week', currentSort, 0, true, true);
+        return fetchProducts('week', currentSort, 0, true, true, false);
       }
 
       if (reset) {
@@ -517,7 +518,8 @@ const Home = () => {
     setPage(0);
     setProducts([]);
     setHasMore(true);
-    fetchProducts(period, sort, 0, true);
+    // Pass skipFallback=true when user manually selects a period - they should see actual results
+    fetchProducts(period, sort, 0, true, false, true);
   };
 
   const handleSortChange = (newSort: 'rated' | 'popular' | 'latest' | 'revenue') => {
