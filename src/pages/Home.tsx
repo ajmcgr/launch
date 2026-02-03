@@ -746,7 +746,7 @@ const Home = () => {
         )}
         
         {/* Media Banner */}
-        <div className="flex flex-col items-center pt-6">
+        <div className="flex flex-col items-center py-6">
           <div className="flex flex-col items-center">
             <a 
               href="https://trymedia.ai/" 
@@ -902,7 +902,7 @@ const Home = () => {
         </div>
 
         {/* Bio Sponsor Banner */}
-        <div className="mt-8 flex flex-col items-center">
+        <div className="py-6 flex flex-col items-center">
           <a 
             href="https://trybio.ai" 
             target="_blank" 

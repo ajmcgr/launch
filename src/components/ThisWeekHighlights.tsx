@@ -676,7 +676,7 @@ export const ThisWeekHighlights = () => {
         </div>
         
         {/* Roach Banner */}
-        <div className="flex flex-col items-center pt-6">
+        <div className="flex flex-col items-center py-6">
           <div className="flex flex-col items-center">
             <a 
               href="https://roachclo.com/" 
