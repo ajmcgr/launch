@@ -900,7 +900,7 @@ const Home = () => {
           </AccordionItem>
         </Accordion>
 
-        <div className="text-center mt-8">
+        <div className="text-center mt-6">
           <Link to="/faq">
             <Button variant="outline">View All FAQs</Button>
           </Link>
