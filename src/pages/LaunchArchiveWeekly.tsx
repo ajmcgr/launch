@@ -477,10 +477,9 @@ const LaunchArchiveWeekly = () => {
 
         {/* Title - matching homepage */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Reckless, serif' }}>
+          <h2 className="text-2xl font-bold mb-2">
             {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
           </h2>
-          <p className="text-sm text-muted-foreground">{dateRange}</p>
         </div>
 
         {/* Product list */}
