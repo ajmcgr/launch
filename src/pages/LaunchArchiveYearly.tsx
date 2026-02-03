@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
-import { format, parse, isValid, addDays, subDays, isToday, isFuture } from 'date-fns';
+import { format, startOfYear, endOfYear, addYears, subYears, isFuture, isThisYear } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
@@ -37,8 +37,8 @@ interface Product {
   launch_date?: string;
 }
 
-const LaunchArchive = () => {
-  const { date } = useParams<{ date: string }>();
+const LaunchArchiveYearly = () => {
+  const { year } = useParams<{ year: string }>();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
@@ -70,24 +70,30 @@ const LaunchArchive = () => {
     }
   };
 
-  // Handle "today" redirect and date parsing
-  useEffect(() => {
-    if (date === 'today') {
-      const todayStr = format(new Date(), 'yyyy-MM-dd');
-      navigate(`/launches/${todayStr}`, { replace: true });
-      return;
-    }
-  }, [date, navigate]);
+  // Parse year
+  const parsedYear = parseInt(year || '', 10);
+  const isValidParams = !isNaN(parsedYear) && parsedYear >= 2020 && parsedYear <= 2100;
 
-  // Parse the date from URL
-  const parsedDate = date && date !== 'today' ? parse(date, 'yyyy-MM-dd', new Date()) : new Date();
-  const isValidDate = isValid(parsedDate);
-  const isFutureDate = isValidDate && isFuture(parsedDate) && !isToday(parsedDate);
+  // Get the date for this year
+  const getYearDate = () => {
+    if (!isValidParams) return new Date();
+    return new Date(parsedYear, 0, 1);
+  };
 
-  // Navigation dates
-  const prevDate = isValidDate ? subDays(parsedDate, 1) : null;
-  const nextDate = isValidDate ? addDays(parsedDate, 1) : null;
-  const canGoNext = nextDate && (isToday(nextDate) || !isFuture(nextDate));
+  const yearDate = getYearDate();
+  const yearStart = startOfYear(yearDate);
+  const yearEnd = endOfYear(yearDate);
+  const isFutureYear = isValidParams && isFuture(yearStart) && !isThisYear(yearDate);
+  const isCurrentYear = isThisYear(yearDate);
+
+  // Navigation
+  const prevYearDate = subYears(yearDate, 1);
+  const nextYearDate = addYears(yearDate, 1);
+  const canGoNext = !isFuture(startOfYear(nextYearDate)) || isThisYear(nextYearDate);
+
+  const formatYearUrl = (date: Date) => {
+    return `/launches/${date.getFullYear()}`;
+  };
 
   useEffect(() => {
     localStorage.setItem('productView', view);
@@ -106,28 +112,15 @@ const LaunchArchive = () => {
   }, []);
 
   useEffect(() => {
-    if (date === 'today' || !isValidDate || isFutureDate) return;
+    if (!isValidParams || isFutureYear) return;
     fetchProducts();
-  }, [date, isValidDate, isFutureDate, user]);
+  }, [year, isValidParams, isFutureYear, user]);
 
   const fetchProducts = async () => {
-    if (!isValidDate) return;
-    
     setLoading(true);
     try {
-      // Get start and end of the day in UTC
-      const startOfDay = new Date(Date.UTC(
-        parsedDate.getFullYear(),
-        parsedDate.getMonth(),
-        parsedDate.getDate(),
-        0, 0, 0, 0
-      ));
-      const endOfDay = new Date(Date.UTC(
-        parsedDate.getFullYear(),
-        parsedDate.getMonth(),
-        parsedDate.getDate(),
-        23, 59, 59, 999
-      ));
+      const startDate = new Date(Date.UTC(parsedYear, 0, 1, 0, 0, 0, 0));
+      const endDate = new Date(Date.UTC(parsedYear, 11, 31, 23, 59, 59, 999));
 
       const { data: productsData, error } = await supabase
         .from('products')
@@ -146,8 +139,8 @@ const LaunchArchive = () => {
           product_makers(user_id, users(username, avatar_url))
         `)
         .eq('status', 'launched')
-        .gte('launch_date', startOfDay.toISOString())
-        .lte('launch_date', endOfDay.toISOString())
+        .gte('launch_date', startDate.toISOString())
+        .lte('launch_date', endDate.toISOString())
         .order('launch_date', { ascending: false });
 
       if (error) throw error;
@@ -159,6 +152,12 @@ const LaunchArchive = () => {
         .from('product_vote_counts')
         .select('product_id, net_votes');
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+
+      // Fetch rating stats
+      const { data: ratingStats } = await supabase
+        .from('product_rating_stats')
+        .select('product_id, average_rating, rating_count');
+      const ratingMap = new Map(ratingStats?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
 
       // Fetch categories
       const { data: categories } = await supabase
@@ -284,12 +283,12 @@ const LaunchArchive = () => {
     }
   };
 
-  if (!isValidDate) {
+  if (!isValidParams) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-12 max-w-5xl text-center">
-          <h1 className="text-2xl font-bold mb-4">Invalid Date</h1>
-          <p className="text-muted-foreground mb-6">The date format should be YYYY-MM-DD (e.g., 2025-01-15)</p>
+          <h1 className="text-2xl font-bold mb-4">Invalid Year</h1>
+          <p className="text-muted-foreground mb-6">The URL format should be /launches/YYYY (e.g., /launches/2025)</p>
           <Link to="/launches/today">
             <Button>View Today's Launches</Button>
           </Link>
@@ -298,12 +297,14 @@ const LaunchArchive = () => {
     );
   }
 
-  if (isFutureDate) {
+  if (isFutureYear) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-12 max-w-5xl text-center">
-          <h1 className="text-2xl font-bold mb-4">Future Date</h1>
-          <p className="text-muted-foreground mb-6">Check back on {format(parsedDate, 'MMMM d, yyyy')} to see launches!</p>
+          <h1 className="text-2xl font-bold mb-4">Future Year</h1>
+          <p className="text-muted-foreground mb-6">
+            {parsedYear} hasn't started yet. Check back later!
+          </p>
           <Link to="/launches/today">
             <Button>View Today's Launches</Button>
           </Link>
@@ -312,11 +313,10 @@ const LaunchArchive = () => {
     );
   }
 
-  const formattedDate = format(parsedDate, 'MMMM d, yyyy');
-  const pageTitle = isToday(parsedDate) 
-    ? "Today's Launches" 
-    : `${formattedDate} Launches`;
-  const metaDescription = `Discover the top product launches from ${formattedDate}. See what products launched, vote for your favorites, and explore the best new tools and apps.`;
+  const pageTitle = isCurrentYear 
+    ? "This Year's Launches" 
+    : `${parsedYear} Launches`;
+  const metaDescription = `Discover the top product launches from ${parsedYear}. Vote for your favorites and explore the best new tools and apps.`;
 
   // Filter products by platform
   const filteredProducts = selectedPlatforms.length > 0 
@@ -331,7 +331,7 @@ const LaunchArchive = () => {
     if (filteredProducts.length === 0) {
       return (
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No launches on this day.</p>
+          <p className="text-muted-foreground mb-4">No launches during this year.</p>
           <Link to="/launches/today">
             <Button variant="outline">View Today's Launches</Button>
           </Link>
@@ -400,10 +400,10 @@ const LaunchArchive = () => {
       <Helmet>
         <title>{pageTitle} | Launch</title>
         <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={`https://trylaunch.ai/launches/${date}`} />
+        <link rel="canonical" href={`https://trylaunch.ai/launches/${year}`} />
         <meta property="og:title" content={`${pageTitle} | Launch`} />
         <meta property="og:description" content={metaDescription} />
-        <meta property="og:url" content={`https://trylaunch.ai/launches/${date}`} />
+        <meta property="og:url" content={`https://trylaunch.ai/launches/${year}`} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${pageTitle} | Launch`} />
@@ -414,25 +414,25 @@ const LaunchArchive = () => {
         items={[
           { name: 'Home', url: 'https://trylaunch.ai' },
           { name: 'Launches', url: 'https://trylaunch.ai/products' },
-          { name: formattedDate, url: `https://trylaunch.ai/launches/${date}` }
+          { name: String(parsedYear), url: `https://trylaunch.ai/launches/${year}` }
         ]} 
       />
 
       <div className="container mx-auto px-4 py-6 max-w-5xl">
         {/* Filter bar - matching homepage exactly */}
         <div className="flex flex-row items-center justify-between gap-2 mb-6">
-          {/* Date Navigation on the left */}
+          {/* Year Navigation on the left */}
           <div className="flex items-center gap-1 border rounded-md p-1 h-9">
-            <Link to={`/launches/${format(prevDate!, 'yyyy-MM-dd')}`}>
+            <Link to={formatYearUrl(prevYearDate)}>
               <Button variant="ghost" size="sm" className="h-7 px-2 gap-1">
                 <ChevronLeft className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-xs">{format(prevDate!, 'MMM d')}</span>
+                <span className="hidden sm:inline text-xs">{prevYearDate.getFullYear()}</span>
               </Button>
             </Link>
             {canGoNext && (
-              <Link to={`/launches/${format(nextDate!, 'yyyy-MM-dd')}`}>
+              <Link to={formatYearUrl(nextYearDate)}>
                 <Button variant="ghost" size="sm" className="h-7 px-2 gap-1">
-                  <span className="hidden sm:inline text-xs">{format(nextDate!, 'MMM d')}</span>
+                  <span className="hidden sm:inline text-xs">{nextYearDate.getFullYear()}</span>
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
               </Link>
@@ -463,7 +463,7 @@ const LaunchArchive = () => {
             {pageTitle}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {formattedDate}
+            {format(yearStart, 'MMM d, yyyy')} - {format(yearEnd, 'MMM d, yyyy')}
           </p>
         </div>
 
@@ -473,7 +473,7 @@ const LaunchArchive = () => {
         {/* Stats */}
         {!loading && filteredProducts.length > 0 && (
           <div className="text-center text-sm text-muted-foreground mt-8">
-            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} launched on {formattedDate}
+            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} launched in {parsedYear}
           </div>
         )}
       </div>
@@ -481,4 +481,4 @@ const LaunchArchive = () => {
   );
 };
 
-export default LaunchArchive;
+export default LaunchArchiveYearly;
