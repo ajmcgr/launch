@@ -176,7 +176,7 @@ export const Footer = () => {
                   to="/advertise"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Advertising
+                  Advertise
                 </Link>
               </li>
               <li>
