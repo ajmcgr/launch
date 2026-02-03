@@ -292,38 +292,20 @@ const LaunchArchiveWeekly = () => {
       />
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {/* Week Navigation */}
-        <div className="flex items-center justify-between mb-8">
-          <Link to={formatWeekUrl(prevWeekDate)}>
-            <Button variant="ghost" size="sm" className="gap-1">
-              <ChevronLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Week {getWeek(prevWeekDate, { weekStartsOn: 1 })}</span>
-            </Button>
-          </Link>
-          
-          <div className="text-center">
-            <h1 className="text-2xl sm:text-3xl font-reckless font-bold text-foreground">
-              {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">{dateRange}</p>
-          </div>
-
-          {canGoNext ? (
-            <Link to={formatWeekUrl(nextWeekDate)}>
-              <Button variant="ghost" size="sm" className="gap-1">
-                <span className="hidden sm:inline">Week {getWeek(nextWeekDate, { weekStartsOn: 1 })}</span>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          ) : (
-            <div className="w-20" />
-          )}
+        {/* Hero title - matching homepage */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-reckless font-bold mb-4 text-foreground">
+            {isCurrentWeek ? "This Week's Launches" : `Week ${parsedWeek}, ${parsedYear}`}
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            {dateRange}
+          </p>
         </div>
 
-        {/* Section title and filters - matching homepage */}
+        {/* Section title and filters - matching homepage exactly */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-foreground sm:text-left text-center mb-3">
-            {isCurrentWeek ? "This Week's Launches" : `${dateRange}`}
+            {isCurrentWeek ? "This Week's Launches" : dateRange}
           </h2>
           <div className="flex items-center gap-2 sm:justify-start justify-center">
             <PlatformFilter 
@@ -335,6 +317,27 @@ const LaunchArchiveWeekly = () => {
             <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
             {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
           </div>
+        </div>
+
+        {/* Week Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <Link to={formatWeekUrl(prevWeekDate)}>
+            <Button variant="ghost" size="sm" className="gap-1">
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Week {getWeek(prevWeekDate, { weekStartsOn: 1 })}</span>
+            </Button>
+          </Link>
+          
+          {canGoNext ? (
+            <Link to={formatWeekUrl(nextWeekDate)}>
+              <Button variant="ghost" size="sm" className="gap-1">
+                <span className="hidden sm:inline">Week {getWeek(nextWeekDate, { weekStartsOn: 1 })}</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          ) : (
+            <div className="w-20" />
+          )}
         </div>
 
         {/* Content */}
