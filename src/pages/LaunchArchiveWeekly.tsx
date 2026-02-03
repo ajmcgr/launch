@@ -469,7 +469,7 @@ const LaunchArchiveWeekly = () => {
               />
             </div>
             <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
-            <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={false} />
+            <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
             <ViewToggle view={view} onViewChange={setView} />
           </div>
         </div>
