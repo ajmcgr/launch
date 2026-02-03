@@ -746,7 +746,7 @@ const Home = () => {
         
         {/* Media Banner */}
         <div className="flex flex-col items-center pt-6">
-          <div className="relative">
+          <div className="flex flex-col items-center">
             <a 
               href="https://trymedia.ai/" 
               target="_blank" 
@@ -760,7 +760,7 @@ const Home = () => {
                 style={{ width: '728px', height: '91px', borderRadius: 0 }}
               />
             </a>
-            <Link to="/media-kit" className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground opacity-60 hover:opacity-100">
+            <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-1">
               Sponsored
             </Link>
           </div>
