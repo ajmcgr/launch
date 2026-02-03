@@ -105,8 +105,9 @@ const Index = () => {
   const fetchLaunches = async () => {
     setLoading(true);
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      // Use UTC start of today to ensure consistent behavior across timezones
+      const now = new Date();
+      const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
 
       const { data: products, error } = await supabase
         .from('products')
@@ -123,7 +124,7 @@ const Index = () => {
           )
         `)
         .eq('status', 'launched')
-        .gte('launch_date', today.toISOString())
+        .gte('launch_date', todayUTC.toISOString())
         .order('launch_date', { ascending: false });
 
       if (error) throw error;
