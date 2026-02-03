@@ -460,12 +460,9 @@ const LaunchArchiveYearly = () => {
 
         {/* Title - matching homepage */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Reckless, serif' }}>
-            {pageTitle}
+          <h2 className="text-2xl font-bold mb-2">
+            {isCurrentYear ? "This Year's Launches" : `${parsedYear}`}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            {format(yearStart, 'MMM d, yyyy')} - {format(yearEnd, 'MMM d, yyyy')}
-          </p>
         </div>
 
         {/* Product list */}

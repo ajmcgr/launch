@@ -458,14 +458,11 @@ const LaunchArchiveDaily = () => {
           </div>
         </div>
 
-        {/* Title - matching weekly format */}
+        {/* Title - matching homepage */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Reckless, serif' }}>
-            {pageTitle}
+          <h2 className="text-2xl font-bold mb-2">
+            {isToday(parsedDate) ? "Today's Launches" : formattedDate}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            {formattedDate}
-          </p>
         </div>
 
         {/* Product list */}
