@@ -687,8 +687,7 @@ export const ThisWeekHighlights = () => {
               <img 
                 src={roachBanner} 
                 alt="Roach - Survive. Thrive. Shop Roach." 
-                className="max-w-full h-auto transition-all duration-200 hover:opacity-95"
-                style={{ width: '728px', height: '91px', borderRadius: 0 }}
+                className="w-full max-w-[728px] h-auto transition-all duration-200 hover:opacity-95"
               />
             </a>
             <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-1">
