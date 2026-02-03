@@ -761,7 +761,7 @@ const Home = () => {
               />
             </a>
             <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-1">
-              Featured Partner — Become a partner
+              Featured Partner · Become a partner
             </Link>
           </div>
         </div>
@@ -917,7 +917,7 @@ const Home = () => {
             />
           </a>
           <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 mt-1">
-            Featured Partner — Become a partner
+            Featured Partner · Become a partner
           </Link>
         </div>
       </div>
