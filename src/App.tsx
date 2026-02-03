@@ -100,7 +100,7 @@ const AppContent = () => {
           <Route path="/media-kit" element={<MediaKit />} />
           <Route path="/launches/today" element={<LaunchArchive />} />
           <Route path="/launches/:date" element={<LaunchArchive />} />
-          <Route path="/launches/:year/w:week" element={<LaunchArchiveWeekly />} />
+          <Route path="/launches/:year/:week" element={<LaunchArchiveWeekly />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />

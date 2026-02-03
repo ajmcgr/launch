@@ -47,9 +47,10 @@ const LaunchArchiveWeekly = () => {
   
   const effectiveView = isMobile ? 'compact' : view;
 
-  // Parse year and week
+  // Parse year and week (week comes as "w06" format)
   const parsedYear = parseInt(year || '', 10);
-  const parsedWeek = parseInt(week?.replace('w', '') || '', 10);
+  const weekNumber = week?.startsWith('w') ? week.slice(1) : week;
+  const parsedWeek = parseInt(weekNumber || '', 10);
   const isValidParams = !isNaN(parsedYear) && !isNaN(parsedWeek) && parsedWeek >= 1 && parsedWeek <= 53;
 
   // Get the date for this week
