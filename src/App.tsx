@@ -40,6 +40,8 @@ import PassGraphic from "./pages/PassGraphic";
 import ProductHuntAlternative from "./pages/ProductHuntAlternative";
 import ProductLaunchPlatform from "./pages/ProductLaunchPlatform";
 import ProductLaunchStrategy from "./pages/ProductLaunchStrategy";
+import LaunchArchive from "./pages/LaunchArchive";
+import LaunchArchiveWeekly from "./pages/LaunchArchiveWeekly";
 
 import DiscourseSso from "./pages/DiscourseSso";
 import MediaKit from "./pages/MediaKit";
@@ -96,6 +98,9 @@ const AppContent = () => {
           <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
           <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
           <Route path="/media-kit" element={<MediaKit />} />
+          <Route path="/launches/today" element={<LaunchArchive />} />
+          <Route path="/launches/:date" element={<LaunchArchive />} />
+          <Route path="/launches/:year/w:week" element={<LaunchArchiveWeekly />} />
           <Route path="/:username/followers" element={<Followers />} />
           <Route path="/:username/following" element={<Following />} />
           <Route path="/:username" element={<UserProfile />} />

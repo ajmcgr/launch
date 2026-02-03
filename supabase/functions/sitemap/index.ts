@@ -47,10 +47,48 @@ Deno.serve(async (req) => {
       return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     };
 
+    // Generate archive dates (last 90 days)
+    const generateArchiveDates = () => {
+      const dates: string[] = [];
+      const today = new Date();
+      for (let i = 0; i < 90; i++) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        dates.push(date.toISOString().split('T')[0]);
+      }
+      return dates;
+    };
+
+    // Generate archive weeks (last 12 weeks)
+    const generateArchiveWeeks = () => {
+      const weeks: { year: number; week: number }[] = [];
+      const today = new Date();
+      
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - (i * 7));
+        const year = date.getFullYear();
+        // Get ISO week number
+        const startOfYear = new Date(year, 0, 1);
+        const days = Math.floor((date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+        const week = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+        
+        // Avoid duplicates
+        if (!weeks.some(w => w.year === year && w.week === week)) {
+          weeks.push({ year, week });
+        }
+      }
+      return weeks;
+    };
+
+    const archiveDates = generateArchiveDates();
+    const archiveWeeks = generateArchiveWeeks();
+
     // Static pages
     const staticPages = [
       { loc: "/", priority: "1.0", changefreq: "daily" },
       { loc: "/products", priority: "0.9", changefreq: "daily" },
+      { loc: "/launches/today", priority: "0.9", changefreq: "daily" },
       { loc: "/product-hunt-alternative", priority: "0.8", changefreq: "monthly" },
       { loc: "/product-launch-platform", priority: "0.8", changefreq: "monthly" },
       { loc: "/product-launch-strategy", priority: "0.8", changefreq: "monthly" },
@@ -72,6 +110,28 @@ Deno.serve(async (req) => {
     <loc>${SITE_URL}${page.loc}</loc>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
+  </url>`;
+    }
+
+    // Add daily archive pages
+    for (const date of archiveDates) {
+      xml += `
+  <url>
+    <loc>${SITE_URL}/launches/${date}</loc>
+    <lastmod>${date}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+    }
+
+    // Add weekly archive pages
+    for (const { year, week } of archiveWeeks) {
+      const weekStr = week.toString().padStart(2, '0');
+      xml += `
+  <url>
+    <loc>${SITE_URL}/launches/${year}/w${weekStr}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>`;
     }
 
