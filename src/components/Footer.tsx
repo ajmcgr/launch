@@ -49,7 +49,7 @@ export const Footer = () => {
       const { data } = await supabase
         .from('products')
         .select('id, name, slug')
-        .eq('status', 'published')
+        .eq('status', 'launched')
         .not('name', 'is', null)
         .not('slug', 'is', null)
         .order('launch_date', { ascending: false })
