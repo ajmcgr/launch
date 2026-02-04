@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, MessageSquare } from 'lucide-react';
 
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
@@ -17,6 +17,7 @@ interface HomeLaunchListItemProps {
   platforms?: Platform[];
   makers?: Array<{ username: string; avatar_url?: string }>;
   userVote?: 1 | null;
+  commentCount?: number;
   onVote: () => void;
 }
 
@@ -32,6 +33,7 @@ export const HomeLaunchListItem = ({
   platforms,
   makers = [],
   userVote,
+  commentCount = 0,
   onVote,
 }: HomeLaunchListItemProps) => {
   const navigate = useNavigate();
@@ -107,7 +109,23 @@ export const HomeLaunchListItem = ({
           </div>
         </div>
       </div>
-      <div className="flex items-start self-start">
+      <div className="flex items-start self-start gap-1.5">
+        {/* Comment button - desktop only */}
+        <Link
+          to={`/launch/${slug}#comments`}
+          onClick={(e) => e.stopPropagation()}
+          className="hidden md:flex"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 touch-manipulation border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary transition-colors"
+          >
+            <MessageSquare className="h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground" strokeWidth={2.5} />
+            <span className="font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground">{commentCount}</span>
+          </Button>
+        </Link>
+        
         <Button
           variant="outline"
           size="sm"
