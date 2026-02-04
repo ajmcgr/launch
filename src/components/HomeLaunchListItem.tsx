@@ -121,8 +121,8 @@ export const HomeLaunchListItem = ({
             size="sm"
             className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 touch-manipulation border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary transition-colors"
           >
-            <MessageSquare className="h-4 w-4 text-[#666666] [@media(hover:hover)]:group-hover:text-primary-foreground" strokeWidth={2.5} />
-            <span className="font-bold text-sm text-[#666666] [@media(hover:hover)]:group-hover:text-primary-foreground">{commentCount}</span>
+            <MessageSquare className="h-4 w-4 text-[#999999] [@media(hover:hover)]:group-hover:text-primary-foreground" strokeWidth={2.5} />
+            <span className="font-bold text-sm text-[#999999] [@media(hover:hover)]:group-hover:text-primary-foreground">{commentCount}</span>
           </Button>
         </Link>
         
