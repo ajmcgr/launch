@@ -907,7 +907,7 @@ const Home = () => {
         </div>
 
         {/* Bio Sponsor Banner */}
-        <div className="py-6 flex flex-col items-center">
+        <div className="mt-6 py-6 flex flex-col items-center">
           <a 
             href="https://trybio.ai" 
             target="_blank" 

@@ -641,7 +641,7 @@ export const ThisWeekHighlights = () => {
   return (
     <section className="py-6 bg-background">
       <div className="container mx-auto px-4 max-w-5xl">
-        <h2 className="text-2xl font-bold text-center mb-8">This Week's Best Launches</h2>
+        <h2 className="text-2xl font-bold text-center mb-8">This Week's Launch Picks</h2>
 
         <div className="space-y-8">
           {sections.map((section) => (
@@ -676,7 +676,7 @@ export const ThisWeekHighlights = () => {
         </div>
         
         {/* Roach Banner */}
-        <div className="flex flex-col items-center py-6">
+        <div className="flex flex-col items-center mt-6 py-6">
           <div className="flex flex-col items-center">
             <a 
               href="https://roachclo.com/" 
