@@ -24,8 +24,8 @@ const RedditIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-interface Tag {
-  id: number;
+interface Product {
+  id: string;
   name: string;
   slug: string;
 }
@@ -41,18 +41,22 @@ const createSlug = (name: string) => {
 };
 
 export const Footer = () => {
-  const [tags, setTags] = useState<Tag[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const fetchTags = async () => {
+    const fetchProducts = async () => {
       const { data } = await supabase
-        .from('product_tags')
+        .from('products')
         .select('id, name, slug')
-        .order('name');
+        .eq('status', 'published')
+        .not('name', 'is', null)
+        .not('slug', 'is', null)
+        .order('launch_date', { ascending: false })
+        .limit(30);
       
       if (data) {
-        setTags(data);
+        setProducts(data as Product[]);
       }
     };
 
@@ -67,31 +71,31 @@ export const Footer = () => {
       }
     };
 
-    fetchTags();
+    fetchProducts();
     fetchCategories();
   }, []);
 
   return (
     <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Tags Section */}
-        {tags.length > 0 && (
+        {/* Products Section */}
+        {products.length > 0 && (
           <div className="mb-8">
             <h3 className="font-semibold mb-4 text-foreground">Popular Products</h3>
             <div className="flex flex-wrap gap-2">
-              {tags.slice(0, 30).map((tag) => (
+              {products.map((product) => (
                 <Link
-                  key={tag.id}
-                  to={`/tag/${tag.slug}`}
+                  key={product.id}
+                  to={`/launch/${product.slug}`}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {tag.name}
+                  {product.name}
                 </Link>
               ))}
             </div>
             <div className="mt-4">
               <Link 
-                to="/tags" 
+                to="/products" 
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 More →
