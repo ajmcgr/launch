@@ -70,7 +70,7 @@ const Home = () => {
     const saved = localStorage.getItem('productView');
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
-  const [currentPeriod, setCurrentPeriod] = useState<'today' | 'week' | 'month' | 'year'>('week');
+  const [currentPeriod, setCurrentPeriod] = useState<'all' | 'today' | 'week' | 'month' | 'year'>('week');
   const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
@@ -259,9 +259,11 @@ const Home = () => {
     }
   };
 
-  const getStartDateForPeriod = (period: 'today' | 'week' | 'month' | 'year'): Date => {
+  const getStartDateForPeriod = (period: 'all' | 'today' | 'week' | 'month' | 'year'): Date => {
     const now = new Date();
     switch (period) {
+      case 'all':
+        return new Date(2000, 0, 1); // Far past date to include all products
       case 'today':
         return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
       case 'week':
@@ -273,7 +275,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false, skipFallback: boolean = false) => {
+  const fetchProducts = async (period: 'all' | 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false, skipFallback: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -518,7 +520,7 @@ const Home = () => {
   // Check if we've hit the homepage limit
   const canLoadMore = hasMore && products.length < MAX_HOMEPAGE_PRODUCTS;
 
-  const handlePeriodChange = (period: 'today' | 'week' | 'month' | 'year') => {
+  const handlePeriodChange = (period: 'all' | 'today' | 'week' | 'month' | 'year') => {
     setCurrentPeriod(period);
     setPage(0);
     setProducts([]);
@@ -590,6 +592,8 @@ const Home = () => {
   const getViewAllLink = () => {
     const now = new Date();
     switch (currentPeriod) {
+      case 'all':
+        return `/products`;
       case 'today':
         return `/launches/${format(now, 'yyyy-MM-dd')}`;
       case 'week': {
@@ -744,7 +748,7 @@ const Home = () => {
           <div className="flex justify-center pt-6">
             <Link to={getViewAllLink()}>
               <Button variant="outline" className="border-2 border-muted-foreground/20">
-                View all {currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} launches →
+                View all {currentPeriod === 'all' ? "all-time" : currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} launches →
               </Button>
             </Link>
           </div>
@@ -791,6 +795,7 @@ const Home = () => {
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-6">
             <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
+              <TabsTrigger value="all" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">All</TabsTrigger>
               <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Today</TabsTrigger>
               <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Week</TabsTrigger>
               <TabsTrigger value="month" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Month</TabsTrigger>
@@ -816,12 +821,17 @@ const Home = () => {
           {/* Value Proposition */}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">
+              {currentPeriod === 'all' && "All-Time Launches"}
               {currentPeriod === 'today' && "Today's Launches"}
               {currentPeriod === 'week' && "This Week's Launches"}
               {currentPeriod === 'month' && "This Month's Launches"}
               {currentPeriod === 'year' && "This Year's Launches"}
             </h2>
           </div>
+
+          <TabsContent value="all" className="space-y-6">
+            {renderProductList(products)}
+          </TabsContent>
 
           <TabsContent value="today" className="space-y-6">
             {renderProductList(products)}
@@ -921,7 +931,7 @@ const Home = () => {
               style={{ borderRadius: 0 }}
             />
           </a>
-          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 mt-1">
+          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-1">
             Featured Partner · Become a partner
           </Link>
         </div>
