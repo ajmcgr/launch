@@ -196,53 +196,63 @@ export const Footer = () => {
 
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Connect</h3>
-            <div className="flex items-center gap-4">
-              <a 
-                href="https://x.com/trylaunchai" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="Follow us on X"
-              >
-                <XIcon className="h-5 w-5" />
-              </a>
-              <a 
-                href="https://t.me/trylaunch" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="Join us on Telegram"
-              >
-                <TelegramIcon className="h-5 w-5" />
-              </a>
-              <a 
-                href="https://www.reddit.com/r/TryLaunch/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="Join us on Reddit"
-              >
-                <RedditIcon className="h-5 w-5" />
-              </a>
-              <a 
-                href="https://instagram.com/trylaunch" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="Follow us on Instagram"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a 
-                href="https://www.youtube.com/channel/UCiWIdnazQN7JqkioVROrblQ/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="Subscribe on YouTube"
-              >
-                <Youtube className="h-5 w-5" />
-              </a>
-            </div>
+            <ul className="space-y-1">
+              <li>
+                <a 
+                  href="https://x.com/trylaunchai" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
+                >
+                  <XIcon className="h-4 w-4" />
+                  X
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://t.me/trylaunch" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
+                >
+                  <TelegramIcon className="h-4 w-4" />
+                  Telegram
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.reddit.com/r/TryLaunch/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
+                >
+                  <RedditIcon className="h-4 w-4" />
+                  Reddit
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://instagram.com/trylaunch" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
+                >
+                  <Instagram className="h-4 w-4" />
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.youtube.com/channel/UCiWIdnazQN7JqkioVROrblQ/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
+                >
+                  <Youtube className="h-4 w-4" />
+                  YouTube
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
