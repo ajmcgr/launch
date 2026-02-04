@@ -142,11 +142,9 @@ const ProductListItem = ({
               </>
             )}
             
-            <span>·</span>
-            <Globe className="h-3.5 w-3.5" />
-            
-            <span>·</span>
-            <div className="flex items-center gap-0.5">
+            {/* Comment count inline - mobile only (desktop shows button) */}
+            <span className="md:hidden">·</span>
+            <div className="flex items-center gap-0.5 md:hidden">
               <MessageSquare className="h-3.5 w-3.5" />
               <span>{product.commentCount || 0}</span>
             </div>
@@ -160,7 +158,23 @@ const ProductListItem = ({
           </div>
         </div>
 
-        <div className="flex items-start self-start">
+        <div className="flex items-start self-start gap-1.5">
+          {/* Comment button - desktop only */}
+          <Link
+            to={`/launch/${product.slug}#comments`}
+            onClick={(e) => e.stopPropagation()}
+            className="hidden md:flex"
+          >
+            <Button
+              size="sm"
+              variant="outline"
+              className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 transition-colors touch-manipulation border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary"
+            >
+              <MessageSquare className="h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground" strokeWidth={2.5} />
+              <span className="font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground">{product.commentCount || 0}</span>
+            </Button>
+          </Link>
+          
           <Button
             size="sm"
             variant="outline"
