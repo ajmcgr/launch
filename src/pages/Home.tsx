@@ -799,7 +799,7 @@ const Home = () => {
               <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Week</TabsTrigger>
               <TabsTrigger value="month" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Month</TabsTrigger>
               <TabsTrigger value="year" className="hidden sm:inline-flex text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Year</TabsTrigger>
-              <TabsTrigger value="all" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">All</TabsTrigger>
+              <TabsTrigger value="all" className="hidden sm:inline-flex text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">All</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
               <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
