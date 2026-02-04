@@ -83,7 +83,7 @@ export const Footer = () => {
           <div className="mb-8">
             <h3 className="font-semibold mb-4 text-foreground">Popular Products</h3>
             <div className="flex flex-wrap gap-2">
-              {products.map((product) => (
+              {products.slice(0, 30).map((product) => (
                 <Link
                   key={product.id}
                   to={`/launch/${product.slug}`}
