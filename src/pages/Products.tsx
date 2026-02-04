@@ -460,11 +460,11 @@ const Products = () => {
               {/* Time Period Toggle */}
               <div className="flex items-center gap-1 border rounded-md p-1 h-9">
                 {[
+                  { value: 'all', label: 'All' },
                   { value: 'today', label: 'Today' },
                   { value: 'week', label: 'Week' },
                   { value: 'month', label: 'Month' },
                   { value: 'year', label: 'Year' },
-                  { value: 'all', label: 'All-Time' },
                 ].map((period) => (
                   <button
                     key={period.value}
