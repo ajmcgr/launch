@@ -45,7 +45,7 @@ const MediaKit = () => {
             {/* Left Column - Key Metrics */}
             <div className="space-y-4">
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">73K+</p>
+                <p className="text-4xl font-bold text-primary">77K+</p>
                 <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
@@ -71,24 +71,24 @@ const MediaKit = () => {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">🇬🇧 United Kingdom</span>
-                    <span className="font-semibold text-foreground">45%</span>
+                    <span className="text-muted-foreground">🇺🇸 United States</span>
+                    <span className="font-semibold text-foreground">28%</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">🇺🇸 United States</span>
-                    <span className="font-semibold text-foreground">17%</span>
+                    <span className="text-muted-foreground">🇬🇧 United Kingdom</span>
+                    <span className="font-semibold text-foreground">13%</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">🇮🇳 India</span>
-                    <span className="font-semibold text-foreground">8%</span>
+                    <span className="font-semibold text-foreground">11%</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">🇨🇳 China</span>
-                    <span className="font-semibold text-foreground">6%</span>
+                    <span className="font-semibold text-foreground">9%</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">🌍 EU & Others</span>
-                    <span className="font-semibold text-foreground">24%</span>
+                    <span className="font-semibold text-foreground">39%</span>
                   </div>
                 </div>
               </div>
@@ -207,7 +207,7 @@ const MediaKit = () => {
               Email alex@trylaunch.ai
             </a>
             <p className="text-xs text-muted-foreground mt-6">
-              Data source: Google Analytics. Updated January 2026
+              Data source: Google Analytics. Updated February 2026
             </p>
           </div>
         </div>
