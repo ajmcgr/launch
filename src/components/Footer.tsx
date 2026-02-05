@@ -76,7 +76,7 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="border-t bg-background">
+    <footer className="bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Products Section */}
         {products.length > 0 && (
@@ -130,8 +130,11 @@ export const Footer = () => {
           </div>
         )}
 
-        {/* Footer Links */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-6 border-t">
+        {/* Footer Links - full width border */}
+      </div>
+      <div className="border-t">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">About</h3>
             <ul className="space-y-1">
@@ -254,9 +257,8 @@ export const Footer = () => {
               </li>
             </ul>
           </div>
-        </div>
-
-        <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
+          </div>
+          <div className="pb-8 text-center text-sm text-muted-foreground">
           <p>
             Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
             <a 
@@ -276,6 +278,7 @@ export const Footer = () => {
               Works
             </a>.
           </p>
+          </div>
         </div>
       </div>
     </footer>
