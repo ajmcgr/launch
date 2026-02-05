@@ -572,7 +572,7 @@ export const AutoSurfacedContent = () => {
       const newText = newNoteworthy
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`## ✨ New & Noteworthy\n\n${newText}`);
+      sections.push(`## ✨ New & Noteworthy on Launch\n\n${newText}`);
     }
     
     // Hidden Gems
@@ -588,7 +588,7 @@ export const AutoSurfacedContent = () => {
       const missedText = missedProducts
         .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
-      sections.push(`## 🕐 5 Products You Missed This Week\n\n${missedText}`);
+      sections.push(`## 🕐 5 Launch Products You Missed This Week\n\n${missedText}`);
     }
     
     // Builders to Watch
@@ -629,14 +629,14 @@ export const AutoSurfacedContent = () => {
       isLoading: weeklyLoading,
     },
     {
-      title: "🕐 5 Products You Missed This Week",
+      title: "🕐 5 Launch Products You Missed This Week",
       description: "Top performers from 7-14 days ago",
       icon: null,
       products: missedProducts,
       isLoading: missedLoading,
     },
     {
-      title: "✨ New & Noteworthy",
+      title: "✨ New & Noteworthy on Launch",
       description: "Fresh launches gaining traction",
       icon: null,
       products: newNoteworthy,
