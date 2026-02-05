@@ -319,6 +319,44 @@ const Pricing = () => {
           </div>
         </div>
 
+        {/* Custom Package Card */}
+        <div className="max-w-md mx-auto mt-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-xl">Custom Package</CardTitle>
+              <CardDescription>Tailored campaigns for your brand</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">Fully managed campaigns</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">Display or multi-channel campaigns</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">Newsletters, events, or other promoted content</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">Customized to meet your campaign goals</span>
+                </li>
+              </ul>
+              <Button 
+                asChild
+                className="w-full" 
+                size="lg"
+                variant="outline"
+              >
+                <Link to="/media-kit">Get Started</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mt-12">
           <Lock className="h-4 w-4" />
           <span>Payments secured by</span>
