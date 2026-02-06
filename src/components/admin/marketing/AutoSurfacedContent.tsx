@@ -336,9 +336,25 @@ export const AutoSurfacedContent = () => {
     },
   });
 
-  // Launch of the Day - top voted product today
+  // Get current sponsored product IDs to exclude from other sections
+  const { data: sponsoredProductIds } = useQuery({
+    queryKey: ['sponsored-product-ids', todayUTC.toISOString()],
+    queryFn: async () => {
+      const today = todayUTC.toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('sponsored_products')
+        .select('product_id')
+        .lte('start_date', today)
+        .gte('end_date', today);
+      
+      if (error) throw error;
+      return new Set((data || []).map((sp: any) => sp.product_id));
+    },
+  });
+
+  // Launch of the Day - top voted product today (excluding sponsored)
   const { data: launchOfDay, isLoading: launchLoading } = useQuery({
-    queryKey: ['auto-launch-of-day', startOfDay],
+    queryKey: ['auto-launch-of-day', startOfDay, sponsoredProductIds],
     queryFn: async () => {
       // Fetch products and votes separately since product_vote_counts is a VIEW
       const [productsRes, votesRes] = await Promise.all([
@@ -357,21 +373,24 @@ export const AutoSurfacedContent = () => {
       
       const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
       
-      const mapped = (productsRes.data || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        tagline: p.tagline,
-        slug: p.slug,
-        net_votes: votesMap.get(p.id) || 0,
-      }));
+      const mapped = (productsRes.data || [])
+        .filter((p: any) => !sponsoredProductIds?.has(p.id))
+        .map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          tagline: p.tagline,
+          slug: p.slug,
+          net_votes: votesMap.get(p.id) || 0,
+        }));
       
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 3);
     },
+    enabled: sponsoredProductIds !== undefined,
   });
 
-  // Weekly Winners - top voted products this week
+  // Weekly Winners - top voted products this week (excluding sponsored)
   const { data: weeklyWinners, isLoading: weeklyLoading } = useQuery({
-    queryKey: ['auto-weekly-winners', twoWeeksAgo],
+    queryKey: ['auto-weekly-winners', twoWeeksAgo, sponsoredProductIds],
     queryFn: async () => {
       // Fetch products and votes separately since product_vote_counts is a VIEW
       const [productsRes, votesRes] = await Promise.all([
@@ -390,21 +409,24 @@ export const AutoSurfacedContent = () => {
       
       const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
       
-      const mapped = (productsRes.data || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        tagline: p.tagline,
-        slug: p.slug,
-        net_votes: votesMap.get(p.id) || 0,
-      }));
+      const mapped = (productsRes.data || [])
+        .filter((p: any) => !sponsoredProductIds?.has(p.id))
+        .map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          tagline: p.tagline,
+          slug: p.slug,
+          net_votes: votesMap.get(p.id) || 0,
+        }));
       
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
     },
+    enabled: sponsoredProductIds !== undefined,
   });
 
-  // Hidden Gems - recent products with fewer votes but launched
+  // Hidden Gems - recent products with fewer votes but launched (excluding sponsored)
   const { data: hiddenGems, isLoading: gemsLoading } = useQuery({
-    queryKey: ['auto-hidden-gems'],
+    queryKey: ['auto-hidden-gems', sponsoredProductIds],
     queryFn: async () => {
       // Get products from last 30 days with lower vote counts
       const thirtyDaysAgo = new Date(todayUTC.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -427,19 +449,22 @@ export const AutoSurfacedContent = () => {
       
       const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
       
-      const mapped = (productsRes.data || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        tagline: p.tagline,
-        slug: p.slug,
-        net_votes: votesMap.get(p.id) || 0,
-      }));
+      const mapped = (productsRes.data || [])
+        .filter((p: any) => !sponsoredProductIds?.has(p.id))
+        .map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          tagline: p.tagline,
+          slug: p.slug,
+          net_votes: votesMap.get(p.id) || 0,
+        }));
       
       // Filter to products with 1-10 votes (hidden gems)
       return mapped
         .filter((p) => (p.net_votes || 0) >= 1 && (p.net_votes || 0) <= 10)
         .slice(0, 5);
     },
+    enabled: sponsoredProductIds !== undefined,
   });
 
   // Builders to Watch - users with multiple products
@@ -482,9 +507,9 @@ export const AutoSurfacedContent = () => {
     },
   });
 
-  // 5 Products You Missed This Week - top products from 7-14 days ago
+  // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
-    queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo],
+    queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo, sponsoredProductIds],
     queryFn: async () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
@@ -502,21 +527,24 @@ export const AutoSurfacedContent = () => {
       
       const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
       
-      const mapped = (productsRes.data || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        tagline: p.tagline,
-        slug: p.slug,
-        net_votes: votesMap.get(p.id) || 0,
-      }));
+      const mapped = (productsRes.data || [])
+        .filter((p: any) => !sponsoredProductIds?.has(p.id))
+        .map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          tagline: p.tagline,
+          slug: p.slug,
+          net_votes: votesMap.get(p.id) || 0,
+        }));
       
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
     },
+    enabled: sponsoredProductIds !== undefined,
   });
 
-  // New & Noteworthy - newest launches with at least 1 vote
+  // New & Noteworthy - newest launches with at least 1 vote (excluding sponsored)
   const { data: newNoteworthy, isLoading: newNoteworthyLoading } = useQuery({
-    queryKey: ['auto-new-noteworthy', threeDaysAgo],
+    queryKey: ['auto-new-noteworthy', threeDaysAgo, sponsoredProductIds],
     queryFn: async () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
@@ -534,17 +562,20 @@ export const AutoSurfacedContent = () => {
       
       const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
       
-      const mapped = (productsRes.data || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        tagline: p.tagline,
-        slug: p.slug,
-        net_votes: votesMap.get(p.id) || 0,
-      }));
+      const mapped = (productsRes.data || [])
+        .filter((p: any) => !sponsoredProductIds?.has(p.id))
+        .map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          tagline: p.tagline,
+          slug: p.slug,
+          net_votes: votesMap.get(p.id) || 0,
+        }));
       
       // Filter to products with at least 1 vote
       return mapped.filter((p) => (p.net_votes || 0) >= 1).slice(0, 5);
     },
+    enabled: sponsoredProductIds !== undefined,
   });
 
   // Master copy function for all newsletter content
