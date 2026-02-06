@@ -125,23 +125,13 @@ const Contact = () => {
                       Sending...
                     </>
                   ) : (
-                    <>
-                      <Send className="mr-2 h-4 w-4" />
-                      Send Message
-                    </>
+                    'Send Message'
                   )}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
-
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          You can also email us directly at{' '}
-          <a href="mailto:alex@trylaunch.ai" className="text-primary hover:underline">
-            alex@trylaunch.ai
-          </a>
-        </p>
       </div>
     </div>
   );
