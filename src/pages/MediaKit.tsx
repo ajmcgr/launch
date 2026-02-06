@@ -210,64 +210,76 @@ const MediaKit = () => {
 
         </div>
 
-        <div className="bg-muted py-12">
-          <div className="max-w-2xl mx-auto px-4">
-            <h3 className="text-2xl font-bold text-foreground mb-2 text-center">Brand Assets</h3>
-            <p className="text-muted-foreground text-center mb-8">
-              Download our logo files for press and media use
-            </p>
+        {/* Brand Assets Section */}
+        <div className="border-t border-border">
+          <div className="max-w-2xl mx-auto px-4 py-16">
+            <div className="text-center mb-10">
+              <h3 className="text-2xl font-bold text-foreground mb-2">Brand Assets</h3>
+              <p className="text-muted-foreground">
+                Download our logo files for press and media use
+              </p>
+            </div>
             
-            {/* Logo Grid */}
-            <div className="flex flex-col items-center gap-8 mb-8">
+            {/* Logo Cards */}
+            <div className="space-y-4">
               {/* Gray Logo - Primary */}
-              <div className="flex flex-col items-center gap-3">
-                <div className="h-24 px-8 bg-white rounded-lg flex items-center justify-center">
-                  <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="h-10 object-contain" />
+              <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-32 h-16 bg-muted rounded-lg flex items-center justify-center">
+                    <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="h-8 object-contain" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Gray Logo</p>
+                    <p className="text-sm text-muted-foreground">Primary</p>
+                  </div>
                 </div>
-                <div className="flex gap-1">
-                  <a href="/media-kit/launch-logo-gray.png" download className="text-xs text-primary hover:underline">PNG</a>
-                  <span className="text-muted-foreground text-xs">·</span>
-                  <a href="/media-kit/launch-logo-gray.svg" download className="text-xs text-primary hover:underline">SVG</a>
+                <div className="flex gap-2">
+                  <a href="/media-kit/launch-logo-gray.png" download className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors">PNG</a>
+                  <a href="/media-kit/launch-logo-gray.svg" download className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors">SVG</a>
                 </div>
-                <span className="text-xs text-muted-foreground">Gray</span>
               </div>
 
-              {/* Black & White Logos - Secondary */}
-              <div className="flex gap-8">
-                {/* Black Logo */}
-                <div className="flex flex-col items-center gap-3">
-                  <div className="h-24 px-8 bg-white rounded-lg flex items-center justify-center">
-                    <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="h-10 object-contain" />
+              {/* Black Logo */}
+              <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-32 h-16 bg-white rounded-lg flex items-center justify-center border border-border">
+                    <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="h-8 object-contain" />
                   </div>
-                  <div className="flex gap-1">
-                    <a href="/media-kit/launch-logo-black.png" download className="text-xs text-primary hover:underline">PNG</a>
-                    <span className="text-muted-foreground text-xs">·</span>
-                    <a href="/media-kit/launch-logo-black.svg" download className="text-xs text-primary hover:underline">SVG</a>
+                  <div>
+                    <p className="font-medium text-foreground">Black Logo</p>
+                    <p className="text-sm text-muted-foreground">Light backgrounds</p>
                   </div>
-                  <span className="text-xs text-muted-foreground">Black</span>
                 </div>
+                <div className="flex gap-2">
+                  <a href="/media-kit/launch-logo-black.png" download className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors">PNG</a>
+                  <a href="/media-kit/launch-logo-black.svg" download className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors">SVG</a>
+                </div>
+              </div>
 
-                {/* White Logo */}
-                <div className="flex flex-col items-center gap-3">
-                  <div className="h-24 px-8 bg-foreground rounded-lg flex items-center justify-center">
-                    <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="h-10 object-contain" />
+              {/* White Logo */}
+              <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-32 h-16 bg-foreground rounded-lg flex items-center justify-center">
+                    <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="h-8 object-contain" />
                   </div>
-                  <div className="flex gap-1">
-                    <a href="/media-kit/launch-logo-white.png" download className="text-xs text-primary hover:underline">PNG</a>
-                    <span className="text-muted-foreground text-xs">·</span>
-                    <a href="/media-kit/launch-logo-white.svg" download className="text-xs text-primary hover:underline">SVG</a>
+                  <div>
+                    <p className="font-medium text-foreground">White Logo</p>
+                    <p className="text-sm text-muted-foreground">Dark backgrounds</p>
                   </div>
-                  <span className="text-xs text-muted-foreground">White</span>
+                </div>
+                <div className="flex gap-2">
+                  <a href="/media-kit/launch-logo-white.png" download className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors">PNG</a>
+                  <a href="/media-kit/launch-logo-white.svg" download className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors">SVG</a>
                 </div>
               </div>
             </div>
 
             {/* Download All Button */}
-            <div className="flex justify-center pt-4 border-t border-border/50">
+            <div className="flex justify-center mt-8">
               <Button asChild size="lg">
                 <a href="/media-kit/launch-logos.zip" download>
                   <Download className="mr-2 h-4 w-4" />
-                  Download All (.zip)
+                  Download All Logos
                 </a>
               </Button>
             </div>
