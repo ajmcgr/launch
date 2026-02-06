@@ -221,7 +221,7 @@ const MediaKit = () => {
             </div>
             
             {/* Logo Cards */}
-            <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
               {/* Gray Logo - Primary */}
               <div className="bg-card rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-3">
