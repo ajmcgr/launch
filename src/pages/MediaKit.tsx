@@ -223,7 +223,20 @@ const MediaKit = () => {
               
               {/* Logo Grid */}
               <div className="grid grid-cols-3 gap-8 mb-8 max-w-lg mx-auto">
-                {/* Black Logo */}
+                {/* Gray Logo - Primary */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4">
+                    <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="max-h-16 object-contain" />
+                  </div>
+                  <div className="flex gap-1">
+                    <a href="/media-kit/launch-logo-gray.png" download className="text-xs text-primary hover:underline">PNG</a>
+                    <span className="text-muted-foreground text-xs">·</span>
+                    <a href="/media-kit/launch-logo-gray.svg" download className="text-xs text-primary hover:underline">SVG</a>
+                  </div>
+                  <span className="text-xs text-muted-foreground">Gray</span>
+                </div>
+
+                {/* Black Logo - Secondary */}
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4">
                     <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="max-h-16 object-contain" />
@@ -236,7 +249,7 @@ const MediaKit = () => {
                   <span className="text-xs text-muted-foreground">Black</span>
                 </div>
 
-                {/* White Logo */}
+                {/* White Logo - Secondary */}
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-full aspect-square bg-foreground rounded-lg flex items-center justify-center p-4">
                     <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="max-h-16 object-contain" />
@@ -247,19 +260,6 @@ const MediaKit = () => {
                     <a href="/media-kit/launch-logo-white.svg" download className="text-xs text-primary hover:underline">SVG</a>
                   </div>
                   <span className="text-xs text-muted-foreground">White</span>
-                </div>
-
-                {/* Gray Logo */}
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4">
-                    <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="max-h-16 object-contain" />
-                  </div>
-                  <div className="flex gap-1">
-                    <a href="/media-kit/launch-logo-gray.png" download className="text-xs text-primary hover:underline">PNG</a>
-                    <span className="text-muted-foreground text-xs">·</span>
-                    <a href="/media-kit/launch-logo-gray.svg" download className="text-xs text-primary hover:underline">SVG</a>
-                  </div>
-                  <span className="text-xs text-muted-foreground">Gray</span>
                 </div>
               </div>
 
