@@ -225,8 +225,8 @@ const MediaKit = () => {
               {/* Gray Logo - Primary */}
               <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-36 h-20 border border-border rounded-lg flex items-center justify-center">
-                    <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="h-8 object-contain" />
+                  <div className="w-36 h-20 rounded-lg flex items-center justify-center">
+                    <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="h-10 object-contain" />
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Gray Logo</p>
@@ -242,8 +242,8 @@ const MediaKit = () => {
               {/* Black Logo */}
               <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-36 h-20 bg-white rounded-lg flex items-center justify-center border border-border">
-                    <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="h-8 object-contain" />
+                  <div className="w-36 h-20 bg-white rounded-lg flex items-center justify-center">
+                    <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="h-10 object-contain" />
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Black Logo</p>
@@ -260,7 +260,7 @@ const MediaKit = () => {
               <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-36 h-20 bg-foreground rounded-lg flex items-center justify-center">
-                    <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="h-8 object-contain" />
+                    <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="h-10 object-contain" />
                   </div>
                   <div>
                     <p className="font-medium text-foreground">White Logo</p>
