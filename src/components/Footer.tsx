@@ -134,26 +134,15 @@ export const Footer = () => {
       </div>
       <div className="border-t">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8">
           <div>
-            <h3 className="font-semibold mb-4 text-foreground">About</h3>
+            <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-1">
-              <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  About
-                </Link>
-              </li>
               <li>
                 <Link to="/faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   FAQ
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4 text-foreground">Support</h3>
-            <ul className="space-y-1">
               <li>
                 <a 
                   href="mailto:alex@trylaunch.ai"
@@ -178,6 +167,11 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Resources</h3>
             <ul className="space-y-1">
+              <li>
+                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  About
+                </Link>
+              </li>
               <li>
                 <Link 
                   to="/advertise"
