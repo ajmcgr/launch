@@ -144,12 +144,9 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="mailto:alex@trylaunch.ai"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
+                <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
