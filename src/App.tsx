@@ -29,6 +29,7 @@ import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
 import Advertise from "./pages/Advertise";
 import TagPage from "./pages/TagPage";
 import Tags from "./pages/Tags";
@@ -80,6 +81,7 @@ const AppContent = () => {
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
