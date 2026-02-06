@@ -211,7 +211,7 @@ const MediaKit = () => {
         </div>
 
         {/* Brand Assets Section */}
-        <div className="border-t border-border">
+        <div>
           <div className="max-w-2xl mx-auto px-4 py-16">
             <div className="text-center mb-10">
               <h3 className="text-2xl font-bold text-foreground mb-2">Brand Assets</h3>
@@ -225,7 +225,7 @@ const MediaKit = () => {
               {/* Gray Logo - Primary */}
               <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-32 h-16 bg-muted rounded-lg flex items-center justify-center">
+                  <div className="w-36 h-20 border border-border rounded-lg flex items-center justify-center">
                     <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="h-8 object-contain" />
                   </div>
                   <div>
@@ -242,7 +242,7 @@ const MediaKit = () => {
               {/* Black Logo */}
               <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-32 h-16 bg-white rounded-lg flex items-center justify-center border border-border">
+                  <div className="w-36 h-20 bg-white rounded-lg flex items-center justify-center border border-border">
                     <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="h-8 object-contain" />
                   </div>
                   <div>
@@ -259,7 +259,7 @@ const MediaKit = () => {
               {/* White Logo */}
               <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-32 h-16 bg-foreground rounded-lg flex items-center justify-center">
+                  <div className="w-36 h-20 bg-foreground rounded-lg flex items-center justify-center">
                     <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="h-8 object-contain" />
                   </div>
                   <div>
