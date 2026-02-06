@@ -1,0 +1,1 @@
+DELETE FROM sponsored_products WHERE id = '37c16e14-5794-46e9-9cb0-1a835f2a4fd0';
