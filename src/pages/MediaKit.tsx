@@ -1,4 +1,6 @@
 import { Helmet } from 'react-helmet-async';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import PopularProductIcons from '@/components/PopularProductIcons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
@@ -209,6 +211,24 @@ const MediaKit = () => {
             <p className="text-xs text-muted-foreground mt-6">
               Data source: Google Analytics. Updated February 2026
             </p>
+          </div>
+
+          {/* Logo Downloads */}
+          <div className="mt-12">
+            <h3 className="text-2xl font-bold text-foreground mb-6 text-center">Brand Assets</h3>
+            <div className="bg-card rounded-xl p-6 border border-border">
+              <p className="text-muted-foreground text-center mb-6">
+                Download our logo files for press and media use
+              </p>
+              <div className="flex justify-center">
+                <Button asChild size="lg">
+                  <a href="/media-kit/launch-logos.zip" download>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Logo Pack (.zip)
+                  </a>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
