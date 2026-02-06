@@ -7,6 +7,13 @@ import { Copy, Check, ExternalLink, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+// Truncate text to one sentence
+const truncateToOneSentence = (text: string): string => {
+  if (!text) return '';
+  const match = text.match(/^[^.!?]*[.!?]/);
+  return match ? match[0] : text;
+};
+
 interface SurfacedProduct {
   id: string;
   name: string;
@@ -81,7 +88,7 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
           )}
         </div>
         <p className="text-sm text-muted-foreground truncate mt-0.5">
-          {product.tagline || 'No tagline'}
+          {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
         </p>
         <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
       </div>
@@ -124,7 +131,7 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground truncate mt-0.5">
-          {product.tagline || 'No tagline'}
+          {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
         </p>
         <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
       </div>
