@@ -74,7 +74,8 @@ const CopyButton = ({ text, label }: { text: string; label: string }) => {
 
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
-  const copyText = `${product.name} - ${product.tagline || 'No tagline'}\n${productUrl}`;
+  const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
+  const copyText = `${product.name} - ${taglineText}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
@@ -111,7 +112,8 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
-  const copyText = `${product.name} - ${product.tagline || 'No tagline'}\n${productUrl}`;
+  const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
+  const copyText = `${product.name} - ${taglineText}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
@@ -190,7 +192,7 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
 
   const handleCopyAll = async () => {
     const text = products
-      .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+      .map((p) => `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
@@ -212,7 +214,7 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
 
   const handleCopyAll = async () => {
     const text = products
-      .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+      .map((p) => `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
