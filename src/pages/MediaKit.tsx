@@ -223,7 +223,7 @@ const MediaKit = () => {
             {/* Logo Cards */}
             <div className="space-y-4">
               {/* Gray Logo - Primary */}
-              <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between">
+              <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-32 h-16 bg-muted rounded-lg flex items-center justify-center">
                     <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="h-8 object-contain" />
@@ -240,7 +240,7 @@ const MediaKit = () => {
               </div>
 
               {/* Black Logo */}
-              <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between">
+              <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-32 h-16 bg-white rounded-lg flex items-center justify-center border border-border">
                     <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="h-8 object-contain" />
@@ -257,7 +257,7 @@ const MediaKit = () => {
               </div>
 
               {/* White Logo */}
-              <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between">
+              <div className="bg-card rounded-xl p-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-32 h-16 bg-foreground rounded-lg flex items-center justify-center">
                     <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="h-8 object-contain" />
