@@ -222,10 +222,10 @@ const MediaKit = () => {
               </p>
               
               {/* Logo Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
                 {/* Black Logo */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4 border">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4">
                     <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="max-h-16 object-contain" />
                   </div>
                   <div className="flex gap-1">
@@ -237,8 +237,8 @@ const MediaKit = () => {
                 </div>
 
                 {/* White Logo */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-full aspect-square bg-foreground rounded-lg flex items-center justify-center p-4 border">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-full aspect-square bg-foreground rounded-lg flex items-center justify-center p-4">
                     <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="max-h-16 object-contain" />
                   </div>
                   <div className="flex gap-1">
@@ -250,8 +250,8 @@ const MediaKit = () => {
                 </div>
 
                 {/* Gray Logo */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4 border">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4">
                     <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="max-h-16 object-contain" />
                   </div>
                   <div className="flex gap-1">
@@ -263,8 +263,8 @@ const MediaKit = () => {
                 </div>
 
                 {/* Gray BG Logo */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-full aspect-square bg-muted rounded-lg flex items-center justify-center p-4 border">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-full aspect-square bg-muted rounded-lg flex items-center justify-center p-4">
                     <img src="/media-kit/launch-logo-gray-bg.png" alt="Launch Logo Gray Background" className="max-h-16 object-contain" />
                   </div>
                   <div className="flex gap-1">
