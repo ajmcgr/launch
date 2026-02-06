@@ -216,13 +216,13 @@ const MediaKit = () => {
           {/* Logo Downloads */}
           <div className="mt-12">
             <h3 className="text-2xl font-bold text-foreground mb-6 text-center">Brand Assets</h3>
-            <div className="bg-card rounded-xl p-6 border border-border">
+            <div className="rounded-xl p-6">
               <p className="text-muted-foreground text-center mb-6">
                 Download our logo files for press and media use
               </p>
               
               {/* Logo Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+              <div className="grid grid-cols-3 gap-8 mb-8 max-w-lg mx-auto">
                 {/* Black Logo */}
                 <div className="flex flex-col items-center gap-3">
                   <div className="w-full aspect-square bg-white rounded-lg flex items-center justify-center p-4">
@@ -260,19 +260,6 @@ const MediaKit = () => {
                     <a href="/media-kit/launch-logo-gray.svg" download className="text-xs text-primary hover:underline">SVG</a>
                   </div>
                   <span className="text-xs text-muted-foreground">Gray</span>
-                </div>
-
-                {/* Gray BG Logo */}
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-full aspect-square bg-muted rounded-lg flex items-center justify-center p-4">
-                    <img src="/media-kit/launch-logo-gray-bg.png" alt="Launch Logo Gray Background" className="max-h-16 object-contain" />
-                  </div>
-                  <div className="flex gap-1">
-                    <a href="/media-kit/launch-logo-gray-bg.png" download className="text-xs text-primary hover:underline">PNG</a>
-                    <span className="text-muted-foreground text-xs">·</span>
-                    <a href="/media-kit/launch-logo-gray-bg.svg" download className="text-xs text-primary hover:underline">SVG</a>
-                  </div>
-                  <span className="text-xs text-muted-foreground">Gray BG</span>
                 </div>
               </div>
 
