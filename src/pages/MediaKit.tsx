@@ -225,8 +225,8 @@ const MediaKit = () => {
               <div className="flex flex-col items-center gap-8 mb-8">
                 {/* Gray Logo - Primary */}
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-32 aspect-square bg-white rounded-lg flex items-center justify-center p-6">
-                    <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="max-h-20 object-contain" />
+                  <div className="w-40 aspect-square bg-white rounded-lg flex items-center justify-center p-6">
+                    <img src="/media-kit/launch-logo-gray.png" alt="Launch Logo Gray" className="max-h-28 object-contain" />
                   </div>
                   <div className="flex gap-1">
                     <a href="/media-kit/launch-logo-gray.png" download className="text-xs text-primary hover:underline">PNG</a>
@@ -240,8 +240,8 @@ const MediaKit = () => {
                 <div className="flex gap-8">
                   {/* Black Logo */}
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-32 aspect-square bg-white rounded-lg flex items-center justify-center p-6">
-                      <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="max-h-20 object-contain" />
+                    <div className="w-40 aspect-square bg-white rounded-lg flex items-center justify-center p-6">
+                      <img src="/media-kit/launch-logo-black.png" alt="Launch Logo Black" className="max-h-28 object-contain" />
                     </div>
                     <div className="flex gap-1">
                       <a href="/media-kit/launch-logo-black.png" download className="text-xs text-primary hover:underline">PNG</a>
@@ -253,8 +253,8 @@ const MediaKit = () => {
 
                   {/* White Logo */}
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-32 aspect-square bg-foreground rounded-lg flex items-center justify-center p-6">
-                      <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="max-h-20 object-contain" />
+                    <div className="w-40 aspect-square bg-foreground rounded-lg flex items-center justify-center p-6">
+                      <img src="/media-kit/launch-logo-white.png" alt="Launch Logo White" className="max-h-28 object-contain" />
                     </div>
                     <div className="flex gap-1">
                       <a href="/media-kit/launch-logo-white.png" download className="text-xs text-primary hover:underline">PNG</a>
