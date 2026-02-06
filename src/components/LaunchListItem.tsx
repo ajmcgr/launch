@@ -9,6 +9,13 @@ import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
+
+// Truncate text to one sentence
+const truncateToOneSentence = (text: string): string => {
+  if (!text) return '';
+  const match = text.match(/^[^.!?]*[.!?]/);
+  return match ? match[0] : text;
+};
 interface LaunchListItemProps {
   id: string;
   slug: string;
@@ -145,7 +152,7 @@ export const LaunchListItem = ({
           </div>
           
           <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1">
-            {tagline}
+            {truncateToOneSentence(tagline)}
           </p>
           
           <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
