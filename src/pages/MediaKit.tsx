@@ -142,6 +142,21 @@ const MediaKit = () => {
             </div>
           </div>
 
+          {/* CTA */}
+          <div className="text-center bg-card rounded-xl p-8 mb-12">
+            <h3 className="text-2xl font-bold text-foreground mb-2">Ready to reach our audience?</h3>
+            <p className="text-muted-foreground mb-6">Get in touch to discuss opportunities</p>
+            <a 
+              href="mailto:alex@trylaunch.ai" 
+              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            >
+              Email alex@trylaunch.ai
+            </a>
+            <p className="text-xs text-muted-foreground mt-6">
+              Data source: Google Analytics. Updated February 2026
+            </p>
+          </div>
+
           {/* Testimonials - Stacked */}
           <div className="space-y-6 mb-12">
             {/* Jake's Testimonial */}
@@ -197,25 +212,8 @@ const MediaKit = () => {
 
         <div className="max-w-2xl mx-auto px-4 pb-12">
 
-
-          {/* CTA */}
-          <div className="text-center bg-card rounded-xl p-8">
-            <h3 className="text-2xl font-bold text-foreground mb-2">Ready to reach our audience?</h3>
-            <p className="text-muted-foreground mb-6">Get in touch to discuss opportunities</p>
-            <a 
-              href="mailto:alex@trylaunch.ai" 
-              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              Email alex@trylaunch.ai
-            </a>
-            <p className="text-xs text-muted-foreground mt-6">
-              Data source: Google Analytics. Updated February 2026
-            </p>
-          </div>
-
-          {/* Logo Downloads */}
           <div className="mt-12">
-            <h3 className="text-2xl font-bold text-foreground mb-6 text-center">Brand Assets</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-2 text-center">Brand Assets</h3>
             <div className="rounded-xl p-6">
               <p className="text-muted-foreground text-center mb-6">
                 Download our logo files for press and media use
