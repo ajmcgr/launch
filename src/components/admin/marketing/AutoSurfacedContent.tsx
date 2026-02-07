@@ -20,7 +20,6 @@ interface SurfacedProduct {
   tagline: string | null;
   slug: string;
   net_votes?: number;
-  icon_url?: string | null;
 }
 
 interface SponsoredProduct {
@@ -31,7 +30,6 @@ interface SponsoredProduct {
   sponsorship_type: string;
   start_date: string;
   end_date: string;
-  icon_url?: string | null;
 }
 
 interface SurfacedBuilder {
@@ -77,34 +75,23 @@ const CopyButton = ({ text, label }: { text: string; label: string }) => {
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const copyText = product.icon_url 
-    ? `${product.name} - ${taglineText}\n${productUrl}\nIcon: ${product.icon_url}`
-    : `${product.name} - ${taglineText}\n${productUrl}`;
+  const copyText = `${product.name} - ${taglineText}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
-      <div className="flex items-start gap-3 flex-1 min-w-0">
-        {product.icon_url && (
-          <img 
-            src={product.icon_url} 
-            alt={product.name} 
-            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-          />
-        )}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-medium truncate">{product.name}</span>
-            {product.net_votes !== undefined && (
-              <Badge variant="secondary" className="text-xs">
-                {product.net_votes} votes
-              </Badge>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground truncate mt-0.5">
-            {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
-          </p>
-          <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium truncate">{product.name}</span>
+          {product.net_votes !== undefined && (
+            <Badge variant="secondary" className="text-xs">
+              {product.net_votes} votes
+            </Badge>
+          )}
         </div>
+        <p className="text-sm text-muted-foreground truncate mt-0.5">
+          {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
+        </p>
+        <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
         <CopyButton text={copyText} label="product" />
@@ -126,40 +113,29 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const copyText = product.icon_url
-    ? `${product.name} - ${taglineText}\n${productUrl}\nIcon: ${product.icon_url}`
-    : `${product.name} - ${taglineText}\n${productUrl}`;
+  const copyText = `${product.name} - ${taglineText}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
-      <div className="flex items-start gap-3 flex-1 min-w-0">
-        {product.icon_url && (
-          <img 
-            src={product.icon_url} 
-            alt={product.name} 
-            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-          />
-        )}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-medium truncate">{product.name}</span>
-            <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
-              {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
-               product.sponsorship_type === 'website' ? 'Website' : 
-               product.sponsorship_type === 'newsletter' ? 'Newsletter' :
-               product.sponsorship_type.toLowerCase() === 'skip' ? 'Pro' :
-               product.sponsorship_type.toLowerCase() === 'join' ? 'Lite' :
-               product.sponsorship_type.toLowerCase() === 'lite' ? 'Lite' :
-               product.sponsorship_type.toLowerCase() === 'pro' ? 'Pro' :
-               product.sponsorship_type.toLowerCase().includes('pass') ? 'Pass' :
-               product.sponsorship_type}
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground truncate mt-0.5">
-            {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
-          </p>
-          <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium truncate">{product.name}</span>
+          <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
+            {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
+             product.sponsorship_type === 'website' ? 'Website' : 
+             product.sponsorship_type === 'newsletter' ? 'Newsletter' :
+             product.sponsorship_type.toLowerCase() === 'skip' ? 'Pro' :
+             product.sponsorship_type.toLowerCase() === 'join' ? 'Lite' :
+             product.sponsorship_type.toLowerCase() === 'lite' ? 'Lite' :
+             product.sponsorship_type.toLowerCase() === 'pro' ? 'Pro' :
+             product.sponsorship_type.toLowerCase().includes('pass') ? 'Pass' :
+             product.sponsorship_type}
+          </Badge>
         </div>
+        <p className="text-sm text-muted-foreground truncate mt-0.5">
+          {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
+        </p>
+        <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
         <CopyButton text={copyText} label="product" />
@@ -216,10 +192,7 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
 
   const handleCopyAll = async () => {
     const text = products
-      .map((p) => {
-        const base = `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
-        return p.icon_url ? `${base}\nIcon: ${p.icon_url}` : base;
-      })
+      .map((p) => `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
@@ -241,10 +214,7 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
 
   const handleCopyAll = async () => {
     const text = products
-      .map((p) => {
-        const base = `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
-        return p.icon_url ? `${base}\nIcon: ${p.icon_url}` : base;
-      })
+      .map((p) => `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
@@ -296,38 +266,6 @@ export const AutoSurfacedContent = () => {
   const oneWeekAgo = new Date(todayUTC.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const twoWeeksAgo = new Date(todayUTC.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
   const threeDaysAgo = new Date(todayUTC.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString();
-
-  // Fetch all product icons to enrich product data
-  const { data: productIcons } = useQuery({
-    queryKey: ['product-icons-map'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('product_media')
-        .select('product_id, url')
-        .eq('type', 'icon');
-      
-      if (error) throw error;
-      
-      // Create a map of product_id -> icon_url (first icon for each product)
-      const iconMap = new Map<string, string>();
-      (data || []).forEach((item: any) => {
-        if (!iconMap.has(item.product_id)) {
-          iconMap.set(item.product_id, item.url);
-        }
-      });
-      return iconMap;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-
-  // Helper to enrich products with icons
-  const enrichWithIcons = <T extends { id: string }>(products: T[] | undefined): (T & { icon_url?: string | null })[] => {
-    if (!products) return [];
-    return products.map(p => ({
-      ...p,
-      icon_url: productIcons?.get(p.id) || null,
-    }));
-  };
 
   // Paid Launches - currently active sponsored products + Lite/Pro/Pass orders from past week
   const { data: paidLaunches, isLoading: paidLoading } = useQuery({
@@ -656,60 +594,46 @@ export const AutoSurfacedContent = () => {
     enabled: sponsoredProductIds !== undefined,
   });
 
-  // Enrich all product lists with icons
-  const enrichedPaidLaunches = enrichWithIcons(paidLaunches);
-  const enrichedLaunchOfDay = enrichWithIcons(launchOfDay);
-  const enrichedWeeklyWinners = enrichWithIcons(weeklyWinners);
-  const enrichedMissedProducts = enrichWithIcons(missedProducts);
-  const enrichedNewNoteworthy = enrichWithIcons(newNoteworthy);
-  const enrichedHiddenGems = enrichWithIcons(hiddenGems);
-
-  // Helper to format product text with optional icon
-  const formatProductText = (p: { name: string; tagline: string | null; slug: string; icon_url?: string | null }) => {
-    const base = `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
-    return p.icon_url ? `${base}\nIcon: ${p.icon_url}` : base;
-  };
-
   // Master copy function for all newsletter content
   const handleMasterCopy = async () => {
     const sections: string[] = [];
     
     // Paid Launches
-    if (enrichedPaidLaunches.length > 0) {
-      const paidText = enrichedPaidLaunches
-        .map(formatProductText)
+    if (paidLaunches && paidLaunches.length > 0) {
+      const paidText = paidLaunches
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
       sections.push(`## 💰 Sponsored Launches\n\n${paidText}`);
     }
     
     // Weekly Winners
-    if (enrichedWeeklyWinners.length > 0) {
-      const winnersText = enrichedWeeklyWinners
-        .map(formatProductText)
+    if (weeklyWinners && weeklyWinners.length > 0) {
+      const winnersText = weeklyWinners
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
       sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
     }
     
     // New & Noteworthy
-    if (enrichedNewNoteworthy.length > 0) {
-      const newText = enrichedNewNoteworthy
-        .map(formatProductText)
+    if (newNoteworthy && newNoteworthy.length > 0) {
+      const newText = newNoteworthy
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
       sections.push(`## ✨ New & Noteworthy on Launch\n\n${newText}`);
     }
     
     // Hidden Gems
-    if (enrichedHiddenGems.length > 0) {
-      const gemsText = enrichedHiddenGems
-        .map(formatProductText)
+    if (hiddenGems && hiddenGems.length > 0) {
+      const gemsText = hiddenGems
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
       sections.push(`## 💎 Launch Hidden Gems\n\n${gemsText}`);
     }
     
     // Products You Missed
-    if (enrichedMissedProducts.length > 0) {
-      const missedText = enrichedMissedProducts
-        .map(formatProductText)
+    if (missedProducts && missedProducts.length > 0) {
+      const missedText = missedProducts
+        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
         .join('\n\n');
       sections.push(`## 🕐 5 Launch Products You Missed This Week\n\n${missedText}`);
     }
@@ -734,42 +658,42 @@ export const AutoSurfacedContent = () => {
       title: "💰 Sponsored Launches",
       description: "Currently active sponsored products",
       icon: null,
-      sponsoredProducts: enrichedPaidLaunches as SponsoredProduct[],
+      sponsoredProducts: paidLaunches,
       isLoading: paidLoading,
     },
     {
       title: "🏆 Launch of the Day",
       description: "Top voted product(s) launched today",
       icon: null,
-      products: enrichedLaunchOfDay,
+      products: launchOfDay,
       isLoading: launchLoading,
     },
     {
       title: "📈 Launch Weekly Winners",
       description: "Top 5 products from the past week",
       icon: null,
-      products: enrichedWeeklyWinners,
+      products: weeklyWinners,
       isLoading: weeklyLoading,
     },
     {
       title: "🕐 5 Launch Products You Missed This Week",
       description: "Top performers from 7-14 days ago",
       icon: null,
-      products: enrichedMissedProducts,
+      products: missedProducts,
       isLoading: missedLoading,
     },
     {
       title: "✨ New & Noteworthy on Launch",
       description: "Fresh launches gaining traction",
       icon: null,
-      products: enrichedNewNoteworthy,
+      products: newNoteworthy,
       isLoading: newNoteworthyLoading,
     },
     {
       title: "💎 Launch Hidden Gems",
       description: "Quality products that deserve more attention",
       icon: null,
-      products: enrichedHiddenGems,
+      products: hiddenGems,
       isLoading: gemsLoading,
     },
     {
