@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { UserPlus, UserMinus, Globe } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
+import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 
 const UserProfile = () => {
   const { username: rawUsername } = useParams();
@@ -355,11 +356,7 @@ const UserProfile = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!profile) {
