@@ -392,7 +392,7 @@ export const AutoSurfacedContent = () => {
           net_votes: votesMap.get(p.id) || 0,
         }));
       
-      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 3);
+      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 1);
     },
     enabled: sponsoredProductIds !== undefined,
   });
