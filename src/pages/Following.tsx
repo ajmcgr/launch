@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { UserPlus, UserMinus, Globe } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
+import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 
 interface UserItem {
   id: string;
@@ -143,11 +144,7 @@ const Following = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!profile) {
