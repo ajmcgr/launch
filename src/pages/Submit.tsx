@@ -1093,7 +1093,11 @@ const Submit = () => {
       // Handle paid plans
       // If user has a paid plan that can be reused (skip/relaunch), use it without requiring another payment
       // If upgrading from 'join', go through payment for the new plan
-      if (canReuseExistingPlan && formData.plan !== 'free') {
+      // Only reuse if the user selected the same plan type as their existing order
+      const existingPlanType = existingOrders?.[0]?.plan as 'join' | 'skip' | 'relaunch' | undefined;
+      const shouldReuseExistingPlan = canReuseExistingPlan && formData.plan === existingPlanType && formData.plan !== 'free';
+      
+      if (shouldReuseExistingPlan) {
         try {
           // Reuse existing order for this launch
           const existingOrder = existingOrders[0];
