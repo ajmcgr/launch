@@ -369,7 +369,7 @@ export const AutoSurfacedContent = () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, tagline, slug')
+          .select('id, name, tagline, slug, launch_date')
           .eq('status', 'launched')
           .gte('launch_date', startOfDay)
           .lt('launch_date', endOfDay),
@@ -389,10 +389,17 @@ export const AutoSurfacedContent = () => {
           name: p.name,
           tagline: p.tagline,
           slug: p.slug,
+          launch_date: p.launch_date,
           net_votes: votesMap.get(p.id) || 0,
         }));
       
-      return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 1);
+      // Sort by votes (desc), then by earliest launch_date as tiebreaker
+      return mapped.sort((a, b) => {
+        const voteDiff = (b.net_votes || 0) - (a.net_votes || 0);
+        if (voteDiff !== 0) return voteDiff;
+        // Earlier launch wins when votes are tied
+        return new Date(a.launch_date).getTime() - new Date(b.launch_date).getTime();
+      }).slice(0, 1);
     },
     enabled: sponsoredProductIds !== undefined,
   });
