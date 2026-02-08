@@ -754,25 +754,23 @@ const Home = () => {
           </div>
         )}
         
-        {/* Media Banner */}
-        <div className="flex flex-col items-center py-6">
-          <div className="flex flex-col items-center">
-            <a 
-              href="https://trymedia.ai/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block"
-            >
-              <img 
-                src={mediaBanner} 
-                alt="Media - Any Journalist or Creator Email. Instantly." 
-                className="w-full max-w-[728px] h-auto transition-all duration-200 hover:opacity-95"
-              />
-            </a>
-            <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-1">
-              Featured Partner · Become a partner
-            </Link>
-          </div>
+        {/* Media Banner - Full width premium format */}
+        <div className="flex flex-col items-center py-6 w-full">
+          <a 
+            href="https://trymedia.ai/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block w-full"
+          >
+            <img 
+              src={mediaBanner} 
+              alt="Media - Any Journalist or Creator Email. Instantly." 
+              className="w-full h-auto rounded-lg transition-all duration-200 hover:opacity-95"
+            />
+          </a>
+          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+            Featured Partner · Become a partner
+          </Link>
         </div>
       </>
     );
@@ -916,22 +914,21 @@ const Home = () => {
           </Link>
         </div>
 
-        {/* Bio Sponsor Banner */}
-        <div className="mt-6 py-6 flex flex-col items-center">
+        {/* Bio Sponsor Banner - Full width premium format */}
+        <div className="mt-8 py-6 flex flex-col items-center w-full">
           <a 
             href="https://trybio.ai" 
             target="_blank" 
             rel="noopener noreferrer sponsored"
-            className="block"
+            className="block w-full"
           >
             <img 
               src={bioBanner} 
               alt="Bio - Link in Bio" 
-              className="w-full max-w-[728px] h-auto"
-              style={{ borderRadius: 0 }}
+              className="w-full h-auto rounded-lg transition-all duration-200 hover:opacity-95"
             />
           </a>
-          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-1">
+          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
             Featured Partner · Become a partner
           </Link>
         </div>
