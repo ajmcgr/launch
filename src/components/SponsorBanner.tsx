@@ -11,23 +11,22 @@ export const SponsorBanner = ({ className }: SponsorBannerProps) => {
   if (!isEnabled) return null;
   
   return (
-    <div className={`w-full flex justify-center py-3 ${className || ''}`}>
+    <div className={`w-full flex flex-col items-center py-6 ${className || ''}`}>
       <a 
         href="https://www.taskade.com/create?ref=launch" 
         target="_blank" 
         rel="noopener noreferrer sponsored"
-        className="block relative group"
+        className="block w-full relative group"
       >
         <img 
           src={taskadeBanner} 
           alt="Taskade - AI Powered Project Management" 
-          className="max-w-full h-auto rounded-lg shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:opacity-95"
-          style={{ maxHeight: '91px' }}
+          className="w-full h-auto rounded-lg transition-all duration-200 group-hover:opacity-95"
         />
-        <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground opacity-60">
-          Sponsored
-        </span>
       </a>
+      <span className="text-[10px] text-muted-foreground opacity-60 mt-2">
+        Featured Partner
+      </span>
     </div>
   );
 };
