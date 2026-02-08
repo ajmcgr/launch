@@ -21,7 +21,7 @@ export const SponsorBanner = ({ className }: SponsorBannerProps) => {
         <img 
           src={taskadeBanner} 
           alt="Taskade - AI Powered Project Management" 
-          className="w-full h-auto rounded-lg transition-all duration-200 group-hover:opacity-95"
+          className="w-full h-auto transition-all duration-200 group-hover:opacity-95"
         />
       </a>
       <span className="text-[10px] text-muted-foreground opacity-60 mt-2">

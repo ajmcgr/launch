@@ -765,7 +765,7 @@ const Home = () => {
             <img 
               src={mediaBanner} 
               alt="Media - Any Journalist or Creator Email. Instantly." 
-              className="w-full h-auto rounded-lg transition-all duration-200 hover:opacity-95"
+              className="w-full h-auto transition-all duration-200 hover:opacity-95"
             />
           </a>
           <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
@@ -925,7 +925,7 @@ const Home = () => {
             <img 
               src={bioBanner} 
               alt="Bio - Link in Bio" 
-              className="w-full h-auto rounded-lg transition-all duration-200 hover:opacity-95"
+              className="w-full h-auto transition-all duration-200 hover:opacity-95"
             />
           </a>
           <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
