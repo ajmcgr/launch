@@ -598,44 +598,38 @@ export const AutoSurfacedContent = () => {
   const handleMasterCopy = async () => {
     const sections: string[] = [];
     
+    // Helper to format product text with truncated taglines
+    const formatProduct = (p: SurfacedProduct | SponsoredProduct) => 
+      `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
+    
     // Paid Launches
     if (paidLaunches && paidLaunches.length > 0) {
-      const paidText = paidLaunches
-        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
-        .join('\n\n');
+      const paidText = paidLaunches.map(formatProduct).join('\n\n');
       sections.push(`## 💰 Sponsored Launches\n\n${paidText}`);
     }
     
     // Weekly Winners
     if (weeklyWinners && weeklyWinners.length > 0) {
-      const winnersText = weeklyWinners
-        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
-        .join('\n\n');
+      const winnersText = weeklyWinners.map(formatProduct).join('\n\n');
       sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
+    }
+    
+    // 5 Products You Missed This Week
+    if (missedProducts && missedProducts.length > 0) {
+      const missedText = missedProducts.map(formatProduct).join('\n\n');
+      sections.push(`## 🕐 5 Launch Products You Missed This Week\n\n${missedText}`);
     }
     
     // New & Noteworthy
     if (newNoteworthy && newNoteworthy.length > 0) {
-      const newText = newNoteworthy
-        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
-        .join('\n\n');
+      const newText = newNoteworthy.map(formatProduct).join('\n\n');
       sections.push(`## ✨ New & Noteworthy on Launch\n\n${newText}`);
     }
     
     // Hidden Gems
     if (hiddenGems && hiddenGems.length > 0) {
-      const gemsText = hiddenGems
-        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
-        .join('\n\n');
+      const gemsText = hiddenGems.map(formatProduct).join('\n\n');
       sections.push(`## 💎 Launch Hidden Gems\n\n${gemsText}`);
-    }
-    
-    // Products You Missed
-    if (missedProducts && missedProducts.length > 0) {
-      const missedText = missedProducts
-        .map((p) => `${p.name} - ${p.tagline || 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
-        .join('\n\n');
-      sections.push(`## 🕐 5 Launch Products You Missed This Week\n\n${missedText}`);
     }
     
     // Builders to Watch
@@ -644,6 +638,11 @@ export const AutoSurfacedContent = () => {
         .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
         .join('\n\n');
       sections.push(`## 👀 Launch Builders to Watch\n\n${buildersText}`);
+    }
+    
+    if (sections.length === 0) {
+      toast.error('No content available to copy');
+      return;
     }
     
     const fullContent = sections.join('\n\n---\n\n');
