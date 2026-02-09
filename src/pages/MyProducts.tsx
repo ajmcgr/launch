@@ -50,17 +50,25 @@ const MyProducts = () => {
     });
   }, [navigate]);
 
+  // Track if we've already processed success to avoid race conditions
+  const [successProcessed, setSuccessProcessed] = useState(false);
+  
   useEffect(() => {
-    // Check for successful payment and show share modal
-    if (searchParams.get('success') === 'true' && user) {
-      toast.success('Payment successful! Your product has been scheduled.');
+    // Check for successful submission and show share modal
+    const hasSuccess = searchParams.get('success') === 'true';
+    
+    if (hasSuccess && user && !successProcessed) {
+      // Mark as processed immediately to prevent duplicate triggers
+      setSuccessProcessed(true);
+      
+      toast.success('🎉 Your product has been submitted! Share it to get more visibility.');
       
       // Clear the success param from URL
       searchParams.delete('success');
       setSearchParams(searchParams, { replace: true });
       
       // Fetch fresh products and show share modal for the most recent one
-      setTimeout(async () => {
+      const showShareModalForLatest = async () => {
         await fetchProducts(user.id);
         
         // Get the most recently scheduled/launched product
@@ -79,11 +87,14 @@ const MyProducts = () => {
             slug: latestProduct.slug,
             tagline: latestProduct.tagline || undefined
           });
-          setShowShareModal(true);
+          // Small delay to let the page settle before showing modal
+          setTimeout(() => setShowShareModal(true), 500);
         }
-      }, 1000);
+      };
+      
+      showShareModalForLatest();
     }
-  }, [searchParams, user]);
+  }, [searchParams, user, successProcessed]);
 
   const fetchProducts = async (userId: string) => {
     setLoading(true);

@@ -60,49 +60,57 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            🎉 Want more users?
+            🎉 Congrats on launching!
           </DialogTitle>
           <p className="text-center text-muted-foreground mt-2">
-            Shared launches get more visibility. Every share brings new founders to discover your product.
+            Products that get shared receive <span className="font-semibold text-foreground">3x more votes</span> on average. Share now to maximize your launch!
           </p>
         </DialogHeader>
         
         <div className="space-y-6 mt-4">
-          {/* Social Share Buttons */}
+          {/* Primary CTA - Share on X */}
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Share on Social</h3>
-            
             <Button 
               onClick={handleXShare}
-              className="w-full justify-start gap-3 h-12 bg-black hover:bg-black/90 text-white"
+              className="w-full justify-center gap-3 h-14 bg-black hover:bg-black/90 text-white text-lg font-semibold"
+              size="lg"
             >
-              <X className="w-5 h-5" />
-              <span className="flex-1 text-left">Share on X (Twitter)</span>
-              <ExternalLink className="w-4 h-4 opacity-50" />
+              <X className="w-6 h-6" />
+              <span>Share on X (Twitter)</span>
             </Button>
+            <p className="text-xs text-center text-muted-foreground">
+              Most founders see immediate votes after sharing on X
+            </p>
+          </div>
+          
+          {/* Secondary Social Options */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">More ways to share</h3>
             
-            <Button 
-              onClick={handleLinkedInShare}
-              className="w-full justify-start gap-3 h-12 bg-[#0A66C2] hover:bg-[#0A66C2]/90 text-white"
-            >
-              <Linkedin className="w-5 h-5" />
-              <span className="flex-1 text-left">Share on LinkedIn</span>
-              <ExternalLink className="w-4 h-4 opacity-50" />
-            </Button>
-            
-            <Button 
-              onClick={handleRedditShare}
-              className="w-full justify-start gap-3 h-12 bg-[#FF4500] hover:bg-[#FF4500]/90 text-white"
-            >
-              <RedditIcon className="w-5 h-5" />
-              <span className="flex-1 text-left">Share on Reddit</span>
-              <ExternalLink className="w-4 h-4 opacity-50" />
-            </Button>
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                onClick={handleLinkedInShare}
+                variant="outline"
+                className="justify-start gap-2 h-11"
+              >
+                <Linkedin className="w-4 h-4 text-[#0A66C2]" />
+                <span>LinkedIn</span>
+              </Button>
+              
+              <Button 
+                onClick={handleRedditShare}
+                variant="outline"
+                className="justify-start gap-2 h-11"
+              >
+                <RedditIcon className="w-4 h-4 text-[#FF4500]" />
+                <span>Reddit</span>
+              </Button>
+            </div>
           </div>
           
           {/* Copy-Paste CTA */}
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Copy-Paste CTA</h3>
+            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Copy & paste anywhere</h3>
             <div className="relative">
               <Textarea 
                 value={ctaText}
@@ -121,21 +129,13 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
             </div>
           </div>
           
-          
-          {/* Encouragement */}
-          <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 text-center">
-            <p className="text-sm font-medium text-primary">
-              ✨ Sharing increases visibility and helps other founders discover your product
-            </p>
-          </div>
-          
-          {/* Close Button */}
+          {/* Skip for now - less prominent */}
           <Button 
             onClick={onClose}
-            variant="outline"
-            className="w-full"
+            variant="ghost"
+            className="w-full text-muted-foreground hover:text-foreground"
           >
-            Maybe Later
+            I'll share later
           </Button>
         </div>
       </DialogContent>
