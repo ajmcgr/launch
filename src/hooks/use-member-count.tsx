@@ -28,7 +28,7 @@ export const TrustPhrase = ({ className }: { className?: string }) => {
   const { formattedMemberCount } = useMemberCount();
   return (
     <p className={className ?? 'text-sm text-muted-foreground'}>
-      Trusted by {formattedMemberCount} founders
+      Trusted by {formattedMemberCount} makers
     </p>
   );
 };
