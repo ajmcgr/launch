@@ -164,12 +164,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
           display: 'inline-flex',
           alignItems: 'center',
           gap: '10px',
-          padding: '8px 12px',
-          borderRadius: '8px',
-          border: `1px solid ${styles.border}`,
-          background: styles.bg,
-          color: styles.text,
-          ...(theme === 'gold' && { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' })
+          padding: '0',
         }}
       >
         <img src={badgeSrc} alt="Launch" style={{ display: 'inline-block', height: '36px', width: 'auto', verticalAlign: 'middle' }} />
