@@ -27,7 +27,7 @@ import {
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { format, getWeek } from 'date-fns';
-import { CommunityCallout } from '@/components/CommunityCallout';
+
 import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
 import { SponsorBanner } from '@/components/SponsorBanner';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
@@ -852,7 +852,7 @@ const Home = () => {
         <SponsorBanner className="mt-6" />
       </div>
 
-      <CommunityCallout />
+      
 
       <ThisWeekHighlights view={effectiveView} />
 

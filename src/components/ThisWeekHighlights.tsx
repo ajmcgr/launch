@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { getWeek } from 'date-fns';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
+import { CommunityCallout } from '@/components/CommunityCallout';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
@@ -661,7 +662,9 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
         <h2 className="text-2xl font-bold text-center mb-8">This Week's Launch Picks</h2>
 
         <div className="space-y-8">
-          {sections.map((section) => (
+          {sections.map((section, sectionIndex) => (
+            <React.Fragment key={section.title}>
+            {sectionIndex === 2 && <CommunityCallout />}
             <div key={section.title}>
               <h3 className="text-lg font-semibold mb-4">{section.title}</h3>
               {section.isLoading ? (
@@ -725,6 +728,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
                 </div>
               )}
             </div>
+            </React.Fragment>
           ))}
         </div>
 
