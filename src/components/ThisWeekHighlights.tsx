@@ -12,6 +12,9 @@ import { toast } from 'sonner';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { getWeek } from 'date-fns';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
+import { LaunchListItem } from '@/components/LaunchListItem';
+import { LaunchCard } from '@/components/LaunchCard';
+import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 
 interface SurfacedProduct {
   id: string;
@@ -254,7 +257,7 @@ const BuilderItem = ({ builder, rank }: { builder: SurfacedBuilder; rank: number
   );
 };
 
-export const ThisWeekHighlights = () => {
+export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' | 'compact' }) => {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<any>(null);
   const [userVotes, setUserVotes] = useState<Map<string, 1>>(new Map());
@@ -666,15 +669,59 @@ export const ThisWeekHighlights = () => {
               ) : !section.products?.length ? (
                 <p className="text-sm text-muted-foreground py-3">Nothing to show yet</p>
               ) : (
-                <div>
-                  {section.products.map((product, index) => (
-                    <ProductListItem 
-                      key={product.id} 
-                      product={applyLocalVoteChanges(product)} 
-                      rank={index + 1} 
-                      onVote={handleVote}
-                    />
-                  ))}
+                <div className={view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : view === 'compact' ? 'space-y-0' : 'space-y-2'}>
+                  {section.products.map((product, index) => {
+                    const p = applyLocalVoteChanges(product);
+                    if (view === 'compact') {
+                      return (
+                        <CompactLaunchListItem
+                          key={p.id}
+                          rank={index + 1}
+                          name={p.name}
+                          votes={p.net_votes || 0}
+                          slug={p.slug}
+                          userVote={p.userVote}
+                          onVote={() => handleVote(p.id)}
+                          launchDate={p.launch_date}
+                          commentCount={p.commentCount}
+                          makers={p.makers}
+                          domainUrl={p.domainUrl}
+                          categories={p.categories}
+                          platforms={p.platforms}
+                        />
+                      );
+                    }
+                    if (view === 'grid') {
+                      return (
+                        <LaunchCard
+                          key={p.id}
+                          id={p.id}
+                          slug={p.slug}
+                          name={p.name}
+                          tagline={p.tagline || ''}
+                          thumbnail={p.iconUrl || ''}
+                          iconUrl={p.iconUrl}
+                          domainUrl={p.domainUrl}
+                          categories={p.categories || []}
+                          platforms={p.platforms}
+                          netVotes={p.net_votes || 0}
+                          userVote={p.userVote}
+                          commentCount={p.commentCount || 0}
+                          makers={p.makers || []}
+                          rank={index + 1}
+                          onVote={() => handleVote(p.id)}
+                        />
+                      );
+                    }
+                    return (
+                      <ProductListItem 
+                        key={p.id} 
+                        product={p} 
+                        rank={index + 1} 
+                        onVote={handleVote}
+                      />
+                    );
+                  })}
                 </div>
               )}
             </div>

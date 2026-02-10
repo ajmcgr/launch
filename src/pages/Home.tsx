@@ -854,7 +854,7 @@ const Home = () => {
 
       <CommunityCallout />
 
-      <ThisWeekHighlights />
+      <ThisWeekHighlights view={effectiveView} />
 
       <CategoryCloud />
 
