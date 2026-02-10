@@ -1,7 +1,10 @@
 <svg width="13901" height="4575" viewBox="-700 -600 13901 4575" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs><linearGradient id="goldBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFA500"/></linearGradient></defs>
+<defs>
+<linearGradient id="goldBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFA500"/></linearGradient>
+<clipPath id="imgClip"><rect x="0" y="200" width="12501" height="3175"/></clipPath>
+</defs>
 <rect x="-700" y="-600" width="13901" height="4575" rx="500" ry="500" fill="url(#goldBg)" stroke="#E6A800" stroke-width="50"/>
-<rect width="12501" height="3375" fill="url(#pattern0_0_2)"/>
+<rect width="12501" height="3375" fill="url(#pattern0_0_2)" clip-path="url(#imgClip)"/>
 <defs>
 <pattern id="pattern0_0_2" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_0_2" transform="scale(7.99936e-05 0.000296296)"/>
