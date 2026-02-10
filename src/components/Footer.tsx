@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Instagram, Youtube } from 'lucide-react';
+import { TrustPhrase } from '@/hooks/use-member-count';
 
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -255,7 +256,8 @@ export const Footer = () => {
             </ul>
           </div>
           </div>
-          <div className="pb-8 text-center text-sm text-muted-foreground">
+          <div className="pb-8 text-center text-sm text-muted-foreground space-y-2">
+          <TrustPhrase className="text-sm text-muted-foreground" />
           <p>
             Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
             <a 
