@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { z } from 'zod';
 import { usePass } from '@/hooks/use-pass';
 import { PassOption } from '@/components/PassOption';
+import { TrustPhrase } from '@/hooks/use-member-count';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -1209,9 +1210,10 @@ const Submit = () => {
           <h1 className="text-4xl font-bold mb-2">
             {isRescheduling ? 'Reschedule Launch' : 'Submit Your Product'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-1">
             {isRescheduling ? 'Choose a new launch date for your product' : 'Launch your product to thousands of founders'}
           </p>
+          {!isRescheduling && <TrustPhrase className="text-sm text-muted-foreground" />}
         </div>
 
         {/* Only show step indicator when not rescheduling */}

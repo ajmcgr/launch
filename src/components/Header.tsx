@@ -15,8 +15,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { User, Settings, Package, LogOut, Menu } from 'lucide-react';
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
@@ -24,6 +23,7 @@ import logoDark from '@/assets/logo-dark.png';
 import { NotificationBell } from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useTheme } from 'next-themes';
+import { useMemberCount } from '@/hooks/use-member-count';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -32,28 +32,10 @@ export const Header = () => {
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { formattedMemberCount } = useMemberCount();
   
   // Check if we should show the Launch Pass promo (after Jan 26, 2026)
   const showLaunchPassPromo = new Date() >= new Date('2026-01-26T00:00:00');
-
-  // Fetch dynamic member count
-  const { data: memberCount } = useQuery({
-    queryKey: ['member-count'],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('users')
-        .select('*', { count: 'exact', head: true });
-      return count ?? 0;
-    },
-    staleTime: 1000 * 60 * 60, // 1 hour
-  });
-
-  const formattedMemberCount = useMemo(() => {
-    const count = memberCount ?? 0;
-    if (count < 100) return `${count}`;
-    const rounded = Math.floor(count / 100) * 100;
-    return `${rounded.toLocaleString()}+`;
-  }, [memberCount]);
 
   // Use ref to track scroll state without causing re-renders during scroll
   const scrolledRef = useRef(false);
@@ -135,7 +117,7 @@ export const Header = () => {
           <div className="container mx-auto px-4 max-w-5xl">
             <p className="text-center text-sm font-medium">
               {showLaunchPassPromo 
-                ? `Trusted by ${formattedMemberCount} makers shipping every week → Get Launch Pass`
+                ? `Trusted by ${formattedMemberCount} founders → Get Launch Pass`
                 : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
               }
             </p>

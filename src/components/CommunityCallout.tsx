@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, MessageSquare } from 'lucide-react';
+import { TrustPhrase } from '@/hooks/use-member-count';
 
 export const CommunityCallout = () => {
   return (
@@ -9,9 +10,7 @@ export const CommunityCallout = () => {
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
           <div className="flex-1 text-center md:text-left">
             <h3 className="text-lg font-semibold mb-1">Join the Community</h3>
-            <p className="text-sm text-muted-foreground">
-              Stay updated with weekly launches and connect with other makers
-            </p>
+            <TrustPhrase className="text-sm text-muted-foreground" />
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Button asChild className="gap-2">

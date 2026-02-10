@@ -12,6 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import stripeLogo from '@/assets/stripe-logo.png';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
+import { TrustPhrase } from '@/hooks/use-member-count';
 import {
   Accordion,
   AccordionContent,
@@ -216,7 +217,8 @@ const Pass = () => {
         <div className="container mx-auto px-4 max-w-3xl py-12 md:py-16">
           {/* Hero - Who, What, Why */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Launch Pass</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Launch Pass</h1>
+            <TrustPhrase className="text-sm text-muted-foreground mb-6" />
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
               For makers who launch often. Replace per-launch fees with one flat rate.
             </p>
