@@ -637,7 +637,7 @@ export const AutoSurfacedContent = () => {
       const buildersText = buildersToWatch
         .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
         .join('\n\n');
-      sections.push(`## 👀 Launch Builders to Watch\n\n${buildersText}`);
+      sections.push(`## 👀 Launch Makers to Watch\n\n${buildersText}`);
     }
     
     if (sections.length === 0) {
@@ -696,8 +696,8 @@ export const AutoSurfacedContent = () => {
       isLoading: gemsLoading,
     },
     {
-      title: "👀 Launch Builders to Watch",
-      description: "Prolific builders with multiple products",
+      title: "👀 Launch Makers to Watch",
+      description: "Prolific makers with multiple products",
       icon: null,
       builders: buildersToWatch,
       isLoading: buildersLoading,
