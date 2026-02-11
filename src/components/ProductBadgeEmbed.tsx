@@ -80,7 +80,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     const logoUrl = getBadgeImageUrl(theme);
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; padding: 8px 12px; background: ${styles.bg}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-  <img src="${logoUrl}" alt="Launch" height="54" style="display: block; height: 54px; width: auto;" />
+  <img src="${logoUrl}" alt="Launch" height="44" style="display: block; height: 44px; width: auto;" />
 </a>`;
   };
 
@@ -92,7 +92,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: all 0.2s; ${theme === 'gold' ? 'box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);' : ''}">
-  <img src="${logoUrl}" alt="Launch" height="54" style="display: inline-block; height: 54px; width: auto; vertical-align: middle;" />
+  <img src="${logoUrl}" alt="Launch" height="44" style="display: inline-block; height: 44px; width: auto; vertical-align: middle;" />
   ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; letter-spacing: 0; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
 </a>`;
   };
@@ -167,7 +167,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
           padding: '0',
         }}
       >
-        <img src={badgeSrc} alt="Launch" style={{ display: 'inline-block', height: '54px', width: 'auto', verticalAlign: 'middle' }} />
+        <img src={badgeSrc} alt="Launch" style={{ display: 'inline-block', height: '44px', width: 'auto', verticalAlign: 'middle' }} />
         {withCategories && categories.length > 0 && (
           <span 
             style={{
