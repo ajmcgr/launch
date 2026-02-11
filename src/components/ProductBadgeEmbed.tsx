@@ -41,26 +41,11 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     }
   };
 
-  const getThemeStyles = (theme: BadgeTheme) => {
+  const getThemeTextColor = (theme: BadgeTheme) => {
     switch (theme) {
-      case 'white':
-        return {
-          bg: '#1A1A1A',
-          text: '#FFFFFF',
-          border: '#333333',
-        };
-      case 'color':
-        return {
-          bg: '#FFFFFF',
-          text: '#313131',
-          border: '#E5E5E5',
-        };
-      case 'gold':
-        return {
-          bg: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-          text: '#313131',
-          border: '#FFD700',
-        };
+      case 'white': return '#FFFFFF';
+      case 'color': return '#313131';
+      case 'gold': return '#313131';
     }
   };
 
@@ -76,23 +61,22 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
   };
 
   const generateBasicBadgeHTML = (theme: BadgeTheme) => {
-    const styles = getThemeStyles(theme);
     const logoUrl = getBadgeImageUrl(theme);
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; padding: 8px 14px; background: ${styles.bg}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none;">
-  <img src="${logoUrl}" alt="Featured on Launch" height="33" style="display: block; height: 33px; width: auto;" />
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; text-decoration: none;">
+  <img src="${logoUrl}" alt="Featured on Launch" height="53" style="display: block; height: 53px; width: auto;" />
 </a>`;
   };
 
   const generateCategoryBadgeHTML = (theme: BadgeTheme) => {
-    const styles = getThemeStyles(theme);
     const logoUrl = getBadgeImageUrl(theme);
+    const textColor = getThemeTextColor(theme);
     const categoriesText = categories.slice(0, 2).join(' · ');
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <img src="${logoUrl}" alt="Featured on Launch" height="33" style="display: inline-block; height: 33px; width: auto; vertical-align: middle;" />
-  ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <img src="${logoUrl}" alt="Featured on Launch" height="53" style="display: inline-block; height: 53px; width: auto; vertical-align: middle;" />
+  ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; color: ${textColor}; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
 </a>`;
   };
 
@@ -152,8 +136,8 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
   };
 
   const renderPreview = (theme: BadgeTheme, withCategories: boolean, type: 'basic' | 'category') => {
-    const styles = getThemeStyles(theme);
     const badgeSrc = getBadgeImage(theme);
+    const textColor = getThemeTextColor(theme);
     const refKey = `${type}-${theme}`;
     
     return (
@@ -163,13 +147,9 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
           display: 'inline-flex',
           alignItems: 'center',
           gap: '10px',
-          padding: '8px 14px',
-          background: styles.bg,
-          border: `1px solid ${styles.border}`,
-          borderRadius: '8px',
         }}
       >
-        <img src={badgeSrc} alt="Featured on Launch" style={{ display: 'inline-block', height: '33px', width: 'auto', verticalAlign: 'middle' }} />
+        <img src={badgeSrc} alt="Featured on Launch" style={{ display: 'inline-block', height: '53px', width: 'auto', verticalAlign: 'middle' }} />
         {withCategories && categories.length > 0 && (
           <span 
             style={{
@@ -179,7 +159,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
               whiteSpace: 'nowrap',
               opacity: 0.7,
               verticalAlign: 'middle',
-              color: styles.text,
+              color: textColor,
             }}
           >
             {categories.slice(0, 2).join(' · ')}
