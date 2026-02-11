@@ -2,7 +2,7 @@
 <rect x="1.5" y="1.5" width="597" height="159" rx="14.5" fill="white"/>
 <rect x="1.5" y="1.5" width="597" height="159" rx="14.5" stroke="#E5E5E5" stroke-width="3"/>
 <rect width="400" height="108" transform="translate(28 27)" fill="white"/>
-<rect x="28" y="27" width="400" height="108" fill="url(#pattern0_0_1)"/>
+<path d="M28 27H428V135H28V27Z" fill="url(#pattern0_0_1)"/>
 <defs>
 <pattern id="pattern0_0_1" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_0_1" transform="scale(7.99936e-05 0.000296296)"/>
