@@ -1,7 +1,5 @@
-<svg width="765" height="249" viewBox="-1400 -800 15301 4975" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs><clipPath id="imgClip"><rect x="0" y="200" width="12501" height="3175"/></clipPath></defs>
-<rect x="-1400" y="-800" width="15301" height="4975" rx="500" ry="500" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="50"/>
-<rect width="12501" height="3375" fill="url(#pattern0_0_1)" clip-path="url(#imgClip)"/>
+<svg width="12501" height="3375" viewBox="0 0 12501 3375" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="12501" height="3375" fill="url(#pattern0_0_1)"/>
 <defs>
 <pattern id="pattern0_0_1" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_0_1" transform="scale(7.99936e-05 0.000296296)"/>
