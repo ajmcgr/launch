@@ -76,9 +76,10 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
   };
 
   const generateBasicBadgeHTML = (theme: BadgeTheme) => {
+    const styles = getThemeStyles(theme);
     const logoUrl = getBadgeImageUrl(theme);
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; text-decoration: none;">
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; padding: 8px 12px; background: ${styles.bg}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none;">
   <img src="${logoUrl}" alt="Featured on Launch" height="36" style="display: block; height: 36px; width: auto;" />
 </a>`;
   };
@@ -89,9 +90,9 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     const categoriesText = categories.slice(0, 2).join(' · ');
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: ${styles.bg}; color: ${styles.text}; border: 1px solid ${styles.border}; border-radius: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <img src="${logoUrl}" alt="Featured on Launch" height="36" style="display: inline-block; height: 36px; width: auto; vertical-align: middle;" />
-  ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; color: ${styles.text}; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
+  ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
 </a>`;
   };
 
@@ -162,6 +163,10 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
           display: 'inline-flex',
           alignItems: 'center',
           gap: '10px',
+          padding: '8px 12px',
+          background: styles.bg,
+          border: `1px solid ${styles.border}`,
+          borderRadius: '8px',
         }}
       >
         <img src={badgeSrc} alt="Featured on Launch" style={{ display: 'inline-block', height: '36px', width: 'auto', verticalAlign: 'middle' }} />
