@@ -2,7 +2,7 @@
 <defs><linearGradient id="goldBg" x1="0" y1="0" x2="600" y2="162" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFA500"/></linearGradient></defs>
 <rect width="600" height="162" rx="16" fill="url(#goldBg)"/>
 <rect x="1.5" y="1.5" width="597" height="159" rx="14.5" stroke="#FFD700" stroke-width="3" fill="none"/>
-<rect width="600" height="162" fill="url(#pattern0_0_1)"/>
+<rect x="20" y="16" width="560" height="130" fill="url(#pattern0_0_1)"/>
 <defs>
 <pattern id="pattern0_0_1" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_0_1" transform="scale(7.99936e-05 0.000296296)"/>

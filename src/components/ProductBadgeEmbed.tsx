@@ -79,7 +79,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     const logoUrl = getBadgeImageUrl(theme);
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; text-decoration: none;">
-  <img src="${logoUrl}" alt="Featured on Launch" height="36" style="display: block; height: 36px; width: auto;" />
+  <img src="${logoUrl}" alt="Featured on Launch" height="53" style="display: block; height: 53px; width: auto;" />
 </a>`;
   };
 
@@ -89,7 +89,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     
     return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
 <a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <img src="${logoUrl}" alt="Featured on Launch" height="36" style="display: inline-block; height: 36px; width: auto; vertical-align: middle;" />
+  <img src="${logoUrl}" alt="Featured on Launch" height="53" style="display: inline-block; height: 53px; width: auto; vertical-align: middle;" />
   ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; color: #666; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
 </a>`;
   };
@@ -162,7 +162,7 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
           gap: '8px',
         }}
       >
-        <img src={badgeSrc} alt="Featured on Launch" style={{ display: 'inline-block', height: '36px', width: 'auto', verticalAlign: 'middle' }} />
+        <img src={badgeSrc} alt="Featured on Launch" style={{ display: 'inline-block', height: '53px', width: 'auto', verticalAlign: 'middle' }} />
         {withCategories && categories.length > 0 && (
           <span 
             style={{
