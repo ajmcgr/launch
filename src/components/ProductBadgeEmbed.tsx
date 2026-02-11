@@ -164,7 +164,12 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
           display: 'inline-flex',
           alignItems: 'center',
           gap: '10px',
-          padding: '0',
+          padding: '8px 12px',
+          background: styles.bg,
+          border: `1px solid ${styles.border}`,
+          borderRadius: '8px',
+          textDecoration: 'none',
+          ...(theme === 'gold' ? { boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)' } : {}),
         }}
       >
         <img src={badgeSrc} alt="Launch" style={{ display: 'inline-block', height: '54px', width: 'auto', verticalAlign: 'middle' }} />
@@ -177,7 +182,8 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
               letterSpacing: '0',
               whiteSpace: 'nowrap',
               opacity: 0.7,
-              verticalAlign: 'middle'
+              verticalAlign: 'middle',
+              color: styles.text,
             }}
           >
             {categories.slice(0, 2).join(' · ')}
