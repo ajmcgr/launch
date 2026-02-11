@@ -1,7 +1,8 @@
-<svg width="672" height="210" viewBox="0 0 672 210" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<defs><linearGradient id="goldBg" x1="0" y1="0" x2="672" y2="210" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFA500"/></linearGradient></defs>
-<rect x="1.5" y="1.5" width="669" height="207" rx="24" fill="url(#goldBg)" stroke="#FFD700" stroke-width="3"/>
-<rect x="36" y="24" width="600" height="162" fill="url(#pattern0_0_1)"/>
+<svg width="600" height="162" viewBox="0 0 600 162" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs><linearGradient id="goldBg" x1="0" y1="0" x2="600" y2="162" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFA500"/></linearGradient></defs>
+<rect width="600" height="162" rx="16" fill="url(#goldBg)"/>
+<rect x="1.5" y="1.5" width="597" height="159" rx="14.5" stroke="#FFD700" stroke-width="3" fill="none"/>
+<rect width="600" height="162" fill="url(#pattern0_0_1)"/>
 <defs>
 <pattern id="pattern0_0_1" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_0_1" transform="scale(7.99936e-05 0.000296296)"/>
