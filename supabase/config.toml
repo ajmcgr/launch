@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.send-renewal-reminders]
 verify_jwt = false
+
+[functions.post-social-content]
+verify_jwt = false
