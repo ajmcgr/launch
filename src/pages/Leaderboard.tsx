@@ -58,7 +58,6 @@ const Leaderboard = () => {
 
         {/* Table header */}
         <div className="flex items-center gap-3 py-2 px-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          <div className="w-5 flex-shrink-0">#</div>
           <div className="w-10 flex-shrink-0"></div>
           <div className="flex-1">Maker</div>
           <div className="w-16 text-right flex-shrink-0">Growth</div>
@@ -90,15 +89,15 @@ const Leaderboard = () => {
                 to={`/@${user.username}`}
                 className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors"
               >
-                <div className="w-5 flex justify-center flex-shrink-0">
-                  {getRankIcon(index + 1)}
-                </div>
                 <Avatar className="h-10 w-10 rounded-lg flex-shrink-0">
                   <AvatarImage src={user.avatar_url || ''} alt={user.username} />
                   <AvatarFallback className="rounded-lg">{user.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
+                    <div className="w-5 flex justify-center flex-shrink-0">
+                      {getRankIcon(index + 1)}
+                    </div>
                     <h3 className="font-semibold text-base text-foreground truncate">
                       {user.name || `@${user.username}`}
                     </h3>
