@@ -161,6 +161,11 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/leaderboard" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Karma Leaderboard
+                </Link>
+              </li>
+              <li>
                 <Link 
                   to="/advertise"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"

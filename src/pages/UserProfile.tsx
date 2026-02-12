@@ -9,10 +9,13 @@ import { UserPlus, UserMinus, Globe } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
+import { useKarmaByUsername } from '@/hooks/use-karma';
+import { KarmaScore } from '@/components/KarmaScore';
 
 const UserProfile = () => {
   const { username: rawUsername } = useParams();
   const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
+  const { karma } = useKarmaByUsername(username);
   const [profile, setProfile] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [upvotedProducts, setUpvotedProducts] = useState<any[]>([]);
@@ -387,7 +390,10 @@ const UserProfile = () => {
             <div className="flex-1">
               <div className="flex items-start justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold mb-1">@{profile.username}</h1>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-3xl font-bold">@{profile.username}</h1>
+                  <KarmaScore karma={karma} size="md" />
+                </div>
                 {profile.name && (
                   <p className="text-xl text-muted-foreground mb-2">{profile.name}</p>
                 )}

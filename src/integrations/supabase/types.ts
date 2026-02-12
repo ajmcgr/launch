@@ -180,6 +180,13 @@ export type Database = {
             foreignKeyName: "comments_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -252,6 +259,13 @@ export type Database = {
             foreignKeyName: "follows_followed_id_fkey"
             columns: ["followed_id"]
             isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "follows_followed_id_fkey"
+            columns: ["followed_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -261,6 +275,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "public_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "follows_follower_id_fkey"
@@ -351,6 +372,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "public_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_content_builders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "marketing_content_builders_user_id_fkey"
@@ -470,6 +498,13 @@ export type Database = {
             foreignKeyName: "notifications_related_user_id_fkey"
             columns: ["related_user_id"]
             isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "notifications_related_user_id_fkey"
+            columns: ["related_user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -521,6 +556,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "public_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "orders_user_id_fkey"
@@ -739,6 +781,13 @@ export type Database = {
             foreignKeyName: "product_makers_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "product_makers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -826,6 +875,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "public_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "product_ratings_user_id_fkey"
@@ -983,6 +1039,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "public_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "products_owner_id_fkey"
@@ -1259,6 +1322,13 @@ export type Database = {
             foreignKeyName: "votes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -1414,6 +1484,13 @@ export type Database = {
             foreignKeyName: "products_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -1464,6 +1541,16 @@ export type Database = {
           username?: string | null
           website?: string | null
           youtube?: string | null
+        }
+        Relationships: []
+      }
+      user_karma: {
+        Row: {
+          avatar_url: string | null
+          karma: number | null
+          name: string | null
+          user_id: string | null
+          username: string | null
         }
         Relationships: []
       }
