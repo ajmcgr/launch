@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.post-social-content]
 verify_jwt = false
+
+[functions.snapshot-karma]
+verify_jwt = false

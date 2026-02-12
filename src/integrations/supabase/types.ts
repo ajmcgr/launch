@@ -292,6 +292,30 @@ export type Database = {
           },
         ]
       }
+      karma_snapshots: {
+        Row: {
+          created_at: string
+          id: string
+          karma: number
+          snapshot_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          karma?: number
+          snapshot_date?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          karma?: number
+          snapshot_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       marketing_content: {
         Row: {
           body: string | null
