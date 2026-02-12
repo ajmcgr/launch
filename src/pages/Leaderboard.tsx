@@ -23,7 +23,10 @@ const Leaderboard = () => {
       </Helmet>
       
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-2xl font-bold text-center mb-6">Maker Leaderboard</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">Maker Leaderboard</h1>
+        <p className="text-muted-foreground text-sm text-center mb-6">
+          Top makers ranked by karma. Earn points from upvotes, comments, and wins.
+        </p>
 
         <div>
           {loading ? (
