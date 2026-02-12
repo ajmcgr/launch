@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { CommentForm } from './CommentForm';
+import { KarmaScore } from '@/components/KarmaScore';
+import { useKarma } from '@/hooks/use-karma';
 import { Pin, PinOff, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
@@ -162,6 +164,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
     // Safety check for null user
     const username = comment.user?.username || 'Unknown';
     const avatarUrl = comment.user?.avatar_url || '';
+    const { karma } = useKarma(comment.user_id);
     
     return (
       <div className={`p-4 ${isReply ? 'ml-8 mt-3 border-l-2 border-muted' : 'border rounded-lg bg-card'} ${comment.pinned && !isReply ? 'border-primary/50 bg-primary/5' : ''}`}>
@@ -177,6 +180,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
               <Link to={`/@${username}`} className="font-semibold hover:text-primary transition-colors">
                 @{username}
               </Link>
+              <KarmaScore karma={karma} />
               {comment.pinned && (
                 <span className="flex items-center gap-1 text-xs text-primary font-medium">
                   <Pin className="h-3 w-3" />
