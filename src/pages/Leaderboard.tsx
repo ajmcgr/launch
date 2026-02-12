@@ -110,8 +110,7 @@ const Leaderboard = () => {
                 <div className="w-16 flex justify-end flex-shrink-0">
                   {getChangeIndicator(user.karmaChange)}
                 </div>
-                <div className="w-16 flex items-center justify-end gap-1 text-primary font-bold text-sm flex-shrink-0">
-                  <Zap className="h-4 w-4" />
+                <div className="w-16 flex items-center justify-end font-bold text-sm text-foreground flex-shrink-0">
                   {user.karma.toLocaleString()}
                 </div>
               </Link>
