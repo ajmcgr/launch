@@ -267,71 +267,81 @@ Deno.serve(async (req) => {
 
     console.log(`Fetching content for: ${section.title}`);
 
-    // Fetch the appropriate content
-    let tweetText = '';
+    // Get social set ID upfront
+    const socialSetId = await getSocialSetId(typefullyApiKey);
+    console.log(`Using social set: ${socialSetId}`);
 
-    switch (section.key) {
-      case 'sponsored': {
-        const products = await fetchSponsoredLaunches(supabase);
-        tweetText = formatProductTweet(section.title, section.emoji, products);
-        break;
-      }
-      case 'weekly_winners': {
-        const products = await fetchWeeklyWinners(supabase);
-        tweetText = formatProductTweet(section.title, section.emoji, products);
-        break;
-      }
-      case 'missed': {
-        const products = await fetchMissedProducts(supabase);
-        tweetText = formatProductTweet(section.title, section.emoji, products);
-        break;
-      }
-      case 'new_noteworthy': {
-        const products = await fetchNewNoteworthy(supabase);
-        tweetText = formatProductTweet(section.title, section.emoji, products);
-        break;
-      }
-      case 'hidden_gems': {
-        const products = await fetchHiddenGems(supabase);
-        tweetText = formatProductTweet(section.title, section.emoji, products);
-        break;
-      }
-      case 'makers': {
-        const makers = await fetchMakersToWatch(supabase);
-        tweetText = formatMakersTweet(makers);
-        break;
-      }
-      case 'top_karma': {
-        const makers = await fetchTopMakersByKarma(supabase);
-        tweetText = formatTopKarmaTweet(makers);
-        break;
+    const draftsCreated: Array<{ section: string; draft_id: string; text_length: number }> = [];
+
+    // 1. Always post Products to Promote (paid/sponsored launches) every day
+    const sponsoredProducts = await fetchSponsoredLaunches(supabase);
+    if (sponsoredProducts.length > 0) {
+      const sponsoredTweet = formatProductTweet('Sponsored Launches', '💰', sponsoredProducts);
+      if (sponsoredTweet) {
+        console.log(`Sponsored tweet (${sponsoredTweet.length} chars):\n${sponsoredTweet}`);
+        const sponsoredDraft = await createTypefullyDraft(typefullyApiKey, socialSetId, sponsoredTweet);
+        console.log(`Sponsored draft created: ${JSON.stringify(sponsoredDraft)}`);
+        draftsCreated.push({ section: 'Sponsored Launches', draft_id: sponsoredDraft.id, text_length: sponsoredTweet.length });
       }
     }
 
-    if (!tweetText) {
-      console.log('No content available for this section');
+    // 2. Post the day's scheduled section (skip 'sponsored' since we already posted it above)
+    let tweetText = '';
+    if (section.key !== 'sponsored') {
+      switch (section.key) {
+        case 'weekly_winners': {
+          const products = await fetchWeeklyWinners(supabase);
+          tweetText = formatProductTweet(section.title, section.emoji, products);
+          break;
+        }
+        case 'missed': {
+          const products = await fetchMissedProducts(supabase);
+          tweetText = formatProductTweet(section.title, section.emoji, products);
+          break;
+        }
+        case 'new_noteworthy': {
+          const products = await fetchNewNoteworthy(supabase);
+          tweetText = formatProductTweet(section.title, section.emoji, products);
+          break;
+        }
+        case 'hidden_gems': {
+          const products = await fetchHiddenGems(supabase);
+          tweetText = formatProductTweet(section.title, section.emoji, products);
+          break;
+        }
+        case 'makers': {
+          const makers = await fetchMakersToWatch(supabase);
+          tweetText = formatMakersTweet(makers);
+          break;
+        }
+        case 'top_karma': {
+          const makers = await fetchTopMakersByKarma(supabase);
+          tweetText = formatTopKarmaTweet(makers);
+          break;
+        }
+      }
+
+      if (tweetText) {
+        console.log(`Section tweet (${tweetText.length} chars):\n${tweetText}`);
+        const sectionDraft = await createTypefullyDraft(typefullyApiKey, socialSetId, tweetText);
+        console.log(`Section draft created: ${JSON.stringify(sectionDraft)}`);
+        draftsCreated.push({ section: section.title, draft_id: sectionDraft.id, text_length: tweetText.length });
+      }
+    }
+
+    if (draftsCreated.length === 0) {
+      console.log('No content available for any section');
       return new Response(
         JSON.stringify({ message: 'No content available', section: section.key }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Tweet text (${tweetText.length} chars):\n${tweetText}`);
-
-    // Get social set ID and create draft
-    const socialSetId = await getSocialSetId(typefullyApiKey);
-    console.log(`Using social set: ${socialSetId}`);
-
-    const draft = await createTypefullyDraft(typefullyApiKey, socialSetId, tweetText);
-    console.log(`Draft created: ${JSON.stringify(draft)}`);
-
     return new Response(
       JSON.stringify({
         success: true,
-        section: section.title,
         day: dayOfWeek,
-        draft_id: draft.id,
-        text_length: tweetText.length,
+        drafts: draftsCreated,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
