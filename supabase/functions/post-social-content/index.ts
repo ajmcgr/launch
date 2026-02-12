@@ -9,6 +9,7 @@ const TYPEFULLY_API_URL = 'https://api.typefully.com/v2';
 
 // Day-of-week to content section mapping (0=Sunday, 1=Monday, etc.)
 const DAY_SECTIONS: Record<number, { key: string; title: string; emoji: string }> = {
+  0: { key: 'top_karma', title: 'Launch Top Makers by Karma', emoji: '⚡' },
   1: { key: 'sponsored', title: 'Sponsored Launches', emoji: '💰' },
   2: { key: 'weekly_winners', title: 'Launch Weekly Winners', emoji: '📈' },
   3: { key: 'missed', title: '5 Launch Products You Missed This Week', emoji: '🕐' },
@@ -209,6 +210,27 @@ function formatMakersTweet(makers: any[]): string {
   return `👀 Launch Makers to Watch\n\n${lines.join('\n\n')}\n\nDiscover more → https://trylaunch.ai`;
 }
 
+async function fetchTopMakersByKarma(supabase: any) {
+  const { data } = await supabase
+    .from('user_karma')
+    .select('user_id, username, name, karma')
+    .order('karma', { ascending: false })
+    .limit(10);
+
+  return (data || []).filter((m: any) => m.karma > 0);
+}
+
+function formatTopKarmaTweet(makers: any[]): string {
+  if (!makers || makers.length === 0) return '';
+
+  const lines = makers.map((m: any, i: number) => {
+    const displayName = m.name || m.username;
+    return `${i + 1}. ${displayName} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`;
+  });
+
+  return `⚡ Launch Top Makers by Karma\n\n${lines.join('\n\n')}\n\nSee the full leaderboard → https://trylaunch.ai/makers`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -236,7 +258,7 @@ Deno.serve(async (req) => {
 
     const section = DAY_SECTIONS[dayOfWeek];
     if (!section) {
-      console.log('No content scheduled for today (Sunday)');
+      console.log('No content scheduled for today');
       return new Response(
         JSON.stringify({ message: 'No content scheduled for today', day: dayOfWeek }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -277,6 +299,11 @@ Deno.serve(async (req) => {
       case 'makers': {
         const makers = await fetchMakersToWatch(supabase);
         tweetText = formatMakersTweet(makers);
+        break;
+      }
+      case 'top_karma': {
+        const makers = await fetchTopMakersByKarma(supabase);
+        tweetText = formatTopKarmaTweet(makers);
         break;
       }
     }

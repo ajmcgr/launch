@@ -39,12 +39,20 @@ interface SurfacedBuilder {
   product_count: number;
 }
 
+interface TopMaker {
+  user_id: string;
+  username: string;
+  name: string | null;
+  karma: number;
+}
+
 interface ContentSection {
   title: string;
   description: string;
   icon: React.ReactNode;
   products?: SurfacedProduct[];
   builders?: SurfacedBuilder[];
+  topMakers?: TopMaker[];
   sponsoredProducts?: SponsoredProduct[];
   isLoading: boolean;
 }
@@ -151,6 +159,61 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
         </Button>
       </div>
     </div>
+  );
+};
+
+const TopMakerCard = ({ maker }: { maker: TopMaker }) => {
+  const profileUrl = `https://trylaunch.ai/@${maker.username}`;
+  const copyText = `${maker.name || maker.username} (@${maker.username}) — ${maker.karma} karma\n${profileUrl}`;
+
+  return (
+    <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium truncate">{maker.name || maker.username}</span>
+          <Badge variant="secondary" className="text-xs">
+            {maker.karma} karma
+          </Badge>
+        </div>
+        <p className="text-sm text-muted-foreground">@{maker.username}</p>
+        <p className="text-xs text-muted-foreground/70 mt-1 truncate">{profileUrl}</p>
+      </div>
+      <div className="flex items-center gap-1 ml-2">
+        <CopyButton text={copyText} label="maker" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 px-2"
+          asChild
+        >
+          <a href={`/@${maker.username}`} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const CopyAllTopMakersButton = ({ makers, title }: { makers: TopMaker[]; title: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAll = async () => {
+    const text = makers
+      .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`)
+      .join('\n\n');
+    
+    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    setCopied(true);
+    toast.success('All top makers copied!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={handleCopyAll} className="gap-2">
+      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+      Copy All
+    </Button>
   );
 };
 
@@ -523,6 +586,21 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // Top Makers by Karma
+  const { data: topMakersByKarma, isLoading: topMakersLoading } = useQuery({
+    queryKey: ['auto-top-makers-karma'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_karma')
+        .select('user_id, username, name, karma')
+        .order('karma', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return (data || []).filter((m: any) => m.karma > 0) as TopMaker[];
+    },
+  });
+
   // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo, sponsoredProductIds],
@@ -640,6 +718,14 @@ export const AutoSurfacedContent = () => {
       sections.push(`## 👀 Launch Makers to Watch\n\n${buildersText}`);
     }
     
+    // Top Makers by Karma
+    if (topMakersByKarma && topMakersByKarma.length > 0) {
+      const makersText = topMakersByKarma
+        .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`)
+        .join('\n\n');
+      sections.push(`## ⚡ Top Makers by Karma\n\n${makersText}`);
+    }
+    
     if (sections.length === 0) {
       toast.error('No content available to copy');
       return;
@@ -702,6 +788,13 @@ export const AutoSurfacedContent = () => {
       builders: buildersToWatch,
       isLoading: buildersLoading,
     },
+    {
+      title: "⚡ Top Makers by Karma",
+      description: "Top 10 makers ranked by karma score",
+      icon: null,
+      topMakers: topMakersByKarma,
+      isLoading: topMakersLoading,
+    },
   ];
 
   return (
@@ -737,6 +830,9 @@ export const AutoSurfacedContent = () => {
                 )}
                 {section.builders && section.builders.length > 0 && (
                   <CopyAllBuildersButton builders={section.builders} title={section.title} />
+                )}
+                {section.topMakers && section.topMakers.length > 0 && (
+                  <CopyAllTopMakersButton makers={section.topMakers} title={section.title} />
                 )}
               </div>
               <CardDescription>{section.description}</CardDescription>
@@ -776,6 +872,16 @@ export const AutoSurfacedContent = () => {
                 ) : (
                   <p className="text-sm text-muted-foreground py-4 text-center">
                     No builders found
+                  </p>
+                )
+              ) : section.topMakers ? (
+                section.topMakers.length > 0 ? (
+                  section.topMakers.map((maker) => (
+                    <TopMakerCard key={maker.user_id} maker={maker} />
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    No makers found
                   </p>
                 )
               ) : null}
