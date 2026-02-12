@@ -51,7 +51,7 @@ const Leaderboard = () => {
       </Helmet>
       
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-2xl font-bold text-center mb-2">Top Makers</h1>
+        <h2 className="text-2xl font-bold text-center mb-2">Top Makers</h2>
         <p className="text-muted-foreground text-sm text-center mb-6">
           Top makers ranked by karma. Earn points from upvotes, comments, and wins.
         </p>
