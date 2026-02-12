@@ -35,7 +35,7 @@ const Index = () => {
     const savedView = localStorage.getItem('homeViewPreference');
     return (savedView === 'grid' || savedView === 'list' || savedView === 'compact') ? savedView : 'list';
   });
-  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
+  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue' | 'maker'>('popular');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [displayCount, setDisplayCount] = useState(25);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });

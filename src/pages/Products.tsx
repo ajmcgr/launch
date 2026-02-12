@@ -30,7 +30,7 @@ const Products = () => {
     const saved = localStorage.getItem('productView');
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
-  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
+  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue' | 'maker'>('popular');
   const [user, setUser] = useState<any>(null);
   const [userVotes, setUserVotes] = useState<Set<string>>(new Set());
   
@@ -228,6 +228,7 @@ const Products = () => {
           platforms,
           verified_mrr,
           mrr_verified_at,
+          owner_id,
           product_media(url, type),
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
@@ -313,6 +314,24 @@ const Products = () => {
         // Filter to only products with verified MRR, then sort by MRR
         formattedProducts = formattedProducts.filter((p: any) => p.verifiedMrr !== null && p.verifiedMrr > 0);
         formattedProducts.sort((a: any, b: any) => (b.verifiedMrr || 0) - (a.verifiedMrr || 0));
+      } else if (sort === 'maker') {
+        // Sort by maker karma - fetch karma data
+        const ownerIds = [...new Set((allProducts || []).map((p: any) => p.owner_id))];
+        const { data: karmaData } = await supabase
+          .from('user_karma' as any)
+          .select('user_id, karma')
+          .in('user_id', ownerIds);
+        
+        const karmaMap = new Map((karmaData as any[] || []).map((k: any) => [k.user_id, k.karma || 0]));
+        
+        // Create a map from product id to owner_id
+        const ownerMap = new Map((allProducts || []).map((p: any) => [p.id, p.owner_id]));
+        
+        formattedProducts.sort((a: any, b: any) => {
+          const karmaA = karmaMap.get(ownerMap.get(a.id)) || 0;
+          const karmaB = karmaMap.get(ownerMap.get(b.id)) || 0;
+          return karmaB - karmaA;
+        });
       } else {
         formattedProducts.sort((a: any, b: any) => 
           new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime()
@@ -347,6 +366,7 @@ const Products = () => {
           platforms,
           verified_mrr,
           mrr_verified_at,
+          owner_id,
           product_media(url, type),
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
@@ -415,9 +435,19 @@ const Products = () => {
       } else if (sort === 'popular') {
         formattedProducts.sort((a: any, b: any) => b.netVotes - a.netVotes);
       } else if (sort === 'revenue') {
-        // Filter to only products with verified MRR, then sort by MRR
         formattedProducts = formattedProducts.filter((p: any) => p.verifiedMrr !== null && p.verifiedMrr > 0);
         formattedProducts.sort((a: any, b: any) => (b.verifiedMrr || 0) - (a.verifiedMrr || 0));
+      } else if (sort === 'maker') {
+        const ownerIds = [...new Set((allProducts || []).map((p: any) => p.owner_id))];
+        const { data: karmaData } = await supabase
+          .from('user_karma' as any)
+          .select('user_id, karma')
+          .in('user_id', ownerIds);
+        const karmaMap = new Map((karmaData as any[] || []).map((k: any) => [k.user_id, k.karma || 0]));
+        const ownerMap = new Map((allProducts || []).map((p: any) => [p.id, p.owner_id]));
+        formattedProducts.sort((a: any, b: any) => {
+          return (karmaMap.get(ownerMap.get(b.id)) || 0) - (karmaMap.get(ownerMap.get(a.id)) || 0);
+        });
       } else {
         formattedProducts.sort((a: any, b: any) => 
           new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime()

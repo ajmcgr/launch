@@ -71,7 +71,7 @@ const Home = () => {
     return (saved === 'list' || saved === 'grid' || saved === 'compact') ? saved : 'list';
   });
   const [currentPeriod, setCurrentPeriod] = useState<'all' | 'today' | 'week' | 'month' | 'year'>('week');
-  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue'>('popular');
+  const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue' | 'maker'>('popular');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   
@@ -275,7 +275,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'all' | 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false, skipFallback: boolean = false) => {
+  const fetchProducts = async (period: 'all' | 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false, skipFallback: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -406,6 +406,46 @@ const Home = () => {
         const cappedProducts = sortedByRevenue.slice(0, MAX_HOMEPAGE_PRODUCTS);
         allProducts = cappedProducts.slice(from, to + 1);
         setHasMore(cappedProducts.length > to + 1 && to + 1 < MAX_HOMEPAGE_PRODUCTS);
+      } else if (currentSort === 'maker') {
+        // For maker sorting, fetch all products then sort by owner karma
+        const { data: productsData, error } = await supabase
+          .from('products')
+          .select(`
+            id,
+            slug,
+            name,
+            tagline,
+            launch_date,
+            domain_url,
+            platforms,
+            verified_mrr,
+            mrr_verified_at,
+            owner_id,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          `)
+          .eq('status', 'launched')
+          .gte('launch_date', startDate.toISOString());
+
+        if (error) throw error;
+
+        // Fetch karma for all owners
+        const ownerIds = [...new Set((productsData || []).map(p => p.owner_id))];
+        const { data: karmaData } = await supabase
+          .from('user_karma' as any)
+          .select('user_id, karma')
+          .in('user_id', ownerIds);
+
+        const karmaMap = new Map((karmaData as any[] || []).map((k: any) => [k.user_id, k.karma || 0]));
+
+        const sortedByKarma = (productsData || []).sort((a, b) => {
+          return (karmaMap.get(b.owner_id) || 0) - (karmaMap.get(a.owner_id) || 0);
+        });
+
+        const cappedProducts = sortedByKarma.slice(0, MAX_HOMEPAGE_PRODUCTS);
+        allProducts = cappedProducts.slice(from, to + 1);
+        setHasMore(cappedProducts.length > to + 1 && to + 1 < MAX_HOMEPAGE_PRODUCTS);
       } else {
         // For latest sorting, use database ordering with pagination
         const { data: productsData, error } = await supabase
@@ -529,7 +569,7 @@ const Home = () => {
     fetchProducts(period, sort, 0, true, false, true);
   };
 
-  const handleSortChange = (newSort: 'rated' | 'popular' | 'latest' | 'revenue') => {
+  const handleSortChange = (newSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker') => {
     setSort(newSort);
     setPage(0);
     setProducts([]);
