@@ -7,6 +7,7 @@ interface KarmaData {
   avatar_url: string | null;
   name: string | null;
   karma: number;
+  karmaChange?: number | null;
 }
 
 export const useKarma = (userId?: string) => {
@@ -73,15 +74,41 @@ export const useKarmaLeaderboard = (limit = 50) => {
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
-      const { data, error } = await supabase
-        .from('user_karma' as any)
-        .select('*')
-        .gt('karma', 0)
-        .order('karma', { ascending: false })
-        .limit(limit);
+      // Fetch current karma and 7-day-old snapshots in parallel
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
 
-      if (!error && data) {
-        setUsers(data as unknown as KarmaData[]);
+      const [karmaRes, snapshotRes] = await Promise.all([
+        supabase
+          .from('user_karma' as any)
+          .select('*')
+          .gt('karma', 0)
+          .order('karma', { ascending: false })
+          .limit(limit),
+        supabase
+          .from('karma_snapshots' as any)
+          .select('user_id, karma')
+          .eq('snapshot_date', sevenDaysAgo),
+      ]);
+
+      if (!karmaRes.error && karmaRes.data) {
+        const snapshotMap = new Map<string, number>();
+        if (!snapshotRes.error && snapshotRes.data) {
+          (snapshotRes.data as any[]).forEach((s) => {
+            snapshotMap.set(s.user_id, s.karma);
+          });
+        }
+
+        const enriched = (karmaRes.data as unknown as KarmaData[]).map((user) => {
+          const oldKarma = snapshotMap.get(user.user_id);
+          return {
+            ...user,
+            karmaChange: oldKarma !== undefined ? user.karma - oldKarma : null,
+          };
+        });
+
+        setUsers(enriched);
       }
       setLoading(false);
     };
