@@ -56,13 +56,6 @@ const Leaderboard = () => {
           Top makers ranked by karma. Earn points from upvotes, comments, and wins.
         </p>
 
-        {/* Table header */}
-        <div className="flex items-center gap-3 py-2 px-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          <div className="w-10 flex-shrink-0"></div>
-          <div className="flex-1">Maker</div>
-          <div className="w-16 text-right flex-shrink-0">Growth</div>
-          <div className="w-16 text-right flex-shrink-0">Karma</div>
-        </div>
 
         <div>
           {loading ? (
