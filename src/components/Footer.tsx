@@ -257,7 +257,7 @@ export const Footer = () => {
           </div>
           </div>
           <div className="pb-8 text-center text-sm text-muted-foreground space-y-2">
-          <TrustPhrase className="text-sm text-muted-foreground" />
+          
           <p>
             Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
             <a 
