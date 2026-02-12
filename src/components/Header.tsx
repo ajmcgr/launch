@@ -139,7 +139,7 @@ export const Header = () => {
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
-              <Link to="/leaderboard" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              <Link to="/makers" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Makers
               </Link>
               <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
@@ -247,7 +247,7 @@ export const Header = () => {
                     Products
                   </Link>
                   <Link 
-                    to="/leaderboard" 
+                    to="/makers" 
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
