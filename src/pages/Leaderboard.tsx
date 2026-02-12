@@ -2,7 +2,8 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Zap, Trophy, Medal, Award, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Trophy, Medal, Award, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import karmaIcon from '@/assets/karma-icon.png';
 import { useKarmaLeaderboard } from '@/hooks/use-karma';
 
 const getRankIcon = (rank: number) => {
@@ -110,7 +111,8 @@ const Leaderboard = () => {
                 <div className="w-16 flex justify-end flex-shrink-0">
                   {getChangeIndicator(user.karmaChange)}
                 </div>
-                <div className="w-16 flex items-center justify-end font-bold text-sm text-foreground flex-shrink-0">
+                <div className="w-16 flex items-center justify-end gap-0.5 font-bold text-sm text-foreground flex-shrink-0">
+                  <img src={karmaIcon} alt="Karma" className="h-3.5 w-3.5" />
                   {user.karma.toLocaleString()}
                 </div>
               </Link>

@@ -1,5 +1,5 @@
-import { Zap } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import karmaIcon from '@/assets/karma-icon.png';
 
 interface KarmaScoreProps {
   karma: number | null;
@@ -15,7 +15,11 @@ export const KarmaScore = ({ karma, size = 'sm' }: KarmaScoreProps) => {
         <span className={`inline-flex items-center gap-0.5 text-muted-foreground ${
           size === 'sm' ? 'text-xs' : 'text-sm'
         }`}>
-          <Zap className={size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
+          <img 
+            src={karmaIcon} 
+            alt="Karma" 
+            className={size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5'}
+          />
           <span className="font-medium">{karma.toLocaleString()}</span>
         </span>
       </TooltipTrigger>
