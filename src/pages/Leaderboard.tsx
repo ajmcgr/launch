@@ -61,7 +61,7 @@ const Leaderboard = () => {
           <div className="w-5 flex-shrink-0">#</div>
           <div className="w-10 flex-shrink-0"></div>
           <div className="flex-1">Maker</div>
-          <div className="w-16 text-right flex-shrink-0">7d</div>
+          <div className="w-16 text-right flex-shrink-0">Growth</div>
           <div className="w-16 text-right flex-shrink-0">Karma</div>
         </div>
 
