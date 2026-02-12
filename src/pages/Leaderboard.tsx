@@ -46,18 +46,18 @@ const Leaderboard = () => {
   return (
     <div className="min-h-screen bg-background py-6">
       <Helmet>
-        <title>Maker Leaderboard | Launch</title>
+        <title>Top Makers | Launch</title>
         <meta name="description" content="Top makers on Launch ranked by karma. Earn karma through upvotes, comments, and wins." />
       </Helmet>
       
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-2xl font-bold text-center mb-2">Maker Leaderboard</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">Top Makers</h1>
         <p className="text-muted-foreground text-sm text-center mb-6">
           Top makers ranked by karma. Earn points from upvotes, comments, and wins.
         </p>
 
         {/* Table header */}
-        <div className="flex items-center gap-3 py-2 px-2 border-b border-border text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <div className="flex items-center gap-3 py-2 px-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
           <div className="w-5 flex-shrink-0">#</div>
           <div className="w-10 flex-shrink-0"></div>
           <div className="flex-1">Maker</div>
