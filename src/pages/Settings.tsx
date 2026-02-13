@@ -130,44 +130,56 @@ const Settings = () => {
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      // Use a fixed filename so upsert actually overwrites
+      const fileName = `${user.id}/avatar.${fileExt}`;
 
-      // Remove old avatar if it exists in our storage
-      if (profile.avatar_url?.includes('supabase.co/storage')) {
-        const oldPath = profile.avatar_url.split('/avatars/')[1];
-        if (oldPath) {
-          await supabase.storage.from('avatars').remove([oldPath]);
+      // Try to remove old avatar (non-blocking)
+      try {
+        if (profile.avatar_url?.includes('/avatars/')) {
+          const oldPath = profile.avatar_url.split('/avatars/')[1];
+          if (oldPath) {
+            await supabase.storage.from('avatars').remove([decodeURIComponent(oldPath)]);
+          }
         }
+      } catch (removeErr) {
+        console.warn('Could not remove old avatar:', removeErr);
       }
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
-          cacheControl: '3600',
+          cacheControl: '0',
           upsert: true,
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
+      // Append cache-busting param to force refresh
+      const freshUrl = `${publicUrl}?t=${Date.now()}`;
+
       const { error: updateError } = await supabase
         .from('users')
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: freshUrl })
         .eq('id', user.id);
 
       if (updateError) throw updateError;
 
-      setProfile({ ...profile, avatar_url: publicUrl });
+      setProfile({ ...profile, avatar_url: freshUrl });
       toast.success('Avatar updated successfully');
     } catch (error: any) {
-      console.error('Upload error:', error);
-      if (error.message === 'Failed to fetch') {
+      console.error('Upload error details:', error);
+      const msg = error?.message || error?.statusCode || 'Failed to upload avatar';
+      if (msg === 'Failed to fetch') {
         toast.error('Network error. Please check your connection and try again.');
       } else {
-        toast.error(error.message || 'Failed to upload avatar');
+        toast.error(String(msg));
       }
     } finally {
       setUploading(false);
