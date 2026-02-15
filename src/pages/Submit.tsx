@@ -874,7 +874,7 @@ const Submit = () => {
             ? 'Product launched successfully!' 
             : 'Launch rescheduled successfully';
           toast.success(successMessage);
-          navigate('/my-products');
+          navigate('/my-products?success=true');
           return;
         } catch (error) {
           console.error('Reschedule error:', error);
@@ -1153,7 +1153,7 @@ const Submit = () => {
           localStorage.removeItem('submitStep');
           
           toast.success('Product scheduled using your existing plan!');
-          navigate('/my-products');
+          navigate('/my-products?success=true');
           return;
         } catch (error) {
           console.error('Error using existing plan:', error);
