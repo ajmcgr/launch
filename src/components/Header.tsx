@@ -151,9 +151,6 @@ export const Header = () => {
               <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Advertise
               </Link>
-              <Link to="/pass" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Pass
-              </Link>
             </nav>
           </div>
           
@@ -277,13 +274,6 @@ export const Header = () => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Advertise
-                  </Link>
-                  <Link 
-                    to="/pass" 
-                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Pass
                   </Link>
                   
                   {user ? (
