@@ -176,6 +176,16 @@ export const Footer = () => {
                   Media Kit
                 </Link>
               </li>
+              <li>
+                <a 
+                  href="https://store.trylaunch.ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Store
+                </a>
+              </li>
             </ul>
           </div>
 
