@@ -77,7 +77,7 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-[#f5f5f5]">
+    <footer>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Products Section */}
         {products.length > 0 && (
@@ -133,7 +133,7 @@ export const Footer = () => {
 
         {/* Footer Links - full width border */}
       </div>
-      <div>
+      <div className="bg-[#f5f5f5]">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
           <div>
