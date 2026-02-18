@@ -133,7 +133,7 @@ export const Footer = () => {
 
         {/* Footer Links - full width border */}
       </div>
-      <div className="border-t">
+      <div>
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
           <div>
