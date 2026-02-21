@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Rocket, Users, MousePointerClick } from 'lucide-react';
+
 
 const usePlatformStats = () => {
   return useQuery({
@@ -43,9 +43,9 @@ export const PlatformStats = ({ className }: PlatformStatsProps) => {
   if (!data) return null;
 
   const stats = [
-    { icon: Rocket, value: formatStat(data.launched), label: 'products launched' },
-    { icon: Users, value: formatStat(data.members), label: 'makers' },
-    { icon: MousePointerClick, value: formatStat(data.clicksSent), label: 'clicks sent to maker sites' },
+    { value: formatStat(data.launched), label: 'products launched' },
+    { value: formatStat(data.members), label: 'makers' },
+    { value: formatStat(data.clicksSent), label: 'clicks sent to maker sites' },
   ];
 
   return (
@@ -53,7 +53,6 @@ export const PlatformStats = ({ className }: PlatformStatsProps) => {
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
         {stats.map((stat) => (
           <div key={stat.label} className="flex items-center gap-1.5">
-            <stat.icon className="h-3.5 w-3.5 text-primary" />
             <span className="font-semibold text-foreground">{stat.value}</span>
             <span>{stat.label}</span>
           </div>
