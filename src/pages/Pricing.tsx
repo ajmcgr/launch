@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import { TrustPhrase } from '@/hooks/use-member-count';
+import { PlatformStats } from '@/components/PlatformStats';
 
 const FEATURE_CONFIG = [
   { key: 'listing', label: 'Homepage listing', icon: TrendingUp },
@@ -24,10 +25,10 @@ const Pricing = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Launch Your Product</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-2">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
             Get your product in front of thousands of technologists, marketers and founders
           </p>
-          <TrustPhrase className="text-sm text-muted-foreground" />
+          <PlatformStats />
         </div>
 
 

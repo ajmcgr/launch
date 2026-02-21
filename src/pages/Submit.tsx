@@ -22,6 +22,7 @@ import { z } from 'zod';
 import { usePass } from '@/hooks/use-pass';
 import { PassOption } from '@/components/PassOption';
 import { TrustPhrase } from '@/hooks/use-member-count';
+import { PlatformStats } from '@/components/PlatformStats';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -1213,7 +1214,7 @@ const Submit = () => {
           <p className="text-muted-foreground mb-1">
             {isRescheduling ? 'Choose a new launch date for your product' : 'Launch your product to thousands of founders'}
           </p>
-          {!isRescheduling && <TrustPhrase className="text-sm text-muted-foreground" />}
+          {!isRescheduling && <PlatformStats className="mt-2" />}
         </div>
 
         {/* Only show step indicator when not rescheduling */}
