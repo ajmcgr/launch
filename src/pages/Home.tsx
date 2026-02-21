@@ -30,6 +30,7 @@ import { format, getWeek } from 'date-fns';
 
 import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
 import { SponsorBanner } from '@/components/SponsorBanner';
+import { PlatformStats } from '@/components/PlatformStats';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
@@ -865,6 +866,7 @@ const Home = () => {
               {currentPeriod === 'month' && "This Month's Launches"}
               {currentPeriod === 'year' && "This Year's Launches"}
             </h2>
+            <PlatformStats className="mt-1" />
           </div>
 
           <TabsContent value="all" className="space-y-6">
