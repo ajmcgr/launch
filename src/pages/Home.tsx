@@ -866,7 +866,7 @@ const Home = () => {
               {currentPeriod === 'month' && "This Month's Launches"}
               {currentPeriod === 'year' && "This Year's Launches"}
             </h2>
-            <PlatformStats className="mt-1" />
+            
           </div>
 
           <TabsContent value="all" className="space-y-6">
