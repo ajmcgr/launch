@@ -659,7 +659,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
   return (
     <section className="py-6 bg-background">
       <div className="container mx-auto px-4 max-w-5xl">
-        <h2 className="text-2xl font-bold text-center mb-8">This Week's Launch Picks</h2>
+        <h2 className="text-2xl font-bold text-left mb-8">This Week's Launch Picks</h2>
 
         <div className="space-y-8">
           {sections.map((section, sectionIndex) => (

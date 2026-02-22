@@ -45,12 +45,12 @@ export const PlatformStats = ({ className }: PlatformStatsProps) => {
   const stats = [
     { value: formatStat(data.launched), label: 'products launched' },
     { value: formatStat(data.members), label: 'makers' },
-    { value: formatStat(data.clicksSent), label: 'clicks sent to maker sites' },
+    ...(data.clicksSent > 0 ? [{ value: formatStat(data.clicksSent), label: 'clicks sent to maker sites' }] : []),
   ];
 
   return (
     <div className={className}>
-      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-start gap-x-6 gap-y-2 text-sm text-muted-foreground">
         {stats.map((stat) => (
           <div key={stat.label} className="flex items-center gap-1.5">
             <span className="font-semibold text-foreground">{stat.value}</span>
