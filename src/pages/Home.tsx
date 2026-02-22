@@ -858,7 +858,7 @@ const Home = () => {
           </div>
 
           {/* Value Proposition */}
-          <div className="text-center mb-8">
+          <div className="text-left mb-8">
             <h2 className="text-2xl font-bold mb-2">
               {currentPeriod === 'all' && "All-Time Launches"}
               {currentPeriod === 'today' && "Today's Launches"}
