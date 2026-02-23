@@ -72,6 +72,18 @@ const Pricing = () => {
                       </li>
                     );
                   })}
+                  {plan.id === 'free' && (
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Standard launch queue</span>
+                    </li>
+                  )}
+                  {(plan.id === 'join' || plan.id === 'skip') && (
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Skip the queue</span>
+                    </li>
+                  )}
                 </ul>
 
                 {/* Value callout */}
@@ -119,6 +131,26 @@ const Pricing = () => {
               </div>
 
               <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Homepage listing</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Social media promotion</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Newsletter feature</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Choose launch date</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Verified badge</span>
+                </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
                   <span>Unlimited launches</span>
