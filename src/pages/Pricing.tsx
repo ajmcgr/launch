@@ -28,7 +28,7 @@ const Pricing = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
             Get your product in front of thousands of technologists, marketers and founders
           </p>
-          <PlatformStats />
+          
         </div>
 
 
@@ -154,29 +154,8 @@ const Pricing = () => {
           </Card>
         </div>
 
-        {/* Data-driven proof */}
-        <div className="mt-8 max-w-3xl mx-auto">
-          <div className="rounded-lg border bg-muted/30 px-6 py-5">
-            <p className="text-sm text-center text-muted-foreground mb-3 font-medium">Based on real platform data</p>
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">4x</div>
-                <div className="text-xs text-muted-foreground">more page views</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">5.7x</div>
-                <div className="text-xs text-muted-foreground">more website clicks</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">0 day</div>
-                <div className="text-xs text-muted-foreground">wait to launch</div>
-              </div>
-            </div>
-            <p className="text-xs text-center text-muted-foreground mt-3">
-              Paid launches vs free — measured across 1,100+ products
-            </p>
-          </div>
-        </div>
+
+
 
         <div className="mt-6 text-center space-y-2">
           <p className="text-muted-foreground">
