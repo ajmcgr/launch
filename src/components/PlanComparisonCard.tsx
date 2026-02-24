@@ -33,6 +33,7 @@ interface PlanComparisonCardProps {
 
 const FEATURE_CONFIG = [
   { key: 'listing', label: 'Homepage listing', icon: TrendingUp },
+  { key: 'queue', label: null, icon: null }, // virtual row – label resolved per plan
   { key: 'socialPromotion', label: 'X & LinkedIn promotion', icon: Zap },
   { key: 'newsletter', label: 'Newsletter feature (2K+ subs)', icon: Mail },
   { key: 'chooseDate', label: 'Choose launch date', icon: Calendar },
@@ -100,6 +101,23 @@ export const PlanComparisonCard = ({
       <CardContent className="pt-0">
         <ul className="space-y-2">
           {FEATURE_CONFIG.map(({ key, label, icon: Icon }) => {
+            // Virtual "queue" row – resolved per plan
+            if (key === 'queue') {
+              const isPaid = plan.price > 0;
+              return (
+                <li key={key} className="flex items-center gap-2 text-sm">
+                  {isPaid ? (
+                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  ) : (
+                    <X className="h-4 w-4 text-muted-foreground/40 flex-shrink-0" />
+                  )}
+                  <span className={cn(!isPaid && 'text-muted-foreground/60')}>
+                    {isPaid ? 'Skip the queue' : 'Standard launch queue'}
+                  </span>
+                </li>
+              );
+            }
+
             const hasFeature = plan.features[key as keyof PlanFeatures];
             return (
               <li key={key} className="flex items-center gap-2 text-sm">
