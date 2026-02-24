@@ -189,7 +189,7 @@ const Home = () => {
         `)
         .lte('start_date', today)
         .gte('end_date', today)
-        .in('sponsorship_type', ['website', 'combined'])
+        .in('sponsorship_type', ['website', 'combined', 'boost'])
         .order('position', { ascending: true });
 
       if (sponsoredData && sponsoredData.length > 0) {

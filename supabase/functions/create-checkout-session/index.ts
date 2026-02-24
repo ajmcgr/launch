@@ -53,6 +53,7 @@ serve(async (req) => {
       join: { amount: 900, name: 'Launch Lite - $9' },
       skip: { amount: 3900, name: 'Launch - $39' },
       relaunch: { amount: 1900, name: 'Relaunch - $19' },
+      boost: { amount: 1900, name: 'Featured Boost - $19' },
       annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true }
     };
 
@@ -108,12 +109,17 @@ serve(async (req) => {
     
     // Set success/cancel URLs based on plan type
     const isAnnualAccess = plan === 'annual_access';
+    const isBoost = plan === 'boost';
     const successUrl = isAnnualAccess 
       ? `${productionUrl}/settings?tab=billing&success=annual`
-      : `${productionUrl}/my-products?success=true`;
+      : isBoost
+        ? `${productionUrl}/my-products?boost=success`
+        : `${productionUrl}/my-products?success=true`;
     const cancelUrl = isAnnualAccess
       ? `${productionUrl}/settings?tab=billing&canceled=true`
-      : `${productionUrl}/submit?canceled=true`;
+      : isBoost
+        ? `${productionUrl}/my-products`
+        : `${productionUrl}/submit?canceled=true`;
     
     let session;
     
