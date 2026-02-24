@@ -22,6 +22,7 @@ import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, Refresh
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
+import BoostUpsellModal from '@/components/BoostUpsellModal';
 import { formatMRRRange } from '@/lib/revenue';
 
 const MyProducts = () => {
@@ -32,7 +33,8 @@ const MyProducts = () => {
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
   const [showShareModal, setShowShareModal] = useState(false);
-  const [recentProduct, setRecentProduct] = useState<{ name: string; slug: string; tagline?: string } | null>(null);
+  const [showBoostModal, setShowBoostModal] = useState(false);
+  const [recentProduct, setRecentProduct] = useState<{ id: string; name: string; slug: string; tagline?: string } | null>(null);
   const [stripeActionLoading, setStripeActionLoading] = useState<string | null>(null);
   const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
   const [sponsorAnalytics, setSponsorAnalytics] = useState<Record<string, { impressions: number; clicks: number }>>({});
@@ -56,6 +58,14 @@ const MyProducts = () => {
   useEffect(() => {
     // Check for successful submission and show share modal
     const hasSuccess = searchParams.get('success') === 'true';
+    const hasBoostSuccess = searchParams.get('boost') === 'success';
+    
+    if (hasBoostSuccess && user && !successProcessed) {
+      setSuccessProcessed(true);
+      toast.success('⚡ Boost activated! Your product is now featured on the homepage.');
+      searchParams.delete('boost');
+      setSearchParams(searchParams, { replace: true });
+    }
     
     if (hasSuccess && user && !successProcessed) {
       // Mark as processed immediately to prevent duplicate triggers
@@ -74,7 +84,7 @@ const MyProducts = () => {
         // Get the most recently scheduled/launched product
         const { data: latestProduct } = await supabase
           .from('products')
-          .select('name, slug, tagline')
+          .select('id, name, slug, tagline')
           .eq('owner_id', user.id)
           .in('status', ['scheduled', 'launched'])
           .order('created_at', { ascending: false })
@@ -83,6 +93,7 @@ const MyProducts = () => {
         
         if (latestProduct && latestProduct.slug) {
           setRecentProduct({
+            id: latestProduct.id,
             name: latestProduct.name || 'Your Product',
             slug: latestProduct.slug,
             tagline: latestProduct.tagline || undefined
@@ -920,10 +931,24 @@ const MyProducts = () => {
       {recentProduct && (
         <ShareLaunchModal
           open={showShareModal}
-          onClose={() => setShowShareModal(false)}
+          onClose={() => {
+            setShowShareModal(false);
+            // Show boost upsell after share modal closes
+            setTimeout(() => setShowBoostModal(true), 300);
+          }}
           productName={recentProduct.name}
           productSlug={recentProduct.slug}
           productTagline={recentProduct.tagline}
+        />
+      )}
+
+      {/* Boost Upsell Modal */}
+      {recentProduct && (
+        <BoostUpsellModal
+          open={showBoostModal}
+          onClose={() => setShowBoostModal(false)}
+          productId={recentProduct.id}
+          productName={recentProduct.name}
         />
       )}
     </div>

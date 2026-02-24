@@ -603,9 +603,51 @@ Deno.serve(async (req) => {
         return (count ?? 0) < MAX_DAILY_CAPACITY;
       };
 
+      const plan = metadata.plan;
+
+      // Handle boost plan - creates a 24h sponsored placement
+      if (plan === 'boost') {
+        console.log('Processing boost purchase for product:', metadata.product_id);
+        
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const { error: boostError } = await supabaseClient
+          .from('sponsored_products')
+          .insert({
+            product_id: metadata.product_id,
+            position: 0,
+            sponsorship_type: 'boost',
+            start_date: today.toISOString().split('T')[0],
+            end_date: tomorrow.toISOString().split('T')[0],
+          });
+        
+        if (boostError) {
+          console.error('Error creating boost:', boostError);
+          throw boostError;
+        }
+        
+        // Create order record
+        await supabaseClient
+          .from('orders')
+          .insert({
+            user_id: metadata.user_id,
+            product_id: metadata.product_id,
+            stripe_session_id: session.id,
+            plan: 'boost',
+          });
+        
+        console.log('Boost activated for product:', metadata.product_id);
+        
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        });
+      }
+
       // Determine launch date based on plan
       let launchDate: string;
-      const plan = metadata.plan;
       
       // Handle Annual Access plan - user-level subscription, not product-specific
       if (plan === 'annual_access') {
