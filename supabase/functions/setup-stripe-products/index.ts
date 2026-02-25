@@ -57,6 +57,13 @@ serve(async (req) => {
         description: 'Website + Newsletter sponsorship for one month',
         amount: 40000, // $400 in cents
         metadata: { plan_id: 'ad_combined' }
+      },
+      // Featured Boost
+      {
+        name: 'Featured Boost',
+        description: 'Pin your product to the top of the homepage for 24 hours',
+        amount: 1900, // $19 in cents
+        metadata: { plan_id: 'boost' }
       }
     ];
 
