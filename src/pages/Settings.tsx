@@ -271,7 +271,7 @@ const Settings = () => {
                     <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
-                      value={profile.username}
+                      value={profile.username || ''}
                       onChange={(e) => setProfile({ ...profile, username: e.target.value })}
                     />
                   </div>
@@ -288,7 +288,7 @@ const Settings = () => {
                     <Label htmlFor="bio">Bio</Label>
                     <Textarea
                       id="bio"
-                      value={profile.bio}
+                      value={profile.bio || ''}
                       onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
                       rows={4}
                     />
@@ -297,7 +297,7 @@ const Settings = () => {
                     <Label htmlFor="twitter">X Username</Label>
                     <Input
                       id="twitter"
-                      value={profile.twitter}
+                      value={profile.twitter || ''}
                       onChange={(e) => setProfile({ ...profile, twitter: e.target.value })}
                       placeholder="@username"
                     />
@@ -306,7 +306,7 @@ const Settings = () => {
                     <Label htmlFor="instagram">Instagram Username</Label>
                     <Input
                       id="instagram"
-                      value={profile.instagram}
+                      value={profile.instagram || ''}
                       onChange={(e) => setProfile({ ...profile, instagram: e.target.value })}
                       placeholder="@username"
                     />
@@ -315,7 +315,7 @@ const Settings = () => {
                     <Label htmlFor="linkedin">LinkedIn Username</Label>
                     <Input
                       id="linkedin"
-                      value={profile.linkedin}
+                      value={profile.linkedin || ''}
                       onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
                       placeholder="username"
                     />
@@ -324,7 +324,7 @@ const Settings = () => {
                     <Label htmlFor="youtube">YouTube Channel</Label>
                     <Input
                       id="youtube"
-                      value={profile.youtube}
+                      value={profile.youtube || ''}
                       onChange={(e) => setProfile({ ...profile, youtube: e.target.value })}
                       placeholder="@channel"
                     />
@@ -333,7 +333,7 @@ const Settings = () => {
                     <Label htmlFor="telegram">Telegram Username</Label>
                     <Input
                       id="telegram"
-                      value={profile.telegram}
+                      value={profile.telegram || ''}
                       onChange={(e) => setProfile({ ...profile, telegram: e.target.value })}
                       placeholder="@username"
                     />
@@ -343,7 +343,7 @@ const Settings = () => {
                     <Input
                       id="website"
                       type="url"
-                      value={profile.website}
+                      value={profile.website || ''}
                       onChange={(e) => setProfile({ ...profile, website: e.target.value })}
                       placeholder="https://example.com"
                     />
