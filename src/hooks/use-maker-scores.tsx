@@ -12,7 +12,7 @@ interface MakerScoreData {
   totalReviews: number;
 }
 
-type SortMode = 'weekly' | 'alltime' | 'reviewed' | 'new';
+type SortMode = 'today' | 'weekly' | 'monthly' | 'yearly' | 'alltime';
 
 function getCurrentWeekStart(): string {
   const now = new Date();
@@ -131,14 +131,13 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
   const sorted = useMemo(() => {
     const copy = [...users];
     switch (sortMode) {
+      case 'today':
       case 'weekly':
+      case 'monthly':
+      case 'yearly':
         return copy.sort((a, b) => b.weeklyScore - a.weeklyScore);
       case 'alltime':
         return copy.sort((a, b) => b.totalLaunches - a.totalLaunches);
-      case 'reviewed':
-        return copy.sort((a, b) => b.totalReviews - a.totalReviews);
-      case 'new':
-        return copy; // Already sorted by karma desc from DB, we'll keep it
       default:
         return copy;
     }

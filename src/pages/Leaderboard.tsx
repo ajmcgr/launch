@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Trophy, Medal, Award, Zap, Flame, Rocket, Star, Clock } from 'lucide-react';
+import { Trophy, Medal, Award, Zap } from 'lucide-react';
 import { useMakerScores } from '@/hooks/use-maker-scores';
 import {
   Select,
@@ -13,13 +13,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-type SortMode = 'weekly' | 'alltime' | 'reviewed' | 'new';
+type SortMode = 'today' | 'weekly' | 'monthly' | 'yearly' | 'alltime';
 
-const TAB_CONFIG: { key: SortMode; label: string; icon: React.ReactNode }[] = [
-  { key: 'weekly', label: 'This Week', icon: <Flame className="h-3.5 w-3.5" /> },
-  { key: 'alltime', label: 'All Time', icon: <Rocket className="h-3.5 w-3.5" /> },
-  { key: 'reviewed', label: 'Most Reviewed', icon: <Star className="h-3.5 w-3.5" /> },
-  { key: 'new', label: 'New', icon: <Clock className="h-3.5 w-3.5" /> },
+const TAB_CONFIG: { key: SortMode; label: string }[] = [
+  { key: 'today', label: 'Today' },
+  { key: 'weekly', label: 'Week' },
+  { key: 'monthly', label: 'Month' },
+  { key: 'yearly', label: 'Year' },
+  { key: 'alltime', label: 'All' },
 ];
 
 const getRankBadge = (rank: number) => {
@@ -31,27 +32,25 @@ const getRankBadge = (rank: number) => {
 
 const getScoreLabel = (sortMode: SortMode, user: any) => {
   switch (sortMode) {
+    case 'today':
     case 'weekly':
+    case 'monthly':
+    case 'yearly':
       return user.weeklyScore;
     case 'alltime':
       return user.totalLaunches;
-    case 'reviewed':
-      return user.totalReviews;
-    case 'new':
-      return user.karma;
   }
 };
 
 const getScoreUnit = (sortMode: SortMode) => {
   switch (sortMode) {
+    case 'today':
     case 'weekly':
+    case 'monthly':
+    case 'yearly':
       return 'pts';
     case 'alltime':
       return 'launches';
-    case 'reviewed':
-      return 'reviews';
-    case 'new':
-      return 'karma';
   }
 };
 
@@ -69,7 +68,7 @@ const Leaderboard = () => {
   const { users, loading, availableWeeks } = useMakerScores(sortMode, weekFilter);
 
   // Filter out zero-score users for weekly view
-  const filteredUsers = sortMode === 'weekly'
+  const filteredUsers = ['today', 'weekly', 'monthly', 'yearly'].includes(sortMode)
     ? users.filter((u) => u.weeklyScore > 0)
     : users;
 
@@ -81,14 +80,6 @@ const Leaderboard = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        {/* Incentive Banner */}
-        <div className="mb-8 rounded-xl border border-border/50 bg-muted/20 px-5 py-4">
-          <p className="text-sm text-foreground/80 tracking-tight text-center">
-            <span className="font-semibold text-foreground">Top 3 makers this week</span>
-            {' '}get homepage feature + newsletter spotlight.
-          </p>
-        </div>
-
         <h2 className="text-2xl font-bold text-center mb-6 font-reckless">Top Makers</h2>
 
         {/* Sort Tabs */}
@@ -109,8 +100,7 @@ const Leaderboard = () => {
                   }
                 `}
               >
-                {tab.icon}
-                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.label}
               </button>
             ))}
           </div>
