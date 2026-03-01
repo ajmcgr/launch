@@ -316,6 +316,55 @@ export type Database = {
         }
         Relationships: []
       }
+      maker_scores: {
+        Row: {
+          created_at: string
+          id: string
+          points: number
+          updated_at: string
+          user_id: string
+          week_start_date: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points?: number
+          updated_at?: string
+          user_id: string
+          week_start_date: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points?: number
+          updated_at?: string
+          user_id?: string
+          week_start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maker_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maker_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_karma"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "maker_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketing_content: {
         Row: {
           body: string | null
@@ -1580,6 +1629,11 @@ export type Database = {
       }
     }
     Functions: {
+      award_maker_points: {
+        Args: { _points: number; _user_id: string }
+        Returns: undefined
+      }
+      current_week_start: { Args: never; Returns: string }
       get_comment_count: { Args: { product_uuid: string }; Returns: number }
       get_product_rating: {
         Args: { product_uuid: string }
