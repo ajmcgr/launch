@@ -80,7 +80,7 @@ const Leaderboard = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-2xl font-bold text-center mb-6 font-reckless">Top Makers</h1>
+        <h1 className="text-4xl font-bold text-center mb-6 font-reckless">Top Makers</h1>
 
         {/* Sort Tabs */}
         <div className="flex items-center justify-center mb-6">
