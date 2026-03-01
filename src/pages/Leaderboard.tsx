@@ -63,7 +63,7 @@ const formatWeekLabel = (weekStart: string) => {
 };
 
 const Leaderboard = () => {
-  const [sortMode, setSortMode] = useState<SortMode>('weekly');
+  const [sortMode, setSortMode] = useState<SortMode>('alltime');
   const [weekFilter, setWeekFilter] = useState<string | undefined>(undefined);
   const { users, loading, availableWeeks } = useMakerScores(sortMode, weekFilter);
 
@@ -80,10 +80,10 @@ const Leaderboard = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        <h2 className="text-2xl font-bold text-center mb-6 font-reckless">Top Makers</h2>
+        <h1 className="text-2xl font-bold text-center mb-6 font-reckless">Top Makers</h1>
 
         {/* Sort Tabs */}
-        <div className="flex items-center justify-between mb-6 gap-3">
+        <div className="flex items-center justify-center mb-6">
           <div className="flex items-center gap-1 border rounded-lg p-1">
             {TAB_CONFIG.map((tab) => (
               <button
