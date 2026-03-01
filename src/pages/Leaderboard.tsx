@@ -1,60 +1,141 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Trophy, Medal, Award, TrendingUp, TrendingDown, Minus, Zap } from 'lucide-react';
-import { useKarmaLeaderboard } from '@/hooks/use-karma';
+import { Trophy, Medal, Award, Zap, Flame, Rocket, Star, Clock } from 'lucide-react';
+import { useMakerScores } from '@/hooks/use-maker-scores';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-const getRankIcon = (rank: number) => {
+type SortMode = 'weekly' | 'alltime' | 'reviewed' | 'new';
+
+const TAB_CONFIG: { key: SortMode; label: string; icon: React.ReactNode }[] = [
+  { key: 'weekly', label: 'This Week', icon: <Flame className="h-3.5 w-3.5" /> },
+  { key: 'alltime', label: 'All Time', icon: <Rocket className="h-3.5 w-3.5" /> },
+  { key: 'reviewed', label: 'Most Reviewed', icon: <Star className="h-3.5 w-3.5" /> },
+  { key: 'new', label: 'New', icon: <Clock className="h-3.5 w-3.5" /> },
+];
+
+const getRankBadge = (rank: number) => {
   if (rank === 1) return <Trophy className="h-4 w-4 text-yellow-500" />;
   if (rank === 2) return <Medal className="h-4 w-4 text-gray-400" />;
   if (rank === 3) return <Award className="h-4 w-4 text-amber-600" />;
-  return <span className="text-sm font-bold text-muted-foreground">{rank}.</span>;
+  return <span className="text-sm font-bold text-muted-foreground">{rank}</span>;
 };
 
-const getChangeIndicator = (change: number | null | undefined) => {
-  if (change === null || change === undefined) {
-    return <span className="text-xs text-muted-foreground">—</span>;
+const getScoreLabel = (sortMode: SortMode, user: any) => {
+  switch (sortMode) {
+    case 'weekly':
+      return user.weeklyScore;
+    case 'alltime':
+      return user.totalLaunches;
+    case 'reviewed':
+      return user.totalReviews;
+    case 'new':
+      return user.karma;
   }
-  if (change > 0) {
-    return (
-      <span className="flex items-center gap-0.5 text-xs font-semibold text-emerald-500">
-        <TrendingUp className="h-3 w-3" />
-        +{change}
-      </span>
-    );
+};
+
+const getScoreUnit = (sortMode: SortMode) => {
+  switch (sortMode) {
+    case 'weekly':
+      return 'pts';
+    case 'alltime':
+      return 'launches';
+    case 'reviewed':
+      return 'reviews';
+    case 'new':
+      return 'karma';
   }
-  if (change < 0) {
-    return (
-      <span className="flex items-center gap-0.5 text-xs font-semibold text-red-500">
-        <TrendingDown className="h-3 w-3" />
-        {change}
-      </span>
-    );
-  }
-  return (
-    <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
-      <Minus className="h-3 w-3" />
-      0
-    </span>
-  );
+};
+
+const formatWeekLabel = (weekStart: string) => {
+  const date = new Date(weekStart + 'T00:00:00Z');
+  const end = new Date(date);
+  end.setDate(end.getDate() + 6);
+  const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+  return `${date.toLocaleDateString('en-US', opts)} – ${end.toLocaleDateString('en-US', opts)}`;
 };
 
 const Leaderboard = () => {
-  const { users, loading } = useKarmaLeaderboard(100);
+  const [sortMode, setSortMode] = useState<SortMode>('weekly');
+  const [weekFilter, setWeekFilter] = useState<string | undefined>(undefined);
+  const { users, loading, availableWeeks } = useMakerScores(sortMode, weekFilter);
+
+  // Filter out zero-score users for weekly view
+  const filteredUsers = sortMode === 'weekly'
+    ? users.filter((u) => u.weeklyScore > 0)
+    : users;
 
   return (
     <div className="min-h-screen bg-background py-6">
       <Helmet>
         <title>Top Makers | Launch</title>
-        <meta name="description" content="Top makers on Launch ranked by karma. Earn karma through upvotes, comments, and wins." />
+        <meta name="description" content="Top makers on Launch ranked by weekly distribution score. Earn points through launches, reviews, shares, and boosts." />
       </Helmet>
-      
+
       <div className="container mx-auto px-4 max-w-5xl">
-        <h2 className="text-2xl font-bold text-center mb-8">Top Makers</h2>
+        {/* Incentive Banner */}
+        <div className="mb-8 rounded-xl border border-border/50 bg-muted/20 px-5 py-4">
+          <p className="text-sm text-foreground/80 tracking-tight text-center">
+            <span className="font-semibold text-foreground">Top 3 makers this week</span>
+            {' '}get homepage feature + newsletter spotlight.
+          </p>
+        </div>
 
-        <h3 className="text-lg font-semibold mb-4">⚡ Top Makers by Karma</h3>
+        <h2 className="text-2xl font-bold text-center mb-6 font-reckless">Top Makers</h2>
 
+        {/* Sort Tabs */}
+        <div className="flex items-center justify-between mb-6 gap-3">
+          <div className="flex items-center gap-1 border rounded-lg p-1">
+            {TAB_CONFIG.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => {
+                  setSortMode(tab.key);
+                  if (tab.key !== 'weekly') setWeekFilter(undefined);
+                }}
+                className={`
+                  inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all
+                  ${sortMode === tab.key
+                    ? 'bg-foreground text-background shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                  }
+                `}
+              >
+                {tab.icon}
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Week selector for weekly mode */}
+          {sortMode === 'weekly' && availableWeeks.length > 1 && (
+            <Select
+              value={weekFilter || availableWeeks[0]}
+              onValueChange={(v) => setWeekFilter(v)}
+            >
+              <SelectTrigger className="w-auto min-w-[180px] h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableWeeks.map((w) => (
+                  <SelectItem key={w} value={w} className="text-xs">
+                    {formatWeekLabel(w)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
+        {/* Leaderboard List */}
         <div>
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
@@ -65,55 +146,78 @@ const Leaderboard = () => {
                   <Skeleton className="h-4 w-32 mb-1" />
                   <Skeleton className="h-3 w-20" />
                 </div>
-                <Skeleton className="h-4 w-12" />
-                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-4 w-16" />
               </div>
             ))
-          ) : users.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              No karma data yet. Start launching products!
+          ) : filteredUsers.length === 0 ? (
+            <div className="py-16 text-center text-muted-foreground">
+              <p className="text-sm">
+                {sortMode === 'weekly'
+                  ? 'No scores yet this week. Launch a product to get on the board!'
+                  : 'No maker data yet.'}
+              </p>
             </div>
           ) : (
-            users.map((user, index) => (
-              <Link
-                key={user.user_id}
-                to={`/@${user.username}`}
-                className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors"
-              >
-                <Avatar className="h-10 w-10 rounded-lg flex-shrink-0">
-                  <AvatarImage src={user.avatar_url || ''} alt={user.username} />
-                  <AvatarFallback className="rounded-lg">{user.username?.[0]?.toUpperCase() || '?'}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-5 flex justify-center flex-shrink-0">
-                      {getRankIcon(index + 1)}
+            filteredUsers.map((user, index) => {
+              const rank = index + 1;
+              const score = getScoreLabel(sortMode, user);
+
+              return (
+                <Link
+                  key={user.user_id}
+                  to={`/@${user.username}`}
+                  className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors"
+                >
+                  <Avatar className="h-10 w-10 rounded-lg flex-shrink-0">
+                    <AvatarImage src={user.avatar_url || ''} alt={user.username} />
+                    <AvatarFallback className="rounded-lg">
+                      {user.username?.[0]?.toUpperCase() || '?'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-5 flex justify-center flex-shrink-0">
+                        {getRankBadge(rank)}
+                      </div>
+                      <h3 className="font-semibold text-base text-foreground truncate">
+                        {user.name || `@${user.username}`}
+                      </h3>
+                      {sortMode === 'weekly' && rank <= 3 && (
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
+                          rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                          rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
+                          'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                        }`}>
+                          {rank === 1 ? 'Gold' : rank === 2 ? 'Silver' : 'Bronze'}
+                        </span>
+                      )}
                     </div>
-                    <h3 className="font-semibold text-base text-foreground truncate">
-                      {user.name || `@${user.username}`}
-                    </h3>
+                    {user.name && (
+                      <p className="text-sm text-muted-foreground truncate">@{user.username}</p>
+                    )}
                   </div>
-                  {user.name && (
-                    <p className="text-sm text-muted-foreground truncate">@{user.username}</p>
-                  )}
-                </div>
-                <div className="w-16 flex justify-end flex-shrink-0">
-                  {getChangeIndicator(user.karmaChange)}
-                </div>
-                <div className="w-16 flex items-center justify-end gap-0.5 font-bold text-sm text-foreground flex-shrink-0">
-                  <Zap className="h-3.5 w-3.5" />
-                  {user.karma.toLocaleString()}
-                </div>
-              </Link>
-            ))
+                  <div className="flex items-center gap-1 font-bold text-sm text-foreground flex-shrink-0 tabular-nums">
+                    {sortMode === 'weekly' ? (
+                      <Zap className="h-3.5 w-3.5" />
+                    ) : null}
+                    {score.toLocaleString()}
+                    <span className="text-[10px] font-normal text-muted-foreground ml-0.5">
+                      {getScoreUnit(sortMode)}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })
           )}
         </div>
-        
-        <div className="mt-6 text-center text-xs text-muted-foreground space-y-1">
-          <p className="font-medium">How karma is calculated:</p>
-          <p>+1 per upvote received · +1 per comment written · +1 per comment received</p>
-          <p>+10 daily win · +25 weekly win · +50 monthly win</p>
-        </div>
+
+        {/* Points breakdown */}
+        {sortMode === 'weekly' && (
+          <div className="mt-8 text-center text-xs text-muted-foreground space-y-1 border-t pt-6">
+            <p className="font-medium text-foreground/70">How points are earned</p>
+            <p>+10 launch · +5 review received · +15 referral signup · +3 share click · +20 boost purchase</p>
+          </div>
+        )}
       </div>
     </div>
   );
