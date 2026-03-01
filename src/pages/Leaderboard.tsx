@@ -187,9 +187,7 @@ const Leaderboard = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-1 font-bold text-sm text-foreground flex-shrink-0 tabular-nums">
-                    {sortMode === 'weekly' ? (
-                      <Zap className="h-3.5 w-3.5" />
-                    ) : null}
+                    <Zap className="h-3.5 w-3.5" />
                     {score.toLocaleString()}
                     <span className="text-[10px] font-normal text-muted-foreground ml-0.5">
                       {getScoreUnit(sortMode)}
