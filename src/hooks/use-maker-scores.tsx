@@ -196,16 +196,24 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
         return;
       }
 
-      const { data: profileRows, error: profileError } = await supabase
-        .from('users')
-        .select('id, username, avatar_url, name')
-        .in('id', Array.from(userIds));
+      // Fetch user profiles in chunks to avoid oversized `id=in.(...)` URLs (400 Bad Request)
+      const allUserIds = Array.from(userIds);
+      const chunkSize = 200;
+      const profileRequests: any[] = [];
 
-      if (profileError || !profileRows) {
-        setUsers([]);
-        setLoading(false);
-        return;
+      for (let i = 0; i < allUserIds.length; i += chunkSize) {
+        const chunk = allUserIds.slice(i, i + chunkSize);
+        profileRequests.push(
+          supabase
+            .from('users')
+            .select('id, username, avatar_url, name')
+            .in('id', chunk)
+        );
       }
+
+      const profileResponses = await Promise.all(profileRequests);
+
+      const profileRows = profileResponses.flatMap((res) => (res.error || !res.data ? [] : res.data));
 
       const merged: MakerScoreData[] = profileRows
         .filter((u) => !!u.username)
