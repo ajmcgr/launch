@@ -12,7 +12,7 @@ export const useMakerScoreByUsername = (username?: string) => {
     }
 
     const fetchScore = async () => {
-      // First get user_id from username
+      // Get user_id from username
       const { data: user } = await supabase
         .from('users')
         .select('id')
@@ -24,16 +24,30 @@ export const useMakerScoreByUsername = (username?: string) => {
         return;
       }
 
-      // Sum all maker_scores for this user
-      const { data, error } = await supabase
-        .from('maker_scores' as any)
-        .select('points')
-        .eq('user_id', user.id);
+      // Fetch maker_scores points and launch count in parallel
+      const [scoresRes, launchesRes] = await Promise.all([
+        supabase
+          .from('maker_scores' as any)
+          .select('points')
+          .eq('user_id', user.id),
+        supabase
+          .from('products')
+          .select('id', { count: 'exact', head: true })
+          .eq('owner_id', user.id)
+          .eq('status', 'launched'),
+      ]);
 
-      if (!error && data) {
-        const total = (data as any[]).reduce((sum, row) => sum + (row.points || 0), 0);
-        setScore(total > 0 ? total : null);
+      // Sum all maker score points
+      let totalPoints = 0;
+      if (!scoresRes.error && scoresRes.data) {
+        totalPoints = (scoresRes.data as any[]).reduce((sum, row) => sum + (row.points || 0), 0);
       }
+
+      // Use total points if available, otherwise fall back to launch count
+      const launchCount = launchesRes.count || 0;
+      const finalScore = totalPoints > 0 ? totalPoints : launchCount;
+
+      setScore(finalScore > 0 ? finalScore : null);
       setLoading(false);
     };
 
