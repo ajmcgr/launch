@@ -22,6 +22,43 @@ function getCurrentWeekStart(): string {
   return monday.toISOString().split('T')[0];
 }
 
+function getDateRangeForMode(sortMode: SortMode): { from?: string; to?: string } {
+  const now = new Date();
+
+  switch (sortMode) {
+    case 'today': {
+      // Current week only (scores are weekly granularity)
+      const weekStart = getCurrentWeekStart();
+      return { from: weekStart, to: weekStart };
+    }
+    case 'weekly': {
+      const weekStart = getCurrentWeekStart();
+      return { from: weekStart, to: weekStart };
+    }
+    case 'monthly': {
+      // All weeks that fall within the current month
+      const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+      const monthEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0));
+      return {
+        from: monthStart.toISOString().split('T')[0],
+        to: monthEnd.toISOString().split('T')[0],
+      };
+    }
+    case 'yearly': {
+      // All weeks in the current year
+      const yearStart = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+      const yearEnd = new Date(Date.UTC(now.getUTCFullYear(), 11, 31));
+      return {
+        from: yearStart.toISOString().split('T')[0],
+        to: yearEnd.toISOString().split('T')[0],
+      };
+    }
+    case 'alltime':
+    default:
+      return {}; // No date filter needed
+  }
+}
+
 export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: string) => {
   const [users, setUsers] = useState<MakerScoreData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +67,11 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const weekStart = weekFilter || getCurrentWeekStart();
+
+      // Build scores query based on sort mode
+      const dateRange = weekFilter
+        ? { from: weekFilter, to: weekFilter }
+        : getDateRangeForMode(sortMode);
 
       // Fetch all data in parallel
       const [karmaRes, scoresRes, launchesRes, reviewsRes, weeksRes] = await Promise.all([
@@ -40,10 +81,21 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
           .gt('karma', 0)
           .order('karma', { ascending: false })
           .limit(100),
-        supabase
-          .from('maker_scores' as any)
-          .select('user_id, points, week_start_date')
-          .eq('week_start_date', weekStart),
+        // Fetch scores with date range
+        dateRange.from
+          ? dateRange.from === dateRange.to
+            ? supabase
+                .from('maker_scores' as any)
+                .select('user_id, points, week_start_date')
+                .eq('week_start_date', dateRange.from)
+            : supabase
+                .from('maker_scores' as any)
+                .select('user_id, points, week_start_date')
+                .gte('week_start_date', dateRange.from)
+                .lte('week_start_date', dateRange.to)
+          : supabase
+              .from('maker_scores' as any)
+              .select('user_id, points, week_start_date'),
         // Total launches per owner
         supabase
           .from('products')
@@ -60,11 +112,11 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
           .order('week_start_date', { ascending: false }),
       ]);
 
-      // Build score map
+      // Build score map - aggregate points across multiple weeks
       const scoreMap = new Map<string, number>();
       if (!scoresRes.error && scoresRes.data) {
         (scoresRes.data as any[]).forEach((s) => {
-          scoreMap.set(s.user_id, s.points);
+          scoreMap.set(s.user_id, (scoreMap.get(s.user_id) || 0) + s.points);
         });
       }
 
@@ -80,7 +132,6 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
       const reviewCountMap = new Map<string, number>();
       if (!reviewsRes.error && reviewsRes.data && reviewsRes.data.length > 0) {
         const productIds = [...new Set(reviewsRes.data.map((r) => r.product_id))];
-        // Get owners for these products
         const { data: productOwners } = await supabase
           .from('products')
           .select('id, owner_id')
