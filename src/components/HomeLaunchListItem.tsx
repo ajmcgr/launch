@@ -149,7 +149,7 @@ export const HomeLaunchListItem = ({
           className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 touch-manipulation active:scale-95 border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary transition-colors"
         >
           <span className={`text-sm font-bold [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>▲</span>
-          <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>{votes}</span>
+          <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>{Math.max(0, votes)}</span>
         </Button>
       </div>
     </div>
