@@ -148,7 +148,7 @@ export const CompactLaunchListItem = ({
         }`}
       >
         <ChevronUp className="h-4 w-4" />
-        <span className="font-medium text-xs">{votes}</span>
+        <span className="font-medium text-xs">{Math.max(0, votes)}</span>
       </button>
     </div>
   );
