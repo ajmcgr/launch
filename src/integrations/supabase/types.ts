@@ -1072,6 +1072,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           domain_url: string | null
+          forum_thread_url: string | null
           id: string
           languages: string[] | null
           last_badge_check: string | null
@@ -1098,6 +1099,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           domain_url?: string | null
+          forum_thread_url?: string | null
           id?: string
           languages?: string[] | null
           last_badge_check?: string | null
@@ -1124,6 +1126,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           domain_url?: string | null
+          forum_thread_url?: string | null
           id?: string
           languages?: string[] | null
           last_badge_check?: string | null

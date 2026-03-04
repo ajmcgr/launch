@@ -194,6 +194,16 @@ Deno.serve(async (req) => {
         console.log(`Sent notifications to ${followers.length} followers for product ${product.id}`);
       }
 
+      // Create forum thread for this product
+      try {
+        await supabaseAdmin.functions.invoke('create-forum-thread', {
+          body: { productId: product.id },
+        });
+        console.log(`Forum thread created for product ${product.id}`);
+      } catch (forumError) {
+        console.error(`Error creating forum thread for ${product.id}:`, forumError);
+      }
+
       results.push({ id: product.id, name: product.name, success: true });
     }
 

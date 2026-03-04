@@ -675,16 +675,21 @@ const LaunchDetail = () => {
                 </p>
               </div>
 
-              {/* Discuss on Forums */}
-              <div>
+              {/* Discuss this launch */}
+              <div className="space-y-2">
+                <h3 className="font-medium text-sm text-muted-foreground">💬 Discuss this launch</h3>
                 <Button
                   variant="outline"
                   className="w-full gap-2 border-2 border-muted-foreground/20"
                   asChild
                 >
-                  <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
+                  <a 
+                    href={product.forum_thread_url || 'https://forums.trylaunch.ai/'} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
                     <MessageSquare className="h-4 w-4" />
-                    Discuss on Forums
+                    {product.forum_thread_url ? 'Join the conversation →' : 'Discuss on Forums'}
                   </a>
                 </Button>
               </div>
