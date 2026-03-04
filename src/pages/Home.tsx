@@ -955,9 +955,11 @@ const Home = () => {
             <Button variant="outline">View All FAQs</Button>
           </Link>
         </div>
+      </div>
 
-        {/* Bio Sponsor Banner - Full width premium format */}
-        <div className="mt-8 py-6 flex flex-col items-center w-full">
+      {/* Bio Sponsor Banner - Full width premium format */}
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="py-6 flex flex-col items-center w-full">
           <a 
             href="https://trybio.ai" 
             target="_blank" 
