@@ -26,6 +26,7 @@ const LaunchDetail = () => {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
+  const [stackItems, setStackItems] = useState<Array<{ id: number; name: string; slug: string }>>([]);
   const [userVote, setUserVote] = useState<1 | -1 | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
@@ -133,6 +134,22 @@ const LaunchDetail = () => {
             .in('id', tagIds);
           
           setTags(tagsData || []);
+        }
+
+        // Fetch stack items for this product
+        const { data: stackMapData } = await supabase
+          .from('product_stack_map')
+          .select('stack_item_id')
+          .eq('product_id', productData.id);
+
+        if (stackMapData && stackMapData.length > 0) {
+          const stackIds = stackMapData.map(s => s.stack_item_id);
+          const { data: stackData } = await supabase
+            .from('stack_items')
+            .select('id, name, slug')
+            .in('id', stackIds);
+          
+          setStackItems(stackData || []);
         }
 
         // Fetch vote counts
@@ -460,6 +477,22 @@ const LaunchDetail = () => {
                 {product.description}
               </p>
             </div>
+
+            {/* Built With Stack */}
+            {stackItems.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Built With</h2>
+                <div className="flex flex-wrap gap-2">
+                  {stackItems.map((item) => (
+                    <Link key={item.id} to={`/stack/${item.slug}`}>
+                      <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-sm px-3 py-1">
+                        {item.name}
+                      </Badge>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {product.coupon_code && (
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl">
