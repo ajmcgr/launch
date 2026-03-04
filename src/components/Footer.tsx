@@ -150,7 +150,7 @@ export const Footer = () => {
         {/* Technology Section */}
         {stackItems.length > 0 && (
           <div className="mb-8 pt-6 border-t">
-            <h3 className="font-semibold mb-4 text-foreground">Popular Technology</h3>
+            <h3 className="font-semibold mb-4 text-foreground">Popular Tech</h3>
             <div className="flex flex-wrap gap-2">
               {stackItems.slice(0, 30).map((item) => (
                 <Link
