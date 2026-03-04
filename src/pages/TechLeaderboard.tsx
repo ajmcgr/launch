@@ -117,12 +117,12 @@ const TechLeaderboard = () => {
   return (
     <div className="min-h-screen bg-background py-6">
       <Helmet>
-        <title>Popular Tech | Launch</title>
+        <title>Tech | Launch</title>
         <meta name="description" content="Most popular technologies used by makers on Launch. Discover the top tools and frameworks powering indie products." />
       </Helmet>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-4xl font-bold text-center mb-6 font-reckless">Popular Tech</h1>
+        <h1 className="text-4xl font-bold text-center mb-6 font-reckless">Tech</h1>
 
         {/* Sort Tabs */}
         <div className="flex items-center justify-center mb-6">

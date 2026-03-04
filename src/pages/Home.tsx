@@ -789,7 +789,7 @@ const Home = () => {
           <div className="flex justify-center pt-6">
             <Link to={getViewAllLink()}>
               <Button variant="outline" className="border-2 border-muted-foreground/20">
-                View all {currentPeriod === 'all' ? "all-time" : currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} launches →
+                View all {currentPeriod === 'all' ? "all-time" : currentPeriod === 'today' ? "today's" : currentPeriod === 'week' ? "this week's" : currentPeriod === 'month' ? "this month's" : "this year's"} products →
               </Button>
             </Link>
           </div>
@@ -860,11 +860,11 @@ const Home = () => {
           {/* Value Proposition */}
           <div className="text-left mb-8">
             <h2 className="text-2xl font-bold mb-2">
-              {currentPeriod === 'all' && "All-Time Launches"}
-              {currentPeriod === 'today' && "Today's Launches"}
-              {currentPeriod === 'week' && "This Week's Launches"}
-              {currentPeriod === 'month' && "This Month's Launches"}
-              {currentPeriod === 'year' && "This Year's Launches"}
+              {currentPeriod === 'all' && "All-Time Products"}
+              {currentPeriod === 'today' && "Today's Products"}
+              {currentPeriod === 'week' && "This Week's Products"}
+              {currentPeriod === 'month' && "This Month's Products"}
+              {currentPeriod === 'year' && "This Year's Products"}
             </h2>
             
           </div>
