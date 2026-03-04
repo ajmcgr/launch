@@ -142,6 +142,9 @@ export const Header = () => {
               <Link to="/makers" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Makers
               </Link>
+              <Link to="/tech" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Tech
+              </Link>
               <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Newsletter
               </a>
@@ -249,6 +252,13 @@ export const Header = () => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Makers
+                  </Link>
+                  <Link 
+                    to="/tech" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Tech
                   </Link>
                   <a 
                     href="https://newsletter.trylaunch.ai/" 
