@@ -1148,6 +1148,21 @@ const Submit = () => {
           
           console.log('Product updated successfully:', updateData);
 
+          // For immediate free launches, create forum thread now (scheduler/webhook won't run)
+          if (productStatus === 'launched' && savedProductId) {
+            try {
+              const { error: forumError } = await supabase.functions.invoke('create-forum-thread', {
+                body: { productId: savedProductId },
+              });
+
+              if (forumError) {
+                console.error('Forum thread creation failed from submit flow:', forumError);
+              }
+            } catch (forumInvokeError) {
+              console.error('Error invoking create-forum-thread from submit flow:', forumInvokeError);
+            }
+          }
+
           // Clear form data
           localStorage.removeItem('submitFormData');
           localStorage.removeItem('submitMedia');
