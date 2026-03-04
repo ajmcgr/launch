@@ -816,6 +816,23 @@ Deno.serve(async (req) => {
       
       console.log('Product updated successfully');
 
+      // If launched immediately (not scheduled), create forum thread now
+      if (!shouldBeScheduled) {
+        try {
+          const forumResponse = await supabaseClient.functions.invoke('create-forum-thread', {
+            body: { productId: product.id },
+          });
+
+          if (forumResponse.error) {
+            console.error(`Forum thread creation failed for ${product.id}:`, forumResponse.error);
+          } else {
+            console.log(`Forum thread created for launched product ${product.id}:`, forumResponse.data);
+          }
+        } catch (forumError) {
+          console.error(`Error creating forum thread for launched product ${product.id}:`, forumError);
+        }
+      }
+
       // Create order record
       await supabaseClient
         .from('orders')
