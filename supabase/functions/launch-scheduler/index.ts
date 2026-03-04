@@ -196,10 +196,14 @@ Deno.serve(async (req) => {
 
       // Create forum thread for this product
       try {
-        await supabaseAdmin.functions.invoke('create-forum-thread', {
+        const forumResponse = await supabaseAdmin.functions.invoke('create-forum-thread', {
           body: { productId: product.id },
         });
-        console.log(`Forum thread created for product ${product.id}`);
+        if (forumResponse.error) {
+          console.error(`Forum thread creation failed for ${product.id}:`, forumResponse.error);
+        } else {
+          console.log(`Forum thread created for product ${product.id}:`, forumResponse.data);
+        }
       } catch (forumError) {
         console.error(`Error creating forum thread for ${product.id}:`, forumError);
       }
