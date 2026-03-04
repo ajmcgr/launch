@@ -4,6 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Instagram, Youtube } from 'lucide-react';
 import { TrustPhrase } from '@/hooks/use-member-count';
 
+interface StackItem {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
@@ -44,6 +50,7 @@ const createSlug = (name: string) => {
 export const Footer = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [stackItems, setStackItems] = useState<StackItem[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -72,8 +79,17 @@ export const Footer = () => {
       }
     };
 
+    const fetchStackItems = async () => {
+      const { data } = await supabase
+        .from('stack_items')
+        .select('id, name, slug')
+        .order('name');
+      if (data) setStackItems(data);
+    };
+
     fetchProducts();
     fetchCategories();
+    fetchStackItems();
   }, []);
 
   return (
@@ -127,6 +143,24 @@ export const Footer = () => {
               >
                 More →
               </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Technology Section */}
+        {stackItems.length > 0 && (
+          <div className="mb-8 pt-6 border-t">
+            <h3 className="font-semibold mb-4 text-foreground">Popular Technology</h3>
+            <div className="flex flex-wrap gap-2">
+              {stackItems.slice(0, 30).map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/stack/${item.slug}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {item.name}
+                </Link>
+              ))}
             </div>
           </div>
         )}

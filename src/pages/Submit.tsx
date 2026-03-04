@@ -1294,7 +1294,7 @@ const Submit = () => {
           <p className="text-muted-foreground mb-1">
             {isRescheduling ? 'Choose a new launch date for your product' : 'Launch your product to thousands of founders'}
           </p>
-          {!isRescheduling && <PlatformStats className="mt-2" />}
+          
         </div>
 
         {/* Only show step indicator when not rescheduling */}
