@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.snapshot-karma]
 verify_jwt = false
+
+[functions.create-forum-thread]
+verify_jwt = false
