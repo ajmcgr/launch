@@ -44,6 +44,7 @@ import ProductLaunchStrategy from "./pages/ProductLaunchStrategy";
 import LaunchArchive from "./pages/LaunchArchive";
 import LaunchArchivePeriod from "./pages/LaunchArchivePeriod";
 import LaunchArchiveYearly from "./pages/LaunchArchiveYearly";
+import StackPage from "./pages/StackPage";
 
 import DiscourseSso from "./pages/DiscourseSso";
 import MediaKit from "./pages/MediaKit";
@@ -102,6 +103,7 @@ const AppContent = () => {
           <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
           <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
           <Route path="/media-kit" element={<MediaKit />} />
+          <Route path="/stack/:slug" element={<StackPage />} />
           <Route path="/makers" element={<Leaderboard />} />
           <Route path="/launches/today" element={<LaunchArchive />} />
           <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />

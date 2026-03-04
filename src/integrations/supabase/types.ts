@@ -965,6 +965,43 @@ export type Database = {
           },
         ]
       }
+      product_stack_map: {
+        Row: {
+          product_id: string
+          stack_item_id: number
+        }
+        Insert: {
+          product_id: string
+          stack_item_id: number
+        }
+        Update: {
+          product_id?: string
+          stack_item_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_stack_map_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_stack_map_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "public_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_stack_map_stack_item_id_fkey"
+            columns: ["stack_item_id"]
+            isOneToOne: false
+            referencedRelation: "stack_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_tag_map: {
         Row: {
           product_id: string
@@ -1215,6 +1252,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stack_items: {
+        Row: {
+          created_at: string | null
+          id: number
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          name?: string
+          slug?: string
+        }
+        Relationships: []
       }
       tag_intro_copy: {
         Row: {

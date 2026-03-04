@@ -88,6 +88,7 @@ const Submit = () => {
         description: '',
         categories: [] as string[],
         tags: [] as number[],
+        stackItems: [] as number[],
         platforms: [] as Platform[],
         languages: [] as string[],
         slug: '',
@@ -105,6 +106,7 @@ const Submit = () => {
       description: '',
       categories: [] as string[],
       tags: [] as number[],
+      stackItems: [] as number[],
       platforms: [] as Platform[],
       languages: [] as string[],
       slug: '',
@@ -115,8 +117,11 @@ const Submit = () => {
     };
   });
   const [availableTags, setAvailableTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
+  const [availableStackItems, setAvailableStackItems] = useState<Array<{ id: number; name: string; slug: string }>>([]);
   const [newTagName, setNewTagName] = useState('');
+  const [newStackName, setNewStackName] = useState('');
   const [isCreatingTag, setIsCreatingTag] = useState(false);
+  const [isCreatingStack, setIsCreatingStack] = useState(false);
   
   // Pass status
   const { data: passStatus } = usePass(user?.id);
@@ -143,7 +148,17 @@ const Submit = () => {
         setAvailableTags(data);
       }
     };
+    const fetchStackItems = async () => {
+      const { data } = await supabase
+        .from('stack_items')
+        .select('id, name, slug')
+        .order('name');
+      if (data) {
+        setAvailableStackItems(data);
+      }
+    };
     fetchTags();
+    fetchStackItems();
   }, []);
 
   // Save to localStorage whenever step changes
@@ -195,7 +210,8 @@ const Submit = () => {
           product_category_map(
             product_categories(name)
           ),
-          product_tag_map(tag_id)
+          product_tag_map(tag_id),
+          product_stack_map(stack_item_id)
         `)
         .eq('id', id)
         .eq('owner_id', userId)
@@ -203,8 +219,8 @@ const Submit = () => {
 
       if (error) throw error;
 
-      // Get existing tags
       const existingTags = product.product_tag_map?.map((t: any) => t.tag_id) || [];
+      const existingStack = product.product_stack_map?.map((s: any) => s.stack_item_id) || [];
 
       // Get the order to determine the plan
       const { data: order, error: orderError } = await supabase
@@ -241,6 +257,7 @@ const Submit = () => {
           description: product.description || '',
           categories,
           tags: existingTags,
+          stackItems: existingStack,
           platforms: (product.platforms || []) as Platform[],
           languages: (product.languages || []) as string[],
           slug: product.slug || '',
@@ -280,6 +297,7 @@ const Submit = () => {
           description: product.description || '',
           categories,
           tags: existingTags,
+          stackItems: existingStack,
           platforms: (product.platforms || []) as Platform[],
           languages: (product.languages || []) as string[],
           slug: product.slug || '',
@@ -314,15 +332,16 @@ const Submit = () => {
           product_category_map(
             product_categories(name)
           ),
-          product_tag_map(tag_id)
+          product_tag_map(tag_id),
+          product_stack_map(stack_item_id)
         `)
         .eq('id', id)
         .single();
 
       if (error) throw error;
 
-      // Get existing tags for this product
       const draftTags = product.product_tag_map?.map((t: any) => t.tag_id) || [];
+      const draftStack = product.product_stack_map?.map((s: any) => s.stack_item_id) || [];
 
       // Check if product is already launched
       if (product.status === 'launched') {
@@ -339,7 +358,8 @@ const Submit = () => {
           url: '',
           description: '',
           categories: [],
-          tags: [],
+           tags: [],
+           stackItems: [],
           platforms: [],
           languages: [],
           slug: '',
@@ -390,6 +410,7 @@ const Submit = () => {
         description: product.description || '',
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         tags: draftTags,
+        stackItems: draftStack,
         platforms: (product.platforms || []) as Platform[],
         languages: (product.languages || []) as string[],
         slug: product.slug || '',
@@ -461,6 +482,51 @@ const Submit = () => {
         ? [...prev.languages, langCode]
         : prev.languages
     }));
+  };
+
+  const handleStackToggle = (stackId: number) => {
+    setFormData(prev => ({
+      ...prev,
+      stackItems: prev.stackItems.includes(stackId)
+        ? prev.stackItems.filter(s => s !== stackId)
+        : [...prev.stackItems, stackId]
+    }));
+  };
+
+  const handleCreateStackItem = async () => {
+    const trimmedName = newStackName.trim();
+    if (!trimmedName) return;
+    
+    const existing = availableStackItems.find(
+      s => s.name.toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (existing) {
+      toast.error('This stack item already exists');
+      return;
+    }
+    
+    setIsCreatingStack(true);
+    try {
+      const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      
+      const { data, error } = await supabase
+        .from('stack_items')
+        .insert({ name: trimmedName, slug })
+        .select('id, name, slug')
+        .single();
+      
+      if (error) throw error;
+      
+      setAvailableStackItems(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+      setFormData(prev => ({ ...prev, stackItems: [...prev.stackItems, data.id] }));
+      setNewStackName('');
+      toast.success(`"${trimmedName}" added to stack!`);
+    } catch (error: any) {
+      console.error('Error creating stack item:', error);
+      toast.error('Failed to create stack item');
+    } finally {
+      setIsCreatingStack(false);
+    }
   };
 
   const handleCreateTag = async () => {
@@ -775,6 +841,20 @@ const Submit = () => {
             tag_id: tagId,
           }));
           await supabase.from('product_tag_map').insert(tagMappings);
+        }
+
+        // Save stack items
+        await supabase
+          .from('product_stack_map')
+          .delete()
+          .eq('product_id', currentProductId);
+
+        if (formData.stackItems && formData.stackItems.length > 0) {
+          const stackMappings = formData.stackItems.map(stackId => ({
+            product_id: currentProductId,
+            stack_item_id: stackId,
+          }));
+          await supabase.from('product_stack_map').insert(stackMappings);
         }
       }
 
@@ -1518,6 +1598,51 @@ const Submit = () => {
                   <p className="text-sm text-muted-foreground">
                     Describe what the coupon offers
                   </p>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t">
+                  <Label>Build Stack</Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    What technologies did you use to build your product?
+                  </p>
+                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-4 border rounded-md">
+                    {availableStackItems.map((item) => (
+                      <div key={item.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`stack-${item.id}`}
+                          checked={formData.stackItems?.includes(item.id)}
+                          onCheckedChange={() => handleStackToggle(item.id)}
+                        />
+                        <Label htmlFor={`stack-${item.id}`} className="text-sm cursor-pointer">
+                          {item.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      placeholder="Add custom technology..."
+                      value={newStackName}
+                      onChange={(e) => setNewStackName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleCreateStackItem();
+                        }
+                      }}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCreateStackItem}
+                      disabled={isCreatingStack || !newStackName.trim()}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      {isCreatingStack ? 'Adding...' : 'Add'}
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2 pt-4 border-t">
