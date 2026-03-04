@@ -168,7 +168,7 @@ const TechLeaderboard = () => {
               return (
                 <Link
                   key={item.id}
-                  to={`/stack/${item.slug}`}
+                  to={`/tech/${item.slug}`}
                   className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex-1 min-w-0">

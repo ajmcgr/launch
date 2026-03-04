@@ -484,7 +484,7 @@ const LaunchDetail = () => {
                 <h2 className="text-xl font-semibold mb-4">Built With</h2>
                 <div className="flex flex-wrap gap-2">
                   {stackItems.map((item) => (
-                    <Link key={item.id} to={`/stack/${item.slug}`}>
+                    <Link key={item.id} to={`/tech/${item.slug}`}>
                       <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-sm px-3 py-1">
                         {item.name}
                       </Badge>

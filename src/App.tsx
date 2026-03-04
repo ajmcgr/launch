@@ -104,7 +104,7 @@ const AppContent = () => {
           <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
           <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
           <Route path="/media-kit" element={<MediaKit />} />
-          <Route path="/stack/:slug" element={<StackPage />} />
+          <Route path="/tech/:slug" element={<StackPage />} />
           <Route path="/tech" element={<TechLeaderboard />} />
           <Route path="/makers" element={<Leaderboard />} />
           <Route path="/launches/today" element={<LaunchArchive />} />

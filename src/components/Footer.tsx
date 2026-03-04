@@ -155,7 +155,7 @@ export const Footer = () => {
               {stackItems.slice(0, 30).map((item) => (
                 <Link
                   key={item.id}
-                  to={`/stack/${item.slug}`}
+                  to={`/tech/${item.slug}`}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   {item.name}
