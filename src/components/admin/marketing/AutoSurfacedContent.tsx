@@ -322,7 +322,7 @@ const CopyAllStackButton = ({ items, title }: { items: { name: string; slug: str
 
   const handleCopyAll = async () => {
     const text = items
-      .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/stack/${t.slug}`)
+      .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`)
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
@@ -778,7 +778,7 @@ export const AutoSurfacedContent = () => {
     // Popular Technology
     if (popularTech && popularTech.length > 0) {
       const techText = popularTech
-        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/stack/${t.slug}`)
+        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`)
         .join('\n\n');
       sections.push(`## 🛠️ Popular Technology\n\n${techText}`);
     }
@@ -962,12 +962,12 @@ export const AutoSurfacedContent = () => {
                             {item.product_count} product{item.product_count !== 1 ? 's' : ''}
                           </Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/stack/{item.slug}</p>
+                        <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/tech/{item.slug}</p>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton text={`${item.name} (${item.product_count} products)\nhttps://trylaunch.ai/stack/${item.slug}`} label="technology" />
+                        <CopyButton text={`${item.name} (${item.product_count} products)\nhttps://trylaunch.ai/tech/${item.slug}`} label="technology" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
-                          <a href={`/stack/${item.slug}`} target="_blank" rel="noopener noreferrer">
+                          <a href={`/tech/${item.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
                           </a>
                         </Button>

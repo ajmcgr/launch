@@ -214,7 +214,7 @@ const StackPage = () => {
       <Helmet>
         <title>{pageTitle} - Launch</title>
         <meta name="description" content={pageDescription} />
-        <link rel="canonical" href={`https://trylaunch.ai/stack/${slug}`} />
+        <link rel="canonical" href={`https://trylaunch.ai/tech/${slug}`} />
       </Helmet>
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="mb-8">
