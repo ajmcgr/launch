@@ -54,6 +54,7 @@ interface ContentSection {
   builders?: SurfacedBuilder[];
   topMakers?: TopMaker[];
   sponsoredProducts?: SponsoredProduct[];
+  stackItems?: { id: number; name: string; slug: string; product_count: number }[];
   isLoading: boolean;
 }
 
@@ -305,6 +306,28 @@ const CopyAllBuildersButton = ({ builders, title }: { builders: SurfacedBuilder[
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
     setCopied(true);
     toast.success('All builders copied!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={handleCopyAll} className="gap-2">
+      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+      Copy All
+    </Button>
+  );
+};
+
+const CopyAllStackButton = ({ items, title }: { items: { name: string; slug: string; product_count: number }[]; title: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAll = async () => {
+    const text = items
+      .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/stack/${t.slug}`)
+      .join('\n\n');
+    
+    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    setCopied(true);
+    toast.success('All technologies copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -601,6 +624,32 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // Popular Technology - top 5 stack items by product count
+  const { data: popularTech, isLoading: techLoading } = useQuery({
+    queryKey: ['auto-popular-tech'],
+    queryFn: async () => {
+      const { data: stackItems, error: stackError } = await supabase
+        .from('stack_items')
+        .select('id, name, slug');
+      if (stackError) throw stackError;
+
+      const { data: mappings, error: mapError } = await supabase
+        .from('product_stack_map')
+        .select('stack_item_id');
+      if (mapError) throw mapError;
+
+      const countMap: Record<number, number> = {};
+      (mappings || []).forEach((m: any) => {
+        countMap[m.stack_item_id] = (countMap[m.stack_item_id] || 0) + 1;
+      });
+
+      return (stackItems || [])
+        .map((s: any) => ({ id: s.id, name: s.name, slug: s.slug, product_count: countMap[s.id] || 0 }))
+        .sort((a, b) => b.product_count - a.product_count)
+        .slice(0, 5);
+    },
+  });
+
   // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo, sponsoredProductIds],
@@ -726,6 +775,14 @@ export const AutoSurfacedContent = () => {
       sections.push(`## ⚡ Top Makers by Karma\n\n${makersText}`);
     }
     
+    // Popular Technology
+    if (popularTech && popularTech.length > 0) {
+      const techText = popularTech
+        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/stack/${t.slug}`)
+        .join('\n\n');
+      sections.push(`## 🛠️ Popular Technology\n\n${techText}`);
+    }
+    
     if (sections.length === 0) {
       toast.error('No content available to copy');
       return;
@@ -795,6 +852,13 @@ export const AutoSurfacedContent = () => {
       topMakers: topMakersByKarma,
       isLoading: topMakersLoading,
     },
+    {
+      title: "🛠️ Popular Technology",
+      description: "Top 5 technologies used by makers",
+      icon: null,
+      stackItems: popularTech,
+      isLoading: techLoading,
+    },
   ];
 
   return (
@@ -833,6 +897,9 @@ export const AutoSurfacedContent = () => {
                 )}
                 {section.topMakers && section.topMakers.length > 0 && (
                   <CopyAllTopMakersButton makers={section.topMakers} title={section.title} />
+                )}
+                {section.stackItems && section.stackItems.length > 0 && (
+                  <CopyAllStackButton items={section.stackItems} title={section.title} />
                 )}
               </div>
               <CardDescription>{section.description}</CardDescription>
@@ -882,6 +949,34 @@ export const AutoSurfacedContent = () => {
                 ) : (
                   <p className="text-sm text-muted-foreground py-4 text-center">
                     No makers found
+                  </p>
+                )
+              ) : section.stackItems ? (
+                section.stackItems.length > 0 ? (
+                  section.stackItems.map((item) => (
+                    <div key={item.id} className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium truncate">{item.name}</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {item.product_count} product{item.product_count !== 1 ? 's' : ''}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/stack/{item.slug}</p>
+                      </div>
+                      <div className="flex items-center gap-1 ml-2">
+                        <CopyButton text={`${item.name} (${item.product_count} products)\nhttps://trylaunch.ai/stack/${item.slug}`} label="technology" />
+                        <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
+                          <a href={`/stack/${item.slug}`} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    No technologies found
                   </p>
                 )
               ) : null}
