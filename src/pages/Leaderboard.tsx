@@ -75,12 +75,12 @@ const Leaderboard = () => {
   return (
     <div className="min-h-screen bg-background py-6">
       <Helmet>
-        <title>Top Makers | Launch</title>
+        <title>Makers | Launch</title>
         <meta name="description" content="Top makers on Launch ranked by weekly distribution score. Earn points through launches, reviews, shares, and boosts." />
       </Helmet>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-4xl font-bold text-center mb-6 font-reckless">Top Makers</h1>
+        <h1 className="text-4xl font-bold text-center mb-6 font-reckless">Makers</h1>
 
         {/* Sort Tabs */}
         <div className="flex items-center justify-center mb-6">

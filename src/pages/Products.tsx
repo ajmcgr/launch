@@ -537,11 +537,11 @@ const Products = () => {
         <h2 className="text-2xl font-bold text-center mb-8">
           {selectedArchiveYear 
             ? `${selectedArchiveYear} Archive`
-            : topPeriod === 'today' ? "Today's Launches"
-            : topPeriod === 'week' ? "This Week's Launches"
-            : topPeriod === 'month' ? "This Month's Launches"
-            : topPeriod === 'year' ? "This Year's Launches"
-            : "All-Time Launches"
+            : topPeriod === 'today' ? "Today's Products"
+            : topPeriod === 'week' ? "This Week's Products"
+            : topPeriod === 'month' ? "This Month's Products"
+            : topPeriod === 'year' ? "This Year's Products"
+            : "All-Time Products"
           }
         </h2>
 
