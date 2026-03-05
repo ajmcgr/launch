@@ -650,6 +650,20 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // Latest Tech on Launch - 5 most recently added stack items
+  const { data: latestTech, isLoading: latestTechLoading } = useQuery({
+    queryKey: ['auto-latest-tech'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('stack_items')
+        .select('id, name, slug, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return (data || []).map((s: any) => ({ id: s.id, name: s.name, slug: s.slug, product_count: 0 }));
+    },
+  });
+
   // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo, sponsoredProductIds],
@@ -782,6 +796,14 @@ export const AutoSurfacedContent = () => {
         .join('\n\n');
       sections.push(`## 🛠️ Most Popular Tech on Launch\n\n${techText}`);
     }
+
+    // Latest Tech on Launch
+    if (latestTech && latestTech.length > 0) {
+      const latestTechText = latestTech
+        .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`)
+        .join('\n\n');
+      sections.push(`## 🆕 Latest Tech on Launch\n\n${latestTechText}`);
+    }
     
     if (sections.length === 0) {
       toast.error('No content available to copy');
@@ -858,6 +880,13 @@ export const AutoSurfacedContent = () => {
       icon: null,
       stackItems: popularTech,
       isLoading: techLoading,
+    },
+    {
+      title: "🆕 Latest Tech on Launch",
+      description: "5 most recently added technologies",
+      icon: null,
+      stackItems: latestTech,
+      isLoading: latestTechLoading,
     },
   ];
 
