@@ -104,17 +104,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    const discourseUrl = Deno.env.get('DISCOURSE_FORUM_URL');
-    const discourseApiKey = Deno.env.get('DISCOURSE_API_KEY');
-    const discourseSsoSecret = Deno.env.get('DISCOURSE_SSO_SECRET');
-
-    if (!discourseUrl || !discourseApiKey) {
-      console.error('Discourse configuration missing');
-      return new Response(
-        JSON.stringify({ error: 'Forum configuration missing' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      );
-    }
+    // Temporarily disable auto-posting to Discourse.
+    // Keep returning 200 so launch flows don't fail while this is paused.
+    console.warn('Auto forum posting is temporarily disabled');
+    return new Response(
+      JSON.stringify({ skipped: true, reason: 'auto_posting_disabled' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+    );
 
     // Determine which Discourse username to post as
     let postAsUsername = 'system';
