@@ -71,24 +71,21 @@ export const PopularTechThisWeek = () => {
   return (
     <section className="py-6 bg-background">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h2 className="text-2xl font-bold text-center mb-6">Popular Tech on Launch This Week</h2>
+        <h2 className="text-2xl font-bold text-center mb-8">Browse by Tech</h2>
         <div className="flex flex-wrap justify-center gap-3">
-          {techItems.map((item) => (
-            <Link
-              key={item.id}
-              to={`/tech/${item.slug}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border text-foreground hover:text-primary hover:border-primary transition-all hover:scale-105"
-            >
-              <Layers className="h-3.5 w-3.5" />
-              <span className="font-medium text-sm">{item.name}</span>
-              <span className="text-xs text-muted-foreground">({item.product_count})</span>
-            </Link>
-          ))}
-        </div>
-        <div className="text-center mt-4">
-          <Link to="/tech" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            View all tech →
-          </Link>
+          {techItems.map((item, index) => {
+            const sizes = ['text-sm', 'text-base', 'text-lg', 'text-xl'];
+            const sizeClass = sizes[index % sizes.length];
+            return (
+              <Link
+                key={item.id}
+                to={`/tech/${item.slug}`}
+                className={`${sizeClass} px-4 py-2 rounded-full border border-border text-nav-text hover:text-primary hover:border-primary transition-all hover:scale-105`}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
