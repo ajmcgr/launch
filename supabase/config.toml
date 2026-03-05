@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.create-forum-thread]
 verify_jwt = false
+
+[functions.send-launch-share-email]
+verify_jwt = false
