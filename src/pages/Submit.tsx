@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { X, CalendarIcon, Plus, Zap } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { FirstCommentModal } from '@/components/FirstCommentModal';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS, PLAN_FEATURE_LABELS } from '@/lib/constants';
@@ -57,6 +58,24 @@ const Submit = () => {
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [existingPlan, setExistingPlan] = useState<'join' | 'skip' | 'relaunch' | null>(null);
   const [isLoadingProduct, setIsLoadingProduct] = useState(!!productIdParam);
+  const [showFirstCommentModal, setShowFirstCommentModal] = useState(false);
+  const [submittedProductId, setSubmittedProductId] = useState<string | null>(null);
+  const [submittedProductName, setSubmittedProductName] = useState<string>('');
+
+  const handleSubmitSuccess = useCallback((savedId: string, productName: string, successMessage: string) => {
+    localStorage.removeItem('submitFormData');
+    localStorage.removeItem('submitMedia');
+    localStorage.removeItem('submitStep');
+    toast.success(successMessage);
+    setSubmittedProductId(savedId);
+    setSubmittedProductName(productName);
+    setShowFirstCommentModal(true);
+  }, []);
+
+  const handleFirstCommentClose = useCallback(() => {
+    setShowFirstCommentModal(false);
+    navigate('/my-products?success=true');
+  }, [navigate]);
   const [step, setStep] = useState(() => {
     // If productId is present, we're rescheduling, go to step 4
     if (productIdParam) {
@@ -1018,13 +1037,8 @@ const Submit = () => {
           launch_date: launchDate.toISOString(),
         }).eq('id', savedProductId);
         
-        localStorage.removeItem('submitFormData');
-        localStorage.removeItem('submitMedia');
-        localStorage.removeItem('submitStep');
-        
-        toast.success(launchStatus === 'launched' ? 'Product launched!' : 'Product scheduled!');
-        navigate('/my-products?success=true');
-        return;
+        const successMsg = launchStatus === 'launched' ? 'Product launched!' : 'Product scheduled!';
+        handleSubmitSuccess(savedProductId, formData.name, successMsg);
       }
       
       // Handle free plan separately
@@ -1163,17 +1177,10 @@ const Submit = () => {
             }
           }
 
-          // Clear form data
-          localStorage.removeItem('submitFormData');
-          localStorage.removeItem('submitMedia');
-          localStorage.removeItem('submitStep');
-          
           const message = productStatus === 'launched'
             ? 'Product launched successfully!'
             : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${launchDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-          toast.success(message);
-          navigate('/my-products?success=true');
-          return;
+          handleSubmitSuccess(savedProductId, formData.name, message);
         } catch (error: any) {
           console.error('Free launch error details:', {
             message: error?.message,
@@ -1243,14 +1250,7 @@ const Submit = () => {
 
           if (updateError) throw updateError;
 
-          // Clear form data
-          localStorage.removeItem('submitFormData');
-          localStorage.removeItem('submitMedia');
-          localStorage.removeItem('submitStep');
-          
-          toast.success('Product scheduled using your existing plan!');
-          navigate('/my-products?success=true');
-          return;
+          handleSubmitSuccess(savedProductId, formData.name, 'Product scheduled using your existing plan!');
         } catch (error) {
           console.error('Error using existing plan:', error);
           toast.error('Failed to schedule launch. Please try again.');
@@ -2014,6 +2014,16 @@ const Submit = () => {
           </div>
         </div>
       </div>
+
+      {showFirstCommentModal && submittedProductId && user && (
+        <FirstCommentModal
+          open={showFirstCommentModal}
+          onClose={handleFirstCommentClose}
+          productId={submittedProductId}
+          productName={submittedProductName}
+          userId={user.id}
+        />
+      )}
     </div>
   );
 };
