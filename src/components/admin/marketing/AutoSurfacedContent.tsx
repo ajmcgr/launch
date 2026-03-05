@@ -780,7 +780,7 @@ export const AutoSurfacedContent = () => {
       const techText = popularTech
         .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`)
         .join('\n\n');
-      sections.push(`## 🛠️ Popular Technology\n\n${techText}`);
+      sections.push(`## 🛠️ Most Popular Tech on Launch\n\n${techText}`);
     }
     
     if (sections.length === 0) {
@@ -853,7 +853,7 @@ export const AutoSurfacedContent = () => {
       isLoading: topMakersLoading,
     },
     {
-      title: "🛠️ Popular Technology",
+      title: "🛠️ Most Popular Tech on Launch",
       description: "Top 5 technologies used by makers",
       icon: null,
       stackItems: popularTech,

@@ -32,6 +32,7 @@ import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonL
 import { SponsorBanner } from '@/components/SponsorBanner';
 import { PlatformStats } from '@/components/PlatformStats';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
+import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
 
@@ -899,6 +900,8 @@ const Home = () => {
       <ThisWeekHighlights view={effectiveView} />
 
       <CategoryCloud />
+
+      <PopularTechThisWeek />
 
       <div className="container mx-auto px-4 pt-6 pb-4 max-w-4xl">
         <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
