@@ -46,7 +46,7 @@ export const PopularTechThisWeek = () => {
         .filter((s) => s.product_count > 0)
         .sort((a, b) => b.product_count - a.product_count);
 
-      return shuffleAndPick(withCounts.slice(0, 15), 5);
+      return shuffleAndPick(withCounts.slice(0, 30), 15);
     },
     staleTime: 1000 * 60 * 5,
   });
