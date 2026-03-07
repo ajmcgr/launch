@@ -127,7 +127,7 @@ export const ForumActivityWidget = () => {
       <div className="border rounded-lg p-4">
         <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
           <MessageSquare className="h-4 w-4" />
-          Latest Discussions
+          Community Forums
         </h3>
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -170,7 +170,7 @@ export const ForumActivityWidget = () => {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <MessageSquare className="h-4 w-4" />
-          Latest Discussions
+          Community Forums
         </h3>
         <a
           href="https://forums.trylaunch.ai"
