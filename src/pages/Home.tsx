@@ -942,7 +942,7 @@ const Home = () => {
             <PopularTechThisWeek />
 
             <div className="pt-6 pb-4">
-              <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+              <h2 className="text-2xl font-bold mb-8 text-left">Frequently Asked Questions</h2>
               
               <Accordion type="single" collapsible className="w-full space-y-4">
                 <AccordionItem value="what-is" className="border rounded-lg px-6">
@@ -991,7 +991,7 @@ const Home = () => {
                 </AccordionItem>
               </Accordion>
 
-              <div className="text-center mt-6">
+              <div className="text-left mt-6">
                 <Link to="/faq">
                   <Button variant="outline">View All FAQs</Button>
                 </Link>
