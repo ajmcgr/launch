@@ -832,68 +832,79 @@ const Home = () => {
       <OrganizationSchema />
       <WebSiteSchema />
       <FAQSchema faqs={homepageFaqs} />
-      <div className="container mx-auto px-4 py-6 max-w-5xl">
-        <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
-          <div className="flex flex-row items-center justify-between gap-2 mb-6">
-            <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
-              <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Today</TabsTrigger>
-              <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Week</TabsTrigger>
-              <TabsTrigger value="month" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Month</TabsTrigger>
-              <TabsTrigger value="year" className="hidden sm:inline-flex text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Year</TabsTrigger>
-              <TabsTrigger value="all" className="hidden sm:inline-flex text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">All</TabsTrigger>
-            </TabsList>
-            <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
-              <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
-                <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5" />
-                <Input
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleSearch}
-                  className="pl-7 h-full !text-[11px] sm:!text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Main feed column */}
+          <div className="flex-1 min-w-0">
+            <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
+              <div className="flex flex-row items-center justify-between gap-2 mb-6">
+                <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
+                  <TabsTrigger value="today" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Today</TabsTrigger>
+                  <TabsTrigger value="week" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Week</TabsTrigger>
+                  <TabsTrigger value="month" className="text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Month</TabsTrigger>
+                  <TabsTrigger value="year" className="hidden sm:inline-flex text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Year</TabsTrigger>
+                  <TabsTrigger value="all" className="hidden sm:inline-flex text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">All</TabsTrigger>
+                </TabsList>
+                <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
+                  <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
+                    <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5" />
+                    <Input
+                      placeholder="Search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={handleSearch}
+                      className="pl-7 h-full !text-[11px] sm:!text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                  </div>
+                  <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
+                  <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
+                  <ViewToggle view={view} onViewChange={handleViewChange} />
+                </div>
               </div>
-              <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
-              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
-              <ViewToggle view={view} onViewChange={handleViewChange} />
+
+              {/* Value Proposition */}
+              <div className="text-left mb-8">
+                <h2 className="text-2xl font-bold mb-2">
+                  {currentPeriod === 'all' && "All-Time Launches"}
+                  {currentPeriod === 'today' && "Today's Launches"}
+                  {currentPeriod === 'week' && "This Week's Launches"}
+                  {currentPeriod === 'month' && "This Month's Launches"}
+                  {currentPeriod === 'year' && "This Year's Launches"}
+                </h2>
+              </div>
+
+              <TabsContent value="all" className="space-y-6">
+                {renderProductList(products)}
+              </TabsContent>
+
+              <TabsContent value="today" className="space-y-6">
+                {renderProductList(products)}
+              </TabsContent>
+
+              <TabsContent value="week" className="space-y-6">
+                {renderProductList(products)}
+              </TabsContent>
+
+              <TabsContent value="month" className="space-y-6">
+                {renderProductList(products)}
+              </TabsContent>
+
+              <TabsContent value="year" className="space-y-6">
+                {renderProductList(products)}
+              </TabsContent>
+            </Tabs>
+            
+            {/* Sponsor Banner - Below leaderboard */}
+            <SponsorBanner className="mt-6" />
+          </div>
+
+          {/* Right sidebar - Forum Activity */}
+          <div className="w-full lg:w-72 flex-shrink-0">
+            <div className="lg:sticky lg:top-20">
+              <ForumActivityWidget />
             </div>
           </div>
-
-          {/* Value Proposition */}
-          <div className="text-left mb-8">
-            <h2 className="text-2xl font-bold mb-2">
-              {currentPeriod === 'all' && "All-Time Launches"}
-              {currentPeriod === 'today' && "Today's Launches"}
-              {currentPeriod === 'week' && "This Week's Launches"}
-              {currentPeriod === 'month' && "This Month's Launches"}
-              {currentPeriod === 'year' && "This Year's Launches"}
-            </h2>
-            
-          </div>
-
-          <TabsContent value="all" className="space-y-6">
-            {renderProductList(products)}
-          </TabsContent>
-
-          <TabsContent value="today" className="space-y-6">
-            {renderProductList(products)}
-          </TabsContent>
-
-          <TabsContent value="week" className="space-y-6">
-            {renderProductList(products)}
-          </TabsContent>
-
-          <TabsContent value="month" className="space-y-6">
-            {renderProductList(products)}
-          </TabsContent>
-
-          <TabsContent value="year" className="space-y-6">
-            {renderProductList(products)}
-          </TabsContent>
-        </Tabs>
-        
-        {/* Sponsor Banner - Below leaderboard */}
-        <SponsorBanner className="mt-6" />
+        </div>
       </div>
 
       
