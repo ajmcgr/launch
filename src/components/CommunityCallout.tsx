@@ -10,7 +10,7 @@ export const CommunityCallout = () => {
           <h3 className="text-lg font-semibold mb-1">Join the Community</h3>
           <TrustPhrase className="text-sm text-muted-foreground" />
         </div>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <Button asChild className="gap-2">
             <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer">
               <Mail className="h-4 w-4" />
