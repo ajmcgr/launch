@@ -912,6 +912,10 @@ const Home = () => {
 
       <ThisWeekHighlights view={effectiveView} />
 
+      {/* Community Callout - Centered full width */}
+      <div className="container mx-auto px-4 max-w-6xl">
+        <CommunityCallout />
+      </div>
 
       {/* Roach Banner - Centered full width */}
       <div className="container mx-auto px-4 max-w-6xl">
