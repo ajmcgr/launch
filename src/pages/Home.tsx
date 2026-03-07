@@ -881,10 +881,8 @@ const Home = () => {
               <SponsorBanner className="mt-6" />
             </div>
 
-            {/* Right sidebar - Forum Activity */}
-            <div className="w-full lg:w-72 flex-shrink-0">
-              <ForumActivityWidget />
-            </div>
+            {/* Right sidebar spacer to maintain layout */}
+            <div className="hidden lg:block w-72 flex-shrink-0" />
           </div>
         </Tabs>
       </div>
