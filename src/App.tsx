@@ -46,6 +46,7 @@ import LaunchArchivePeriod from "./pages/LaunchArchivePeriod";
 import LaunchArchiveYearly from "./pages/LaunchArchiveYearly";
 import StackPage from "./pages/StackPage";
 import TechLeaderboard from "./pages/TechLeaderboard";
+import ProductAnalytics from "./pages/ProductAnalytics";
 
 import DiscourseSso from "./pages/DiscourseSso";
 import MediaKit from "./pages/MediaKit";
