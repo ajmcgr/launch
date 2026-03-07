@@ -170,7 +170,7 @@ export const ForumActivityWidget = () => {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <MessageSquare className="h-4 w-4" />
-          Latest Discussions
+          Community Forums
         </h3>
         <a
           href="https://forums.trylaunch.ai"
