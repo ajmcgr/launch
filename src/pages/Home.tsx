@@ -971,7 +971,7 @@ const Home = () => {
       </div>
 
       {/* Bio Sponsor Banner - Full width premium format */}
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4 max-w-6xl">
         <div className="py-6 flex flex-col items-center w-full">
           <a 
             href="https://trybio.ai" 

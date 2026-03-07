@@ -173,10 +173,9 @@ export const ForumActivityWidget = () => {
           href="https://forums.trylaunch.ai"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           View all
-          <ExternalLink className="h-3 w-3" />
         </a>
       </div>
       <div className="space-y-1">
