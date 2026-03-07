@@ -797,24 +797,6 @@ const Home = () => {
           </div>
         )}
         
-        {/* Media Banner - Full width premium format */}
-        <div className="flex flex-col items-center py-6 w-full max-w-5xl mx-auto">
-          <a 
-            href="https://trymedia.ai/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block w-full"
-          >
-            <img 
-              src={mediaBanner} 
-              alt="Media - Any Journalist or Creator Email. Instantly." 
-              className="w-full h-auto transition-all duration-200 hover:opacity-95"
-            />
-          </a>
-          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
-            Featured Partner · Become a partner
-          </Link>
-        </div>
       </>
     );
   };
@@ -905,7 +887,26 @@ const Home = () => {
         </Tabs>
       </div>
 
-      
+      {/* Media Banner - Centered full width */}
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="py-6 flex flex-col items-center w-full">
+          <a 
+            href="https://trymedia.ai/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block w-full"
+          >
+            <img 
+              src={mediaBanner} 
+              alt="Media - Any Journalist or Creator Email. Instantly." 
+              className="w-full h-auto transition-all duration-200 hover:opacity-95"
+            />
+          </a>
+          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+            Featured Partner · Become a partner
+          </Link>
+        </div>
+      </div>
 
       <ThisWeekHighlights view={effectiveView} />
 
@@ -970,9 +971,9 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Bio Sponsor Banner - Full width premium format */}
+      {/* Bio Sponsor Banner - Centered full width */}
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="py-6 flex flex-col items-center w-full max-w-5xl mx-auto">
+        <div className="py-6 flex flex-col items-center w-full">
           <a 
             href="https://trybio.ai" 
             target="_blank" 
