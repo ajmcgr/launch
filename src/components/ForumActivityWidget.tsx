@@ -124,7 +124,7 @@ export const ForumActivityWidget = () => {
 
   if (loading) {
     return (
-      <div className="border rounded-lg p-4">
+      <div className="rounded-lg p-4">
         <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
           <MessageSquare className="h-4 w-4" />
           Community Forums
@@ -144,7 +144,7 @@ export const ForumActivityWidget = () => {
   // Show a CTA even if fetch failed or no threads
   if (threads.length === 0) {
     return (
-      <div className="border rounded-lg p-4">
+      <div className="rounded-lg p-4">
         <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
           <MessageSquare className="h-4 w-4" />
           Community Forum
@@ -166,7 +166,7 @@ export const ForumActivityWidget = () => {
   }
 
   return (
-    <div className="border rounded-lg p-4">
+    <div className="rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <MessageSquare className="h-4 w-4" />
