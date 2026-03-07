@@ -798,7 +798,7 @@ const Home = () => {
         )}
         
         {/* Media Banner - Full width premium format */}
-        <div className="flex flex-col items-center py-6 w-full">
+        <div className="flex flex-col items-center py-6 w-full max-w-5xl mx-auto">
           <a 
             href="https://trymedia.ai/" 
             target="_blank" 
