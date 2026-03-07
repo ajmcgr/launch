@@ -125,7 +125,7 @@ export const Header = () => {
         </Link>
       </div>
       
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex h-14 items-center justify-between">
           {/* Left: Logo + Navigation */}
           <div className="flex items-center gap-6">
