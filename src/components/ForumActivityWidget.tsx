@@ -166,7 +166,7 @@ export const ForumActivityWidget = () => {
   }
 
   return (
-    <div className="border rounded-lg p-4">
+    <div className="rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <MessageSquare className="h-4 w-4" />
