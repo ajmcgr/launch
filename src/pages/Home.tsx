@@ -899,9 +899,7 @@ const Home = () => {
 
             {/* Right sidebar - Forum Activity */}
             <div className="w-full lg:w-72 flex-shrink-0">
-              <div className="lg:sticky lg:top-20">
-                <ForumActivityWidget />
-              </div>
+              <ForumActivityWidget />
             </div>
           </div>
         </Tabs>
