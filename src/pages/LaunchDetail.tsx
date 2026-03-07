@@ -747,6 +747,18 @@ const LaunchDetail = () => {
                   </div>
                 </div>
               )}
+
+              {/* Analytics Button — owner only */}
+              {user && product.owner_id === user.id && (
+                <div className="pt-2">
+                  <Button variant="outline" className="w-full gap-2 border-2 border-muted-foreground/20" asChild>
+                    <Link to={`/launch/${product.slug}/analytics`}>
+                      <BarChart3 className="h-4 w-4" />
+                      Analytics
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
