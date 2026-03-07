@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.send-launch-share-email]
 verify_jwt = false
+
+[functions.forum-latest]
+verify_jwt = false
