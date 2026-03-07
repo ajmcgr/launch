@@ -34,31 +34,72 @@ const setCachedThreads = (threads: ForumThread[]) => {
   } catch { /* ignore */ }
 };
 
+const parseDiscourseTopics = (data: any): ForumThread[] => {
+  const topics = (data.topic_list?.topics || []).slice(0, 10);
+  const categories = data.topic_list?.categories || data.categories || [];
+  const catMap = new Map<number, string>();
+  for (const cat of categories) {
+    catMap.set(cat.id, cat.name);
+  }
+  return topics.map((t: any) => ({
+    id: t.id,
+    title: t.title,
+    slug: t.slug,
+    category: catMap.get(t.category_id) || null,
+    replyCount: t.reply_count || (t.posts_count ? t.posts_count - 1 : 0),
+    createdAt: t.created_at,
+    lastPostedAt: t.last_posted_at || t.created_at,
+  }));
+};
+
 export const ForumActivityWidget = () => {
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const cached = getCachedThreads();
-    if (cached) {
+    if (cached && cached.length > 0) {
       setThreads(cached);
       setLoading(false);
       return;
     }
 
     const fetchThreads = async () => {
+      // Try edge function first
       try {
         const { data, error } = await supabase.functions.invoke('forum-latest');
-        if (error) throw error;
-        if (data?.threads) {
+        if (!error && data?.threads?.length > 0) {
           setThreads(data.threads);
           setCachedThreads(data.threads);
+          setLoading(false);
+          return;
         }
-      } catch (err) {
-        console.error('Failed to fetch forum threads:', err);
-      } finally {
-        setLoading(false);
+      } catch {
+        // Fall through to direct fetch
       }
+
+      // Fallback: fetch directly from Discourse
+      try {
+        const res = await fetch('https://forums.trylaunch.ai/latest.json', {
+          headers: { 'Accept': 'application/json' },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const parsed = parseDiscourseTopics(data);
+          if (parsed.length > 0) {
+            setThreads(parsed);
+            setCachedThreads(parsed);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {
+        // Both methods failed
+      }
+
+      setError(true);
+      setLoading(false);
     };
 
     fetchThreads();
@@ -83,7 +124,29 @@ export const ForumActivityWidget = () => {
     );
   }
 
-  if (threads.length === 0) return null;
+  // Show a CTA even if fetch failed or no threads
+  if (threads.length === 0) {
+    return (
+      <div className="border rounded-lg p-4">
+        <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
+          <MessageSquare className="h-4 w-4" />
+          Community Forum
+        </h3>
+        <p className="text-sm text-muted-foreground mb-3">
+          Join the conversation with fellow makers and founders.
+        </p>
+        <a
+          href="https://forums.trylaunch.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          Visit the forum
+          <ExternalLink className="h-3 w-3" />
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="border rounded-lg p-4">
