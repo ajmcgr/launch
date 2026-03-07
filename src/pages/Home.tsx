@@ -798,7 +798,7 @@ const Home = () => {
         )}
         
         {/* Media Banner - Full width premium format */}
-        <div className="flex flex-col items-center py-6 w-full">
+        <div className="flex flex-col items-center py-6 w-full max-w-5xl mx-auto">
           <a 
             href="https://trymedia.ai/" 
             target="_blank" 
@@ -971,8 +971,8 @@ const Home = () => {
       </div>
 
       {/* Bio Sponsor Banner - Full width premium format */}
-      <div className="container mx-auto px-4 max-w-6xl lg:pr-[calc(theme(spacing.6)+theme(width.72)+1rem)]">
-        <div className="py-6 flex flex-col items-center w-full">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="py-6 flex flex-col items-center w-full max-w-5xl mx-auto">
           <a 
             href="https://trybio.ai" 
             target="_blank" 
