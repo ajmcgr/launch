@@ -664,7 +664,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
         <div className="space-y-8">
           {sections.map((section, sectionIndex) => (
             <React.Fragment key={section.title}>
-            {sectionIndex === 1 && (
+            {sectionIndex === 2 && (
               <div className="lg:-mr-[calc(theme(spacing.6)+theme(width.72)+1rem)]">
                 <CommunityCallout />
               </div>
