@@ -658,7 +658,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
 
   return (
     <section className="py-6 bg-background">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-6xl lg:pr-[calc(theme(spacing.6)+theme(width.72)+1rem)]">
         <h2 className="text-2xl font-bold text-left mb-8">This Week's Launch Picks</h2>
 
         <div className="space-y-8">
