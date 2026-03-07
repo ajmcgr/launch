@@ -126,7 +126,6 @@ export const ForumActivityWidget = () => {
     return (
       <div className="rounded-lg p-4">
         <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
-          <MessageSquare className="h-4 w-4" />
           Community Forums
         </h3>
         <div className="space-y-3">
