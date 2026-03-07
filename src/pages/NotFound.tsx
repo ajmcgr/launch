@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { Coffee } from "lucide-react";
+
 import logoDark from "@/assets/logo-dark.png";
 import logoLight from "@/assets/logo.png";
 import { useTheme } from "next-themes";
