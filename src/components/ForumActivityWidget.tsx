@@ -52,10 +52,17 @@ const parseDiscourseTopics = (data: any): ForumThread[] => {
   }));
 };
 
+const fetchViaAllOrigins = async (): Promise<ForumThread[]> => {
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://forums.trylaunch.ai/latest.json')}`;
+  const res = await fetch(proxyUrl, { headers: { Accept: 'application/json' } });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return parseDiscourseTopics(data);
+};
+
 export const ForumActivityWidget = () => {
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     const cached = getCachedThreads();
@@ -66,7 +73,7 @@ export const ForumActivityWidget = () => {
     }
 
     const fetchThreads = async () => {
-      // Try edge function first
+      // 1) Edge function
       try {
         const { data, error } = await supabase.functions.invoke('forum-latest');
         if (!error && data?.threads?.length > 0) {
@@ -76,13 +83,13 @@ export const ForumActivityWidget = () => {
           return;
         }
       } catch {
-        // Fall through to direct fetch
+        // continue to fallback
       }
 
-      // Fallback: fetch directly from Discourse
+      // 2) Direct Discourse fetch
       try {
         const res = await fetch('https://forums.trylaunch.ai/latest.json', {
-          headers: { 'Accept': 'application/json' },
+          headers: { Accept: 'application/json' },
         });
         if (res.ok) {
           const data = await res.json();
@@ -95,11 +102,21 @@ export const ForumActivityWidget = () => {
           }
         }
       } catch {
-        // Both methods failed
+        // continue to fallback
       }
 
-      setError(true);
-      setLoading(false);
+      // 3) CORS proxy fallback
+      try {
+        const parsed = await fetchViaAllOrigins();
+        if (parsed.length > 0) {
+          setThreads(parsed);
+          setCachedThreads(parsed);
+        }
+      } catch {
+        // ignore
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchThreads();
