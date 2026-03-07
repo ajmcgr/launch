@@ -68,8 +68,8 @@ export const PopularTechThisWeek = () => {
 
   return (
     <section className="py-6 bg-background">
-      <h2 className="text-2xl font-bold text-center mb-8">Browse by Tech</h2>
-      <div className="flex flex-wrap justify-center gap-3">
+      <h2 className="text-2xl font-bold text-left mb-8">Browse by Tech</h2>
+      <div className="flex flex-wrap justify-start gap-3">
         {techItems.map((item, index) => {
           const sizes = ['text-sm', 'text-base', 'text-lg', 'text-xl'];
           const sizeClass = sizes[index % sizes.length];
