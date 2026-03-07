@@ -913,7 +913,7 @@ const Home = () => {
 
       <PopularTechThisWeek />
 
-      <div className="container mx-auto px-4 pt-6 pb-4 max-w-4xl">
+      <div className="container mx-auto px-4 pt-6 pb-4 max-w-6xl">
         <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
         
         <Accordion type="single" collapsible className="w-full space-y-4">
@@ -971,7 +971,7 @@ const Home = () => {
       </div>
 
       {/* Bio Sponsor Banner - Full width premium format */}
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-6xl lg:pr-[calc(theme(spacing.6)+theme(width.72)+1rem)]">
         <div className="py-6 flex flex-col items-center w-full">
           <a 
             href="https://trybio.ai" 

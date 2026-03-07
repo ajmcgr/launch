@@ -54,7 +54,7 @@ export const PopularTechThisWeek = () => {
   if (isLoading) {
     return (
       <section className="py-6 bg-background">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4 max-w-6xl">
           <Skeleton className="h-7 w-64 mx-auto mb-6" />
           <div className="flex flex-wrap justify-center gap-3">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -70,7 +70,7 @@ export const PopularTechThisWeek = () => {
 
   return (
     <section className="py-6 bg-background">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 max-w-6xl">
         <h2 className="text-2xl font-bold text-center mb-8">Browse by Tech</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {techItems.map((item, index) => {
