@@ -630,8 +630,8 @@ const Products = () => {
 
         {/* Category Cloud */}
         <div className="pt-8 mt-8 mb-8">
-          <h2 className="text-2xl font-bold text-center mb-6">Browse by Category</h2>
-          <div className="flex flex-wrap justify-center gap-3">
+          <h2 className="text-2xl font-bold text-left mb-6">Browse by Category</h2>
+          <div className="flex flex-wrap justify-start gap-3">
             {CATEGORIES.map((category, index) => (
               <button
                 key={category}
