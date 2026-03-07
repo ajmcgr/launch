@@ -934,64 +934,71 @@ const Home = () => {
         </div>
       </div>
 
-      <CategoryCloud />
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1 min-w-0">
+            <CategoryCloud />
 
-      <PopularTechThisWeek />
+            <PopularTechThisWeek />
 
-      <div className="container mx-auto px-4 pt-6 pb-4 max-w-6xl">
-        <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
-        
-        <Accordion type="single" collapsible className="w-full space-y-4">
-          <AccordionItem value="what-is" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left text-sm">
-              What is Launch?
-            </AccordionTrigger>
-            <AccordionContent>
-              Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
-            </AccordionContent>
-          </AccordionItem>
+            <div className="pt-6 pb-4">
+              <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+              
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                <AccordionItem value="what-is" className="border rounded-lg px-6">
+                  <AccordionTrigger className="text-left text-sm">
+                    What is Launch?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
+                  </AccordionContent>
+                </AccordionItem>
 
-          <AccordionItem value="how-submit" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left text-sm">
-              How do I submit my product?
-            </AccordionTrigger>
-            <AccordionContent>
-              Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!
-            </AccordionContent>
-          </AccordionItem>
+                <AccordionItem value="how-submit" className="border rounded-lg px-6">
+                  <AccordionTrigger className="text-left text-sm">
+                    How do I submit my product?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!
+                  </AccordionContent>
+                </AccordionItem>
 
-          <AccordionItem value="voting" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left text-sm">
-              How does voting work?
-            </AccordionTrigger>
-            <AccordionContent>
-              Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.
-            </AccordionContent>
-          </AccordionItem>
+                <AccordionItem value="voting" className="border rounded-lg px-6">
+                  <AccordionTrigger className="text-left text-sm">
+                    How does voting work?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.
+                  </AccordionContent>
+                </AccordionItem>
 
-          <AccordionItem value="top-products" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left text-sm">
-              What are Top Products and Archives?
-            </AccordionTrigger>
-            <AccordionContent>
-              Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners. Visit the Products page to see current rankings and archives.
-            </AccordionContent>
-          </AccordionItem>
+                <AccordionItem value="top-products" className="border rounded-lg px-6">
+                  <AccordionTrigger className="text-left text-sm">
+                    What are Top Products and Archives?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners. Visit the Products page to see current rankings and archives.
+                  </AccordionContent>
+                </AccordionItem>
 
-          <AccordionItem value="notifications" className="border rounded-lg px-6">
-            <AccordionTrigger className="text-left text-sm">
-              How do notifications work?
-            </AccordionTrigger>
-            <AccordionContent>
-              Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+                <AccordionItem value="notifications" className="border rounded-lg px-6">
+                  <AccordionTrigger className="text-left text-sm">
+                    How do notifications work?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
 
-        <div className="text-center mt-6">
-          <Link to="/faq">
-            <Button variant="outline">View All FAQs</Button>
-          </Link>
+              <div className="text-center mt-6">
+                <Link to="/faq">
+                  <Button variant="outline">View All FAQs</Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="w-full lg:w-72 flex-shrink-0" />
         </div>
       </div>
 
