@@ -94,7 +94,7 @@ export const Footer = () => {
 
   return (
     <footer>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Products Section */}
         {products.length > 0 && (
           <div className="mb-8">
@@ -168,7 +168,7 @@ export const Footer = () => {
         {/* Footer Links - full width border */}
       </div>
       <div className="bg-muted">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
