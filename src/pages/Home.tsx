@@ -32,6 +32,7 @@ import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonL
 import { SponsorBanner } from '@/components/SponsorBanner';
 import { PlatformStats } from '@/components/PlatformStats';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
+import { ForumActivityWidget } from '@/components/ForumActivityWidget';
 import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
