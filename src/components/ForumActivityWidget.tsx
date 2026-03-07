@@ -126,7 +126,6 @@ export const ForumActivityWidget = () => {
     return (
       <div className="rounded-lg p-4">
         <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
-          <MessageSquare className="h-4 w-4" />
           Community Forums
         </h3>
         <div className="space-y-3">
@@ -146,7 +145,6 @@ export const ForumActivityWidget = () => {
     return (
       <div className="rounded-lg p-4">
         <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
-          <MessageSquare className="h-4 w-4" />
           Community Forum
         </h3>
         <p className="text-sm text-muted-foreground mb-3">
@@ -169,7 +167,6 @@ export const ForumActivityWidget = () => {
     <div className="rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
-          <MessageSquare className="h-4 w-4" />
           Community Forums
         </h3>
         <a
