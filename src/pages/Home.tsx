@@ -36,6 +36,8 @@ import { ForumActivityWidget } from '@/components/ForumActivityWidget';
 import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
+import roachBanner from '@/assets/sponsors/roach-banner.png';
+import { CommunityCallout } from '@/components/CommunityCallout';
 
 interface Product {
   id: string;
