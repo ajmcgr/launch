@@ -94,7 +94,7 @@ export const Footer = () => {
 
   return (
     <footer>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Products Section */}
         {products.length > 0 && (
           <div className="mb-8">
