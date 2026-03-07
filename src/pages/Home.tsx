@@ -36,6 +36,8 @@ import { ForumActivityWidget } from '@/components/ForumActivityWidget';
 import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
+import roachBanner from '@/assets/sponsors/roach-banner.png';
+import { CommunityCallout } from '@/components/CommunityCallout';
 
 interface Product {
   id: string;
@@ -909,6 +911,32 @@ const Home = () => {
       </div>
 
       <ThisWeekHighlights view={effectiveView} />
+
+      {/* Community Callout - Centered full width */}
+      <div className="container mx-auto px-4 max-w-6xl">
+        <CommunityCallout />
+      </div>
+
+      {/* Roach Banner - Centered full width */}
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="py-6 flex flex-col items-center w-full">
+          <a 
+            href="https://roachclo.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block w-full"
+          >
+            <img 
+              src={roachBanner} 
+              alt="Roach - Survive. Thrive. Shop Roach." 
+              className="w-full h-auto transition-all duration-200 hover:opacity-95"
+            />
+          </a>
+          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+            Featured Partner · Become a partner
+          </Link>
+        </div>
+      </div>
 
       <CategoryCloud />
 
