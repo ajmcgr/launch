@@ -46,6 +46,7 @@ import LaunchArchivePeriod from "./pages/LaunchArchivePeriod";
 import LaunchArchiveYearly from "./pages/LaunchArchiveYearly";
 import StackPage from "./pages/StackPage";
 import TechLeaderboard from "./pages/TechLeaderboard";
+import ProductAnalytics from "./pages/ProductAnalytics";
 
 import DiscourseSso from "./pages/DiscourseSso";
 import MediaKit from "./pages/MediaKit";
@@ -80,6 +81,7 @@ const AppContent = () => {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/launch/:slug" element={<LaunchDetail />} />
+          <Route path="/launch/:slug/analytics" element={<ProductAnalytics />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/about" element={<About />} />
