@@ -664,7 +664,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
         <div className="space-y-8">
           {sections.map((section, sectionIndex) => (
             <React.Fragment key={section.title}>
-            
+            {sectionIndex === 1 && <CommunityCallout />}
             <div key={section.title}>
               <h3 className="text-lg font-semibold mb-4">{section.title}</h3>
               {section.isLoading ? (
