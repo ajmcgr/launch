@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, ExternalLink } from 'lucide-react';
+import { MessageSquare, ExternalLink, MessageCircle } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -197,7 +197,7 @@ export const ForumActivityWidget = () => {
                   <span>·</span>
                 </>
               )}
-              <span>{thread.replyCount} {thread.replyCount === 1 ? 'reply' : 'replies'}</span>
+              <span className="inline-flex items-center gap-0.5"><MessageCircle className="h-3 w-3" />{thread.replyCount}</span>
               <span>·</span>
               <span>{formatTimeAgo(thread.lastPostedAt || thread.createdAt)}</span>
             </div>
