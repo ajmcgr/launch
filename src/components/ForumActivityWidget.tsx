@@ -128,11 +128,11 @@ export const ForumActivityWidget = () => {
         <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
           Community Forums
         </h3>
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="animate-pulse space-y-1.5">
-              <div className="h-3.5 bg-muted rounded w-4/5" />
-              <div className="h-3 bg-muted rounded w-2/5" />
+        <div className="space-y-1">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="animate-pulse py-2 px-2 -mx-2 space-y-1.5">
+              <div className="h-4 bg-muted rounded w-[85%]" />
+              <div className="h-3.5 bg-muted rounded w-[45%]" />
             </div>
           ))}
         </div>
