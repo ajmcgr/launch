@@ -197,7 +197,7 @@ export const ForumActivityWidget = () => {
                   <span>·</span>
                 </>
               )}
-              <span className="inline-flex items-center gap-0.5"><MessageCircle className="h-3 w-3" />{thread.replyCount}</span>
+              <span className="inline-flex items-center gap-0.5"><MessageSquare className="h-3 w-3" />{thread.replyCount}</span>
               <span>·</span>
               <span>{formatTimeAgo(thread.lastPostedAt || thread.createdAt)}</span>
             </div>
