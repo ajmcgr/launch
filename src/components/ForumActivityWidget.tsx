@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, ExternalLink, MessageCircle } from 'lucide-react';
+import { MessageSquare, ExternalLink } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { supabase } from '@/integrations/supabase/client';
 
