@@ -85,13 +85,13 @@ const fetchFromDiscourse = async (): Promise<ForumThread[]> => {
 
 /** Race edge function and direct fetch — first success wins */
 const fetchThreads = async (): Promise<ForumThread[]> => {
-  try {
-    const result = await Promise.any([
-      fetchFromEdgeFunction(),
-      fetchFromDiscourse(),
-    ]);
-    return result;
-  } catch {
+  // Run both in parallel, use whichever resolves first successfully
+  const edgeFn = fetchFromEdgeFunction().catch(() => null);
+  const direct = fetchFromDiscourse().catch(() => null);
+
+  const results = await Promise.all([edgeFn, direct]);
+  const first = results.find((r) => r && r.length > 0);
+  if (first) return first;
     // Both failed — try CORS proxy as last resort
     try {
       const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://forums.trylaunch.ai/latest.json')}`;
