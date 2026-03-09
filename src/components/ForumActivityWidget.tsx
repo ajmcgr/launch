@@ -92,17 +92,17 @@ const fetchThreads = async (): Promise<ForumThread[]> => {
   const results = await Promise.all([edgeFn, direct]);
   const first = results.find((r) => r && r.length > 0);
   if (first) return first;
-    // Both failed — try CORS proxy as last resort
-    try {
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://forums.trylaunch.ai/latest.json')}`;
-      const res = await fetch(proxyUrl, { headers: { Accept: 'application/json' } });
-      if (!res.ok) throw new Error('Proxy failed');
-      const data = await res.json();
-      const parsed = parseDiscourseTopics(data);
-      if (parsed.length) return parsed;
-    } catch { /* ignore */ }
-    return [];
-  }
+
+  // Both failed — try CORS proxy as last resort
+  try {
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://forums.trylaunch.ai/latest.json')}`;
+    const res = await fetch(proxyUrl, { headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error('Proxy failed');
+    const data = await res.json();
+    const parsed = parseDiscourseTopics(data);
+    if (parsed.length) return parsed;
+  } catch { /* ignore */ }
+  return [];
 };
 
 export const ForumActivityWidget = () => {
