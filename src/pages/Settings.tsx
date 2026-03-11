@@ -56,13 +56,12 @@ const Settings = () => {
         // Show success toast and refetch pass status for annual pass purchase
         if (searchParams.get('success') === 'annual') {
           toast.success('Launch Pass Annual Access activated! You now have unlimited access for 12 months.');
-          // Invalidate and refetch pass status to show updated state
-          invalidatePassStatus(session.user.id);
           queryClient.invalidateQueries({ queryKey: ['pass', session.user.id] });
         }
       }
     });
-  }, [navigate, searchParams, invalidatePassStatus, queryClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, searchParams]);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
