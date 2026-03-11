@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StripeConnectCard } from '@/components/StripeConnectCard';
 import { PassStatus } from '@/components/PassStatus';
-import { usePass, useInvalidatePassStatus } from '@/hooks/use-pass';
+import { usePass } from '@/hooks/use-pass';
 import { useQueryClient } from '@tanstack/react-query';
 
 const Settings = () => {
@@ -42,7 +42,6 @@ const Settings = () => {
   
   // Pass status
   const { data: passStatus, refetch: refetchPassStatus } = usePass(user?.id);
-  const invalidatePassStatus = useInvalidatePassStatus();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -56,13 +55,12 @@ const Settings = () => {
         // Show success toast and refetch pass status for annual pass purchase
         if (searchParams.get('success') === 'annual') {
           toast.success('Launch Pass Annual Access activated! You now have unlimited access for 12 months.');
-          // Invalidate and refetch pass status to show updated state
-          invalidatePassStatus(session.user.id);
           queryClient.invalidateQueries({ queryKey: ['pass', session.user.id] });
         }
       }
     });
-  }, [navigate, searchParams, invalidatePassStatus, queryClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, searchParams]);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
@@ -88,9 +86,28 @@ const Settings = () => {
         .eq('id', user.id)
         .single()).data?.username;
 
+      // Only send editable fields to avoid sending read-only columns
+      const updateData = {
+        name: profile.name,
+        username: profile.username,
+        bio: profile.bio,
+        twitter: profile.twitter,
+        instagram: profile.instagram,
+        linkedin: profile.linkedin,
+        youtube: profile.youtube,
+        telegram: profile.telegram,
+        website: profile.website,
+        avatar_url: profile.avatar_url,
+        email_notifications_enabled: profile.email_notifications_enabled,
+        notify_on_follow: profile.notify_on_follow,
+        notify_on_comment: profile.notify_on_comment,
+        notify_on_vote: profile.notify_on_vote,
+        notify_on_launch: profile.notify_on_launch,
+      };
+
       const { error } = await supabase
         .from('users')
-        .update(profile)
+        .update(updateData)
         .eq('id', user.id);
 
       if (error) throw error;
