@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StripeConnectCard } from '@/components/StripeConnectCard';
 import { PassStatus } from '@/components/PassStatus';
-import { usePass, useInvalidatePassStatus } from '@/hooks/use-pass';
+import { usePass } from '@/hooks/use-pass';
 import { useQueryClient } from '@tanstack/react-query';
 
 const Settings = () => {
