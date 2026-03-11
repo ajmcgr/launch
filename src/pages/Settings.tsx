@@ -42,7 +42,6 @@ const Settings = () => {
   
   // Pass status
   const { data: passStatus, refetch: refetchPassStatus } = usePass(user?.id);
-  const invalidatePassStatus = useInvalidatePassStatus();
   const queryClient = useQueryClient();
 
   useEffect(() => {
