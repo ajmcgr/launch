@@ -86,9 +86,28 @@ const Settings = () => {
         .eq('id', user.id)
         .single()).data?.username;
 
+      // Only send editable fields to avoid sending read-only columns
+      const updateData = {
+        name: profile.name,
+        username: profile.username,
+        bio: profile.bio,
+        twitter: profile.twitter,
+        instagram: profile.instagram,
+        linkedin: profile.linkedin,
+        youtube: profile.youtube,
+        telegram: profile.telegram,
+        website: profile.website,
+        avatar_url: profile.avatar_url,
+        email_notifications_enabled: profile.email_notifications_enabled,
+        notify_on_follow: profile.notify_on_follow,
+        notify_on_comment: profile.notify_on_comment,
+        notify_on_vote: profile.notify_on_vote,
+        notify_on_launch: profile.notify_on_launch,
+      };
+
       const { error } = await supabase
         .from('users')
-        .update(profile)
+        .update(updateData)
         .eq('id', user.id);
 
       if (error) throw error;
