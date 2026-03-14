@@ -131,12 +131,12 @@ const MyProducts = () => {
       let voteCounts: Record<string, number> = {};
       if (productIds.length > 0) {
         const { data: votesData } = await supabase
-          .from('votes')
-          .select('product_id, value')
+          .from('product_vote_counts')
+          .select('product_id, net_votes')
           .in('product_id', productIds);
 
         votesData?.forEach(vote => {
-          voteCounts[vote.product_id] = (voteCounts[vote.product_id] || 0) + vote.value;
+          voteCounts[vote.product_id] = vote.net_votes || 0;
         });
       }
 
