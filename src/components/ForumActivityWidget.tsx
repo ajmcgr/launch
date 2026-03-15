@@ -48,14 +48,27 @@ const setCachedThreads = (threads: ForumThread[]) => {
   } catch { /* ignore */ }
 };
 
+/** Sort threads: those with replies first (by reply count desc), then by recency */
+const sortThreadsByEngagement = (threads: ForumThread[]): ForumThread[] => {
+  return [...threads].sort((a, b) => {
+    // Threads with replies always come first
+    if (a.replyCount > 0 && b.replyCount === 0) return -1;
+    if (a.replyCount === 0 && b.replyCount > 0) return 1;
+    // Among threads with replies, sort by reply count desc
+    if (a.replyCount > 0 && b.replyCount > 0) return b.replyCount - a.replyCount;
+    // Among threads without replies, sort by recency
+    return new Date(b.lastPostedAt).getTime() - new Date(a.lastPostedAt).getTime();
+  });
+};
+
 const parseDiscourseTopics = (data: any): ForumThread[] => {
-  const topics = (data.topic_list?.topics || []).slice(0, 10);
+  const topics = (data.topic_list?.topics || []).slice(0, 15);
   const categories = data.topic_list?.categories || data.categories || [];
   const catMap = new Map<number, string>();
   for (const cat of categories) {
     catMap.set(cat.id, cat.name);
   }
-  return topics.map((t: any) => ({
+  const parsed = topics.map((t: any) => ({
     id: t.id,
     title: t.title,
     slug: t.slug,
@@ -64,6 +77,7 @@ const parseDiscourseTopics = (data: any): ForumThread[] => {
     createdAt: t.created_at,
     lastPostedAt: t.last_posted_at || t.created_at,
   }));
+  return sortThreadsByEngagement(parsed).slice(0, 10);
 };
 
 const fetchFromEdgeFunction = async (): Promise<ForumThread[]> => {

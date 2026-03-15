@@ -560,6 +560,31 @@ const LaunchDetail = () => {
               )}
               <CommentList productId={product.id} productOwnerId={product.owner_id} refreshTrigger={commentRefreshTrigger} />
             </div>
+
+            {/* Join the Discussion CTA */}
+            <div className="p-6 rounded-xl border border-primary/20 bg-primary/5">
+              <div className="flex items-start gap-4">
+                <div className="p-2.5 rounded-lg bg-primary/10">
+                  <MessageSquare className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-1">Join the discussion</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Share your feedback, ask questions, or suggest features on the community forums. Your input helps makers build better products.
+                  </p>
+                  <Button asChild className="gap-2">
+                    <a
+                      href={product.forum_thread_url || 'https://forums.trylaunch.ai/'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                      {product.forum_thread_url ? 'Discuss on Forums →' : 'Visit Community Forums →'}
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Right Sidebar - Desktop Only */}
