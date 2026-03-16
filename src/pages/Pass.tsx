@@ -295,15 +295,6 @@ const Pass = () => {
             <PopularProductIcons />
           </div>
 
-          {/* Active Pass Notice */}
-          {hasActivePass && expiresAt && (
-            <div className="mb-12 p-6 rounded-lg bg-primary/5 border border-primary/20">
-              <div className="flex items-center gap-2 font-medium text-primary">
-                <Check className="h-4 w-4" />
-                <span>You have an active Launch Pass</span>
-              </div>
-            </div>
-          )}
 
           {/* Two Column Layout: Stats & Features */}
           <div className="mb-12 grid md:grid-cols-2 gap-8 md:gap-12">
