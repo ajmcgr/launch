@@ -77,14 +77,16 @@ const Index = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      fetchLaunches(currentUser);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      fetchLaunches(currentUser);
     });
-
-    fetchLaunches();
 
     return () => subscription.unsubscribe();
   }, []);
