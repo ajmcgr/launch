@@ -22,6 +22,13 @@ const FALLBACK_THREADS: ForumThread[] = [
   { id: 1, title: 'Welcome to the Launch Community Forums', slug: 'welcome-to-the-launch-community-forums', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
   { id: 2, title: 'Introduce yourself here!', slug: 'introduce-yourself-here', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
   { id: 3, title: 'Tips for launching your product', slug: 'tips-for-launching-your-product', category: 'Show Launch', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
+  { id: 4, title: 'How to get your first 100 users', slug: 'how-to-get-your-first-100-users', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
+  { id: 5, title: 'Best tools for indie makers in 2025', slug: 'best-tools-for-indie-makers-in-2025', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
+  { id: 6, title: 'Share your tech stack', slug: 'share-your-tech-stack', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
+  { id: 7, title: 'Landing page roast — post yours for feedback', slug: 'landing-page-roast-post-yours-for-feedback', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
+  { id: 8, title: 'How do you validate your ideas before building?', slug: 'how-do-you-validate-your-ideas-before-building', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
+  { id: 9, title: 'What did you ship this week?', slug: 'what-did-you-ship-this-week', category: 'Show Launch', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
+  { id: 10, title: 'Finding your first paying customers', slug: 'finding-your-first-paying-customers', category: 'General', replyCount: 0, createdAt: '2025-01-01T00:00:00Z', lastPostedAt: '2025-01-01T00:00:00Z' },
 ];
 
 interface CacheEntry {
