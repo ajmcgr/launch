@@ -185,41 +185,57 @@ const Index = () => {
       return;
     }
 
+    const existingVoteInState = launches.find((launch) => launch.id === launchId)?.userVote === 1;
+
+    setLaunches((prev) =>
+      prev.map((launch) =>
+        launch.id === launchId
+          ? {
+              ...launch,
+              votes: Math.max(0, launch.votes + (existingVoteInState ? -1 : 1)),
+              userVote: existingVoteInState ? null : 1,
+            }
+          : launch
+      )
+    );
+
     try {
-      const { data: existingVote } = await supabase
+      const { data: existingVote, error: existingVoteError } = await supabase
         .from('votes')
-        .select('*')
+        .select('id')
         .eq('product_id', launchId)
         .eq('user_id', user.id)
-        .single();
+        .eq('value', 1)
+        .maybeSingle();
+
+      if (existingVoteError) throw existingVoteError;
 
       if (existingVote) {
-        await supabase
+        const { error: deleteError } = await supabase
           .from('votes')
           .delete()
           .eq('id', existingVote.id);
-        
-        setLaunches(prev => 
-          prev.map(launch => 
-            launch.id === launchId 
-              ? { ...launch, votes: launch.votes - 1 }
-              : launch
-          )
-        );
+
+        if (deleteError) throw deleteError;
       } else {
-        await supabase
+        const { error: insertError } = await supabase
           .from('votes')
           .insert({ product_id: launchId, user_id: user.id, value: 1 });
-        
-        setLaunches(prev => 
-          prev.map(launch => 
-            launch.id === launchId 
-              ? { ...launch, votes: launch.votes + 1 }
-              : launch
-          )
-        );
+
+        if (insertError) throw insertError;
       }
     } catch (error) {
+      setLaunches((prev) =>
+        prev.map((launch) =>
+          launch.id === launchId
+            ? {
+                ...launch,
+                votes: Math.max(0, launch.votes + (existingVoteInState ? 1 : -1)),
+                userVote: existingVoteInState ? 1 : null,
+              }
+            : launch
+        )
+      );
       console.error('Error voting:', error);
       toast.error('Failed to vote');
     }
