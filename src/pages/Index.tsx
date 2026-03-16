@@ -23,6 +23,7 @@ interface Launch {
   slug: string;
   launch_date?: string;
   platforms?: Platform[];
+  userVote?: 1 | null;
   makers: Array<{ username: string; avatar_url?: string }>;
 }
 
