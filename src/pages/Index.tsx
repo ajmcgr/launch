@@ -363,6 +363,7 @@ const Index = () => {
                   slug={launch.slug}
                   launchDate={launch.launch_date}
                   platforms={launch.platforms}
+                  userVote={launch.userVote}
                   onVote={() => handleVote(launch.id)}
                 />
               ))}
