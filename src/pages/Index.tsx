@@ -163,7 +163,7 @@ const Index = () => {
           slug: p.slug,
           launch_date: p.launch_date,
           platforms: (p.platforms || []) as Platform[],
-          userVote: userVoteMap.get(p.id) || null,
+          userVote: (userVoteMap.get(p.id) ?? null) as 1 | null,
           makers: (p.product_makers || [])
             .map((pm: any) => pm.users)
             .filter((u: any) => u && u.username)
