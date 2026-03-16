@@ -297,57 +297,13 @@ const Pass = () => {
 
           {/* Active Pass Notice */}
           {hasActivePass && expiresAt && (
-            <div className={`mb-12 p-6 rounded-lg ${cancelAtPeriodEnd ? 'bg-destructive/5 border border-destructive/20' : 'bg-primary/5 border border-primary/20'}`}>
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <div className={`flex items-center gap-2 font-medium mb-1 ${cancelAtPeriodEnd ? 'text-destructive' : 'text-primary'}`}>
-                    {cancelAtPeriodEnd ? (
-                      <>
-                        <AlertCircle className="h-4 w-4" />
-                        <span>Subscription ending</span>
-                      </>
-                    ) : (
-                      <>
-                        <Check className="h-4 w-4" />
-                        <span>Active subscription</span>
-                      </>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {cancelAtPeriodEnd 
-                      ? `Your access ends on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
-                      : `Renews on ${new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
-                    }
-                  </p>
-                </div>
-                
-                {cancelAtPeriodEnd ? (
-                  <Button 
-                    variant="outline"
-                    onClick={handleReactivate}
-                    disabled={isReactivating}
-                  >
-                    {isReactivating ? 'Reactivating...' : 'Reactivate Subscription'}
-                  </Button>
-                ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        Cancel Subscription
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Cancel your subscription?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Your subscription will remain active until {new Date(expiresAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. 
-                          After that, you'll return to standard pricing for launches.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                        <AlertDialogAction 
-                          onClick={handleCancel}
+            <div className="mb-12 p-6 rounded-lg bg-primary/5 border border-primary/20">
+              <div className="flex items-center gap-2 font-medium text-primary">
+                <Check className="h-4 w-4" />
+                <span>You have an active Launch Pass</span>
+              </div>
+            </div>
+          )}
                           disabled={isCancelling}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
