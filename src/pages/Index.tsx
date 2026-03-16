@@ -105,7 +105,7 @@ const Index = () => {
     setLaunches(sorted);
   }, [sort]);
 
-  const fetchLaunches = async () => {
+  const fetchLaunches = async (currentUser: any = null) => {
     setLoading(true);
     try {
       // Use UTC start of today to ensure consistent behavior across timezones
@@ -132,13 +132,26 @@ const Index = () => {
 
       if (error) throw error;
 
-      const { data: voteCounts } = await supabase
-        .from('product_vote_counts')
-        .select('product_id, net_votes');
+      const [voteCountsResult, userVotesResult] = await Promise.all([
+        supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes'),
+        currentUser
+          ? supabase
+              .from('votes')
+              .select('product_id, value')
+              .eq('user_id', currentUser.id)
+              .eq('value', 1)
+          : Promise.resolve({ data: null, error: null }),
+      ]);
 
-      const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+      if (voteCountsResult.error) throw voteCountsResult.error;
+      if (userVotesResult.error) throw userVotesResult.error;
 
-      let launches: Launch[] = (products || [])
+      const voteMap = new Map(voteCountsResult.data?.map(v => [v.product_id, v.net_votes || 0]) || []);
+      const userVoteMap = new Map(userVotesResult.data?.map(v => [v.product_id, 1 as const]) || []);
+
+      const launches: Launch[] = (products || [])
         .map((p, index) => ({
           id: p.id,
           rank: index + 1,
@@ -150,6 +163,7 @@ const Index = () => {
           slug: p.slug,
           launch_date: p.launch_date,
           platforms: (p.platforms || []) as Platform[],
+          userVote: userVoteMap.get(p.id) || null,
           makers: (p.product_makers || [])
             .map((pm: any) => pm.users)
             .filter((u: any) => u && u.username)
