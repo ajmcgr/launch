@@ -318,6 +318,7 @@ const Index = () => {
                 name={launch.name}
                 votes={launch.votes}
                 slug={launch.slug}
+                userVote={launch.userVote}
                 platforms={launch.platforms}
                 makers={launch.makers}
                 launchDate={launch.launch_date}
