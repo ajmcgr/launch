@@ -23,6 +23,7 @@ interface Launch {
   slug: string;
   launch_date?: string;
   platforms?: Platform[];
+  userVote?: 1 | null;
   makers: Array<{ username: string; avatar_url?: string }>;
 }
 
@@ -76,14 +77,16 @@ const Index = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      fetchLaunches(currentUser);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      fetchLaunches(currentUser);
     });
-
-    fetchLaunches();
 
     return () => subscription.unsubscribe();
   }, []);
@@ -102,7 +105,7 @@ const Index = () => {
     setLaunches(sorted);
   }, [sort]);
 
-  const fetchLaunches = async () => {
+  const fetchLaunches = async (currentUser: any = null) => {
     setLoading(true);
     try {
       // Use UTC start of today to ensure consistent behavior across timezones
@@ -129,13 +132,26 @@ const Index = () => {
 
       if (error) throw error;
 
-      const { data: voteCounts } = await supabase
-        .from('product_vote_counts')
-        .select('product_id, net_votes');
+      const [voteCountsResult, userVotesResult] = await Promise.all([
+        supabase
+          .from('product_vote_counts')
+          .select('product_id, net_votes'),
+        currentUser
+          ? supabase
+              .from('votes')
+              .select('product_id, value')
+              .eq('user_id', currentUser.id)
+              .eq('value', 1)
+          : Promise.resolve({ data: null, error: null }),
+      ]);
 
-      const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+      if (voteCountsResult.error) throw voteCountsResult.error;
+      if (userVotesResult.error) throw userVotesResult.error;
 
-      let launches: Launch[] = (products || [])
+      const voteMap = new Map(voteCountsResult.data?.map(v => [v.product_id, v.net_votes || 0]) || []);
+      const userVoteMap = new Map(userVotesResult.data?.map(v => [v.product_id, 1 as const]) || []);
+
+      const launches: Launch[] = (products || [])
         .map((p, index) => ({
           id: p.id,
           rank: index + 1,
@@ -147,6 +163,7 @@ const Index = () => {
           slug: p.slug,
           launch_date: p.launch_date,
           platforms: (p.platforms || []) as Platform[],
+          userVote: (userVoteMap.get(p.id) ?? null) as 1 | null,
           makers: (p.product_makers || [])
             .map((pm: any) => pm.users)
             .filter((u: any) => u && u.username)
@@ -168,41 +185,57 @@ const Index = () => {
       return;
     }
 
+    const existingVoteInState = launches.find((launch) => launch.id === launchId)?.userVote === 1;
+
+    setLaunches((prev) =>
+      prev.map((launch) =>
+        launch.id === launchId
+          ? {
+              ...launch,
+              votes: Math.max(0, launch.votes + (existingVoteInState ? -1 : 1)),
+              userVote: existingVoteInState ? null : 1,
+            }
+          : launch
+      )
+    );
+
     try {
-      const { data: existingVote } = await supabase
+      const { data: existingVote, error: existingVoteError } = await supabase
         .from('votes')
-        .select('*')
+        .select('id')
         .eq('product_id', launchId)
         .eq('user_id', user.id)
-        .single();
+        .eq('value', 1)
+        .maybeSingle();
+
+      if (existingVoteError) throw existingVoteError;
 
       if (existingVote) {
-        await supabase
+        const { error: deleteError } = await supabase
           .from('votes')
           .delete()
           .eq('id', existingVote.id);
-        
-        setLaunches(prev => 
-          prev.map(launch => 
-            launch.id === launchId 
-              ? { ...launch, votes: launch.votes - 1 }
-              : launch
-          )
-        );
+
+        if (deleteError) throw deleteError;
       } else {
-        await supabase
+        const { error: insertError } = await supabase
           .from('votes')
           .insert({ product_id: launchId, user_id: user.id, value: 1 });
-        
-        setLaunches(prev => 
-          prev.map(launch => 
-            launch.id === launchId 
-              ? { ...launch, votes: launch.votes + 1 }
-              : launch
-          )
-        );
+
+        if (insertError) throw insertError;
       }
     } catch (error) {
+      setLaunches((prev) =>
+        prev.map((launch) =>
+          launch.id === launchId
+            ? {
+                ...launch,
+                votes: Math.max(0, launch.votes + (existingVoteInState ? 1 : -1)),
+                userVote: existingVoteInState ? 1 : null,
+              }
+            : launch
+        )
+      );
       console.error('Error voting:', error);
       toast.error('Failed to vote');
     }
@@ -285,6 +318,7 @@ const Index = () => {
                 name={launch.name}
                 votes={launch.votes}
                 slug={launch.slug}
+                userVote={launch.userVote}
                 platforms={launch.platforms}
                 makers={launch.makers}
                 launchDate={launch.launch_date}
@@ -308,6 +342,7 @@ const Index = () => {
                 launchDate={launch.launch_date}
                 platforms={launch.platforms}
                 makers={launch.makers}
+                userVote={launch.userVote}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
@@ -328,6 +363,7 @@ const Index = () => {
                   slug={launch.slug}
                   launchDate={launch.launch_date}
                   platforms={launch.platforms}
+                  userVote={launch.userVote}
                   onVote={() => handleVote(launch.id)}
                 />
               ))}
