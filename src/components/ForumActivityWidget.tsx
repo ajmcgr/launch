@@ -223,7 +223,7 @@ export const ForumActivityWidget = () => {
             <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
               {thread.category && (
                 <>
-                  <span className="text-primary/70">{thread.category}</span>
+                  <span style={{ color: '#999999' }}>{thread.category}</span>
                   <span>·</span>
                 </>
               )}
