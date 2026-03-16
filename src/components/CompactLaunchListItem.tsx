@@ -138,11 +138,6 @@ export const CompactLaunchListItem = ({
           e.stopPropagation();
           onVote();
         }}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onVote();
-        }}
         className={`flex items-center gap-0.5 text-sm touch-manipulation active:scale-95 transition-colors flex-shrink-0 pt-0.5 ${
           userVote === 1 ? 'text-primary' : 'text-muted-foreground hover:text-primary'
         }`}
