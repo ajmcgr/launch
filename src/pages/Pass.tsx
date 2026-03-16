@@ -304,18 +304,6 @@ const Pass = () => {
               </div>
             </div>
           )}
-                          disabled={isCancelling}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          {isCancelling ? 'Cancelling...' : 'Yes, Cancel'}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* Two Column Layout: Stats & Features */}
           <div className="mb-12 grid md:grid-cols-2 gap-8 md:gap-12">
