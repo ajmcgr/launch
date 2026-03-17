@@ -249,7 +249,7 @@ const ProductAnalytics = () => {
         </div>
 
         {/* Section 1: Overview Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {statCards.map((stat) => (
             <Card key={stat.label}>
               <CardContent className="p-4 flex flex-col items-center text-center gap-1">
