@@ -21,6 +21,8 @@ const ProductAnalytics = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [netVotes, setNetVotes] = useState(0);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [referralClicks, setReferralClicks] = useState<any[]>([]);
+  const [voteHistory, setVoteHistory] = useState<any[]>([]);
 
   useEffect(() => {
     const load = async () => {
