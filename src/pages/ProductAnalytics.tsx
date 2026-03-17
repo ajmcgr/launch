@@ -65,8 +65,8 @@ const ProductAnalytics = () => {
       setIsAuthorized(true);
       setProduct(prod);
 
-      // Fetch all analytics, votes, comments, followers in parallel
-      const [analyticsRes, votesRes, commentsRes, followersRes] = await Promise.all([
+      // Fetch all analytics, votes, comments, followers, referral clicks in parallel
+      const [analyticsRes, votesRes, commentsRes, followersRes, referralRes, votesTimeRes] = await Promise.all([
         supabase
           .from('product_analytics')
           .select('event_type, created_at, visitor_id')
@@ -84,9 +84,22 @@ const ProductAnalytics = () => {
           .from('product_follows')
           .select('id', { count: 'exact', head: true })
           .eq('product_id', prod.id),
+        supabase
+          .from('product_analytics')
+          .select('created_at')
+          .eq('product_id', prod.id)
+          .eq('event_type', 'referral_click')
+          .order('created_at', { ascending: true }),
+        supabase
+          .from('votes')
+          .select('created_at, value')
+          .eq('product_id', prod.id)
+          .order('created_at', { ascending: true }),
       ]);
 
       setAnalytics(analyticsRes.data || []);
+      setReferralClicks(referralRes.data || []);
+      setVoteHistory(votesTimeRes.data || []);
       setNetVotes((votesRes.data || []).reduce((sum: number, v: any) => sum + (v.value || 0), 0));
       setCommentCount(commentsRes.count || 0);
       setFollowerCount(followersRes.count || 0);
