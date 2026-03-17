@@ -315,9 +315,9 @@ const LaunchArchiveYearly = () => {
   }
 
   const pageTitle = isCurrentYear 
-    ? "This Year's Launches" 
-    : `${parsedYear} Launches`;
-  const metaDescription = `Discover the top product launches from ${parsedYear}. Vote for your favorites and explore the best new tools and apps.`;
+    ? "This Year's Top Product Launches" 
+    : `Top Product Launches of ${parsedYear}`;
+  const metaDescription = `Discover the ${products.length > 0 ? products.length : 'best'} product launches from ${parsedYear} on Launch. Vote for your favorites and explore the best new SaaS, tools, and apps.`;
 
   // Filter products by platform
   const filteredProducts = selectedPlatforms.length > 0 

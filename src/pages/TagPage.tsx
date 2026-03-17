@@ -349,6 +349,15 @@ const TagPage = () => {
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <link rel="canonical" href={`https://trylaunch.ai/tag/${tagInfo?.slug}`} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://trylaunch.ai" },
+            { "@type": "ListItem", "position": 2, "name": "Tags", "item": "https://trylaunch.ai/tags" },
+            { "@type": "ListItem", "position": 3, "name": tagInfo?.name, "item": `https://trylaunch.ai/tag/${tagInfo?.slug}` }
+          ]
+        })}</script>
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
