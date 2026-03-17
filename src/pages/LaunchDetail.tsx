@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign } from 'lucide-react';
+import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign, Link2, Copy, Check } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
@@ -773,9 +773,36 @@ const LaunchDetail = () => {
                 </div>
               )}
 
-              {/* Analytics Button — owner only */}
+              {/* Owner tools — Analytics, Trackable Link, Verify Revenue */}
               {user && product.owner_id === user.id && (
-                <div className="pt-2 space-y-2">
+                <div className="pt-2 space-y-3">
+                  {/* Trackable Link */}
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-2">
+                    <div className="flex items-center gap-1.5 text-sm font-medium">
+                      <Link2 className="h-4 w-4 text-primary" />
+                      Your Trackable Link
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex-1 bg-background border rounded-md px-2 py-1.5 text-xs font-mono truncate">
+                        trylaunch.ai/go/{product.slug}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="shrink-0 h-8 px-2"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://trylaunch.ai/go/${product.slug}`);
+                          toast.success('Trackable link copied!');
+                        }}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      Share this to track clicks with UTM parameters
+                    </p>
+                  </div>
+
                   <Button variant="outline" className="w-full gap-2 border-2 border-muted-foreground/20" asChild>
                     <Link to={`/launch/${product.slug}/analytics`}>
                       <BarChart3 className="h-4 w-4" />

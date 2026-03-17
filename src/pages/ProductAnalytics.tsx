@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft } from 'lucide-react';
+import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft, Link2 } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import OutcomeReporting from '@/components/OutcomeReporting';
 
@@ -21,6 +21,8 @@ const ProductAnalytics = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [netVotes, setNetVotes] = useState(0);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [referralClicks, setReferralClicks] = useState<any[]>([]);
+  const [voteHistory, setVoteHistory] = useState<any[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -65,8 +67,8 @@ const ProductAnalytics = () => {
       setIsAuthorized(true);
       setProduct(prod);
 
-      // Fetch all analytics, votes, comments, followers in parallel
-      const [analyticsRes, votesRes, commentsRes, followersRes] = await Promise.all([
+      // Fetch all analytics, votes, comments, followers, referral clicks in parallel
+      const [analyticsRes, votesRes, commentsRes, followersRes, referralRes, votesTimeRes] = await Promise.all([
         supabase
           .from('product_analytics')
           .select('event_type, created_at, visitor_id')
@@ -84,9 +86,22 @@ const ProductAnalytics = () => {
           .from('product_follows')
           .select('id', { count: 'exact', head: true })
           .eq('product_id', prod.id),
+        supabase
+          .from('product_analytics')
+          .select('created_at')
+          .eq('product_id', prod.id)
+          .eq('event_type', 'referral_click')
+          .order('created_at', { ascending: true }),
+        supabase
+          .from('votes')
+          .select('created_at, value')
+          .eq('product_id', prod.id)
+          .order('created_at', { ascending: true }),
       ]);
 
       setAnalytics(analyticsRes.data || []);
+      setReferralClicks(referralRes.data || []);
+      setVoteHistory(votesTimeRes.data || []);
       setNetVotes((votesRes.data || []).reduce((sum: number, v: any) => sum + (v.value || 0), 0));
       setCommentCount(commentsRes.count || 0);
       setFollowerCount(followersRes.count || 0);
@@ -99,20 +114,21 @@ const ProductAnalytics = () => {
   // Computed metrics
   const totalViews = useMemo(() => analytics.filter(a => a.event_type === 'page_view').length, [analytics]);
   const totalClicks = useMemo(() => analytics.filter(a => a.event_type === 'website_click').length, [analytics]);
+  const totalReferrals = useMemo(() => referralClicks.length, [referralClicks]);
   const uniqueVisitors = useMemo(() => {
     const ids = new Set(analytics.filter(a => a.event_type === 'page_view').map(a => a.visitor_id).filter(Boolean));
-    return ids.size || Math.round(totalViews * 0.7); // fallback estimate
+    return ids.size || Math.round(totalViews * 0.7);
   }, [analytics, totalViews]);
 
-  // Daily views for chart (last 30 days)
+  // Daily views for chart (last 30 days) — includes referral clicks
   const dailyViews = useMemo(() => {
     const now = new Date();
-    const days: { date: string; views: number; clicks: number }[] = [];
+    const days: { date: string; views: number; clicks: number; referrals: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split('T')[0];
-      days.push({ date: dateStr, views: 0, clicks: 0 });
+      days.push({ date: dateStr, views: 0, clicks: 0, referrals: 0 });
     }
     analytics.forEach(a => {
       const dateStr = a.created_at?.split('T')[0];
@@ -122,43 +138,49 @@ const ProductAnalytics = () => {
         if (a.event_type === 'website_click') day.clicks++;
       }
     });
+    referralClicks.forEach(r => {
+      const dateStr = r.created_at?.split('T')[0];
+      const day = days.find(d => d.date === dateStr);
+      if (day) day.referrals++;
+    });
     return days;
-  }, [analytics]);
+  }, [analytics, referralClicks]);
 
-  // Traffic sources (estimated from referrer patterns)
+  // Traffic sources — use real referral click data alongside estimates
   const trafficSources = useMemo(() => {
     const total = totalViews || 1;
-    // Without actual referrer data, provide estimates based on patterns
-    const directEstimate = Math.round(total * 0.4);
-    const launchHomepage = Math.round(total * 0.35);
-    const social = Math.round(total * 0.15);
-    const external = total - directEstimate - launchHomepage - social;
+    const referralPct = totalViews > 0 ? Math.round((totalReferrals / total) * 100) : 0;
+    const remaining = 100 - referralPct;
+    const launchHomepage = Math.round(remaining * 0.45);
+    const direct = Math.round(remaining * 0.35);
+    const social = remaining - launchHomepage - direct;
     return [
-      { source: 'Launch Homepage', count: launchHomepage, pct: Math.round((launchHomepage / total) * 100) },
-      { source: 'Direct', count: directEstimate, pct: Math.round((directEstimate / total) * 100) },
-      { source: 'Social', count: social, pct: Math.round((social / total) * 100) },
-      { source: 'External', count: Math.max(0, external), pct: Math.max(0, Math.round((external / total) * 100)) },
+      { source: 'Launch Homepage', count: Math.round(total * launchHomepage / 100), pct: launchHomepage },
+      { source: 'Trackable Link (/go/)', count: totalReferrals, pct: referralPct, highlight: true },
+      { source: 'Direct', count: Math.round(total * direct / 100), pct: direct },
+      { source: 'Social / Other', count: Math.round(total * social / 100), pct: Math.max(0, social) },
     ];
-  }, [totalViews]);
+  }, [totalViews, totalReferrals]);
 
-  // Votes over time (cumulative)
+  // Votes over time — use real vote timestamps
   const votesOverTime = useMemo(() => {
-    if (!product?.launch_date) return [];
+    if (voteHistory.length === 0) return [];
     const now = new Date();
-    const launch = new Date(product.launch_date);
-    const daysSinceLaunch = Math.min(30, Math.ceil((now.getTime() - launch.getTime()) / (1000 * 60 * 60 * 24)));
-    if (daysSinceLaunch <= 0) return [];
+    const days: { date: string; votes: number }[] = [];
+    const startDate = new Date(voteHistory[0].created_at);
+    const dayCount = Math.min(30, Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
     
-    // Distribute votes roughly — without per-vote timestamps, simulate curve
-    const points: { day: number; votes: number }[] = [];
-    for (let i = 0; i <= daysSinceLaunch; i++) {
-      const progress = i / daysSinceLaunch;
-      // Votes typically front-loaded
-      const estimated = Math.round(netVotes * (1 - Math.pow(1 - progress, 2)));
-      points.push({ day: i, votes: estimated });
+    let cumulative = 0;
+    for (let i = 0; i <= dayCount; i++) {
+      const d = new Date(startDate);
+      d.setDate(d.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      const dayVotes = voteHistory.filter(v => v.created_at?.split('T')[0] === dateStr);
+      cumulative += dayVotes.reduce((sum: number, v: any) => sum + (v.value || 0), 0);
+      days.push({ date: dateStr, votes: Math.max(0, cumulative) });
     }
-    return points;
-  }, [product, netVotes]);
+    return days;
+  }, [voteHistory]);
 
   const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : '0';
 
@@ -197,6 +219,7 @@ const ProductAnalytics = () => {
     { label: 'Votes', value: netVotes.toLocaleString(), icon: ArrowUp, color: 'text-primary' },
     { label: 'Comments', value: commentCount.toLocaleString(), icon: MessageSquare, color: 'text-primary' },
     { label: 'Click-throughs', value: totalClicks.toLocaleString(), icon: MousePointerClick, color: 'text-primary' },
+    { label: 'Referral Clicks', value: totalReferrals.toLocaleString(), icon: Link2, color: 'text-primary' },
   ];
 
   return (
@@ -226,7 +249,7 @@ const ProductAnalytics = () => {
         </div>
 
         {/* Section 1: Overview Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {statCards.map((stat) => (
             <Card key={stat.label}>
               <CardContent className="p-4 flex flex-col items-center text-center gap-1">
@@ -274,7 +297,8 @@ const ProductAnalytics = () => {
                     labelFormatter={(d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                   />
                   <Area type="monotone" dataKey="views" stroke="hsl(var(--primary))" fill="url(#viewsGrad)" strokeWidth={2} name="Views" />
-                  <Area type="monotone" dataKey="clicks" stroke="hsl(var(--destructive))" fill="none" strokeWidth={1.5} strokeDasharray="4 4" name="Clicks" />
+                  <Area type="monotone" dataKey="clicks" stroke="hsl(var(--destructive))" fill="none" strokeWidth={1.5} strokeDasharray="4 4" name="Click-throughs" />
+                  <Area type="monotone" dataKey="referrals" stroke="hsl(var(--accent-foreground))" fill="none" strokeWidth={1.5} strokeDasharray="2 2" name="Referral Clicks" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -289,19 +313,23 @@ const ProductAnalytics = () => {
                 <BarChart3 className="h-5 w-5 text-primary" />
                 Traffic Sources
               </CardTitle>
-              <p className="text-xs text-muted-foreground">Estimated breakdown</p>
+              <p className="text-xs text-muted-foreground">Trackable link data is real; other sources are estimated</p>
             </CardHeader>
             <CardContent className="space-y-3">
               {trafficSources.map((src) => (
                 <div key={src.source} className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span>{src.source}</span>
-                    <span className="text-muted-foreground">{src.pct}%</span>
+                    <span className={`flex items-center gap-1.5 ${(src as any).highlight ? 'font-medium text-foreground' : ''}`}>
+                      {(src as any).highlight && <Link2 className="h-3 w-3 text-primary" />}
+                      {src.source}
+                      {(src as any).highlight && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">tracked</Badge>}
+                    </span>
+                    <span className="text-muted-foreground">{src.count} ({src.pct}%)</span>
                   </div>
                   <div className="h-2 rounded-full bg-muted overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${src.pct}%` }}
+                      className={`h-full rounded-full transition-all ${(src as any).highlight ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                      style={{ width: `${Math.max(2, src.pct)}%` }}
                     />
                   </div>
                 </div>
@@ -341,7 +369,7 @@ const ProductAnalytics = () => {
                           fontSize: '12px',
                         }}
                         formatter={(v: number) => [v, 'Votes']}
-                        labelFormatter={(d: number) => `Day ${d}`}
+                        labelFormatter={(d: string) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
