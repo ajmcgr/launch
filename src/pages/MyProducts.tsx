@@ -895,6 +895,13 @@ const MyProducts = () => {
                       </AlertDialog>
                     )}
                   </div>
+                  {product.status === 'launched' && (
+                    <UpgradeNudge 
+                      productName={product.name}
+                      currentPlan={product.orderPlan}
+                      productId={product.id}
+                    />
+                  )}
                   {product.status === 'launched' && product.slug && (
                     <Collapsible defaultOpen className="mt-4">
                       <CollapsibleTrigger asChild>
