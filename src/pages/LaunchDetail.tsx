@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign } from 'lucide-react';
+import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign, Link2, Copy, Check } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
