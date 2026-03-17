@@ -25,6 +25,8 @@ import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
 import UpgradeNudge from '@/components/UpgradeNudge';
 import { formatMRRRange } from '@/lib/revenue';
+import { usePass } from '@/hooks/use-pass';
+import { Sparkles } from 'lucide-react';
 
 const MyProducts = () => {
   const navigate = useNavigate();
