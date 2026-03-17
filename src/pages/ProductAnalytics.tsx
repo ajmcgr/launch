@@ -377,7 +377,14 @@ const ProductAnalytics = () => {
           </CardContent>
         </Card>
 
-        {/* Section 6: Share Prompt */}
+        {/* Section 6: Outcome Tracking & Reporting */}
+        <OutcomeReporting
+          productId={product.id}
+          productSlug={product.slug}
+          productName={product.name}
+        />
+
+        {/* Section 7: Share Prompt */}
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-6 text-center space-y-4">
             <Share2 className="h-8 w-8 mx-auto text-primary" />
