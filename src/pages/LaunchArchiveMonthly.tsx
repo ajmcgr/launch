@@ -328,9 +328,9 @@ const LaunchArchiveMonthly = () => {
   }
 
   const pageTitle = isCurrentMonth 
-    ? "This Month's Launches" 
-    : `${format(monthDate, 'MMMM yyyy')} Launches`;
-  const metaDescription = `Discover the top product launches from ${format(monthDate, 'MMMM yyyy')}. Vote for your favorites and explore the best new tools and apps.`;
+    ? "This Month's Top Product Launches" 
+    : `Top Product Launches — ${format(monthDate, 'MMMM yyyy')}`;
+  const metaDescription = `Discover the ${products.length > 0 ? products.length : 'best'} product launches from ${format(monthDate, 'MMMM yyyy')} on Launch. Vote for your favorites and explore the best new SaaS, tools, and apps.`;
 
   // Filter products by platform
   const filteredProducts = selectedPlatforms.length > 0 

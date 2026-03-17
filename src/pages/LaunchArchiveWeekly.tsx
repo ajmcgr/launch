@@ -332,9 +332,9 @@ const LaunchArchiveWeekly = () => {
 
   const dateRange = `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
   const pageTitle = isCurrentWeek 
-    ? "This Week's Launches" 
-    : `Week ${parsedWeek}, ${parsedYear} Launches`;
-  const metaDescription = `Discover the top product launches from Week ${parsedWeek} of ${parsedYear} (${dateRange}). Vote for your favorites and explore the best new tools and apps.`;
+    ? "This Week's Top Product Launches" 
+    : `Top Product Launches — Week ${parsedWeek}, ${parsedYear}`;
+  const metaDescription = `Discover the ${products.length > 0 ? products.length : 'best'} product launches from Week ${parsedWeek} of ${parsedYear} (${dateRange}) on Launch. Vote for your favorites and explore the best new SaaS, tools, and apps.`;
 
   // Filter products by platform
   const filteredProducts = selectedPlatforms.length > 0 

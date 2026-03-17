@@ -314,10 +314,11 @@ const LaunchArchiveDaily = () => {
   }
 
   const formattedDate = format(parsedDate, 'MMMM d, yyyy');
+  const shortDate = format(parsedDate, 'MMM d');
   const pageTitle = isToday(parsedDate) 
-    ? "Today's Launches" 
-    : `${formattedDate}`;
-  const metaDescription = `Discover the top product launches from ${formattedDate}. See what products launched, vote for your favorites, and explore the best new tools and apps.`;
+    ? "Today's Top Product Launches" 
+    : `Top Product Launches on ${formattedDate}`;
+  const metaDescription = `Discover the ${products.length > 0 ? products.length : 'best'} product launches from ${formattedDate} on Launch. See what shipped, vote for your favorites, and explore the best new tools, SaaS, and apps.`;
 
   // Filter products by platform
   const filteredProducts = selectedPlatforms.length > 0 

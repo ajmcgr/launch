@@ -202,6 +202,7 @@ const Pass = () => {
       <Helmet>
         <title>Launch Pass - Unlimited Product Launches for $99/year</title>
         <meta name="description" content="For indie hackers who launch often. Replace per-launch fees with one flat rate. Subscribe to Launch Pass for unlimited product launches at $99/year." />
+        <link rel="canonical" href="https://trylaunch.ai/pass" />
         <meta property="og:title" content="Launch Pass - Unlimited Product Launches for $99/year" />
         <meta property="og:description" content="For makers who launch often. Replace per-launch fees with one flat rate." />
         <meta property="og:image" content="https://trylaunch.lovable.app/images/pass-og.png" />
@@ -210,6 +211,37 @@ const Pass = () => {
         <meta name="twitter:title" content="Launch Pass - Unlimited Product Launches for $99/year" />
         <meta name="twitter:description" content="For makers who launch often. Replace per-launch fees with one flat rate." />
         <meta name="twitter:image" content="https://trylaunch.lovable.app/images/pass-og.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "When does my Launch Pass year start?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Your 12-month access period begins immediately upon purchase." }
+            },
+            {
+              "@type": "Question",
+              "name": "What happens after 12 months?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Your subscription automatically renews each year. You'll receive an email reminder 7 days before renewal. You can cancel anytime from your account settings." }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I cancel Launch Pass?",
+              "acceptedAnswer": { "@type": "Answer", "text": "You can cancel your subscription anytime from the Pass page or your account settings. You'll continue to have access until the end of your current billing period." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I get a refund for Launch Pass?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Pass purchases are non-refundable. If you have concerns, contact us before purchasing." }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Launch Pass include advertising?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. Advertising, sponsorships, and featured placements are not included and are priced separately." }
+            }
+          ]
+        })}</script>
       </Helmet>
 
       <div className="min-h-screen bg-background overflow-x-hidden">

@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,41 @@ const FEATURE_CONFIG = [
 
 const Pricing = () => {
   return (
+    <>
+      <Helmet>
+        <title>Launch Your Product - Pricing | Launch</title>
+        <meta name="description" content="Get your product in front of thousands of technologists, marketers and founders. Choose from Free, Lite, Pro, or custom launch plans." />
+        <link rel="canonical" href="https://trylaunch.ai/pricing" />
+        <meta property="og:title" content="Launch Your Product - Pricing | Launch" />
+        <meta property="og:description" content="Get your product in front of thousands of technologists, marketers and founders." />
+        <meta property="og:url" content="https://trylaunch.ai/pricing" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What's the difference between Free and Pro launches?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Free launches join the standard queue. Pro launches include social media promotion, newsletter features, the ability to choose your launch date, and a verified badge." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I relaunch my product?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes, you can relaunch your product with updated positioning. Relaunch pricing starts at $29." }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I get a dofollow backlink?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes, all product listings on Launch include a dofollow backlink to your website automatically." }
+            },
+            {
+              "@type": "Question",
+              "name": "How does the launch queue work?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Free launches join a standard queue and are published when a slot is available. Paid plans let you skip the queue and choose your launch date." }
+            }
+          ]
+        })}</script>
+      </Helmet>
     <div className="min-h-screen bg-background py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
@@ -411,6 +447,7 @@ const Pricing = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
