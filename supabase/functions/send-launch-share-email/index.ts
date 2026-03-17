@@ -278,6 +278,74 @@ Deno.serve(async (req) => {
       }
     }
 
+    // --- 3. Day-7 outcome emails: products launched 7+ days ago, prompt to report results ---
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const eightDaysAgo = new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000);
+
+    const { data: day7Launches, error: day7Err } = await supabaseAdmin
+      .from('products')
+      .select('id, name, slug, owner_id, launch_date')
+      .eq('status', 'launched')
+      .eq('launch_share_reminder_sent', true)
+      .lte('launch_date', sevenDaysAgo.toISOString())
+      .gte('launch_date', eightDaysAgo.toISOString());
+
+    if (day7Err) {
+      console.error('Error fetching day-7 launches:', day7Err);
+      results.errors.push(day7Err.message);
+    }
+
+    for (const product of day7Launches || []) {
+      try {
+        // Check if we already sent an outcome email (use product_analytics to avoid adding a column)
+        const { count: outcomeEmailCount } = await supabaseAdmin
+          .from('product_analytics')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', product.id)
+          .eq('event_type', 'outcome_email_sent');
+
+        if ((outcomeEmailCount || 0) > 0) continue;
+
+        // Get some stats to include in the email
+        const { count: viewCount } = await supabaseAdmin
+          .from('product_analytics')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', product.id)
+          .eq('event_type', 'page_view');
+
+        const { count: clickCount } = await supabaseAdmin
+          .from('product_analytics')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', product.id)
+          .eq('event_type', 'referral_click');
+
+        const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(product.owner_id);
+        if (!authUser?.user?.email) continue;
+
+        const emailHtml = buildOutcomeEmailHtml(product.name, product.slug, viewCount || 0, clickCount || 0);
+
+        await resend.emails.send({
+          from: 'Launch <notifications@trylaunch.ai>',
+          to: [authUser.user.email],
+          reply_to: 'alex@trylaunch.ai',
+          subject: `How did your launch of ${product.name} go?`,
+          html: emailHtml,
+        });
+
+        // Mark as sent via analytics event
+        await supabaseAdmin
+          .from('product_analytics')
+          .insert({ product_id: product.id, event_type: 'outcome_email_sent' });
+
+        results.outcomeEmailsSent = (results.outcomeEmailsSent || 0) + 1;
+        console.log(`Outcome email sent for product ${product.id} (${product.name})`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        console.error(`Error sending outcome email for ${product.id}:`, msg);
+        results.errors.push(`outcome-${product.id}: ${msg}`);
+      }
+    }
+
     console.log('Launch share email job completed:', results);
 
     return new Response(
