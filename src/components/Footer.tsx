@@ -70,6 +70,14 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link 
+                  to="/success-stories"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Success Stories
+                </Link>
+              </li>
+              <li>
                 <a 
                   href="https://store.trylaunch.ai"
                   target="_blank"
