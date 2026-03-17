@@ -219,6 +219,7 @@ const ProductAnalytics = () => {
     { label: 'Votes', value: netVotes.toLocaleString(), icon: ArrowUp, color: 'text-primary' },
     { label: 'Comments', value: commentCount.toLocaleString(), icon: MessageSquare, color: 'text-primary' },
     { label: 'Click-throughs', value: totalClicks.toLocaleString(), icon: MousePointerClick, color: 'text-primary' },
+    { label: 'Referral Clicks', value: totalReferrals.toLocaleString(), icon: Link2, color: 'text-primary' },
   ];
 
   return (
