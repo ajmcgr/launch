@@ -1,0 +1,38 @@
+# Launch
+
+> Launch is a platform where founders discover, launch, and grow AI products. The community votes on products, helping the best rise to the top.
+
+## About
+
+Launch connects innovative makers with engaged audiences. Founders submit products through a launch wizard, the community votes and provides feedback, and top products get discovered by thousands of users.
+
+## Key Pages
+
+- [Homepage](https://trylaunch.ai/): Daily product launches and trending products
+- [Products](https://trylaunch.ai/products): Browse all launched products
+- [Categories](https://trylaunch.ai/categories): Browse products by category
+- [Tags](https://trylaunch.ai/tags): Browse products by technology and topic tags
+- [Pricing](https://trylaunch.ai/pricing): Launch plans and pricing
+- [FAQ](https://trylaunch.ai/faq): Frequently asked questions
+- [About](https://trylaunch.ai/about): About Launch and the founder
+- [Success Stories](https://trylaunch.ai/success-stories): Real results from launched products
+- [Product Launch Strategy](https://trylaunch.ai/product-launch-strategy): Guide to launching products
+- [Advertise](https://trylaunch.ai/advertise): Sponsorship and advertising options
+
+## Features
+
+- **Product Discovery**: Browse and vote on new AI products daily
+- **Launch Wizard**: Simple submission process for founders
+- **Community Voting**: Democratic product ranking system
+- **Categories & Tags**: Organized browsing by category and technology
+- **Success Stories**: Real metrics from launched products
+- **Launch Pass**: Premium membership with boosted launches and analytics
+- **Daily/Weekly/Monthly Archives**: Historical launch data browsable by date
+
+## Contact
+
+- Website: https://trylaunch.ai
+- Email: alex@trylaunch.ai
+- X/Twitter: https://x.com/trylaunchai
+- Telegram: https://t.me/trylaunch
+- Reddit: https://www.reddit.com/r/TryLaunch/

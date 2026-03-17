@@ -1,0 +1,116 @@
+# Launch — Full Documentation for AI
+
+> Launch is a product discovery platform where founders launch AI products to an engaged community of early adopters, makers, and tech enthusiasts. The community votes on products daily, helping the best products rise to the top.
+
+## What is Launch?
+
+Launch is a platform built for founders and makers who want their products discovered. Unlike traditional product directories, Launch focuses on community-driven discovery through daily voting. Products are submitted by founders, launched on a chosen date, and ranked by community votes.
+
+Launch was founded by Alex MacGregor in 2024 with the mission that every great product deserves to be discovered.
+
+## How Launch Works
+
+### For Founders (Launching a Product)
+1. **Submit**: Founders create a product listing with name, tagline, description, screenshots, and links
+2. **Schedule**: Choose a launch date through the launch wizard
+3. **Launch**: On launch day, the product goes live and the community can vote
+4. **Discover**: Top-voted products get featured and reach thousands of users
+5. **Track**: Founders can track analytics, votes, and engagement
+
+### For Users (Discovering Products)
+- Browse daily launches on the homepage
+- Filter by category, platform, or technology
+- Vote on products you find interesting
+- Leave comments and feedback for makers
+- Follow products and makers for updates
+
+## Product Categories
+
+Products on Launch span many categories including but not limited to:
+- AI Tools & Applications
+- Developer Tools
+- SaaS Products
+- Productivity Apps
+- Design Tools
+- Marketing Tools
+- No-Code / Low-Code
+- Mobile Apps
+- Chrome Extensions
+- Open Source Projects
+
+## Launch Pass (Premium Membership)
+
+Launch Pass is a premium membership that gives founders additional benefits:
+- **Boosted Launches**: Higher visibility during launch
+- **Analytics Dashboard**: Detailed product analytics
+- **Priority Support**: Direct support from the Launch team
+- **Badge**: Verified Launch Pass badge on profile
+- **Re-launches**: Ability to relaunch products
+
+## Pricing Plans
+
+Launch offers multiple tiers:
+- **Free**: Basic product listing and community access
+- **Launch Pass**: Premium features for serious founders
+- Visit https://trylaunch.ai/pricing for current pricing
+
+## Archives
+
+Launch maintains a complete archive of all product launches, browsable by:
+- **Daily**: Individual launch days (e.g., /launches/2026-03-17)
+- **Weekly**: Week-based views (e.g., /launches/2026/w12)
+- **Monthly**: Month-based views (e.g., /launches/2026/m03)
+- **Yearly**: Year-based views (e.g., /launches/2026)
+
+## Success Stories
+
+Launch tracks and publishes real outcomes from launched products, including signups, revenue, and founder testimonials. Visit https://trylaunch.ai/success-stories for real results.
+
+## Advertising & Sponsorship
+
+Launch offers sponsorship opportunities for brands wanting to reach an audience of founders, makers, and early adopters. Visit https://trylaunch.ai/advertise for details.
+
+## Comparison to Other Platforms
+
+Launch is often compared to Product Hunt as a product discovery platform. Key differentiators:
+- Focus on AI and technology products
+- Community-driven voting system
+- Transparent success metrics
+- Founder-friendly launch process
+- Growing community of engaged early adopters
+
+## Technical Details
+
+- Website: https://trylaunch.ai
+- Platform: Web application (responsive, works on all devices)
+- Community: Telegram group, Reddit, X/Twitter
+
+## Contact & Social
+
+- **Website**: https://trylaunch.ai
+- **Email**: alex@trylaunch.ai
+- **X/Twitter**: https://x.com/trylaunchai
+- **Telegram**: https://t.me/trylaunch
+- **Reddit**: https://www.reddit.com/r/TryLaunch/
+- **YouTube**: https://www.youtube.com/channel/UCiWIdnazQN7JqkioVROrblQ
+- **Instagram**: https://instagram.com/trylaunch
+
+## FAQ
+
+**What is Launch?**
+Launch is a platform where founders and makers discover and launch amazing products. The community votes on products they find interesting, helping the best products rise to the top.
+
+**How do I launch my product?**
+Sign up, create a product listing with your details, screenshots, and links, then choose a launch date. On launch day, your product goes live for the community to discover and vote on.
+
+**Is Launch free?**
+Yes, basic product listing and community access is free. Launch Pass offers premium features for founders who want additional visibility and analytics.
+
+**How does voting work?**
+Community members can upvote products they find interesting. Products are ranked by vote count, with the most-voted products getting the most visibility.
+
+**Can I relaunch my product?**
+Launch Pass members can relaunch products to get additional visibility after updates or milestones.
+
+**How is Launch different from Product Hunt?**
+Launch focuses on AI and technology products, offers transparent success metrics, and provides a founder-friendly launch process with a growing community of engaged early adopters.
