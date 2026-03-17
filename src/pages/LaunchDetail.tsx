@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3 } from 'lucide-react';
+import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
@@ -775,13 +775,24 @@ const LaunchDetail = () => {
 
               {/* Analytics Button — owner only */}
               {user && product.owner_id === user.id && (
-                <div className="pt-2">
+                <div className="pt-2 space-y-2">
                   <Button variant="outline" className="w-full gap-2 border-2 border-muted-foreground/20" asChild>
                     <Link to={`/launch/${product.slug}/analytics`}>
                       <BarChart3 className="h-4 w-4" />
                       Analytics
                     </Link>
                   </Button>
+                  {!product.stripe_connect_account_id && (
+                    <Button
+                      className="w-full gap-2 bg-[#635bff] hover:bg-[#5851db] text-white"
+                      asChild
+                    >
+                      <Link to="/settings?tab=integrations">
+                        <DollarSign className="h-4 w-4" />
+                        Verify Revenue
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
