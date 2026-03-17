@@ -1750,6 +1750,20 @@ const Submit = () => {
                         </div>
                       )}
                       
+                      {/* Urgency / scarcity nudge */}
+                      {!isPaidPlan && !hasActivePass && (
+                        <div className="flex items-center justify-between rounded-lg border border-orange-500/30 bg-orange-500/5 px-4 py-3">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                            </span>
+                            <span className="font-medium text-foreground">Only a few Pro slots left this week</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground hidden sm:inline">Most makers choose Pro for full promotion</span>
+                        </div>
+                      )}
+
                       {/* Plan cards grid - 3 columns with Launch in center */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Reorder: Free | Launch (center) | Launch Lite */}
