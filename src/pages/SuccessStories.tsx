@@ -97,7 +97,7 @@ const SuccessStories = () => {
         {/* Hero */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight mb-3 font-['Reckless']">
-            Real Results from Real Launches
+            Success Stories
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Makers share what happened after they launched. Signups, revenue, first customers — the outcomes that matter.
