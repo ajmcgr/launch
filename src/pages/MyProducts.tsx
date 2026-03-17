@@ -42,6 +42,7 @@ const MyProducts = () => {
   const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
   const [sponsorAnalytics, setSponsorAnalytics] = useState<Record<string, { impressions: number; clicks: number }>>({});
   const [sponsoredProductIds, setSponsoredProductIds] = useState<Set<string>>(new Set());
+  const passStatus = usePass(user?.id);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
