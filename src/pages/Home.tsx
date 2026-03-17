@@ -1000,6 +1000,8 @@ const Home = () => {
                   Featured Partner · Become a partner
                 </Link>
               </div>
+
+              <PopularSections />
             </div>
 
             {/* Right sidebar - Forum Activity (hidden on mobile) */}
