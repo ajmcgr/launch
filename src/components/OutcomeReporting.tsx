@@ -20,25 +20,33 @@ interface OutcomeData {
   testimonial: string;
 }
 
+interface StoredOutcome {
+  id: string;
+  product_id: string;
+  signups: number | null;
+  revenue: number | null;
+  testimonial: string | null;
+  updated_at: string;
+}
+
 const OutcomeReporting = ({ productId, productSlug, productName }: OutcomeReportingProps) => {
   const [outcome, setOutcome] = useState<OutcomeData>({ signups: null, revenue: null, testimonial: '' });
-  const [existingOutcome, setExistingOutcome] = useState<any>(null);
+  const [existingOutcome, setExistingOutcome] = useState<StoredOutcome | null>(null);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const trackableLink = `https://trylaunch.ai/go/${productSlug}`;
 
   useEffect(() => {
-    // Load existing outcome
     const loadOutcome = async () => {
-      const { data } = await supabase
+      const { data, error } = await (supabase as any)
         .from('product_outcomes')
         .select('*')
         .eq('product_id', productId)
         .single();
 
-      if (data) {
-        setExistingOutcome(data);
+      if (data && !error) {
+        setExistingOutcome(data as StoredOutcome);
         setOutcome({
           signups: data.signups,
           revenue: data.revenue,
@@ -68,29 +76,28 @@ const OutcomeReporting = ({ productId, productSlug, productName }: OutcomeReport
       };
 
       if (existingOutcome) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('product_outcomes')
           .update(payload)
           .eq('id', existingOutcome.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('product_outcomes')
           .insert(payload);
         if (error) throw error;
       }
 
       toast.success('Outcomes saved!');
-      setExistingOutcome({ ...existingOutcome, ...payload });
+      setExistingOutcome({ ...existingOutcome, ...payload } as StoredOutcome);
     } catch (err) {
       console.error('Save outcome error:', err);
-      toast.error('Failed to save outcomes');
+      toast.error('Failed to save outcomes. The table may not be set up yet.');
     } finally {
       setSaving(false);
     }
   };
 
-  // Calculate referral clicks from analytics
   const [referralClicks, setReferralClicks] = useState(0);
   useEffect(() => {
     const fetchClicks = async () => {
