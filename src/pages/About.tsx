@@ -1,7 +1,38 @@
+import { Helmet } from 'react-helmet-async';
 import founderPhoto from '@/assets/founder-photo.png';
 
 const About = () => {
   return (
+    <>
+      <Helmet>
+        <title>About Launch - Product Discovery Platform</title>
+        <meta name="description" content="Launch is a platform where founders and makers discover and launch amazing products. Learn about our mission to connect innovative makers with engaged audiences." />
+        <link rel="canonical" href="https://trylaunch.ai/about" />
+        <meta property="og:title" content="About Launch - Product Discovery Platform" />
+        <meta property="og:description" content="Launch is a platform where founders and makers discover and launch amazing products." />
+        <meta property="og:url" content="https://trylaunch.ai/about" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is Launch?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Launch is a platform where founders and makers discover and launch amazing products. The community votes on products they find interesting, helping the best products rise to the top." }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I launch my product?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Founders submit their products through a simple launch wizard, choosing when they want to go live. The community then votes on products and provides feedback." }
+            },
+            {
+              "@type": "Question",
+              "name": "Who founded Launch?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Launch was founded by Alex MacGregor to help every great product get discovered and connect innovative makers with engaged audiences." }
+            }
+          ]
+        })}</script>
+      </Helmet>
     <div className="min-h-screen bg-background py-16">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="border border-border rounded-lg p-8 md:p-12 bg-card">
