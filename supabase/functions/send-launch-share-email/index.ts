@@ -109,6 +109,81 @@ function buildShareEmailHtml(productName: string, productSlug: string): string {
   `;
 }
 
+function buildOutcomeEmailHtml(productName: string, productSlug: string, views: number, clicks: number): string {
+  const analyticsUrl = `${PRODUCTION_URL}/launch/${productSlug}/analytics`;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+          .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+          .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+          .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+          .logo { height: 32px; }
+          .content { padding: 30px; }
+          .content h1 { margin: 0 0 16px 0; font-size: 22px; color: #111; }
+          .content p { margin: 0 0 16px 0; color: #4b5563; font-size: 15px; }
+          .stats-row { display: flex; gap: 16px; margin: 24px 0; }
+          .stat-box { flex: 1; background: #f3f4f6; border-radius: 8px; padding: 16px; text-align: center; }
+          .stat-number { font-size: 28px; font-weight: 700; color: #111; display: block; }
+          .stat-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+          .cta-link { display: inline-block; background: #111; color: #fff !important; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; }
+          .tip-box { background: #eff6ff; padding: 16px 20px; border-radius: 8px; margin: 24px 0; border: 1px solid #bfdbfe; }
+          .tip-box p { margin: 0; color: #1e40af; font-size: 14px; }
+          .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <div class="header">
+              <img src="${PRODUCTION_URL}/images/email-logo.png" alt="Launch" class="logo" />
+            </div>
+            <div class="content">
+              <h1>How did your launch go? 📊</h1>
+              <p>It's been a week since <strong>${productName}</strong> launched. Here's what we tracked:</p>
+              
+              <!--[if mso]>
+              <table role="presentation" cellspacing="0" cellpadding="0" width="100%"><tr>
+              <td width="50%" style="padding-right:8px"><![endif]-->
+              <div style="display:inline-block;width:48%;vertical-align:top;background:#f3f4f6;border-radius:8px;padding:16px;text-align:center;margin-right:2%;">
+                <span style="font-size:28px;font-weight:700;color:#111;">${views}</span><br/>
+                <span style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Page Views</span>
+              </div>
+              <!--[if mso]></td><td width="50%" style="padding-left:8px"><![endif]-->
+              <div style="display:inline-block;width:48%;vertical-align:top;background:#f3f4f6;border-radius:8px;padding:16px;text-align:center;">
+                <span style="font-size:28px;font-weight:700;color:#111;">${clicks}</span><br/>
+                <span style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Referral Clicks</span>
+              </div>
+              <!--[if mso]></td></tr></table><![endif]-->
+
+              <p style="margin-top: 24px;">But we can't see the full picture — only you know the real results.</p>
+              <p><strong>Did you get signups? Revenue? Your first users?</strong></p>
+              <p>Take 30 seconds to report your outcomes. It helps us improve Launch and your story could inspire other makers.</p>
+
+              <p style="text-align: center; margin: 28px 0;">
+                <a href="${analyticsUrl}" class="cta-link">Report your outcomes →</a>
+              </p>
+
+              <div class="tip-box">
+                <p><strong>💡 Why report?</strong> Makers who share their results get featured on our success stories page and help us build a better platform for everyone.</p>
+              </div>
+
+              <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">— Launch</p>
+            </div>
+            <div class="footer">
+              <p>You're receiving this because you launched a product on Launch.<br/>
+              <a href="${PRODUCTION_URL}/settings" style="color: #6b7280;">Manage notifications</a></p>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
 function buildReminderEmailHtml(productName: string, productSlug: string): string {
   const launchUrl = `${PRODUCTION_URL}/launch/${productSlug}`;
 
@@ -275,6 +350,74 @@ Deno.serve(async (req) => {
         const msg = err instanceof Error ? err.message : 'Unknown error';
         console.error(`Error sending reminder for ${product.id}:`, msg);
         results.errors.push(`reminder-${product.id}: ${msg}`);
+      }
+    }
+
+    // --- 3. Day-7 outcome emails: products launched 7+ days ago, prompt to report results ---
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const eightDaysAgo = new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000);
+
+    const { data: day7Launches, error: day7Err } = await supabaseAdmin
+      .from('products')
+      .select('id, name, slug, owner_id, launch_date')
+      .eq('status', 'launched')
+      .eq('launch_share_reminder_sent', true)
+      .lte('launch_date', sevenDaysAgo.toISOString())
+      .gte('launch_date', eightDaysAgo.toISOString());
+
+    if (day7Err) {
+      console.error('Error fetching day-7 launches:', day7Err);
+      results.errors.push(day7Err.message);
+    }
+
+    for (const product of day7Launches || []) {
+      try {
+        // Check if we already sent an outcome email (use product_analytics to avoid adding a column)
+        const { count: outcomeEmailCount } = await supabaseAdmin
+          .from('product_analytics')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', product.id)
+          .eq('event_type', 'outcome_email_sent');
+
+        if ((outcomeEmailCount || 0) > 0) continue;
+
+        // Get some stats to include in the email
+        const { count: viewCount } = await supabaseAdmin
+          .from('product_analytics')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', product.id)
+          .eq('event_type', 'page_view');
+
+        const { count: clickCount } = await supabaseAdmin
+          .from('product_analytics')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', product.id)
+          .eq('event_type', 'referral_click');
+
+        const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(product.owner_id);
+        if (!authUser?.user?.email) continue;
+
+        const emailHtml = buildOutcomeEmailHtml(product.name, product.slug, viewCount || 0, clickCount || 0);
+
+        await resend.emails.send({
+          from: 'Launch <notifications@trylaunch.ai>',
+          to: [authUser.user.email],
+          reply_to: 'alex@trylaunch.ai',
+          subject: `How did your launch of ${product.name} go?`,
+          html: emailHtml,
+        });
+
+        // Mark as sent via analytics event
+        await supabaseAdmin
+          .from('product_analytics')
+          .insert({ product_id: product.id, event_type: 'outcome_email_sent' });
+
+        results.outcomeEmailsSent = (results.outcomeEmailsSent || 0) + 1;
+        console.log(`Outcome email sent for product ${product.id} (${product.name})`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        console.error(`Error sending outcome email for ${product.id}:`, msg);
+        results.errors.push(`outcome-${product.id}: ${msg}`);
       }
     }
 

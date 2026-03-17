@@ -48,6 +48,7 @@ import StackPage from "./pages/StackPage";
 import TechLeaderboard from "./pages/TechLeaderboard";
 import ProductAnalytics from "./pages/ProductAnalytics";
 import GoRedirect from "./pages/GoRedirect";
+import SuccessStories from "./pages/SuccessStories";
 
 import DiscourseSso from "./pages/DiscourseSso";
 import MediaKit from "./pages/MediaKit";
@@ -111,6 +112,7 @@ const AppContent = () => {
           <Route path="/tech/:slug" element={<StackPage />} />
           <Route path="/tech" element={<TechLeaderboard />} />
           <Route path="/makers" element={<Leaderboard />} />
+          <Route path="/success-stories" element={<SuccessStories />} />
           <Route path="/launches/today" element={<LaunchArchive />} />
           <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
           <Route path="/launches/:param" element={<LaunchArchive />} />
