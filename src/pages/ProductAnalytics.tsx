@@ -297,7 +297,8 @@ const ProductAnalytics = () => {
                     labelFormatter={(d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                   />
                   <Area type="monotone" dataKey="views" stroke="hsl(var(--primary))" fill="url(#viewsGrad)" strokeWidth={2} name="Views" />
-                  <Area type="monotone" dataKey="clicks" stroke="hsl(var(--destructive))" fill="none" strokeWidth={1.5} strokeDasharray="4 4" name="Clicks" />
+                  <Area type="monotone" dataKey="clicks" stroke="hsl(var(--destructive))" fill="none" strokeWidth={1.5} strokeDasharray="4 4" name="Click-throughs" />
+                  <Area type="monotone" dataKey="referrals" stroke="hsl(var(--accent-foreground))" fill="none" strokeWidth={1.5} strokeDasharray="2 2" name="Referral Clicks" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
