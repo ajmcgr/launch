@@ -847,6 +847,19 @@ const Home = () => {
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Main feed column */}
             <div className="flex-1 min-w-0">
+              {/* Logged-out CTA */}
+              {!user && (
+                <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold">Launch your product to thousands of founders</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Get discovered, collect votes, and grow your audience — it's free to start.</p>
+                  </div>
+                  <Button size="sm" asChild className="shrink-0">
+                    <Link to="/auth">Submit Your Product →</Link>
+                  </Button>
+                </div>
+              )}
+
               {/* Value Proposition */}
               <div className="text-left mb-8">
                 <h2 className="text-2xl font-bold mb-2">

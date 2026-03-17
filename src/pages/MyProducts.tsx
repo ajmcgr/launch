@@ -25,6 +25,8 @@ import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
 import UpgradeNudge from '@/components/UpgradeNudge';
 import { formatMRRRange } from '@/lib/revenue';
+import { usePass } from '@/hooks/use-pass';
+import { Sparkles } from 'lucide-react';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -40,6 +42,7 @@ const MyProducts = () => {
   const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
   const [sponsorAnalytics, setSponsorAnalytics] = useState<Record<string, { impressions: number; clicks: number }>>({});
   const [sponsoredProductIds, setSponsoredProductIds] = useState<Set<string>>(new Set());
+  const passStatus = usePass(user?.id);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -573,6 +576,26 @@ const MyProducts = () => {
             </Link>
           </Button>
         </div>
+
+        {/* Launch Pass upsell for non-Pass users */}
+        {!passStatus.isLoading && !passStatus.data?.hasActivePass && (
+          <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
+                <Sparkles className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Launch Pass — Unlimited launches for $99/year</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Skip the queue, get newsletter features, and social promotion on every launch.</p>
+              </div>
+            </div>
+            <Button size="sm" asChild className="shrink-0">
+              <Link to="/pass">
+                Get Launch Pass →
+              </Link>
+            </Button>
+          </div>
+        )}
 
         {loading ? (
           <div className="text-center py-12">Loading...</div>
