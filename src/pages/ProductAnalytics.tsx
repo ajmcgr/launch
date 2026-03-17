@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import OutcomeReporting from '@/components/OutcomeReporting';
 
 const ProductAnalytics = () => {
   const { slug } = useParams();
@@ -376,7 +377,14 @@ const ProductAnalytics = () => {
           </CardContent>
         </Card>
 
-        {/* Section 6: Share Prompt */}
+        {/* Section 6: Outcome Tracking & Reporting */}
+        <OutcomeReporting
+          productId={product.id}
+          productSlug={product.slug}
+          productName={product.name}
+        />
+
+        {/* Section 7: Share Prompt */}
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-6 text-center space-y-4">
             <Share2 className="h-8 w-8 mx-auto text-primary" />
