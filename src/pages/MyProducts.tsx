@@ -23,6 +23,7 @@ import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
+import UpgradeNudge from '@/components/UpgradeNudge';
 import { formatMRRRange } from '@/lib/revenue';
 
 const MyProducts = () => {
