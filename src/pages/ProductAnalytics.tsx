@@ -369,7 +369,7 @@ const ProductAnalytics = () => {
                           fontSize: '12px',
                         }}
                         formatter={(v: number) => [v, 'Votes']}
-                        labelFormatter={(d: number) => `Day ${d}`}
+                        labelFormatter={(d: string) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
