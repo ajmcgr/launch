@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { TrendingUp, Users, DollarSign, Quote, ArrowRight, Rocket } from 'lucide-react';
-import { JsonLd } from '@/components/JsonLd';
 
 interface SuccessStory {
   product_id: string;
