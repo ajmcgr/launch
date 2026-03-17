@@ -313,19 +313,23 @@ const ProductAnalytics = () => {
                 <BarChart3 className="h-5 w-5 text-primary" />
                 Traffic Sources
               </CardTitle>
-              <p className="text-xs text-muted-foreground">Estimated breakdown</p>
+              <p className="text-xs text-muted-foreground">Trackable link data is real; other sources are estimated</p>
             </CardHeader>
             <CardContent className="space-y-3">
               {trafficSources.map((src) => (
                 <div key={src.source} className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span>{src.source}</span>
-                    <span className="text-muted-foreground">{src.pct}%</span>
+                    <span className={`flex items-center gap-1.5 ${(src as any).highlight ? 'font-medium text-foreground' : ''}`}>
+                      {(src as any).highlight && <Link2 className="h-3 w-3 text-primary" />}
+                      {src.source}
+                      {(src as any).highlight && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">tracked</Badge>}
+                    </span>
+                    <span className="text-muted-foreground">{src.count} ({src.pct}%)</span>
                   </div>
                   <div className="h-2 rounded-full bg-muted overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${src.pct}%` }}
+                      className={`h-full rounded-full transition-all ${(src as any).highlight ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                      style={{ width: `${Math.max(2, src.pct)}%` }}
                     />
                   </div>
                 </div>
