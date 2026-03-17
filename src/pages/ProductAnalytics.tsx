@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft } from 'lucide-react';
+import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft, Link2 } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import OutcomeReporting from '@/components/OutcomeReporting';
 
