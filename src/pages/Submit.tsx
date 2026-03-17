@@ -1775,15 +1775,36 @@ const Submit = () => {
                         })}
                       </div>
                       
-                      {/* Social proof banner - below cards */}
+                      {/* Social proof section - below cards */}
                       {!isPaidPlan && !isRescheduling && (
-                        <div className="bg-muted/50 rounded-lg p-4 text-center">
-                          <p className="text-sm font-medium">
-                            <span className="text-primary">87% of top launches</span> use paid promotion plans
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Get 5-10x more visibility with social & newsletter promotion
-                          </p>
+                        <div className="rounded-lg border border-primary/20 bg-primary/5 p-5">
+                          <div className="flex items-start gap-4">
+                            <img 
+                              src="/images/adgenerator-icon.jpeg" 
+                              alt="AdGenerator" 
+                              className="w-10 h-10 rounded-lg flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm italic text-muted-foreground mb-2">
+                                "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
+                              </p>
+                              <p className="text-xs font-medium">— Jake, founder of AdGenerator</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-center gap-6 mt-4 pt-3 border-t border-primary/10">
+                            <div className="text-center">
+                              <span className="text-lg font-bold text-primary">87%</span>
+                              <p className="text-[10px] text-muted-foreground">of top launches use paid plans</p>
+                            </div>
+                            <div className="text-center">
+                              <span className="text-lg font-bold text-primary">5–10x</span>
+                              <p className="text-[10px] text-muted-foreground">more views with promotion</p>
+                            </div>
+                            <div className="text-center">
+                              <span className="text-lg font-bold text-primary">2K+</span>
+                              <p className="text-[10px] text-muted-foreground">newsletter subscribers</p>
+                            </div>
+                          </div>
                         </div>
                       )}
                       
