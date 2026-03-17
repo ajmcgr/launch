@@ -798,6 +798,16 @@ const MyProducts = () => {
                             View Launch
                           </Link>
                         </Button>
+                        <Button 
+                          variant="outline" 
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Link to={`/launch/${product.slug}/analytics`}>
+                            <BarChart3 className="h-4 w-4 mr-2" />
+                            Analytics
+                          </Link>
+                        </Button>
                         {product.stripe_connect_account_id ? (
                           <Button
                             variant="outline"
