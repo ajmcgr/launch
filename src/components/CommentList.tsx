@@ -176,7 +176,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
             </Avatar>
           </Link>
           <div className="flex-1 min-w-0 overflow-hidden">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <Link to={`/@${username}`} className="font-semibold hover:text-primary transition-colors">
                 @{username}
               </Link>
