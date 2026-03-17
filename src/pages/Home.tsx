@@ -38,6 +38,7 @@ import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
 import { CommunityCallout } from '@/components/CommunityCallout';
+import { PopularSections } from '@/components/PopularSections';
 
 interface Product {
   id: string;
@@ -999,6 +1000,8 @@ const Home = () => {
                   Featured Partner · Become a partner
                 </Link>
               </div>
+
+              <PopularSections />
             </div>
 
             {/* Right sidebar - Forum Activity (hidden on mobile) */}
