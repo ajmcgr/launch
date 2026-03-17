@@ -1006,7 +1006,7 @@ const Home = () => {
 
             {/* Right sidebar - Forum Activity (hidden on mobile) */}
             <div className="hidden lg:block w-72 flex-shrink-0">
-              <div className="sticky top-6">
+              <div>
                 <ForumActivityWidget />
               </div>
             </div>
