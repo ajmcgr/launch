@@ -39,8 +39,9 @@ const Tags = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Popular Products | Launch</title>
-        <meta name="description" content="Browse popular product tags and discover products by topic" />
+        <title>Popular Tags | Launch</title>
+        <meta name="description" content="Browse popular product tags and discover products by topic, technology, and category" />
+        <link rel="canonical" href="https://trylaunch.ai/tags" />
       </Helmet>
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
