@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone, AlertTriangle } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone, AlertTriangle, BarChart3 } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
@@ -796,6 +796,16 @@ const MyProducts = () => {
                           <Link to={`/launch/${product.slug}`}>
                             <ExternalLink className="h-4 w-4 mr-2" />
                             View Launch
+                          </Link>
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Link to={`/launch/${product.slug}/analytics`}>
+                            <BarChart3 className="h-4 w-4 mr-2" />
+                            Analytics
                           </Link>
                         </Button>
                         {product.stripe_connect_account_id ? (
