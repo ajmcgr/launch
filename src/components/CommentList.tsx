@@ -191,7 +191,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
                 {formatTimeAgo(comment.created_at)}
               </span>
             </div>
-            <p className="text-sm text-foreground whitespace-pre-wrap mb-2">{comment.content}</p>
+            <p className="text-sm text-foreground whitespace-pre-wrap mb-2 break-words">{comment.content}</p>
             <div className="flex items-center gap-2">
               {user && (
                 <Button
