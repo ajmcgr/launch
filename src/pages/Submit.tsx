@@ -1752,11 +1752,11 @@ const Submit = () => {
                       
                       {/* Urgency / scarcity nudge */}
                       {!isPaidPlan && !hasActivePass && (
-                        <div className="flex items-center justify-between rounded-lg border border-orange-500/30 bg-orange-500/5 px-4 py-3">
+                        <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
                           <div className="flex items-center gap-2 text-sm">
                             <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive/60 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
                             </span>
                             <span className="font-medium text-foreground">Only a few Pro slots left this week</span>
                           </div>
