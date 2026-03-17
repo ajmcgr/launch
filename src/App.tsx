@@ -112,6 +112,7 @@ const AppContent = () => {
           <Route path="/tech/:slug" element={<StackPage />} />
           <Route path="/tech" element={<TechLeaderboard />} />
           <Route path="/makers" element={<Leaderboard />} />
+          <Route path="/success-stories" element={<SuccessStories />} />
           <Route path="/launches/today" element={<LaunchArchive />} />
           <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
           <Route path="/launches/:param" element={<LaunchArchive />} />

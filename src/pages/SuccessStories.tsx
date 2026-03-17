@@ -90,8 +90,8 @@ const SuccessStories = () => {
         <title>Success Stories — Real Results from Launches | Launch</title>
         <meta name="description" content="See how makers achieved real signups, revenue, and traction by launching on Launch. Browse verified outcomes and testimonials." />
         <link rel="canonical" href="https://trylaunch.ai/success-stories" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-      <JsonLd data={jsonLd} />
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         {/* Hero */}
