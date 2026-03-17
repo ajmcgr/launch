@@ -579,21 +579,21 @@ const MyProducts = () => {
 
         {/* Launch Pass upsell for non-Pass users */}
         {!passStatus.isLoading && !passStatus.data?.hasActivePass && (
-          <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
-                <Sparkles className="h-4 w-4 text-primary" />
+          <div className="w-full bg-muted/30 px-6 flex items-center aspect-[7/1] mb-6">
+            <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-lg font-semibold mb-1">Launch Pass — Unlimited launches for $99/year</h3>
+                <p className="text-sm text-muted-foreground">Skip the queue, get newsletter features, and social promotion on every launch.</p>
               </div>
-              <div>
-                <p className="text-sm font-semibold">Launch Pass — Unlimited launches for $99/year</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Skip the queue, get newsletter features, and social promotion on every launch.</p>
+              <div className="shrink-0">
+                <Button asChild className="gap-2">
+                  <Link to="/pass">
+                    <Sparkles className="h-4 w-4" />
+                    Get Launch Pass
+                  </Link>
+                </Button>
               </div>
             </div>
-            <Button size="sm" asChild className="shrink-0">
-              <Link to="/pass">
-                Get Launch Pass →
-              </Link>
-            </Button>
           </div>
         )}
 

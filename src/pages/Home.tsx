@@ -849,14 +849,18 @@ const Home = () => {
             <div className="flex-1 min-w-0">
               {/* Logged-out CTA */}
               {!user && (
-                <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold">Launch your product to thousands of founders</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Get discovered, collect votes, and grow your audience — it's free to start.</p>
+                <div className="w-full bg-muted/30 px-6 flex items-center aspect-[7/1] mb-6">
+                  <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div className="flex-1 text-center md:text-left">
+                      <h3 className="text-lg font-semibold mb-1">Launch your product to thousands of founders</h3>
+                      <p className="text-sm text-muted-foreground">Get discovered, collect votes, and grow your audience — it's free to start.</p>
+                    </div>
+                    <div className="shrink-0">
+                      <Button asChild className="gap-2">
+                        <Link to="/auth">Submit Your Product →</Link>
+                      </Button>
+                    </div>
                   </div>
-                  <Button size="sm" asChild className="shrink-0">
-                    <Link to="/auth">Submit Your Product →</Link>
-                  </Button>
                 </div>
               )}
 
