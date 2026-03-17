@@ -114,20 +114,21 @@ const ProductAnalytics = () => {
   // Computed metrics
   const totalViews = useMemo(() => analytics.filter(a => a.event_type === 'page_view').length, [analytics]);
   const totalClicks = useMemo(() => analytics.filter(a => a.event_type === 'website_click').length, [analytics]);
+  const totalReferrals = useMemo(() => referralClicks.length, [referralClicks]);
   const uniqueVisitors = useMemo(() => {
     const ids = new Set(analytics.filter(a => a.event_type === 'page_view').map(a => a.visitor_id).filter(Boolean));
-    return ids.size || Math.round(totalViews * 0.7); // fallback estimate
+    return ids.size || Math.round(totalViews * 0.7);
   }, [analytics, totalViews]);
 
-  // Daily views for chart (last 30 days)
+  // Daily views for chart (last 30 days) — includes referral clicks
   const dailyViews = useMemo(() => {
     const now = new Date();
-    const days: { date: string; views: number; clicks: number }[] = [];
+    const days: { date: string; views: number; clicks: number; referrals: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split('T')[0];
-      days.push({ date: dateStr, views: 0, clicks: 0 });
+      days.push({ date: dateStr, views: 0, clicks: 0, referrals: 0 });
     }
     analytics.forEach(a => {
       const dateStr = a.created_at?.split('T')[0];
@@ -137,43 +138,49 @@ const ProductAnalytics = () => {
         if (a.event_type === 'website_click') day.clicks++;
       }
     });
+    referralClicks.forEach(r => {
+      const dateStr = r.created_at?.split('T')[0];
+      const day = days.find(d => d.date === dateStr);
+      if (day) day.referrals++;
+    });
     return days;
-  }, [analytics]);
+  }, [analytics, referralClicks]);
 
-  // Traffic sources (estimated from referrer patterns)
+  // Traffic sources — use real referral click data alongside estimates
   const trafficSources = useMemo(() => {
     const total = totalViews || 1;
-    // Without actual referrer data, provide estimates based on patterns
-    const directEstimate = Math.round(total * 0.4);
-    const launchHomepage = Math.round(total * 0.35);
-    const social = Math.round(total * 0.15);
-    const external = total - directEstimate - launchHomepage - social;
+    const referralPct = totalViews > 0 ? Math.round((totalReferrals / total) * 100) : 0;
+    const remaining = 100 - referralPct;
+    const launchHomepage = Math.round(remaining * 0.45);
+    const direct = Math.round(remaining * 0.35);
+    const social = remaining - launchHomepage - direct;
     return [
-      { source: 'Launch Homepage', count: launchHomepage, pct: Math.round((launchHomepage / total) * 100) },
-      { source: 'Direct', count: directEstimate, pct: Math.round((directEstimate / total) * 100) },
-      { source: 'Social', count: social, pct: Math.round((social / total) * 100) },
-      { source: 'External', count: Math.max(0, external), pct: Math.max(0, Math.round((external / total) * 100)) },
+      { source: 'Launch Homepage', count: Math.round(total * launchHomepage / 100), pct: launchHomepage },
+      { source: 'Trackable Link (/go/)', count: totalReferrals, pct: referralPct, highlight: true },
+      { source: 'Direct', count: Math.round(total * direct / 100), pct: direct },
+      { source: 'Social / Other', count: Math.round(total * social / 100), pct: Math.max(0, social) },
     ];
-  }, [totalViews]);
+  }, [totalViews, totalReferrals]);
 
-  // Votes over time (cumulative)
+  // Votes over time — use real vote timestamps
   const votesOverTime = useMemo(() => {
-    if (!product?.launch_date) return [];
+    if (voteHistory.length === 0) return [];
     const now = new Date();
-    const launch = new Date(product.launch_date);
-    const daysSinceLaunch = Math.min(30, Math.ceil((now.getTime() - launch.getTime()) / (1000 * 60 * 60 * 24)));
-    if (daysSinceLaunch <= 0) return [];
+    const days: { date: string; votes: number }[] = [];
+    const startDate = new Date(voteHistory[0].created_at);
+    const dayCount = Math.min(30, Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
     
-    // Distribute votes roughly — without per-vote timestamps, simulate curve
-    const points: { day: number; votes: number }[] = [];
-    for (let i = 0; i <= daysSinceLaunch; i++) {
-      const progress = i / daysSinceLaunch;
-      // Votes typically front-loaded
-      const estimated = Math.round(netVotes * (1 - Math.pow(1 - progress, 2)));
-      points.push({ day: i, votes: estimated });
+    let cumulative = 0;
+    for (let i = 0; i <= dayCount; i++) {
+      const d = new Date(startDate);
+      d.setDate(d.getDate() + i);
+      const dateStr = d.toISOString().split('T')[0];
+      const dayVotes = voteHistory.filter(v => v.created_at?.split('T')[0] === dateStr);
+      cumulative += dayVotes.reduce((sum: number, v: any) => sum + (v.value || 0), 0);
+      days.push({ date: dateStr, votes: Math.max(0, cumulative) });
     }
-    return points;
-  }, [product, netVotes]);
+    return days;
+  }, [voteHistory]);
 
   const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : '0';
 
