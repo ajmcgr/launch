@@ -167,7 +167,7 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
     const { karma } = useKarma(comment.user_id);
     
     return (
-      <div className={`p-4 ${isReply ? 'ml-8 mt-3 border-l-2 border-muted' : 'border rounded-lg bg-card'} ${comment.pinned && !isReply ? 'border-primary/50 bg-primary/5' : ''}`}>
+      <div className={`p-3 sm:p-4 ${isReply ? 'ml-3 sm:ml-8 mt-3 border-l-2 border-muted' : 'border rounded-lg bg-card'} ${comment.pinned && !isReply ? 'border-primary/50 bg-primary/5' : ''}`}>
         <div className="flex gap-3">
           <Link to={`/@${username}`} className="flex-shrink-0">
             <Avatar className="h-10 w-10 hover:ring-2 hover:ring-primary/50 transition-all">
