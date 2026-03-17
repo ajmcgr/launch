@@ -1,14 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Instagram, Youtube } from 'lucide-react';
 import { TrustPhrase } from '@/hooks/use-member-count';
-
-interface StackItem {
-  id: number;
-  name: string;
-  slug: string;
-}
 
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -31,67 +23,7 @@ const RedditIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-}
-
-const createSlug = (name: string) => {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-};
-
 export const Footer = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [stackItems, setStackItems] = useState<StackItem[]>([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const { data } = await supabase
-        .from('products')
-        .select('id, name, slug')
-        .eq('status', 'launched')
-        .not('name', 'is', null)
-        .not('slug', 'is', null)
-        .order('launch_date', { ascending: false })
-        .limit(30);
-      
-      if (data) {
-        setProducts(data as Product[]);
-      }
-    };
-
-    const fetchCategories = async () => {
-      const { data } = await supabase
-        .from('product_categories')
-        .select('id, name')
-        .order('name');
-      
-      if (data) {
-        setCategories(data.map(c => ({ ...c, slug: createSlug(c.name) })));
-      }
-    };
-
-    const fetchStackItems = async () => {
-      const { data } = await supabase
-        .from('stack_items')
-        .select('id, name, slug')
-        .order('name');
-      if (data) setStackItems(data);
-    };
-
-    fetchProducts();
-    fetchCategories();
-    fetchStackItems();
-  }, []);
-
   return (
     <footer>
       <div className="bg-muted">
