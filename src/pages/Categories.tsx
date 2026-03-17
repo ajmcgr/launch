@@ -44,6 +44,7 @@ const Categories = () => {
       <Helmet>
         <title>Popular Categories | Launch</title>
         <meta name="description" content="Browse popular product categories and discover products by category" />
+        <link rel="canonical" href="https://trylaunch.ai/categories" />
       </Helmet>
       
       <div className="container mx-auto px-4 py-12 max-w-4xl">
