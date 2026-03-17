@@ -23,6 +23,7 @@ import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
+import UpgradeNudge from '@/components/UpgradeNudge';
 import { formatMRRRange } from '@/lib/revenue';
 
 const MyProducts = () => {
@@ -894,6 +895,13 @@ const MyProducts = () => {
                       </AlertDialog>
                     )}
                   </div>
+                  {product.status === 'launched' && (
+                    <UpgradeNudge 
+                      productName={product.name}
+                      currentPlan={product.orderPlan}
+                      productId={product.id}
+                    />
+                  )}
                   {product.status === 'launched' && product.slug && (
                     <Collapsible defaultOpen className="mt-4">
                       <CollapsibleTrigger asChild>
