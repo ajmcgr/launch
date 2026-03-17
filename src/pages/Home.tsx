@@ -879,143 +879,136 @@ const Home = () => {
               
               {/* Sponsor Banner - Below leaderboard */}
               <SponsorBanner className="mt-6" />
+
+              {/* Media Banner */}
+              <div className="py-6 flex flex-col items-center w-full">
+                <a 
+                  href="https://trymedia.ai/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block w-full"
+                >
+                  <img 
+                    src={mediaBanner} 
+                    alt="Media - Any Journalist or Creator Email. Instantly." 
+                    className="w-full h-auto transition-all duration-200 hover:opacity-95"
+                  />
+                </a>
+                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+                  Featured Partner · Become a partner
+                </Link>
+              </div>
+
+              <ThisWeekHighlights view={effectiveView} />
+
+              {/* Roach Banner */}
+              <div className="py-6 flex flex-col items-center w-full">
+                <a 
+                  href="https://roachclo.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block w-full"
+                >
+                  <img 
+                    src={roachBanner} 
+                    alt="Roach - Survive. Thrive. Shop Roach." 
+                    className="w-full h-auto transition-all duration-200 hover:opacity-95"
+                  />
+                </a>
+                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+                  Featured Partner · Become a partner
+                </Link>
+              </div>
+
+              <CategoryCloud />
+
+              <PopularTechThisWeek />
+
+              <div className="pt-6 pb-4">
+                <h2 className="text-2xl font-bold mb-8 text-left">Frequently Asked Questions</h2>
+                
+                <Accordion type="single" collapsible className="w-full space-y-4">
+                  <AccordionItem value="what-is" className="border rounded-lg px-6">
+                    <AccordionTrigger className="text-left text-sm">
+                      What is Launch?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="how-submit" className="border rounded-lg px-6">
+                    <AccordionTrigger className="text-left text-sm">
+                      How do I submit my product?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="voting" className="border rounded-lg px-6">
+                    <AccordionTrigger className="text-left text-sm">
+                      How does voting work?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="top-products" className="border rounded-lg px-6">
+                    <AccordionTrigger className="text-left text-sm">
+                      What are Top Products and Archives?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners. Visit the Products page to see current rankings and archives.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="notifications" className="border rounded-lg px-6">
+                    <AccordionTrigger className="text-left text-sm">
+                      How do notifications work?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+
+                <div className="text-center mt-6">
+                  <Link to="/faq">
+                    <Button variant="outline">View All FAQs</Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Bio Sponsor Banner */}
+              <div className="py-6 flex flex-col items-center w-full">
+                <a 
+                  href="https://trybio.ai" 
+                  target="_blank" 
+                  rel="noopener noreferrer sponsored"
+                  className="block w-full"
+                >
+                  <img 
+                    src={bioBanner} 
+                    alt="Bio - Link in Bio" 
+                    className="w-full h-auto transition-all duration-200 hover:opacity-95"
+                  />
+                </a>
+                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+                  Featured Partner · Become a partner
+                </Link>
+              </div>
             </div>
 
             {/* Right sidebar - Forum Activity (hidden on mobile) */}
             <div className="hidden lg:block w-72 flex-shrink-0">
-              <ForumActivityWidget />
+              <div className="sticky top-6">
+                <ForumActivityWidget />
+              </div>
             </div>
           </div>
         </Tabs>
-      </div>
-
-      {/* Media Banner - Centered full width */}
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="py-6 flex flex-col items-center w-full">
-          <a 
-            href="https://trymedia.ai/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block w-full"
-          >
-            <img 
-              src={mediaBanner} 
-              alt="Media - Any Journalist or Creator Email. Instantly." 
-              className="w-full h-auto transition-all duration-200 hover:opacity-95"
-            />
-          </a>
-          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
-            Featured Partner · Become a partner
-          </Link>
-        </div>
-      </div>
-
-      <ThisWeekHighlights view={effectiveView} />
-
-
-      {/* Roach Banner - Centered full width */}
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="py-6 flex flex-col items-center w-full">
-          <a 
-            href="https://roachclo.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block w-full"
-          >
-            <img 
-              src={roachBanner} 
-              alt="Roach - Survive. Thrive. Shop Roach." 
-              className="w-full h-auto transition-all duration-200 hover:opacity-95"
-            />
-          </a>
-          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
-            Featured Partner · Become a partner
-          </Link>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 max-w-6xl">
-        <CategoryCloud />
-
-        <PopularTechThisWeek />
-
-        <div className="pt-6 pb-4">
-          <h2 className="text-2xl font-bold mb-8 text-left">Frequently Asked Questions</h2>
-          
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            <AccordionItem value="what-is" className="border rounded-lg px-6">
-              <AccordionTrigger className="text-left text-sm">
-                What is Launch?
-              </AccordionTrigger>
-              <AccordionContent>
-                Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="how-submit" className="border rounded-lg px-6">
-              <AccordionTrigger className="text-left text-sm">
-                How do I submit my product?
-              </AccordionTrigger>
-              <AccordionContent>
-                Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="voting" className="border rounded-lg px-6">
-              <AccordionTrigger className="text-left text-sm">
-                How does voting work?
-              </AccordionTrigger>
-              <AccordionContent>
-                Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="top-products" className="border rounded-lg px-6">
-              <AccordionTrigger className="text-left text-sm">
-                What are Top Products and Archives?
-              </AccordionTrigger>
-              <AccordionContent>
-                Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners. Visit the Products page to see current rankings and archives.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="notifications" className="border rounded-lg px-6">
-              <AccordionTrigger className="text-left text-sm">
-                How do notifications work?
-              </AccordionTrigger>
-              <AccordionContent>
-                Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-
-          <div className="text-center mt-6">
-            <Link to="/faq">
-              <Button variant="outline">View All FAQs</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Bio Sponsor Banner - Centered full width */}
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="py-6 flex flex-col items-center w-full">
-          <a 
-            href="https://trybio.ai" 
-            target="_blank" 
-            rel="noopener noreferrer sponsored"
-            className="block w-full"
-          >
-            <img 
-              src={bioBanner} 
-              alt="Bio - Link in Bio" 
-              className="w-full h-auto transition-all duration-200 hover:opacity-95"
-            />
-          </a>
-          <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
-            Featured Partner · Become a partner
-          </Link>
-        </div>
       </div>
     </div>
   );
