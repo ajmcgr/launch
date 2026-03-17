@@ -109,6 +109,81 @@ function buildShareEmailHtml(productName: string, productSlug: string): string {
   `;
 }
 
+function buildOutcomeEmailHtml(productName: string, productSlug: string, views: number, clicks: number): string {
+  const analyticsUrl = `${PRODUCTION_URL}/launch/${productSlug}/analytics`;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+          .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+          .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+          .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+          .logo { height: 32px; }
+          .content { padding: 30px; }
+          .content h1 { margin: 0 0 16px 0; font-size: 22px; color: #111; }
+          .content p { margin: 0 0 16px 0; color: #4b5563; font-size: 15px; }
+          .stats-row { display: flex; gap: 16px; margin: 24px 0; }
+          .stat-box { flex: 1; background: #f3f4f6; border-radius: 8px; padding: 16px; text-align: center; }
+          .stat-number { font-size: 28px; font-weight: 700; color: #111; display: block; }
+          .stat-label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+          .cta-link { display: inline-block; background: #111; color: #fff !important; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; }
+          .tip-box { background: #eff6ff; padding: 16px 20px; border-radius: 8px; margin: 24px 0; border: 1px solid #bfdbfe; }
+          .tip-box p { margin: 0; color: #1e40af; font-size: 14px; }
+          .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <div class="header">
+              <img src="${PRODUCTION_URL}/images/email-logo.png" alt="Launch" class="logo" />
+            </div>
+            <div class="content">
+              <h1>How did your launch go? 📊</h1>
+              <p>It's been a week since <strong>${productName}</strong> launched. Here's what we tracked:</p>
+              
+              <!--[if mso]>
+              <table role="presentation" cellspacing="0" cellpadding="0" width="100%"><tr>
+              <td width="50%" style="padding-right:8px"><![endif]-->
+              <div style="display:inline-block;width:48%;vertical-align:top;background:#f3f4f6;border-radius:8px;padding:16px;text-align:center;margin-right:2%;">
+                <span style="font-size:28px;font-weight:700;color:#111;">${views}</span><br/>
+                <span style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Page Views</span>
+              </div>
+              <!--[if mso]></td><td width="50%" style="padding-left:8px"><![endif]-->
+              <div style="display:inline-block;width:48%;vertical-align:top;background:#f3f4f6;border-radius:8px;padding:16px;text-align:center;">
+                <span style="font-size:28px;font-weight:700;color:#111;">${clicks}</span><br/>
+                <span style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">Referral Clicks</span>
+              </div>
+              <!--[if mso]></td></tr></table><![endif]-->
+
+              <p style="margin-top: 24px;">But we can't see the full picture — only you know the real results.</p>
+              <p><strong>Did you get signups? Revenue? Your first users?</strong></p>
+              <p>Take 30 seconds to report your outcomes. It helps us improve Launch and your story could inspire other makers.</p>
+
+              <p style="text-align: center; margin: 28px 0;">
+                <a href="${analyticsUrl}" class="cta-link">Report your outcomes →</a>
+              </p>
+
+              <div class="tip-box">
+                <p><strong>💡 Why report?</strong> Makers who share their results get featured on our success stories page and help us build a better platform for everyone.</p>
+              </div>
+
+              <p style="margin-top: 24px; color: #6b7280; font-size: 14px;">— Launch</p>
+            </div>
+            <div class="footer">
+              <p>You're receiving this because you launched a product on Launch.<br/>
+              <a href="${PRODUCTION_URL}/settings" style="color: #6b7280;">Manage notifications</a></p>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
 function buildReminderEmailHtml(productName: string, productSlug: string): string {
   const launchUrl = `${PRODUCTION_URL}/launch/${productSlug}`;
 
