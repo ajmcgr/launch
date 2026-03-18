@@ -491,6 +491,10 @@ const Advertise = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Inline ad above comments on product pages</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-sm">1 newsletter sponsorship (one issue)</span>
                     </li>
                     <li className="flex items-start gap-2">
