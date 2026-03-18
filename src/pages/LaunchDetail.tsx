@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
+import InlineAdSlot from '@/components/InlineAdSlot';
 
 
 const LaunchDetail = () => {
@@ -549,6 +550,11 @@ const LaunchDetail = () => {
                 </Carousel>
               </div>
             )}
+
+            {/* Inline Ad Slot */}
+            <div className="pt-8">
+              <InlineAdSlot />
+            </div>
 
             <div className="space-y-5 pt-10 border-t border-border/40">
               <h2 className="text-xl font-semibold">Comments</h2>
