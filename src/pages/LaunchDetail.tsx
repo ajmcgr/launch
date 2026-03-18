@@ -590,7 +590,8 @@ const LaunchDetail = () => {
 
           {/* Right Sidebar - Desktop Only */}
           <div className="lg:col-span-1">
-            <div className="p-5 bg-muted/20 border border-border/50 rounded-xl sticky top-6 space-y-5">
+            <div className="sticky top-6 space-y-6">
+            <div className="p-5 bg-muted/20 border border-border/50 rounded-xl space-y-5">
               {/* Makers */}
               {product.makers && product.makers.length > 0 && (
                 <div>
@@ -827,7 +828,8 @@ const LaunchDetail = () => {
             </div>
 
             {/* Advertise CTA */}
-            <AdvertiseCTA className="mt-6" />
+            <AdvertiseCTA />
+            </div>
           </div>
         </div>
       </div>
