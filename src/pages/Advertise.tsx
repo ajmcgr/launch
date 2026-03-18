@@ -608,37 +608,15 @@ const Advertise = () => {
               </div>
             </div>
 
-            {/* Ad Performance Stats */}
-            <div className="max-w-4xl mx-auto mb-12">
-              <h2 className="text-2xl font-bold text-center mb-8">Proven Results for Sponsors</h2>
-              <AdPerformanceStats />
-            </div>
-
             {/* Popular Product Icons */}
             <div className="my-16">
               <PopularProductIcons />
             </div>
 
-            {/* Why advertise with us */}
-            <div className="max-w-3xl mx-auto mb-16">
-
-              {/* Why advertise with us */}
-              <div>
-                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">Why advertise with us</h2>
-                <div className="space-y-4">
-                  {[
-                    { icon: Rocket, title: "Premium Placement", description: "Top-of-page visibility with no competing ads" },
-                    { icon: RefreshCw, title: "Targeted Audience", description: "Founders and builders actively seeking new tools" },
-                    { icon: Zap, title: "High Intent Traffic", description: "Users ready to discover and try new products" },
-                    { icon: Calendar, title: "Flexible Booking", description: "Choose your months and cancel anytime" }
-                  ].map((feature) => (
-                    <div key={feature.title}>
-                      <h3 className="font-medium">{feature.title}</h3>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {/* Ad Performance Stats */}
+            <div className="max-w-4xl mx-auto mb-12">
+              <h2 className="text-2xl font-bold text-center mb-8">Proven Results for Sponsors</h2>
+              <AdPerformanceStats />
             </div>
 
             {/* Placement Preview Section */}
