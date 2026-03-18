@@ -18,6 +18,7 @@ import { Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
 import PopularProductIcons from '@/components/PopularProductIcons';
+import AdPerformanceStats from '@/components/AdPerformanceStats';
 
 interface LaunchedProduct {
   id: string;

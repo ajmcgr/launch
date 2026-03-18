@@ -11,6 +11,7 @@ import jakeAvatar from '@/assets/jake-avatar.jpg';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
+import AdPerformanceStats from '@/components/AdPerformanceStats';
 
 const FEATURE_CONFIG = [
   { key: 'listing', label: 'Homepage listing', icon: TrendingUp },
