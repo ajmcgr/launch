@@ -14,6 +14,7 @@ import { StarRating } from '@/components/StarRating';
 import { LanguageDisplay } from '@/components/LanguageSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import AdvertiseCTA from '@/components/AdvertiseCTA';
 
 
 const LaunchDetail = () => {
@@ -822,6 +823,9 @@ const LaunchDetail = () => {
                   )}
                 </div>
               )}
+
+              {/* Advertise CTA */}
+              <AdvertiseCTA className="mt-4" />
             </div>
           </div>
         </div>
