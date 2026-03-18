@@ -825,7 +825,7 @@ const LaunchDetail = () => {
               )}
 
               {/* Advertise CTA */}
-              <AdvertiseCTA className="mt-6" />
+              <AdvertiseCTA className="mt-10" />
             </div>
           </div>
         </div>
