@@ -11,6 +11,7 @@ import jakeAvatar from '@/assets/jake-avatar.jpg';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
+import AdPerformanceStats from '@/components/AdPerformanceStats';
 
 const FEATURE_CONFIG = [
   { key: 'listing', label: 'Homepage listing', icon: TrendingUp },
@@ -295,9 +296,10 @@ const Pricing = () => {
         <div className="mt-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Advertising</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
               Reach a highly engaged audience of builders and AI early adopters
             </p>
+            <AdPerformanceStats compact />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
