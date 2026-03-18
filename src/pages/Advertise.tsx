@@ -599,29 +599,20 @@ const Advertise = () => {
               </div>
             </div>
 
+            {/* Ad Performance Stats */}
+            <div className="max-w-4xl mx-auto mb-12">
+              <h2 className="text-2xl font-bold text-center mb-8">Proven Results for Sponsors</h2>
+              <AdPerformanceStats />
+            </div>
+
             {/* Popular Product Icons */}
             <div className="my-16">
               <PopularProductIcons />
             </div>
 
-            {/* Stats & Features - Two Column Layout */}
-            <div className="max-w-3xl mx-auto mb-16 grid md:grid-cols-2 gap-8 md:gap-12">
-              {/* Your reach */}
+            {/* Stats & Features */}
+            <div className="max-w-3xl mx-auto mb-16">
               <div>
-                <h2 className="text-xl font-semibold mb-6 text-center md:text-left">Your reach</h2>
-                <div className="flex flex-col gap-4">
-                  {[
-                    { value: "70K+", label: "Monthly Impressions" },
-                    { value: "2K+", label: "Newsletter Subscribers" },
-                    { value: "25%", label: "Email Open Rate" },
-                  ].map((stat) => (
-                    <div key={stat.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                      <span className="text-sm text-muted-foreground">{stat.label}</span>
-                      <span className="text-2xl font-bold tracking-tight">{stat.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
               {/* Why advertise with us */}
               <div>
