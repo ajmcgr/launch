@@ -1022,10 +1022,11 @@ const Home = () => {
             </div>
 
             {/* Right sidebar - Forum Activity (hidden on mobile) */}
-            <div className="hidden lg:block w-72 flex-shrink-0">
+            <div className="hidden lg:block w-72 flex-shrink-0 space-y-6">
               <div>
                 <ForumActivityWidget />
               </div>
+              <AdvertiseCTA />
             </div>
           </div>
         </Tabs>
