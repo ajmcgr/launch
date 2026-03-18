@@ -479,7 +479,11 @@ const Advertise = () => {
                   <ul className="space-y-3 flex-1">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Homepage sponsorship (1 listing)</span>
+                      <span className="text-sm">Homepage feed + sidebar sponsorship</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Sidebar ad on product detail pages</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
