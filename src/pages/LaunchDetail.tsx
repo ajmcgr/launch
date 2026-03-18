@@ -823,6 +823,11 @@ const LaunchDetail = () => {
                   )}
                 </div>
               )}
+
+              {/* Advertise CTA - only show if product is not already sponsored */}
+              {!product.is_sponsored && (
+                <AdvertiseCTA className="mt-4" />
+              )}
             </div>
           </div>
         </div>
