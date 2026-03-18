@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface AdvertiseCTAProps {
@@ -9,10 +8,7 @@ interface AdvertiseCTAProps {
 const AdvertiseCTA = ({ className }: AdvertiseCTAProps) => {
   return (
     <div className={`w-full bg-muted/30 px-5 py-5 space-y-3 ${className || ''}`}>
-      <div className="flex items-center gap-2">
-        <Megaphone className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-semibold">Promote Your Product</h3>
-      </div>
+      <h3 className="text-sm font-semibold">Promote Your Product</h3>
       <p className="text-xs text-muted-foreground leading-relaxed">
         Get in front of 70K+ monthly visitors with sponsored listings & newsletter features.
       </p>
