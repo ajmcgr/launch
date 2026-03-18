@@ -217,7 +217,7 @@ export const ForumActivityWidget = () => {
             rel="noopener noreferrer"
             className="block py-2 px-2 -mx-2 rounded-md hover:bg-muted/50 transition-colors group"
           >
-            <p className="text-xs text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
+            <p className="text-[13px] text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
               {thread.title}
             </p>
             <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
