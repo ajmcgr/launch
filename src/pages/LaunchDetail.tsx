@@ -550,6 +550,11 @@ const LaunchDetail = () => {
               </div>
             )}
 
+            {/* Inline Ad Slot */}
+            <div className="pt-8">
+              <InlineAdSlot />
+            </div>
+
             <div className="space-y-5 pt-10 border-t border-border/40">
               <h2 className="text-xl font-semibold">Comments</h2>
               {user ? (
