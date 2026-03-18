@@ -17,7 +17,7 @@ const AdvertiseCTA = ({ className }: AdvertiseCTAProps) => {
         Get in front of 70K+ monthly visitors with sponsored listings & newsletter features.
       </p>
       <Button size="sm" className="w-full gap-2" asChild>
-        <Link to="/advertise">View Packages →</Link>
+        <Link to="/advertise">Get Started →</Link>
       </Button>
       <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground">
         <span>From $99/mo</span>
