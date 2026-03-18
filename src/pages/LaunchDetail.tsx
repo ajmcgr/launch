@@ -15,6 +15,7 @@ import { LanguageDisplay } from '@/components/LanguageSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
+import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 
 
 const LaunchDetail = () => {
@@ -826,6 +827,9 @@ const LaunchDetail = () => {
               )}
 
             </div>
+
+            {/* Sidebar Sponsored Ads */}
+            <SidebarSponsoredAd />
 
             {/* Advertise CTA */}
             <AdvertiseCTA />

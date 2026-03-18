@@ -40,6 +40,7 @@ import roachBanner from '@/assets/sponsors/roach-banner.png';
 import { CommunityCallout } from '@/components/CommunityCallout';
 import { PopularSections } from '@/components/PopularSections';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
+import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 
 interface Product {
   id: string;
@@ -1024,6 +1025,7 @@ const Home = () => {
 
             {/* Right sidebar (hidden on mobile) */}
             <div className="hidden lg:block w-72 flex-shrink-0 space-y-6">
+              <SidebarSponsoredAd />
               <div>
                 <ForumActivityWidget />
               </div>
