@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
+import InlineAdSlot from '@/components/InlineAdSlot';
 
 
 const LaunchDetail = () => {
