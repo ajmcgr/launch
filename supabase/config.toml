@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.send-winback-email]
 verify_jwt = false
+
+[functions.send-trending-maker-email]
+verify_jwt = false
