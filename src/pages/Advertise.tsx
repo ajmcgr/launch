@@ -381,7 +381,7 @@ const Advertise = () => {
               >
                 <CardHeader>
                 <CardTitle className="text-xl">Website Placement</CardTitle>
-                <CardDescription>30-day sponsored listing on homepage</CardDescription>
+                <CardDescription>Sponsored listing on homepage + product pages</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
@@ -390,7 +390,11 @@ const Advertise = () => {
                 <ul className="space-y-3 flex-1">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored listing on Launch homepage</span>
+                    <span className="text-sm">Sponsored listing in the homepage feed</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Sidebar ad on homepage & product detail pages</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
