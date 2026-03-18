@@ -611,9 +611,8 @@ const Advertise = () => {
               <PopularProductIcons />
             </div>
 
-            {/* Stats & Features */}
+            {/* Why advertise with us */}
             <div className="max-w-3xl mx-auto mb-16">
-              <div>
 
               {/* Why advertise with us */}
               <div>
