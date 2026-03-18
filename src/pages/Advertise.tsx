@@ -14,7 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Rocket, RefreshCw, Zap, Calendar } from 'lucide-react';
+
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
 import PopularProductIcons from '@/components/PopularProductIcons';
