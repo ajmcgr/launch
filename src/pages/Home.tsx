@@ -39,6 +39,7 @@ import bioBanner from '@/assets/sponsors/bio-banner.png';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
 import { CommunityCallout } from '@/components/CommunityCallout';
 import { PopularSections } from '@/components/PopularSections';
+import AdvertiseCTA from '@/components/AdvertiseCTA';
 
 interface Product {
   id: string;
