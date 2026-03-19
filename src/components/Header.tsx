@@ -104,9 +104,12 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner - smoothly hide when scrolled */}
       <div 
-        className={`overflow-hidden transition-all duration-200 ease-out ${
-          isScrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          isScrolled ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
         }`}
+        aria-hidden={isScrolled}
+      >
+        <div className="overflow-hidden">
         aria-hidden={isScrolled}
       >
         <Link 
