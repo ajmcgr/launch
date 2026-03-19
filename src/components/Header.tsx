@@ -104,25 +104,27 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Promotional Banner - smoothly hide when scrolled */}
       <div 
-        className={`overflow-hidden transition-all duration-200 ease-out ${
-          isScrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          isScrolled ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
         }`}
         aria-hidden={isScrolled}
       >
-        <Link 
-          to={showLaunchPassPromo ? "/pass" : "/pricing"} 
-          className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
-          tabIndex={isScrolled ? -1 : 0}
-        >
-          <div className="container mx-auto px-4 max-w-6xl">
-            <p className="text-center text-sm font-medium">
-              {showLaunchPassPromo 
-                ? `Trusted by ${formattedMemberCount} makers → Get Launch Pass`
-                : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
-              }
-            </p>
-          </div>
-        </Link>
+        <div className="overflow-hidden">
+          <Link 
+            to={showLaunchPassPromo ? "/pass" : "/pricing"} 
+            className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
+            tabIndex={isScrolled ? -1 : 0}
+          >
+            <div className="container mx-auto px-4 max-w-6xl">
+              <p className="text-center text-sm font-medium">
+                {showLaunchPassPromo 
+                  ? `Trusted by ${formattedMemberCount} makers → Get Launch Pass`
+                  : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
+                }
+              </p>
+            </div>
+          </Link>
+        </div>
       </div>
       
       <div className="container mx-auto px-4 max-w-6xl">
@@ -130,7 +132,7 @@ export const Header = () => {
           {/* Left: Logo + Navigation */}
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center">
-              <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} fetchPriority="high" />
+              <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
             <nav className="hidden md:flex items-center gap-4">
               <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
