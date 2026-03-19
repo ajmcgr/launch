@@ -838,7 +838,7 @@ const LaunchDetail = () => {
             <SidebarSponsoredAd />
 
             {/* Advertise CTA */}
-            <AdvertiseCTA />
+            <AdvertiseCTA compact />
             </div>
           </div>
         </div>

@@ -1029,7 +1029,7 @@ const Home = () => {
               <div>
                 <ForumActivityWidget />
               </div>
-              <AdvertiseCTA />
+              <AdvertiseCTA compact />
             </div>
           </div>
         </Tabs>
