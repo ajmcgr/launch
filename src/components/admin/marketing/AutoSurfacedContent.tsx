@@ -1076,6 +1076,46 @@ export const AutoSurfacedContent = () => {
                     No technologies found
                   </p>
                 )
+              ) : section.successStories ? (
+                section.successStories.length > 0 ? (
+                  section.successStories.map((story) => (
+                    <div key={story.product_id} className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium truncate">{story.name}</span>
+                          {story.signups > 0 && (
+                            <Badge variant="secondary" className="text-xs">
+                              {story.signups} signups
+                            </Badge>
+                          )}
+                          {story.revenue > 0 && (
+                            <Badge variant="secondary" className="text-xs">
+                              ${story.revenue.toLocaleString()}
+                            </Badge>
+                          )}
+                        </div>
+                        {story.testimonial && (
+                          <p className="text-sm text-muted-foreground truncate mt-0.5 italic">
+                            "{truncateToOneSentence(story.testimonial)}"
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/launch/{story.slug}</p>
+                      </div>
+                      <div className="flex items-center gap-1 ml-2">
+                        <CopyButton text={`${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? `\n"${truncateToOneSentence(story.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${story.slug}`} label="story" />
+                        <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
+                          <a href={`/launch/${story.slug}`} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    No success stories this month
+                  </p>
+                )
               ) : null}
             </CardContent>
           </Card>
