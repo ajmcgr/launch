@@ -110,22 +110,21 @@ export const Header = () => {
         aria-hidden={isScrolled}
       >
         <div className="overflow-hidden">
-        aria-hidden={isScrolled}
-      >
-        <Link 
-          to={showLaunchPassPromo ? "/pass" : "/pricing"} 
-          className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
-          tabIndex={isScrolled ? -1 : 0}
-        >
-          <div className="container mx-auto px-4 max-w-6xl">
-            <p className="text-center text-sm font-medium">
-              {showLaunchPassPromo 
-                ? `Trusted by ${formattedMemberCount} makers → Get Launch Pass`
-                : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
-              }
-            </p>
-          </div>
-        </Link>
+          <Link 
+            to={showLaunchPassPromo ? "/pass" : "/pricing"} 
+            className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
+            tabIndex={isScrolled ? -1 : 0}
+          >
+            <div className="container mx-auto px-4 max-w-6xl">
+              <p className="text-center text-sm font-medium">
+                {showLaunchPassPromo 
+                  ? `Trusted by ${formattedMemberCount} makers → Get Launch Pass`
+                  : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
+                }
+              </p>
+            </div>
+          </Link>
+        </div>
       </div>
       
       <div className="container mx-auto px-4 max-w-6xl">
