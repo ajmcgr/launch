@@ -73,10 +73,17 @@ const SuccessStories = () => {
   const [stories, setStories] = useState<SuccessStory[]>([]);
   const [loading, setLoading] = useState(true);
   const [totals, setTotals] = useState({ signups: 0, revenue: 0, stories: 0 });
+  const [platformUsers, setPlatformUsers] = useState(0);
 
   useEffect(() => {
     const fetchStories = async () => {
       try {
+        // Fetch platform user count in parallel with outcomes
+        const userCountPromise = supabase
+          .from('users')
+          .select('id', { count: 'exact', head: true });
+
+
         const { data, error } = await (supabase as any)
           .from('product_outcomes')
           .select('product_id, signups, revenue, testimonial, updated_at')
@@ -115,6 +122,10 @@ const SuccessStories = () => {
           });
 
         setStories(merged);
+        
+        const userCountRes = await userCountPromise;
+        setPlatformUsers(userCountRes.count || 0);
+
         setTotals({
           signups: merged.reduce((sum, s) => sum + (s.signups || 0), 0),
           revenue: merged.reduce((sum, s) => sum + (s.revenue || 0), 0),
@@ -163,8 +174,8 @@ const SuccessStories = () => {
             <Card className="text-center">
               <CardContent className="pt-6">
                 <Users className="h-5 w-5 mx-auto mb-2 text-primary" />
-                <p className="text-3xl font-bold">{totals.signups.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Total Signups</p>
+                <p className="text-3xl font-bold">{platformUsers.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Makers on Launch</p>
               </CardContent>
             </Card>
             <Card className="text-center">
