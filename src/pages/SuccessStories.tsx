@@ -19,6 +19,56 @@ interface SuccessStory {
   product_icon: string | null;
 }
 
+const StoryCard = ({ story }: { story: SuccessStory }) => (
+  <Card className="overflow-hidden hover:shadow-md transition-shadow break-inside-avoid mb-4">
+    <CardContent className="p-5">
+      <div className="flex items-center gap-3 mb-3">
+        {story.product_icon && (
+          <img
+            src={story.product_icon}
+            alt={story.product_name}
+            className="w-10 h-10 rounded-lg object-cover shrink-0"
+            loading="lazy"
+            width={40}
+            height={40}
+          />
+        )}
+        <div className="min-w-0">
+          <Link
+            to={`/launch/${story.product_slug}`}
+            className="font-semibold text-base hover:text-primary transition-colors block truncate"
+          >
+            {story.product_name}
+          </Link>
+          <p className="text-xs text-muted-foreground truncate">{story.product_tagline}</p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-3">
+        {story.signups && story.signups > 0 && (
+          <Badge variant="secondary" className="gap-1 text-xs">
+            <Users className="h-3 w-3" />
+            {story.signups.toLocaleString()} signups
+          </Badge>
+        )}
+        {story.revenue && story.revenue > 0 && (
+          <Badge variant="secondary" className="gap-1 text-xs">
+            <DollarSign className="h-3 w-3" />
+            ${story.revenue.toLocaleString()}
+          </Badge>
+        )}
+      </div>
+
+      {story.testimonial && (
+        <div className="bg-muted/50 rounded-lg p-3 border border-border">
+          <Quote className="h-3.5 w-3.5 text-muted-foreground mb-1" />
+          <p className="text-sm italic text-foreground leading-relaxed">{story.testimonial}</p>
+        </div>
+      )}
+    </CardContent>
+  </Card>
+);
+
 const SuccessStories = () => {
   const [stories, setStories] = useState<SuccessStory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +105,6 @@ const SuccessStories = () => {
           .map((d: any) => {
             const p = productMap.get(d.product_id);
             const productIcon = p.product_media?.find((media: any) => media.type === 'icon')?.url || null;
-
             return {
               ...d,
               product_name: p.name,
@@ -97,7 +146,7 @@ const SuccessStories = () => {
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
         {/* Hero */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight mb-3 font-['Reckless']">
@@ -135,14 +184,19 @@ const SuccessStories = () => {
           </div>
         )}
 
-        {/* Stories List */}
+        {/* Stories Wall */}
         {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map(i => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-5 bg-muted rounded w-1/3 mb-3" />
-                  <div className="h-4 bg-muted rounded w-2/3 mb-4" />
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <Card key={i} className="animate-pulse break-inside-avoid mb-4">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-muted rounded-lg" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-muted rounded w-2/3 mb-1" />
+                      <div className="h-3 bg-muted rounded w-full" />
+                    </div>
+                  </div>
                   <div className="h-16 bg-muted rounded" />
                 </CardContent>
               </Card>
@@ -162,54 +216,9 @@ const SuccessStories = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
             {stories.map((story) => (
-              <Card key={story.product_id} className="overflow-hidden hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    {story.product_icon && (
-                      <img
-                        src={story.product_icon}
-                        alt={story.product_name}
-                        className="w-12 h-12 rounded-lg object-cover shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Link
-                          to={`/launch/${story.product_slug}`}
-                          className="font-semibold text-lg hover:text-primary transition-colors"
-                        >
-                          {story.product_name}
-                        </Link>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">{story.product_tagline}</p>
-
-                      <div className="flex flex-wrap gap-3 mb-3">
-                        {story.signups && story.signups > 0 && (
-                          <Badge variant="secondary" className="gap-1">
-                            <Users className="h-3 w-3" />
-                            {story.signups} signups
-                          </Badge>
-                        )}
-                        {story.revenue && story.revenue > 0 && (
-                          <Badge variant="secondary" className="gap-1">
-                            <DollarSign className="h-3 w-3" />
-                            ${story.revenue.toLocaleString()} revenue
-                          </Badge>
-                        )}
-                      </div>
-
-                      {story.testimonial && (
-                        <div className="bg-muted/50 rounded-lg p-4 border border-border">
-                          <Quote className="h-4 w-4 text-muted-foreground mb-1" />
-                          <p className="text-sm italic text-foreground">{story.testimonial}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <StoryCard key={story.product_id} story={story} />
             ))}
           </div>
         )}

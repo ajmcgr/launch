@@ -46,6 +46,15 @@ interface TopMaker {
   karma: number;
 }
 
+interface SuccessStoryItem {
+  product_id: string;
+  name: string;
+  slug: string;
+  signups: number;
+  revenue: number;
+  testimonial: string | null;
+}
+
 interface ContentSection {
   title: string;
   description: string;
@@ -55,6 +64,7 @@ interface ContentSection {
   topMakers?: TopMaker[];
   sponsoredProducts?: SponsoredProduct[];
   stackItems?: { id: number; name: string; slug: string; product_count: number }[];
+  successStories?: SuccessStoryItem[];
   isLoading: boolean;
 }
 
@@ -664,6 +674,49 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // Top 5 Monthly Success Stories - best outcomes from the last 30 days
+  const { data: topSuccessStories, isLoading: successStoriesLoading } = useQuery({
+    queryKey: ['auto-success-stories-monthly'],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date(todayUTC.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      
+      const { data: outcomes, error } = await (supabase as any)
+        .from('product_outcomes')
+        .select('product_id, signups, revenue, testimonial, updated_at')
+        .or('signups.gt.0,revenue.gt.0,testimonial.neq.')
+        .gte('updated_at', thirtyDaysAgo)
+        .order('updated_at', { ascending: false });
+      
+      if (error) throw error;
+      if (!outcomes || outcomes.length === 0) return [];
+
+      const productIds = outcomes.map((o: any) => o.product_id);
+      const { data: products } = await supabase
+        .from('products')
+        .select('id, name, slug')
+        .in('id', productIds)
+        .eq('status', 'launched');
+
+      const productMap = new Map((products || []).map((p: any) => [p.id, p]));
+
+      return outcomes
+        .filter((o: any) => productMap.has(o.product_id))
+        .map((o: any) => {
+          const p = productMap.get(o.product_id);
+          return {
+            product_id: o.product_id,
+            name: p.name,
+            slug: p.slug,
+            signups: o.signups || 0,
+            revenue: o.revenue || 0,
+            testimonial: o.testimonial,
+          };
+        })
+        .sort((a: any, b: any) => (b.signups + b.revenue) - (a.signups + a.revenue))
+        .slice(0, 5) as SuccessStoryItem[];
+    },
+  });
+
   // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo, sponsoredProductIds],
@@ -804,6 +857,14 @@ export const AutoSurfacedContent = () => {
         .join('\n\n');
       sections.push(`## 🆕 Latest Tech on Launch\n\n${latestTechText}`);
     }
+
+    // Top Monthly Success Stories
+    if (topSuccessStories && topSuccessStories.length > 0) {
+      const storiesText = topSuccessStories
+        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`)
+        .join('\n\n');
+      sections.push(`## 🎯 Top Monthly Success Stories\n\n${storiesText}`);
+    }
     
     if (sections.length === 0) {
       toast.error('No content available to copy');
@@ -888,6 +949,13 @@ export const AutoSurfacedContent = () => {
       stackItems: latestTech,
       isLoading: latestTechLoading,
     },
+    {
+      title: "🎯 Top Monthly Success Stories",
+      description: "Best reported outcomes from the last 30 days",
+      icon: null,
+      successStories: topSuccessStories,
+      isLoading: successStoriesLoading,
+    },
   ];
 
   return (
@@ -929,6 +997,17 @@ export const AutoSurfacedContent = () => {
                 )}
                 {section.stackItems && section.stackItems.length > 0 && (
                   <CopyAllStackButton items={section.stackItems} title={section.title} />
+                )}
+                {section.successStories && section.successStories.length > 0 && (
+                  <Button variant="outline" size="sm" className="gap-2" onClick={async () => {
+                    const text = section.successStories!.map(s => 
+                      `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`
+                    ).join('\n\n');
+                    await navigator.clipboard.writeText(`${section.title}\n\n${text}`);
+                    toast.success('Success stories copied!');
+                  }}>
+                    <Copy className="h-4 w-4" /> Copy All
+                  </Button>
                 )}
               </div>
               <CardDescription>{section.description}</CardDescription>
@@ -1006,6 +1085,46 @@ export const AutoSurfacedContent = () => {
                 ) : (
                   <p className="text-sm text-muted-foreground py-4 text-center">
                     No technologies found
+                  </p>
+                )
+              ) : section.successStories ? (
+                section.successStories.length > 0 ? (
+                  section.successStories.map((story) => (
+                    <div key={story.product_id} className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium truncate">{story.name}</span>
+                          {story.signups > 0 && (
+                            <Badge variant="secondary" className="text-xs">
+                              {story.signups} signups
+                            </Badge>
+                          )}
+                          {story.revenue > 0 && (
+                            <Badge variant="secondary" className="text-xs">
+                              ${story.revenue.toLocaleString()}
+                            </Badge>
+                          )}
+                        </div>
+                        {story.testimonial && (
+                          <p className="text-sm text-muted-foreground truncate mt-0.5 italic">
+                            "{truncateToOneSentence(story.testimonial)}"
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/launch/{story.slug}</p>
+                      </div>
+                      <div className="flex items-center gap-1 ml-2">
+                        <CopyButton text={`${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? `\n"${truncateToOneSentence(story.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${story.slug}`} label="story" />
+                        <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
+                          <a href={`/launch/${story.slug}`} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    No success stories this month
                   </p>
                 )
               ) : null}
