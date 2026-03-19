@@ -46,6 +46,15 @@ interface TopMaker {
   karma: number;
 }
 
+interface SuccessStoryItem {
+  product_id: string;
+  name: string;
+  slug: string;
+  signups: number;
+  revenue: number;
+  testimonial: string | null;
+}
+
 interface ContentSection {
   title: string;
   description: string;
@@ -55,6 +64,7 @@ interface ContentSection {
   topMakers?: TopMaker[];
   sponsoredProducts?: SponsoredProduct[];
   stackItems?: { id: number; name: string; slug: string; product_count: number }[];
+  successStories?: SuccessStoryItem[];
   isLoading: boolean;
 }
 
