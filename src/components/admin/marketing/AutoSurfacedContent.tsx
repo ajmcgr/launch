@@ -674,6 +674,47 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // Top 5 Monthly Success Stories - best outcomes from the last 30 days
+  const { data: topSuccessStories, isLoading: successStoriesLoading } = useQuery({
+    queryKey: ['auto-success-stories-monthly'],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date(todayUTC.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      
+      const { data: outcomes, error } = await (supabase as any)
+        .from('product_outcomes')
+        .select('product_id, signups, revenue, testimonial, updated_at')
+        .or('signups.gt.0,revenue.gt.0,testimonial.neq.')
+        .gte('updated_at', thirtyDaysAgo)
+        .order('updated_at', { ascending: false });
+      
+      if (error) throw error;
+      if (!outcomes || outcomes.length === 0) return [];
+
+      const productIds = outcomes.map((o: any) => o.product_id);
+      const { data: products } = await supabase
+        .from('products')
+        .select('id, name, slug')
+        .in('id', productIds)
+        .eq('status', 'launched');
+
+      const productMap = new Map((products || []).map((p: any) => [p.id, p]));
+
+      return outcomes
+        .filter((o: any) => productMap.has(o.product_id))
+        .map((o: any) => {
+          const p = productMap.get(o.product_id);
+          return {
+            product_id: o.product_id,
+            name: p.name,
+            slug: p.slug,
+            signups: o.signups || 0,
+            revenue: o.revenue || 0,
+            testimonial: o.testimonial,
+          };
+        })
+        .sort((a: any, b: any) => (b.signups + b.revenue) - (a.signups + a.revenue))
+        .slice(0, 5) as SuccessStoryItem[];
+
   // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo, sponsoredProductIds],
