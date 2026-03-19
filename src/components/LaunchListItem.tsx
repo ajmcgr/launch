@@ -103,6 +103,9 @@ export const LaunchListItem = ({
                 src={iconUrl} 
                 alt={name} 
                 className="w-full h-full object-cover rounded-lg"
+                width={40}
+                height={40}
+                loading="lazy"
                 onError={(e) => {
                   e.currentTarget.src = defaultProductIcon;
                 }}
@@ -114,6 +117,8 @@ export const LaunchListItem = ({
                 src={defaultProductIcon} 
                 alt={name} 
                 className="w-full h-full object-cover rounded-lg"
+                width={40}
+                height={40}
               />
             )}
           </div>

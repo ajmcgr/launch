@@ -130,7 +130,7 @@ export const Header = () => {
           {/* Left: Logo + Navigation */}
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center">
-              <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" />
+              <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} fetchPriority="high" />
             </Link>
             <nav className="hidden md:flex items-center gap-4">
               <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
