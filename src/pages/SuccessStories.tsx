@@ -40,11 +40,13 @@ const SuccessStories = () => {
         }
 
         const productIds = data.map((d: any) => d.product_id);
-        const { data: products } = await supabase
+        const { data: products, error: productsError } = await supabase
           .from('products')
-          .select('id, name, slug, tagline, icon_url')
+          .select('id, name, slug, tagline, product_media(url, type)')
           .in('id', productIds)
           .eq('status', 'launched');
+
+        if (productsError) throw productsError;
 
         const productMap = new Map((products || []).map((p: any) => [p.id, p]));
 
@@ -52,12 +54,14 @@ const SuccessStories = () => {
           .filter((d: any) => productMap.has(d.product_id))
           .map((d: any) => {
             const p = productMap.get(d.product_id);
+            const productIcon = p.product_media?.find((media: any) => media.type === 'icon')?.url || null;
+
             return {
               ...d,
               product_name: p.name,
               product_slug: p.slug,
               product_tagline: p.tagline,
-              product_icon: p.icon_url,
+              product_icon: productIcon,
             };
           });
 
