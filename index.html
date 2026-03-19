@@ -8,6 +8,12 @@
     <meta name="description" content="Join founders launching with AI. Discover the best new apps, vote on your favorites, and launch your own app to thousands of engaged users." />
     <meta name="author" content="TryLaunch.ai" />
 
+    <!-- Preconnect to critical origins -->
+    <link rel="preconnect" href="https://gzpypxgdkxdynovploxn.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://gzpypxgdkxdynovploxn.supabase.co" />
+    <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin />
+    <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
+
     <meta property="og:title" content="Launch - Launch your product" />
     <meta property="og:description" content="Join founders launching with AI. Discover the best new apps and launch yours to thousands of engaged users." />
     <meta property="og:type" content="website" />
@@ -17,21 +23,25 @@
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://trylaunch.ai/social-card.png?v=2" />
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) — defer to reduce main-thread blocking -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LXSLCD8822"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-LXSLCD8822');
     </script>
 
-    <!-- Crisp Chat Widget -->
-    <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="dc5e5293-e9a2-4f76-af60-2449d6f2f0e6";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+    <!-- Crisp Chat Widget — delay loading until after page is interactive -->
+    <script type="text/javascript">
+      window.$crisp=[];window.CRISP_WEBSITE_ID="dc5e5293-e9a2-4f76-af60-2449d6f2f0e6";
+      window.addEventListener('load', function(){
+        var d=document;var s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);
+      });
+    </script>
 
     <!-- Ahrefs Analytics -->
-    <script src="https://analytics.ahrefs.com/analytics.js" data-key="wIFgCZo0mzM/9QtxrLCXdA" async></script>
+    <script src="https://analytics.ahrefs.com/analytics.js" data-key="wIFgCZo0mzM/9QtxrLCXdA" async defer></script>
   </head>
 
   <body>

@@ -105,6 +105,9 @@ export const LaunchCard = ({
             src={thumbnail} 
             alt={name} 
             className="w-full h-full object-cover rounded-lg"
+            width={400}
+            height={225}
+            loading="lazy"
             onError={(e) => {
               e.currentTarget.src = defaultProductIcon;
               e.currentTarget.className = "w-16 h-16 object-contain";
@@ -115,6 +118,9 @@ export const LaunchCard = ({
             src={iconUrl} 
             alt={name} 
             className="w-16 h-16 object-contain"
+            width={64}
+            height={64}
+            loading="lazy"
             onError={(e) => {
               e.currentTarget.src = defaultProductIcon;
             }}
@@ -126,6 +132,8 @@ export const LaunchCard = ({
             src={defaultProductIcon} 
             alt={name} 
             className="w-16 h-16 object-contain"
+            width={64}
+            height={64}
           />
         )}
       </div>
