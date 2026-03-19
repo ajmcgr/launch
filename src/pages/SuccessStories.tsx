@@ -174,8 +174,8 @@ const SuccessStories = () => {
             <Card className="text-center">
               <CardContent className="pt-6">
                 <Users className="h-5 w-5 mx-auto mb-2 text-primary" />
-                <p className="text-3xl font-bold">{totals.signups.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Total Signups</p>
+                <p className="text-3xl font-bold">{platformUsers.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Makers on Launch</p>
               </CardContent>
             </Card>
             <Card className="text-center">
