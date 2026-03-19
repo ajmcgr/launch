@@ -998,6 +998,17 @@ export const AutoSurfacedContent = () => {
                 {section.stackItems && section.stackItems.length > 0 && (
                   <CopyAllStackButton items={section.stackItems} title={section.title} />
                 )}
+                {section.successStories && section.successStories.length > 0 && (
+                  <Button variant="outline" size="sm" className="gap-2" onClick={async () => {
+                    const text = section.successStories!.map(s => 
+                      `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`
+                    ).join('\n\n');
+                    await navigator.clipboard.writeText(`${section.title}\n\n${text}`);
+                    toast.success('Success stories copied!');
+                  }}>
+                    <Copy className="h-4 w-4" /> Copy All
+                  </Button>
+                )}
               </div>
               <CardDescription>{section.description}</CardDescription>
             </CardHeader>
