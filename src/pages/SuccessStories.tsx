@@ -78,6 +78,12 @@ const SuccessStories = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
+        // Fetch platform user count in parallel with outcomes
+        const userCountPromise = supabase
+          .from('users')
+          .select('id', { count: 'exact', head: true });
+
+
         const { data, error } = await (supabase as any)
           .from('product_outcomes')
           .select('product_id, signups, revenue, testimonial, updated_at')
