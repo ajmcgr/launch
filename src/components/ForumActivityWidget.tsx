@@ -177,8 +177,8 @@ export const ForumActivityWidget = () => {
 
   if (loading) {
     return (
-      <div className="rounded-lg p-4">
-        <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
+    <div className="rounded-lg bg-muted/30 p-4">
+      <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
           Community Forums
         </h3>
         <div className="space-y-1">
@@ -194,7 +194,7 @@ export const ForumActivityWidget = () => {
   }
 
   return (
-    <div className="rounded-lg p-4">
+    <div className="rounded-lg bg-muted/30 p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           Community Forums
