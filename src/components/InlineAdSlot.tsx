@@ -64,7 +64,7 @@ const InlineAdSlot = () => {
   return (
     <Link
       to={`/launch/${sponsored.slug}`}
-      className="flex items-center gap-4 p-5 rounded-xl bg-muted/20 border border-border/50 hover:bg-muted/40 transition-colors group"
+      className="flex items-center gap-4 p-5 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors group"
     >
       {sponsored.icon_url ? (
         <img
