@@ -857,6 +857,14 @@ export const AutoSurfacedContent = () => {
         .join('\n\n');
       sections.push(`## 🆕 Latest Tech on Launch\n\n${latestTechText}`);
     }
+
+    // Top Monthly Success Stories
+    if (topSuccessStories && topSuccessStories.length > 0) {
+      const storiesText = topSuccessStories
+        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`)
+        .join('\n\n');
+      sections.push(`## 🎯 Top Monthly Success Stories\n\n${storiesText}`);
+    }
     
     if (sections.length === 0) {
       toast.error('No content available to copy');
