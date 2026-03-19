@@ -9,7 +9,7 @@ interface AdvertiseCTAProps {
 const AdvertiseCTA = ({ className, compact = false }: AdvertiseCTAProps) => {
   if (compact) {
     return (
-      <div className={`w-full bg-muted/30 px-5 py-5 space-y-3 ${className || ''}`}>
+      <div className={`w-full bg-muted/30 rounded-lg px-5 py-5 space-y-3 ${className || ''}`}>
         <h3 className="text-sm font-semibold">Promote Your Product</h3>
         <p className="text-xs text-muted-foreground">
           From $99/mo · 3.2% CTR · 9x ROI

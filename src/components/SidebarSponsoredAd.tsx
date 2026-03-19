@@ -68,7 +68,7 @@ const SidebarSponsoredAd = () => {
           <Link
             key={product.id}
             to={`/launch/${product.slug}`}
-            className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 border border-border/40 hover:bg-muted/40 transition-colors group"
+            className="flex items-start gap-3 p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors group"
           >
             {product.icon_url ? (
               <img

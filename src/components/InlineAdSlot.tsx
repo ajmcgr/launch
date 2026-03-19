@@ -58,7 +58,7 @@ const InlineAdSlot = () => {
 
   // Show sponsored ad if available, otherwise show CTA
   if (!sponsored) {
-    return <AdvertiseCTA className="rounded-xl border border-border/50" />;
+    return <AdvertiseCTA className="rounded-lg" />;
   }
 
   return (
