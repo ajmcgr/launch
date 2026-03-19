@@ -714,6 +714,8 @@ export const AutoSurfacedContent = () => {
         })
         .sort((a: any, b: any) => (b.signups + b.revenue) - (a.signups + a.revenue))
         .slice(0, 5) as SuccessStoryItem[];
+    },
+  });
 
   // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
