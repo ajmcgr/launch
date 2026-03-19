@@ -122,6 +122,10 @@ const SuccessStories = () => {
           });
 
         setStories(merged);
+        
+        const userCountRes = await userCountPromise;
+        setPlatformUsers(userCountRes.count || 0);
+
         setTotals({
           signups: merged.reduce((sum, s) => sum + (s.signups || 0), 0),
           revenue: merged.reduce((sum, s) => sum + (s.revenue || 0), 0),
