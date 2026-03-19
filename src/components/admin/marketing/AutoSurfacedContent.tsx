@@ -941,6 +941,13 @@ export const AutoSurfacedContent = () => {
       stackItems: latestTech,
       isLoading: latestTechLoading,
     },
+    {
+      title: "🎯 Top Monthly Success Stories",
+      description: "Best reported outcomes from the last 30 days",
+      icon: null,
+      successStories: topSuccessStories,
+      isLoading: successStoriesLoading,
+    },
   ];
 
   return (
