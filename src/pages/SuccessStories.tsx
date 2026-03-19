@@ -73,6 +73,7 @@ const SuccessStories = () => {
   const [stories, setStories] = useState<SuccessStory[]>([]);
   const [loading, setLoading] = useState(true);
   const [totals, setTotals] = useState({ signups: 0, revenue: 0, stories: 0 });
+  const [platformUsers, setPlatformUsers] = useState(0);
 
   useEffect(() => {
     const fetchStories = async () => {
