@@ -121,45 +121,6 @@ const Home = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Check if we have enough daily launches to default to 'today'
-  useEffect(() => {
-    const checkDailyLaunchVolume = async () => {
-      try {
-        // Get launch counts per day for the last 14 days
-        const fourteenDaysAgo = new Date();
-        fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-        
-        const { data, error } = await supabase
-          .from('products')
-          .select('launch_date')
-          .eq('status', 'launched')
-          .gte('launch_date', fourteenDaysAgo.toISOString());
-        
-        if (error || !data) return;
-        
-        // Group by date and count
-        const dailyCounts = new Map<string, number>();
-        data.forEach(product => {
-          if (product.launch_date) {
-            const day = product.launch_date.split('T')[0];
-            dailyCounts.set(day, (dailyCounts.get(day) || 0) + 1);
-          }
-        });
-        
-        // Check if all 14 days have 10+ launches consistently
-        const allDaysHave10Plus = dailyCounts.size >= 14 && 
-          Array.from(dailyCounts.values()).every(count => count >= 10);
-        
-        if (allDaysHave10Plus) {
-          setCurrentPeriod('today');
-        }
-      } catch (err) {
-        console.error('Error checking launch volume:', err);
-      }
-    };
-    
-    checkDailyLaunchVolume();
-  }, []);
 
   // Fetch products only once when user state is first determined
   // Note: Don't include currentPeriod in deps - handlePeriodChange calls fetchProducts directly
@@ -283,7 +244,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'all' | 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false, skipFallback: boolean = false) => {
+  const fetchProducts = async (period: 'all' | 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker', pageNum: number, reset: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
@@ -533,15 +494,6 @@ const Home = () => {
         launch_date: p.launch_date
       }));
 
-      // If "today" has too few products (less than 10) and this isn't already a fallback retry or user-initiated, switch to "week"
-      // skipFallback is true when user manually clicks "Today" - they should be allowed to see sparse results
-      const MIN_PRODUCTS_THRESHOLD = 10;
-      if (reset && period === 'today' && formattedProducts.length < MIN_PRODUCTS_THRESHOLD && !isRetryWithFallback && !skipFallback) {
-        console.log(`Only ${formattedProducts.length} products launched today (< ${MIN_PRODUCTS_THRESHOLD}), falling back to week view`);
-        setCurrentPeriod('week');
-        // Retry with week period
-        return fetchProducts('week', currentSort, 0, true, true, false);
-      }
 
       if (reset) {
         setProducts(formattedProducts);
@@ -573,8 +525,7 @@ const Home = () => {
     setPage(0);
     setProducts([]);
     setHasMore(true);
-    // Pass skipFallback=true when user manually selects a period - they should see actual results
-    fetchProducts(period, sort, 0, true, false, true);
+    fetchProducts(period, sort, 0, true);
   };
 
   const handleSortChange = (newSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker') => {
