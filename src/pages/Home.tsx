@@ -525,8 +525,7 @@ const Home = () => {
     setPage(0);
     setProducts([]);
     setHasMore(true);
-    // Pass skipFallback=true when user manually selects a period - they should see actual results
-    fetchProducts(period, sort, 0, true, false, true);
+    fetchProducts(period, sort, 0, true);
   };
 
   const handleSortChange = (newSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker') => {
