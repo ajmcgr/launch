@@ -244,7 +244,7 @@ const Home = () => {
     }
   };
 
-  const fetchProducts = async (period: 'all' | 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker', pageNum: number, reset: boolean = false, isRetryWithFallback: boolean = false, skipFallback: boolean = false) => {
+  const fetchProducts = async (period: 'all' | 'today' | 'week' | 'month' | 'year', currentSort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker', pageNum: number, reset: boolean = false) => {
     if (reset) {
       setLoading(true);
     } else {
