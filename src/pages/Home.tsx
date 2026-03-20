@@ -121,45 +121,6 @@ const Home = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Check if we have enough daily launches to default to 'today'
-  useEffect(() => {
-    const checkDailyLaunchVolume = async () => {
-      try {
-        // Get launch counts per day for the last 14 days
-        const fourteenDaysAgo = new Date();
-        fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-        
-        const { data, error } = await supabase
-          .from('products')
-          .select('launch_date')
-          .eq('status', 'launched')
-          .gte('launch_date', fourteenDaysAgo.toISOString());
-        
-        if (error || !data) return;
-        
-        // Group by date and count
-        const dailyCounts = new Map<string, number>();
-        data.forEach(product => {
-          if (product.launch_date) {
-            const day = product.launch_date.split('T')[0];
-            dailyCounts.set(day, (dailyCounts.get(day) || 0) + 1);
-          }
-        });
-        
-        // Check if all 14 days have 10+ launches consistently
-        const allDaysHave10Plus = dailyCounts.size >= 14 && 
-          Array.from(dailyCounts.values()).every(count => count >= 10);
-        
-        if (allDaysHave10Plus) {
-          setCurrentPeriod('today');
-        }
-      } catch (err) {
-        console.error('Error checking launch volume:', err);
-      }
-    };
-    
-    checkDailyLaunchVolume();
-  }, []);
 
   // Fetch products only once when user state is first determined
   // Note: Don't include currentPeriod in deps - handlePeriodChange calls fetchProducts directly
