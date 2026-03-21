@@ -409,6 +409,15 @@ const UserProfile = () => {
                 <div className="flex items-center gap-2 mb-1">
                   <h1 className="text-3xl font-bold">@{profile.username}</h1>
                   <KarmaScore karma={makerScore} size="md" />
+                  {bestAward && (
+                    <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
+                      bestAward === 'gold' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                      bestAward === 'silver' ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
+                      'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    }`}>
+                      {bestAward === 'gold' ? '🥇 Gold' : bestAward === 'silver' ? '🥈 Silver' : '🥉 Bronze'}
+                    </span>
+                  )}
                 </div>
                 {profile.name && (
                   <p className="text-xl text-muted-foreground mb-2">{profile.name}</p>
