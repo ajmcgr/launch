@@ -28,6 +28,7 @@ const UserProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [bestAward, setBestAward] = useState<'gold' | 'silver' | 'bronze' | null>(null);
 
   useEffect(() => {
     const init = async () => {
