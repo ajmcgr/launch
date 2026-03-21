@@ -623,8 +623,18 @@ const Home = () => {
     }
 
     if (filteredList.length === 0) {
-      return <div className="text-center py-12 text-muted-foreground">No products found for this period.</div>;
+      return (
+        <div className="text-center py-12 text-muted-foreground">
+          <p>No products found for this period.</p>
+          {currentPeriod === 'today' && (
+            <p className="mt-2 text-sm">Be the first to launch today! <Link to="/submit" className="text-primary hover:underline">Submit your product →</Link></p>
+          )}
+        </div>
+      );
     }
+
+    // Show encouragement when Today has very few products
+    const showLowVolumeNote = currentPeriod === 'today' && filteredList.length <= 3;
 
     // Helper to render products with sponsored items at their positions
     const renderProductsWithSponsored = (viewMode: 'list' | 'grid' | 'compact') => {
@@ -739,6 +749,13 @@ const Home = () => {
         ) : (
           <div className="space-y-4">
             {renderProductsWithSponsored('grid')}
+          </div>
+        )}
+
+        {/* Low volume encouragement for Today */}
+        {showLowVolumeNote && (
+          <div className="text-center py-6 text-sm text-muted-foreground">
+            <p>More launches coming soon today! <Link to="/submit" className="text-primary hover:underline">Be next →</Link></p>
           </div>
         )}
         

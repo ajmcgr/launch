@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign, Link2, Copy, Check } from 'lucide-react';
+import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign, Link2, Copy, Check, Trophy, Medal, Award } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
@@ -33,6 +33,7 @@ const LaunchDetail = () => {
   const [userVote, setUserVote] = useState<1 | -1 | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
+  const [bestRanking, setBestRanking] = useState<{ rank: number; period: string; date: string } | null>(null);
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
@@ -169,6 +170,47 @@ const LaunchDetail = () => {
           .eq('product_id', productData.id);
 
         setFollowerCount(followersCount || 0);
+
+        // Compute best ranking - find this product's rank among products launched on the same day
+        if (productData.launch_date) {
+          try {
+            const launchDay = productData.launch_date.substring(0, 10);
+            const nextDay = new Date(launchDay + 'T00:00:00Z');
+            nextDay.setDate(nextDay.getDate() + 1);
+
+            // Get all products launched on same day with their votes
+            const { data: sameDayProducts } = await supabase
+              .from('products')
+              .select('id')
+              .eq('status', 'launched')
+              .gte('launch_date', launchDay)
+              .lt('launch_date', nextDay.toISOString().substring(0, 10));
+
+            if (sameDayProducts && sameDayProducts.length > 0) {
+              const productIds = sameDayProducts.map(p => p.id);
+              const { data: voteCounts } = await supabase
+                .from('product_vote_counts')
+                .select('product_id, net_votes')
+                .in('product_id', productIds);
+
+              const sorted = (voteCounts || []).sort((a: any, b: any) => (b.net_votes || 0) - (a.net_votes || 0));
+              const rankIndex = sorted.findIndex((v: any) => v.product_id === productData.id);
+              
+              if (rankIndex !== -1) {
+                const bestPeriod = productData.won_daily ? 'Daily Winner' :
+                  productData.won_weekly ? 'Weekly Winner' :
+                  productData.won_monthly ? 'Monthly Winner' : 'Day';
+                setBestRanking({
+                  rank: rankIndex + 1,
+                  period: bestPeriod,
+                  date: launchDay
+                });
+              }
+            }
+          } catch (e) {
+            console.error('Error computing ranking:', e);
+          }
+        }
 
         setProduct({
           ...productData,
@@ -777,6 +819,40 @@ const LaunchDetail = () => {
                     <div>
                       <div className="font-medium text-foreground text-xs">Launched</div>
                       <div className="text-xs">{new Date(product.launch_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Best Ranking */}
+              {bestRanking && (
+                <div className="pt-4 border-t border-border/30">
+                  <div className="flex items-center gap-2 text-sm">
+                    {bestRanking.rank === 1 ? (
+                      <Trophy className="h-4 w-4 text-yellow-500" />
+                    ) : bestRanking.rank === 2 ? (
+                      <Medal className="h-4 w-4 text-gray-400" />
+                    ) : bestRanking.rank === 3 ? (
+                      <Award className="h-4 w-4 text-amber-600" />
+                    ) : (
+                      <Trophy className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <div>
+                      <div className="font-medium text-foreground text-xs flex items-center gap-1.5">
+                        #{bestRanking.rank} {bestRanking.period}
+                        {bestRanking.rank <= 3 && (
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
+                            bestRanking.rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                            bestRanking.rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
+                            'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                          }`}>
+                            {bestRanking.rank === 1 ? 'Gold' : bestRanking.rank === 2 ? 'Silver' : 'Bronze'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(bestRanking.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </div>
                     </div>
                   </div>
                 </div>

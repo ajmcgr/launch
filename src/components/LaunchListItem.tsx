@@ -136,9 +136,20 @@ export const LaunchListItem = ({
               </Link>
             )}
             {rank && !sponsored && (
-              <span className="text-sm font-bold text-muted-foreground">
-                {rank}.
-              </span>
+              <>
+                <span className="text-sm font-bold text-muted-foreground">
+                  {rank}.
+                </span>
+                {rank <= 3 && (
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
+                    rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                    rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
+                    'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                  }`}>
+                    {rank === 1 ? 'Gold' : rank === 2 ? 'Silver' : 'Bronze'}
+                  </span>
+                )}
+              </>
             )}
             <h3 className="font-semibold text-base hover:text-primary transition-colors">
               {name}
