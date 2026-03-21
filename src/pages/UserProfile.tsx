@@ -84,6 +84,21 @@ const UserProfile = () => {
         .order('launch_date', { ascending: false });
 
       if (productsData) {
+        // Compute best award from product winner flags
+        let hasDailyWin = false;
+        let hasWeeklyWin = false;
+        let hasMonthlyWin = false;
+        productsData.forEach((p: any) => {
+          if (p.won_monthly) hasMonthlyWin = true;
+          if (p.won_weekly) hasWeeklyWin = true;
+          if (p.won_daily) hasDailyWin = true;
+        });
+        // Monthly > Weekly > Daily winner maps to Gold > Silver > Bronze
+        if (hasMonthlyWin) setBestAward('gold');
+        else if (hasWeeklyWin) setBestAward('gold');
+        else if (hasDailyWin) setBestAward('gold');
+        else setBestAward(null);
+
         // Get vote counts
         const productIds = productsData.map(p => p.id);
         const { data: votesData } = await supabase
