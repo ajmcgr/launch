@@ -751,6 +751,13 @@ const Home = () => {
             {renderProductsWithSponsored('grid')}
           </div>
         )}
+
+        {/* Low volume encouragement for Today */}
+        {showLowVolumeNote && (
+          <div className="text-center py-6 text-sm text-muted-foreground">
+            <p>More launches coming soon today! <Link to="/submit" className="text-primary hover:underline">Be next →</Link></p>
+          </div>
+        )}
         
         {/* View all link */}
         {filteredList.length > 0 && (
