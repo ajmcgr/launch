@@ -171,45 +171,13 @@ const LaunchDetail = () => {
 
         setFollowerCount(followersCount || 0);
 
-        // Compute best ranking - find this product's rank among products launched on the same day
-        if (productData.launch_date) {
-          try {
-            const launchDay = productData.launch_date.substring(0, 10);
-            const nextDay = new Date(launchDay + 'T00:00:00Z');
-            nextDay.setDate(nextDay.getDate() + 1);
-
-            // Get all products launched on same day with their votes
-            const { data: sameDayProducts } = await supabase
-              .from('products')
-              .select('id')
-              .eq('status', 'launched')
-              .gte('launch_date', launchDay)
-              .lt('launch_date', nextDay.toISOString().substring(0, 10));
-
-            if (sameDayProducts && sameDayProducts.length > 0) {
-              const productIds = sameDayProducts.map(p => p.id);
-              const { data: voteCounts } = await supabase
-                .from('product_vote_counts')
-                .select('product_id, net_votes')
-                .in('product_id', productIds);
-
-              const sorted = (voteCounts || []).sort((a: any, b: any) => (b.net_votes || 0) - (a.net_votes || 0));
-              const rankIndex = sorted.findIndex((v: any) => v.product_id === productData.id);
-              
-              if (rankIndex !== -1) {
-                const bestPeriod = productData.won_daily ? 'Daily Winner' :
-                  productData.won_weekly ? 'Weekly Winner' :
-                  productData.won_monthly ? 'Monthly Winner' : 'Day';
-                setBestRanking({
-                  rank: rankIndex + 1,
-                  period: bestPeriod,
-                  date: launchDay
-                });
-              }
-            }
-          } catch (e) {
-            console.error('Error computing ranking:', e);
-          }
+        // Use stored winner flags as permanent awards (set by detect-winners cron)
+        if (productData.won_monthly) {
+          setBestRanking({ rank: 1, period: 'Monthly Winner', date: productData.launch_date?.substring(0, 10) || '' });
+        } else if (productData.won_weekly) {
+          setBestRanking({ rank: 2, period: 'Weekly Winner', date: productData.launch_date?.substring(0, 10) || '' });
+        } else if (productData.won_daily) {
+          setBestRanking({ rank: 3, period: 'Daily Winner', date: productData.launch_date?.substring(0, 10) || '' });
         }
 
         setProduct({
