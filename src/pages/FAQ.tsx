@@ -187,10 +187,18 @@ const FAQ = () => {
 
           <AccordionItem value="winners" className="border rounded-lg px-6">
             <AccordionTrigger className="text-left">
-              How are daily, weekly, and monthly winners determined?
+              How do Gold, Silver, and Bronze awards work?
             </AccordionTrigger>
             <AccordionContent>
-              Winners are automatically determined based on the highest net votes within each time period. The system runs daily to identify and mark winning products. Winners may receive special badges and recognition on the platform. These achievements are permanently recorded and visible on product pages.
+              Products can earn permanent award badges based on their performance:
+              <ul className="list-disc ml-5 mt-2 space-y-1">
+                <li><strong>🥇 Gold:</strong> Awarded to the top monthly winner</li>
+                <li><strong>🥈 Silver:</strong> Awarded to the top weekly winner</li>
+                <li><strong>🥉 Bronze:</strong> Awarded to the top daily winner</li>
+              </ul>
+              <p className="mt-2">
+                Awards are determined automatically at the end of each launch window based on net votes. Once a product earns a badge, it's permanent and displayed on the product page and in listings. These awards are product-level only — they do not appear on maker profiles or leaderboards.
+              </p>
             </AccordionContent>
           </AccordionItem>
 
