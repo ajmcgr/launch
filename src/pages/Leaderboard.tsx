@@ -172,7 +172,7 @@ const Leaderboard = () => {
                       <h3 className="font-semibold text-base text-foreground truncate">
                         {user.name || `@${user.username}`}
                       </h3>
-                      {sortMode === 'weekly' && rank <= 3 && (
+                      {rank <= 3 && (
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
                           rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
                           rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
