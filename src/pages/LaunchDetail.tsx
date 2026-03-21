@@ -468,8 +468,19 @@ const LaunchDetail = () => {
           {/* Main Content - Left Column */}
           <div className="lg:col-span-2 space-y-10">
             <div>
-              <h1 className="text-4xl font-bold mb-3">{product.name}</h1>
-              <p className="text-xl text-muted-foreground">{product.tagline}</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-4xl font-bold">{product.name}</h1>
+                {bestRanking && bestRanking.rank <= 3 && (
+                  <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
+                    bestRanking.rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                    bestRanking.rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
+                    'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                  }`}>
+                    {bestRanking.rank === 1 ? '🥇 Gold' : bestRanking.rank === 2 ? '🥈 Silver' : '🥉 Bronze'}
+                  </span>
+                )}
+              </div>
+              <p className="text-xl text-muted-foreground mt-3">{product.tagline}</p>
               
               {/* Mobile Makers - visible on mobile only */}
               {product.makers && product.makers.length > 0 && (
