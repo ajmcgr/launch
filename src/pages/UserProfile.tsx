@@ -28,6 +28,7 @@ const UserProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [bestAward, setBestAward] = useState<'gold' | 'silver' | 'bronze' | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -83,6 +84,21 @@ const UserProfile = () => {
         .order('launch_date', { ascending: false });
 
       if (productsData) {
+        // Compute best award from product winner flags
+        let hasDailyWin = false;
+        let hasWeeklyWin = false;
+        let hasMonthlyWin = false;
+        productsData.forEach((p: any) => {
+          if (p.won_monthly) hasMonthlyWin = true;
+          if (p.won_weekly) hasWeeklyWin = true;
+          if (p.won_daily) hasDailyWin = true;
+        });
+        // Monthly winner = Gold, Weekly winner = Silver, Daily winner = Bronze
+        if (hasMonthlyWin) setBestAward('gold');
+        else if (hasWeeklyWin) setBestAward('silver');
+        else if (hasDailyWin) setBestAward('bronze');
+        else setBestAward(null);
+
         // Get vote counts
         const productIds = productsData.map(p => p.id);
         const { data: votesData } = await supabase
@@ -393,6 +409,15 @@ const UserProfile = () => {
                 <div className="flex items-center gap-2 mb-1">
                   <h1 className="text-3xl font-bold">@{profile.username}</h1>
                   <KarmaScore karma={makerScore} size="md" />
+                  {bestAward && (
+                    <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
+                      bestAward === 'gold' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                      bestAward === 'silver' ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
+                      'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    }`}>
+                      {bestAward === 'gold' ? '🥇 Gold' : bestAward === 'silver' ? '🥈 Silver' : '🥉 Bronze'}
+                    </span>
+                  )}
                 </div>
                 {profile.name && (
                   <p className="text-xl text-muted-foreground mb-2">{profile.name}</p>
