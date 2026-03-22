@@ -202,10 +202,9 @@ const Index = () => {
     try {
       const { data: existingVote, error: existingVoteError } = await supabase
         .from('votes')
-        .select('id')
+        .select('id, value')
         .eq('product_id', launchId)
         .eq('user_id', user.id)
-        .eq('value', 1)
         .maybeSingle();
 
       if (existingVoteError) throw existingVoteError;
