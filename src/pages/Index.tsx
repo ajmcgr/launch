@@ -210,12 +210,19 @@ const Index = () => {
       if (existingVoteError) throw existingVoteError;
 
       if (existingVote) {
-        const { error: deleteError } = await supabase
-          .from('votes')
-          .delete()
-          .eq('id', existingVote.id);
-
-        if (deleteError) throw deleteError;
+        if (existingVote.value === 1) {
+          const { error: deleteError } = await supabase
+            .from('votes')
+            .delete()
+            .eq('id', existingVote.id);
+          if (deleteError) throw deleteError;
+        } else {
+          const { error: updateError } = await supabase
+            .from('votes')
+            .update({ value: 1 })
+            .eq('id', existingVote.id);
+          if (updateError) throw updateError;
+        }
       } else {
         const { error: insertError } = await supabase
           .from('votes')
