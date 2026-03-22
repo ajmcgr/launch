@@ -80,45 +80,78 @@ const Products = () => {
       return;
     }
 
-    try {
-      const hasVoted = userVotes.has(productId);
+    const hadVote = userVotes.has(productId);
 
-      if (hasVoted) {
-        await supabase
-          .from('votes')
-          .delete()
-          .eq('product_id', productId)
-          .eq('user_id', user.id);
-        
-        setUserVotes(prev => {
-          const next = new Set(prev);
-          next.delete(productId);
-          return next;
-        });
-        
-        setProducts(prev => 
-          prev.map(p => 
-            p.id === productId 
-              ? { ...p, netVotes: p.netVotes - 1 }
-              : p
-          )
-        );
+    setUserVotes(prev => {
+      const next = new Set(prev);
+      if (hadVote) {
+        next.delete(productId);
       } else {
-        await supabase
+        next.add(productId);
+      }
+      return next;
+    });
+
+    setProducts(prev => 
+      prev.map(p => 
+        p.id === productId 
+          ? { ...p, netVotes: Math.max(0, p.netVotes + (hadVote ? -1 : 1)) }
+          : p
+      )
+    );
+
+    try {
+      const { data: existingVote, error: existingVoteError } = await supabase
+        .from('votes')
+        .select('id, value')
+        .eq('product_id', productId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existingVoteError) throw existingVoteError;
+
+      if (existingVote) {
+        if (existingVote.value === 1) {
+          const { error: deleteError } = await supabase
+            .from('votes')
+            .delete()
+            .eq('id', existingVote.id);
+
+          if (deleteError) throw deleteError;
+        } else {
+          const { error: updateError } = await supabase
+            .from('votes')
+            .update({ value: 1 })
+            .eq('id', existingVote.id);
+
+          if (updateError) throw updateError;
+        }
+      } else {
+        const { error: insertError } = await supabase
           .from('votes')
           .insert({ product_id: productId, user_id: user.id, value: 1 });
-        
-        setUserVotes(prev => new Set(prev).add(productId));
-        
-        setProducts(prev => 
-          prev.map(p => 
-            p.id === productId 
-              ? { ...p, netVotes: p.netVotes + 1 }
-              : p
-          )
-        );
+
+        if (insertError) throw insertError;
       }
     } catch (error) {
+      setUserVotes(prev => {
+        const next = new Set(prev);
+        if (hadVote) {
+          next.add(productId);
+        } else {
+          next.delete(productId);
+        }
+        return next;
+      });
+
+      setProducts(prev => 
+        prev.map(p => 
+          p.id === productId 
+            ? { ...p, netVotes: Math.max(0, p.netVotes + (hadVote ? 1 : -1)) }
+            : p
+        )
+      );
+
       console.error('Error voting:', error);
       toast.error('Failed to vote');
     }

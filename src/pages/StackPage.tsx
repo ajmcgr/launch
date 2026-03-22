@@ -192,15 +192,54 @@ const StackPage = () => {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
+    const hadVote = product.userVote === 1;
+
+    setProducts(prev => prev.map(p =>
+      p.id === productId
+        ? { ...p, userVote: hadVote ? null : 1, netVotes: Math.max(0, p.netVotes + (hadVote ? -1 : 1)) }
+        : p
+    ));
+
     try {
-      if (product.userVote === 1) {
-        await supabase.from('votes').delete().eq('product_id', productId).eq('user_id', user.id);
-        setProducts(prev => prev.map(p => p.id === productId ? { ...p, userVote: null, netVotes: p.netVotes - 1 } : p));
+      const { data: existingVote, error: existingVoteError } = await supabase
+        .from('votes')
+        .select('id, value')
+        .eq('product_id', productId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existingVoteError) throw existingVoteError;
+
+      if (existingVote) {
+        if (existingVote.value === 1) {
+          const { error: deleteError } = await supabase
+            .from('votes')
+            .delete()
+            .eq('id', existingVote.id);
+
+          if (deleteError) throw deleteError;
+        } else {
+          const { error: updateError } = await supabase
+            .from('votes')
+            .update({ value: 1 })
+            .eq('id', existingVote.id);
+
+          if (updateError) throw updateError;
+        }
       } else {
-        await supabase.from('votes').upsert({ product_id: productId, user_id: user.id, value: 1 });
-        setProducts(prev => prev.map(p => p.id === productId ? { ...p, userVote: 1, netVotes: p.netVotes + 1 } : p));
+        const { error: insertError } = await supabase
+          .from('votes')
+          .insert({ product_id: productId, user_id: user.id, value: 1 });
+
+        if (insertError) throw insertError;
       }
     } catch (error) {
+      setProducts(prev => prev.map(p =>
+        p.id === productId
+          ? { ...p, userVote: hadVote ? 1 : null, netVotes: Math.max(0, p.netVotes + (hadVote ? 1 : -1)) }
+          : p
+      ));
+
       console.error('Vote error:', error);
       toast.error('Failed to vote');
     }
