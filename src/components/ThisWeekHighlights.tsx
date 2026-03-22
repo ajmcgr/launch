@@ -326,14 +326,17 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
     try {
       const { data: existingVote } = await supabase
         .from('votes')
-        .select('id')
+        .select('id, value')
         .eq('product_id', productId)
         .eq('user_id', user.id)
-        .eq('value', 1)
         .maybeSingle();
 
       if (existingVote) {
-        await supabase.from('votes').delete().eq('id', existingVote.id);
+        if (existingVote.value === 1) {
+          await supabase.from('votes').delete().eq('id', existingVote.id);
+        } else {
+          await supabase.from('votes').update({ value: 1 }).eq('id', existingVote.id);
+        }
       } else {
         await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
       }
