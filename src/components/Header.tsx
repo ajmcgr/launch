@@ -141,11 +141,8 @@ export const Header = () => {
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
-              <Link to="/makers" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Makers
-              </Link>
-              <Link to="/tech" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Tech
+              <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Pricing
               </Link>
               <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Newsletter
@@ -156,6 +153,23 @@ export const Header = () => {
               <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Advertise
               </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-sm font-medium text-nav-text hover:text-primary transition-colors flex items-center gap-1">
+                  Resources
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-background z-50">
+                  <DropdownMenuItem asChild>
+                    <Link to="/makers">Makers</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/tech">Tech</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/media-kit">Media Kit</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </nav>
           </div>
           
@@ -249,18 +263,11 @@ export const Header = () => {
                     Products
                   </Link>
                   <Link 
-                    to="/makers" 
+                    to="/pricing" 
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Makers
-                  </Link>
-                  <Link 
-                    to="/tech" 
-                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Tech
+                    Pricing
                   </Link>
                   <a 
                     href="https://newsletter.trylaunch.ai/" 
@@ -286,6 +293,28 @@ export const Header = () => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Advertise
+                  </Link>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Resources</p>
+                  <Link 
+                    to="/makers" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Makers
+                  </Link>
+                  <Link 
+                    to="/tech" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Tech
+                  </Link>
+                  <Link 
+                    to="/media-kit" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Media Kit
                   </Link>
                   
                   {user ? (
