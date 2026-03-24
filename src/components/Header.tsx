@@ -134,15 +134,12 @@ export const Header = () => {
             <Link to="/" className="flex items-center">
               <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
-            <nav className="hidden md:flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-6">
               <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Launches
               </Link>
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
-              </Link>
-              <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Pricing
               </Link>
               <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Newsletter
