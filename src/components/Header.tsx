@@ -263,18 +263,11 @@ export const Header = () => {
                     Products
                   </Link>
                   <Link 
-                    to="/makers" 
+                    to="/pricing" 
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Makers
-                  </Link>
-                  <Link 
-                    to="/tech" 
-                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Tech
+                    Pricing
                   </Link>
                   <a 
                     href="https://newsletter.trylaunch.ai/" 
@@ -300,6 +293,28 @@ export const Header = () => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Advertise
+                  </Link>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Resources</p>
+                  <Link 
+                    to="/makers" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Makers
+                  </Link>
+                  <Link 
+                    to="/tech" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Tech
+                  </Link>
+                  <Link 
+                    to="/media-kit" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Media Kit
                   </Link>
                   
                   {user ? (
