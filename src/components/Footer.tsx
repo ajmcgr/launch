@@ -70,6 +70,16 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/makers" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Makers
+                </Link>
+              </li>
+              <li>
+                <Link to="/tech" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Tech
+                </Link>
+              </li>
+              <li>
                 <Link 
                   to="/success-stories"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
