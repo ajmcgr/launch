@@ -991,24 +991,7 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Bio Sponsor Banner */}
-              <div className="py-6 flex flex-col items-center w-full">
-                <a 
-                  href="https://trybio.ai" 
-                  target="_blank" 
-                  rel="noopener noreferrer sponsored"
-                  className="block w-full"
-                >
-                  <img 
-                    src={bioBanner} 
-                    alt="Bio - Link in Bio" 
-                    className="w-full h-auto transition-all duration-200 hover:opacity-95"
-                  />
-                </a>
-                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
-                  Featured Partner · Become a partner
-                </Link>
-              </div>
+              <CommunityCallout />
 
               <PopularSections />
             </div>
