@@ -676,9 +676,9 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
                     className="w-full h-auto transition-all duration-200 hover:opacity-95"
                   />
                 </a>
-                <RouterLink to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
                   Featured Partner · Become a partner
-                </RouterLink>
+                </Link>
               </div>
             )}
             <div key={section.title}>
