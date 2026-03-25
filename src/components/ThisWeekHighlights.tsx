@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { getWeek } from 'date-fns';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
-import { CommunityCallout } from '@/components/CommunityCallout';
+import bioBanner from '@/assets/sponsors/bio-banner.png';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
@@ -663,8 +663,22 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
           {sections.map((section, sectionIndex) => (
             <React.Fragment key={section.title}>
             {sectionIndex === 2 && (
-              <div>
-                <CommunityCallout />
+              <div className="py-6 flex flex-col items-center w-full">
+                <a 
+                  href="https://trybio.ai" 
+                  target="_blank" 
+                  rel="noopener noreferrer sponsored"
+                  className="block w-full"
+                >
+                  <img 
+                    src={bioBanner} 
+                    alt="Bio - Link in Bio" 
+                    className="w-full h-auto transition-all duration-200 hover:opacity-95"
+                  />
+                </a>
+                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
+                  Featured Partner · Become a partner
+                </Link>
               </div>
             )}
             <div key={section.title}>
