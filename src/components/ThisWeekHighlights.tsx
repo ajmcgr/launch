@@ -13,7 +13,6 @@ import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { getWeek } from 'date-fns';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
-import { Link as RouterLink } from 'react-router-dom';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
