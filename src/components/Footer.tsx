@@ -55,14 +55,6 @@ export const Footer = () => {
               </li>
               <li>
                 <Link 
-                  to="/advertise"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Advertise
-                </Link>
-              </li>
-              <li>
-                <Link 
                   to="/media-kit"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
