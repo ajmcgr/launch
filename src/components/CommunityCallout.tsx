@@ -4,7 +4,7 @@ import { TrustPhrase } from '@/hooks/use-member-count';
 
 export const CommunityCallout = () => {
   return (
-    <div className="w-full bg-muted/30 px-6 flex items-center aspect-[7/1]">
+    <div className="w-full bg-muted/30 px-6 py-6 md:py-0 flex items-center md:aspect-[7/1]">
       <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="flex-1 text-center md:text-left">
           <h3 className="text-lg font-semibold mb-1">Join the Community</h3>
