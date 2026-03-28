@@ -25,6 +25,8 @@ const Sparkline = ({ data, color = 'hsl(var(--primary))' }: SparklineProps) => {
           strokeWidth={2}
           fill={`url(#${gradientId})`}
           dot={false}
+          baseValue={0}
+          isAnimationActive={false}
         />
       </AreaChart>
     </ResponsiveContainer>
