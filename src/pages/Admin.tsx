@@ -93,7 +93,7 @@ const Admin = () => {
         supabase.from('comments').select('created_at').order('created_at', { ascending: true }),
       ]);
 
-      // Helper to generate cumulative weekly counts for sparklines
+      // Helper to generate per-week new counts for sparklines (shows spikes)
       const generateWeeklySparkline = (data: { created_at: string | null }[] | null, weeks: number = 9): number[] => {
         if (!data || data.length === 0) return Array(weeks).fill(0);
         
@@ -101,10 +101,12 @@ const Admin = () => {
         const result: number[] = [];
         
         for (let i = weeks - 1; i >= 0; i--) {
+          const weekStart = new Date(now);
+          weekStart.setDate(weekStart.getDate() - ((i + 1) * 7));
           const weekEnd = new Date(now);
           weekEnd.setDate(weekEnd.getDate() - (i * 7));
           const count = data.filter(item => 
-            item.created_at && new Date(item.created_at) <= weekEnd
+            item.created_at && new Date(item.created_at) > weekStart && new Date(item.created_at) <= weekEnd
           ).length;
           result.push(count);
         }
