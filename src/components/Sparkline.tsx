@@ -12,6 +12,7 @@ const Sparkline = ({ data, color = 'hsl(var(--primary))' }: SparklineProps) => {
   return (
     <ResponsiveContainer width="100%" height={40}>
       <AreaChart data={chartData}>
+        <YAxis domain={[0, 'auto']} hide />
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity={0.3} />
