@@ -368,6 +368,31 @@ const CopyAllStackButton = ({ items, title }: { items: { name: string; slug: str
 export const AutoSurfacedContent = () => {
   const [masterCopied, setMasterCopied] = useState(false);
   
+  // Fetch all product icons for enrichment
+  const { data: iconMap } = useQuery({
+    queryKey: ['admin-product-icons'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_media')
+        .select('product_id, url')
+        .eq('type', 'icon')
+        .not('url', 'is', null);
+      if (error) throw error;
+      const map = new Map<string, string>();
+      (data || []).forEach((item: any) => {
+        if (!map.has(item.product_id)) map.set(item.product_id, item.url);
+      });
+      return map;
+    },
+    staleTime: 1000 * 60 * 10,
+  });
+
+  // Helper to enrich products with icon URLs
+  const enrichWithIcons = <T extends { id: string }>(items: T[] | undefined): T[] | undefined => {
+    if (!items || !iconMap) return items;
+    return items.map(item => ({ ...item, icon_url: iconMap.get(item.id) }));
+  };
+
   // Get today's date range in UTC
   const now = new Date();
   const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
