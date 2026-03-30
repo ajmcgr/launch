@@ -31,6 +31,7 @@ interface SponsoredProduct {
   sponsorship_type: string;
   start_date: string;
   end_date: string;
+  icon_url?: string;
 }
 
 interface SurfacedBuilder {
