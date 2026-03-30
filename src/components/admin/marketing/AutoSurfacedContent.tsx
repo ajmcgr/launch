@@ -96,23 +96,30 @@ const CopyButton = ({ text, label }: { text: string; label: string }) => {
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const copyText = `${product.name} - ${taglineText}\n${productUrl}`;
+  const copyText = product.icon_url 
+    ? `![${product.name}](${product.icon_url})\n${product.name} - ${taglineText}\n${productUrl}`
+    : `${product.name} - ${taglineText}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium truncate">{product.name}</span>
-          {product.net_votes !== undefined && (
-            <Badge variant="secondary" className="text-xs">
-              {product.net_votes} votes
-            </Badge>
-          )}
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        {product.icon_url && (
+          <img src={product.icon_url} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium truncate">{product.name}</span>
+            {product.net_votes !== undefined && (
+              <Badge variant="secondary" className="text-xs">
+                {product.net_votes} votes
+              </Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground truncate mt-0.5">
+            {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
+          </p>
+          <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
         </div>
-        <p className="text-sm text-muted-foreground truncate mt-0.5">
-          {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
-        </p>
-        <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
         <CopyButton text={copyText} label="product" />
