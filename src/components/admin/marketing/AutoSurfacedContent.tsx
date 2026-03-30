@@ -141,29 +141,36 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const copyText = `${product.name} - ${taglineText}\n${productUrl}`;
+  const copyText = product.icon_url 
+    ? `![${product.name}](${product.icon_url})\n${product.name} - ${taglineText}\n${productUrl}`
+    : `${product.name} - ${taglineText}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium truncate">{product.name}</span>
-          <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
-            {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
-             product.sponsorship_type === 'website' ? 'Website' : 
-             product.sponsorship_type === 'newsletter' ? 'Newsletter' :
-             product.sponsorship_type.toLowerCase() === 'skip' ? 'Pro' :
-             product.sponsorship_type.toLowerCase() === 'join' ? 'Lite' :
-             product.sponsorship_type.toLowerCase() === 'lite' ? 'Lite' :
-             product.sponsorship_type.toLowerCase() === 'pro' ? 'Pro' :
-             product.sponsorship_type.toLowerCase().includes('pass') ? 'Pass' :
-             product.sponsorship_type}
-          </Badge>
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        {product.icon_url && (
+          <img src={product.icon_url} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium truncate">{product.name}</span>
+            <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
+              {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
+               product.sponsorship_type === 'website' ? 'Website' : 
+               product.sponsorship_type === 'newsletter' ? 'Newsletter' :
+               product.sponsorship_type.toLowerCase() === 'skip' ? 'Pro' :
+               product.sponsorship_type.toLowerCase() === 'join' ? 'Lite' :
+               product.sponsorship_type.toLowerCase() === 'lite' ? 'Lite' :
+               product.sponsorship_type.toLowerCase() === 'pro' ? 'Pro' :
+               product.sponsorship_type.toLowerCase().includes('pass') ? 'Pass' :
+               product.sponsorship_type}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground truncate mt-0.5">
+            {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
+          </p>
+          <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
         </div>
-        <p className="text-sm text-muted-foreground truncate mt-0.5">
-          {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
-        </p>
-        <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
         <CopyButton text={copyText} label="product" />
