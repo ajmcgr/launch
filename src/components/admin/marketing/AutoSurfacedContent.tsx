@@ -833,9 +833,11 @@ export const AutoSurfacedContent = () => {
   const handleMasterCopy = async () => {
     const sections: string[] = [];
     
-    // Helper to format product text with truncated taglines
-    const formatProduct = (p: SurfacedProduct | SponsoredProduct) => 
-      `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
+    // Helper to format product text with truncated taglines and icon
+    const formatProduct = (p: SurfacedProduct | SponsoredProduct) => {
+      const iconLine = (p as any).icon_url ? `![${p.name}](${(p as any).icon_url})\n` : '';
+      return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
+    };
     
     // Paid Launches
     if (paidLaunches && paidLaunches.length > 0) {
