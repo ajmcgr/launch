@@ -20,6 +20,7 @@ interface SurfacedProduct {
   tagline: string | null;
   slug: string;
   net_votes?: number;
+  icon_url?: string;
 }
 
 interface SponsoredProduct {
