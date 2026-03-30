@@ -307,7 +307,10 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
 
   const handleCopyAll = async () => {
     const text = products
-      .map((p) => `${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`)
+      .map((p) => {
+        const iconLine = p.icon_url ? `![${p.name}](${p.icon_url})\n` : '';
+        return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
+      })
       .join('\n\n');
     
     await navigator.clipboard.writeText(`${title}\n\n${text}`);
