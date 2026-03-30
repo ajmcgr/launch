@@ -840,32 +840,37 @@ export const AutoSurfacedContent = () => {
     };
     
     // Paid Launches
-    if (paidLaunches && paidLaunches.length > 0) {
-      const paidText = paidLaunches.map(formatProduct).join('\n\n');
+    const enrichedPaid = enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined;
+    if (enrichedPaid && enrichedPaid.length > 0) {
+      const paidText = enrichedPaid.map(formatProduct).join('\n\n');
       sections.push(`## 💰 Sponsored Launches\n\n${paidText}`);
     }
     
     // Weekly Winners
-    if (weeklyWinners && weeklyWinners.length > 0) {
-      const winnersText = weeklyWinners.map(formatProduct).join('\n\n');
+    const enrichedWinners = enrichWithIcons(weeklyWinners);
+    if (enrichedWinners && enrichedWinners.length > 0) {
+      const winnersText = enrichedWinners.map(formatProduct).join('\n\n');
       sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
     }
     
     // 5 Products You Missed This Week
-    if (missedProducts && missedProducts.length > 0) {
-      const missedText = missedProducts.map(formatProduct).join('\n\n');
+    const enrichedMissed = enrichWithIcons(missedProducts);
+    if (enrichedMissed && enrichedMissed.length > 0) {
+      const missedText = enrichedMissed.map(formatProduct).join('\n\n');
       sections.push(`## 🕐 5 Launch Products You Missed This Week\n\n${missedText}`);
     }
     
     // New & Noteworthy
-    if (newNoteworthy && newNoteworthy.length > 0) {
-      const newText = newNoteworthy.map(formatProduct).join('\n\n');
+    const enrichedNew = enrichWithIcons(newNoteworthy);
+    if (enrichedNew && enrichedNew.length > 0) {
+      const newText = enrichedNew.map(formatProduct).join('\n\n');
       sections.push(`## ✨ New & Noteworthy on Launch\n\n${newText}`);
     }
     
     // Hidden Gems
-    if (hiddenGems && hiddenGems.length > 0) {
-      const gemsText = hiddenGems.map(formatProduct).join('\n\n');
+    const enrichedGems = enrichWithIcons(hiddenGems);
+    if (enrichedGems && enrichedGems.length > 0) {
+      const gemsText = enrichedGems.map(formatProduct).join('\n\n');
       sections.push(`## 💎 Launch Hidden Gems\n\n${gemsText}`);
     }
     
