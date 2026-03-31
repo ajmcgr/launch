@@ -16,6 +16,7 @@ interface HomeLaunchCardProps {
   launchDate?: string;
   platforms?: Platform[];
   userVote?: 1 | null;
+  isBoosted?: boolean;
   onVote: () => void;
 }
 
