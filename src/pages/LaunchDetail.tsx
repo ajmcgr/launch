@@ -184,11 +184,42 @@ const LaunchDetail = () => {
           setBestRanking({ rank: 3, period: '#3 Product of the Week', date: productData.launch_date?.substring(0, 10) || '' });
         }
 
-        setProduct({
+        const productObj = {
           ...productData,
           netVotes: voteData?.net_votes || 0,
           makers
-        });
+        };
+        setProduct(productObj);
+
+        // Fetch current daily rank for launched products
+        if (productData.status === 'launched' && productData.launch_date) {
+          try {
+            const launchDay = productData.launch_date.substring(0, 10);
+            const { data: rankData } = await supabase
+              .from('product_vote_counts')
+              .select('product_id, net_votes')
+              .order('net_votes', { ascending: false });
+            
+            if (rankData) {
+              // Get all products launched on the same day
+              const { data: sameDayProducts } = await supabase
+                .from('products')
+                .select('id')
+                .eq('status', 'launched')
+                .gte('launch_date', `${launchDay}T00:00:00`)
+                .lt('launch_date', `${launchDay}T23:59:59`);
+              
+              const sameDayIds = new Set(sameDayProducts?.map(p => p.id) || []);
+              const sameDayRanked = rankData.filter(r => sameDayIds.has(r.product_id));
+              const rankIndex = sameDayRanked.findIndex(r => r.product_id === productData.id);
+              if (rankIndex !== -1) {
+                setCurrentRank(rankIndex + 1);
+              }
+            }
+          } catch (e) {
+            console.error('Error fetching rank:', e);
+          }
+        }
       } catch (error) {
         console.error('Error:', error);
         navigate('/404');
