@@ -17,6 +17,9 @@ import { toast } from 'sonner';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 import InlineAdSlot from '@/components/InlineAdSlot';
+import LaunchWindowStatus from '@/components/LaunchWindowStatus';
+import BoostNudgeCard from '@/components/BoostNudgeCard';
+import { isActiveLaunch } from '@/lib/launchWindow';
 
 
 const LaunchDetail = () => {
