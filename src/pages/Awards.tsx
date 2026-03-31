@@ -123,25 +123,29 @@ const Awards = () => {
     }[tier];
 
     return (
-      <Link to={`/launch/${product.slug}`} className="block group">
-        <div className="flex items-center gap-4 py-3 hover:bg-muted/30 rounded-lg px-3 transition-colors">
-          <span className="text-base font-bold shrink-0">{config.rankNum}.</span>
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            {product.thumbnail && (
-              <Avatar className="h-10 w-10 rounded-lg">
-                <AvatarImage src={product.thumbnail} alt={product.name} className="object-cover" />
-                <AvatarFallback className="rounded-lg">{product.name[0]}</AvatarFallback>
-              </Avatar>
+      <Link to={`/launch/${product.slug}`} className="block group/card">
+        <div className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors">
+          <div className="flex items-start gap-3 flex-1">
+            {product.thumbnail ? (
+              <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                <img src={product.thumbnail} alt={product.name} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-bold text-muted-foreground">{product.name[0]}</span>
+              </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="font-semibold text-sm truncate">{product.name}</p>
-                <Badge variant="secondary" className="shrink-0 text-[10px] uppercase tracking-wider">{config.label}</Badge>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-bold text-muted-foreground">{config.rankNum}.</span>
+                <h3 className="font-semibold text-base text-foreground">{product.name}</h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
+                  {config.label}
+                </span>
               </div>
-              <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
+              <p className="text-sm text-muted-foreground line-clamp-1">{product.tagline}</p>
             </div>
           </div>
-          <Badge variant="secondary" className="shrink-0">{product.netVotes} votes</Badge>
         </div>
       </Link>
     );
