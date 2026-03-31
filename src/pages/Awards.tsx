@@ -117,9 +117,9 @@ const Awards = () => {
     if (!product) return null;
 
     const config = {
-      gold: { label: 'GOLD', rankNum: '1' },
-      silver: { label: 'SILVER', rankNum: '2' },
-      bronze: { label: 'BRONZE', rankNum: '3' },
+      gold: { label: 'Gold', rankNum: '1', style: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' },
+      silver: { label: 'Silver', rankNum: '2', style: 'bg-gray-400/10 text-gray-500 dark:text-gray-400' },
+      bronze: { label: 'Bronze', rankNum: '3', style: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
     }[tier];
 
     return (
@@ -139,7 +139,7 @@ const Awards = () => {
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-bold text-muted-foreground">{config.rankNum}.</span>
                 <h3 className="font-semibold text-base text-foreground">{product.name}</h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full flex-shrink-0 ${config.style}`}>
                   {config.label}
                 </span>
               </div>
