@@ -24,6 +24,7 @@ import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
 import UpgradeNudge from '@/components/UpgradeNudge';
+import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
 import { usePass } from '@/hooks/use-pass';
 import { Sparkles } from 'lucide-react';
@@ -933,6 +934,13 @@ const MyProducts = () => {
                       productName={product.name}
                       currentPlan={product.orderPlan}
                       productId={product.id}
+                    />
+                  )}
+                  {product.status === 'launched' && !sponsoredProductIds.has(product.id) && (
+                    <BoostNudgeCard
+                      productId={product.id}
+                      productName={product.name}
+                      rank={product.netVotes > 0 ? undefined : undefined}
                     />
                   )}
                   {product.status === 'launched' && product.slug && (

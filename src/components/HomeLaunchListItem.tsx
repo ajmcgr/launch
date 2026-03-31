@@ -25,6 +25,7 @@ interface HomeLaunchListItemProps {
   makers?: Array<{ username: string; avatar_url?: string }>;
   userVote?: 1 | null;
   commentCount?: number;
+  isBoosted?: boolean;
   onVote: () => void;
 }
 
@@ -41,6 +42,7 @@ export const HomeLaunchListItem = ({
   makers = [],
   userVote,
   commentCount = 0,
+  isBoosted = false,
   onVote,
 }: HomeLaunchListItemProps) => {
   const navigate = useNavigate();
@@ -56,7 +58,7 @@ export const HomeLaunchListItem = ({
 
   return (
     <div 
-      className="group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+      className={`group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer ${isBoosted ? 'ring-1 ring-primary/20' : ''}`}
       onClick={handleCardClick}
     >
       <div className="flex items-start gap-3 flex-1">
@@ -87,6 +89,11 @@ export const HomeLaunchListItem = ({
                 <span className="text-xs text-muted-foreground">·</span>
                 <PlatformIcons platforms={platforms} size="sm" />
               </>
+            )}
+            {isBoosted && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
+                Boosted
+              </span>
             )}
             {launchDate && (
               <>

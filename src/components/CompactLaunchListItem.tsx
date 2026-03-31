@@ -19,6 +19,7 @@ interface CompactLaunchListItemProps {
   platforms?: Platform[];
   verifiedMrr?: number | null;
   mrrVerifiedAt?: string | null;
+  isBoosted?: boolean;
 }
 
 export const CompactLaunchListItem = ({
@@ -36,6 +37,7 @@ export const CompactLaunchListItem = ({
   platforms,
   verifiedMrr,
   mrrVerifiedAt,
+  isBoosted = false,
 }: CompactLaunchListItemProps) => {
   const navigate = useNavigate();
   
@@ -81,6 +83,11 @@ export const CompactLaunchListItem = ({
               'bg-amber-500/10 text-amber-600 dark:text-amber-400'
             }`}>
               {rank === 1 ? 'Gold' : rank === 2 ? 'Silver' : 'Bronze'}
+            </span>
+          )}
+          {isBoosted && (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
+              Boosted
             </span>
           )}
           {domainUrl && (
