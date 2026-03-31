@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Zap, TrendingUp, Eye } from 'lucide-react';
+import { Zap, TrendingUp, Eye, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -46,26 +46,26 @@ const BoostUpsellModal = ({ open, onClose, productId, productName }: BoostUpsell
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center flex items-center justify-center gap-2">
             <Zap className="w-5 h-5 text-primary" />
-            Boost Your Launch
+            Get more visibility today
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 mt-2">
           <p className="text-center text-muted-foreground text-sm">
-            Get <span className="font-semibold text-foreground">{productName}</span> pinned to the top of the homepage for 24 hours.
+            Most clicks go to top launches. Boost <span className="font-semibold text-foreground">{productName}</span> to the top for the next 24 hours.
           </p>
 
           <div className="space-y-2">
             <div className="flex items-center gap-3 text-sm">
-              <Eye className="w-4 h-4 text-primary flex-shrink-0" />
-              <span>Featured at the top of the homepage</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
               <TrendingUp className="w-4 h-4 text-primary flex-shrink-0" />
-              <span>3–5x more visibility than standard listing</span>
+              <span>Higher placement in feed</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
-              <Zap className="w-4 h-4 text-primary flex-shrink-0" />
+              <Eye className="w-4 h-4 text-primary flex-shrink-0" />
+              <span>More visibility to active users</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <Clock className="w-4 h-4 text-primary flex-shrink-0" />
               <span>Starts immediately after purchase</span>
             </div>
           </div>
@@ -81,7 +81,7 @@ const BoostUpsellModal = ({ open, onClose, productId, productName }: BoostUpsell
             className="w-full h-12 text-base font-semibold"
             size="lg"
           >
-            {loading ? 'Loading...' : '⚡ Boost for $19'}
+            {loading ? 'Loading...' : '⚡ Boost my launch'}
           </Button>
 
           <Button
@@ -89,7 +89,7 @@ const BoostUpsellModal = ({ open, onClose, productId, productName }: BoostUpsell
             variant="ghost"
             className="w-full text-muted-foreground hover:text-foreground"
           >
-            Maybe later
+            No thanks
           </Button>
         </div>
       </DialogContent>
