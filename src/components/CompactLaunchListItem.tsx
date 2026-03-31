@@ -4,6 +4,7 @@ import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { isActiveLaunch, formatLaunchCountdown } from '@/lib/launchWindow';
 interface CompactLaunchListItemProps {
   rank: number;
   name: string;
