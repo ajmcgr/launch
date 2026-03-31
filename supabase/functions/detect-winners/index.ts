@@ -24,29 +24,29 @@ Deno.serve(async (req) => {
     console.log('Starting winner detection...');
 
     const now = new Date();
-    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Find top 3 monthly products (launched in last 30 days with most votes)
-    const { data: monthlyVotes, error: monthlyError } = await supabaseClient
+    // Find top 3 weekly products (launched in last 7 days with most votes)
+    const { data: weeklyVotes, error: weeklyError } = await supabaseClient
       .from('votes')
       .select('product_id, value, products!inner(launch_date, status)')
-      .gte('products.launch_date', oneMonthAgo.toISOString())
+      .gte('products.launch_date', oneWeekAgo.toISOString())
       .eq('products.status', 'launched');
 
-    if (monthlyError) {
-      console.error('Error fetching monthly votes:', monthlyError);
-      throw monthlyError;
+    if (weeklyError) {
+      console.error('Error fetching weekly votes:', weeklyError);
+      throw weeklyError;
     }
 
     const winners = {
-      gold: null as string | null,   // #1 monthly → won_monthly
-      silver: null as string | null, // #2 monthly → won_weekly (repurposed)
-      bronze: null as string | null, // #3 monthly → won_daily (repurposed)
+      gold: null as string | null,   // #1 weekly → won_monthly
+      silver: null as string | null, // #2 weekly → won_weekly
+      bronze: null as string | null, // #3 weekly → won_daily
     };
 
-    if (monthlyVotes && monthlyVotes.length > 0) {
+    if (weeklyVotes && weeklyVotes.length > 0) {
       const productVotes: Record<string, number> = {};
-      monthlyVotes.forEach((vote: any) => {
+      weeklyVotes.forEach((vote: any) => {
         productVotes[vote.product_id] = (productVotes[vote.product_id] || 0) + vote.value;
       });
 
@@ -54,20 +54,20 @@ Deno.serve(async (req) => {
 
       if (sorted[0]) {
         winners.gold = sorted[0][0];
-        console.log(`🥇 Gold (#1 Monthly): ${sorted[0][0]} with ${sorted[0][1]} votes`);
+        console.log(`🥇 Gold (#1 Weekly): ${sorted[0][0]} with ${sorted[0][1]} votes`);
       }
       if (sorted[1]) {
         winners.silver = sorted[1][0];
-        console.log(`🥈 Silver (#2 Monthly): ${sorted[1][0]} with ${sorted[1][1]} votes`);
+        console.log(`🥈 Silver (#2 Weekly): ${sorted[1][0]} with ${sorted[1][1]} votes`);
       }
       if (sorted[2]) {
         winners.bronze = sorted[2][0];
-        console.log(`🥉 Bronze (#3 Monthly): ${sorted[2][0]} with ${sorted[2][1]} votes`);
+        console.log(`🥉 Bronze (#3 Weekly): ${sorted[2][0]} with ${sorted[2][1]} votes`);
       }
     }
 
     // NOTE: We do NOT reset winner flags - once a product wins, it keeps that badge permanently
-    // won_monthly = Gold (#1 monthly), won_weekly = Silver (#2 monthly), won_daily = Bronze (#3 monthly)
+    // won_monthly = Gold (#1 weekly), won_weekly = Silver (#2 weekly), won_daily = Bronze (#3 weekly)
     console.log('Setting new winners (preserving past winners)...');
 
     const updates = [];
@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         winners,
-        message: 'Winner detection completed — top 3 monthly products awarded'
+        message: 'Winner detection completed — top 3 weekly products awarded'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
