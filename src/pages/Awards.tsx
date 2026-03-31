@@ -171,7 +171,7 @@ const Awards = () => {
           </div>
         ) : weeks.length === 0 ? (
           <div className="text-center py-16">
-            <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <img src="/assets/badge-golden.svg" alt="Awards" className="h-12 w-auto mx-auto mb-4 opacity-50" />
             <p className="text-muted-foreground">No awards have been given yet. Check back soon!</p>
           </div>
         ) : (
