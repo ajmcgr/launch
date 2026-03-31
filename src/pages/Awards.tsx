@@ -134,7 +134,10 @@ const Awards = () => {
               </Avatar>
             )}
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm truncate">{product.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-sm truncate">{product.name}</p>
+                <Badge variant="secondary" className="shrink-0 text-[10px] uppercase tracking-wider">{config.label}</Badge>
+              </div>
               <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
             </div>
           </div>
