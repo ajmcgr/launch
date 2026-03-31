@@ -47,7 +47,7 @@ export const HomeLaunchCard = ({
 
   return (
     <Card 
-      className="group/card overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+      className={`group/card overflow-hidden hover:shadow-md transition-shadow cursor-pointer ${isBoosted ? 'ring-1 ring-primary/20' : ''}`}
       onClick={handleCardClick}
     >
       <div className="p-6">
