@@ -93,7 +93,7 @@ const UserProfile = () => {
           if (p.won_weekly) hasWeeklyWin = true;
           if (p.won_daily) hasDailyWin = true;
         });
-        // Monthly winner = Gold, Weekly winner = Silver, Daily winner = Bronze
+        // #1 Monthly = Gold, #2 Monthly = Silver, #3 Monthly = Bronze
         if (hasMonthlyWin) setBestAward('gold');
         else if (hasWeeklyWin) setBestAward('silver');
         else if (hasDailyWin) setBestAward('bronze');
