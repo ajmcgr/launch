@@ -31,7 +31,7 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   
   const redditTitle = `🚀 Just launched ${productName}${productTagline ? ` - ${productTagline}` : ''}`;
   
-  const ctaText = `🚀 Check out ${productName} on Launch - ${productUrl}`;
+  const ctaText = `🚀 Check out ${productName} on Launch - ${ogShareUrl}`;
   
 
   const handleXShare = () => {
