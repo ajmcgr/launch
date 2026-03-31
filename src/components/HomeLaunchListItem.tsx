@@ -90,6 +90,11 @@ export const HomeLaunchListItem = ({
                 <PlatformIcons platforms={platforms} size="sm" />
               </>
             )}
+            {isBoosted && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
+                Boosted
+              </span>
+            )}
             {launchDate && (
               <>
                 <span className="text-xs text-muted-foreground">·</span>
