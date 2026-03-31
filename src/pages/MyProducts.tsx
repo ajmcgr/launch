@@ -27,6 +27,14 @@ import UpgradeNudge from '@/components/UpgradeNudge';
 import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
 import { usePass } from '@/hooks/use-pass';
+import { Sparkles, Clock } from 'lucide-react';
+import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
+import ShareLaunchModal from '@/components/ShareLaunchModal';
+import BoostUpsellModal from '@/components/BoostUpsellModal';
+import UpgradeNudge from '@/components/UpgradeNudge';
+import BoostNudgeCard from '@/components/BoostNudgeCard';
+import { formatMRRRange } from '@/lib/revenue';
+import { usePass } from '@/hooks/use-pass';
 import { Sparkles } from 'lucide-react';
 
 const MyProducts = () => {
