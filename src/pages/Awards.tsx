@@ -117,15 +117,15 @@ const Awards = () => {
     if (!product) return null;
 
     const config = {
-      gold: { label: '#1 Product of the Week', rank: '#1', emoji: '🥇' },
-      silver: { label: '#2 Product of the Week', rank: '#2', emoji: '🥈' },
-      bronze: { label: '#3 Product of the Week', rank: '#3', emoji: '🥉' },
+      gold: { label: 'GOLD', rankNum: '1' },
+      silver: { label: 'SILVER', rankNum: '2' },
+      bronze: { label: 'BRONZE', rankNum: '3' },
     }[tier];
 
     return (
       <Link to={`/launch/${product.slug}`} className="block group">
         <div className="flex items-center gap-4 py-3 hover:bg-muted/30 rounded-lg px-3 transition-colors">
-          <span className="text-lg font-bold shrink-0 w-8 text-center">{config.emoji}</span>
+          <span className="text-base font-bold shrink-0">{config.rankNum}.</span>
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {product.thumbnail && (
               <Avatar className="h-10 w-10 rounded-lg">
@@ -134,7 +134,10 @@ const Awards = () => {
               </Avatar>
             )}
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm truncate">{product.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-sm truncate">{product.name}</p>
+                <Badge variant="secondary" className="shrink-0 text-[10px] uppercase tracking-wider">{config.label}</Badge>
+              </div>
               <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
             </div>
           </div>
