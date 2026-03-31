@@ -620,6 +620,34 @@ const LaunchDetail = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
             <div className="p-5 bg-muted/30 rounded-xl space-y-5">
+              {/* Award Badge */}
+              {bestRanking && (
+                <div>
+                  <h3 className="font-medium text-sm text-muted-foreground mb-2">Award</h3>
+                  <Link to="/awards" className="block">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-background border border-border hover:border-primary/40 transition-colors">
+                      <img
+                        src={
+                          bestRanking.rank === 1
+                            ? '/assets/badge-golden.svg'
+                            : bestRanking.rank === 2
+                            ? '/assets/badge-silver.png'
+                            : '/assets/badge-bronze.png'
+                        }
+                        alt={bestRanking.period}
+                        className="h-10 w-auto"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm">{bestRanking.period}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Week of {bestRanking.date}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              )}
+
               {/* Makers */}
               {product.makers && product.makers.length > 0 && (
                 <div>
