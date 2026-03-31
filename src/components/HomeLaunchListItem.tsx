@@ -42,6 +42,7 @@ export const HomeLaunchListItem = ({
   makers = [],
   userVote,
   commentCount = 0,
+  isBoosted = false,
   onVote,
 }: HomeLaunchListItemProps) => {
   const navigate = useNavigate();
