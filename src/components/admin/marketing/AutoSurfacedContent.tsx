@@ -895,6 +895,13 @@ export const AutoSurfacedContent = () => {
       sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
     }
     
+    // Weekly Awards
+    const enrichedAwards = enrichWithIcons(weeklyAwards);
+    if (enrichedAwards && enrichedAwards.length > 0) {
+      const awardsText = enrichedAwards.map(formatProduct).join('\n\n');
+      sections.push(`## 🏅 Weekly Awards\n\n${awardsText}`);
+    }
+    
     // 5 Products You Missed This Week
     const enrichedMissed = enrichWithIcons(missedProducts);
     if (enrichedMissed && enrichedMissed.length > 0) {
