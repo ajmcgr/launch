@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
-import { isActiveLaunch, formatLaunchCountdown } from '@/lib/launchWindow';
+
 
 interface HomeLaunchCardProps {
   rank: number;

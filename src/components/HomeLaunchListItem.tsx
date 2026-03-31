@@ -4,7 +4,7 @@ import { ExternalLink, MessageSquare } from 'lucide-react';
 
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
-import { isActiveLaunch, formatLaunchCountdown } from '@/lib/launchWindow';
+
 
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
