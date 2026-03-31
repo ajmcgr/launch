@@ -5,7 +5,6 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Trophy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AwardProduct {
@@ -95,8 +94,8 @@ const Awards = () => {
         const group = weekMap.get(key)!;
 
         if (p.won_monthly && !group.gold) group.gold = p;
-        else if (p.won_weekly && !group.silver) group.silver = p;
-        else if (p.won_daily && !group.bronze) group.bronze = p;
+        if (p.won_weekly && !group.silver) group.silver = p;
+        if (p.won_daily && !group.bronze) group.bronze = p;
       });
 
       // Sort weeks descending
@@ -154,10 +153,7 @@ const Awards = () => {
 
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Trophy className="h-7 w-7 text-primary" />
-            <h1 className="text-3xl font-bold">Weekly Awards</h1>
-          </div>
+          <h1 className="text-4xl font-bold font-reckless mb-3">Weekly Awards</h1>
           <p className="text-muted-foreground">
             The top 3 products each week earn Gold, Silver, and Bronze awards based on community votes.
           </p>
@@ -175,7 +171,7 @@ const Awards = () => {
           </div>
         ) : weeks.length === 0 ? (
           <div className="text-center py-16">
-            <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <img src="/assets/badge-golden.svg" alt="Awards" className="h-12 w-auto mx-auto mb-4 opacity-50" />
             <p className="text-muted-foreground">No awards have been given yet. Check back soon!</p>
           </div>
         ) : (
