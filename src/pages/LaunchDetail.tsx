@@ -37,6 +37,7 @@ const LaunchDetail = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [bestRanking, setBestRanking] = useState<{ rank: number; period: string; date: string } | null>(null);
+  const [currentRank, setCurrentRank] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
