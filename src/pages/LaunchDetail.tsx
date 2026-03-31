@@ -625,7 +625,7 @@ const LaunchDetail = () => {
                 <div>
                   <h3 className="font-medium text-sm text-muted-foreground mb-2">Award</h3>
                   <Link to="/awards" className="block">
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-background border border-border hover:border-primary/40 transition-colors">
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
                       <img
                         src={
                           bestRanking.rank === 1
