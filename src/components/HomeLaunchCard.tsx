@@ -52,9 +52,16 @@ export const HomeLaunchCard = ({
     >
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
-          <span className="text-xl font-bold text-muted-foreground">
-            #{rank}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold text-muted-foreground">
+              #{rank}
+            </span>
+            {isBoosted && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                Boosted
+              </span>
+            )}
+          </div>
           <Button
             variant="outline"
             size="sm"
