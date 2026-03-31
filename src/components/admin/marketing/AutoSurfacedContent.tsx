@@ -991,6 +991,13 @@ export const AutoSurfacedContent = () => {
       isLoading: weeklyLoading,
     },
     {
+      title: "🏅 Weekly Awards",
+      description: "This week's Gold, Silver, and Bronze winners",
+      icon: null,
+      products: enrichWithIcons(weeklyAwards),
+      isLoading: awardsLoading,
+    },
+    {
       title: "🕐 5 Launch Products You Missed This Week",
       description: "Top performers from 7-14 days ago",
       icon: null,
