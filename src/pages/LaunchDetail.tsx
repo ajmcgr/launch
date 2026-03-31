@@ -635,7 +635,7 @@ const LaunchDetail = () => {
                             : '/assets/badge-bronze.png'
                         }
                         alt={bestRanking.period}
-                        className="h-10 w-auto"
+                        className="h-14 w-auto"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm">{bestRanking.period}</p>
