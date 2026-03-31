@@ -655,6 +655,24 @@ const LaunchDetail = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
             <div className="p-5 bg-muted/30 rounded-xl space-y-5">
+              {/* Launch Window Status */}
+              {product.launch_date && product.status === 'launched' && (
+                <div>
+                  <LaunchWindowStatus
+                    launchDate={product.launch_date}
+                    rank={currentRank}
+                  />
+                  {/* Inline boost upsell during active window */}
+                  {isActiveLaunch(product.launch_date) && currentRank && currentRank > 5 && user && product.owner_id === user.id && (
+                    <BoostNudgeCard
+                      productId={product.id}
+                      productName={product.name}
+                      rank={currentRank}
+                    />
+                  )}
+                </div>
+              )}
+
               {/* Award Badge */}
               {bestRanking && (
                 <div>
