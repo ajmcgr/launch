@@ -25,6 +25,7 @@ interface Launch {
   platforms?: Platform[];
   userVote?: 1 | null;
   makers: Array<{ username: string; avatar_url?: string }>;
+  isBoosted?: boolean;
 }
 
 const Index = () => {
