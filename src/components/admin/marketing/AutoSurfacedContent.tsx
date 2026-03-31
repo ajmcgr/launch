@@ -764,6 +764,42 @@ export const AutoSurfacedContent = () => {
     },
   });
 
+  // Weekly Awards - gold, silver, bronze winners from this week
+  const { data: weeklyAwards, isLoading: awardsLoading } = useQuery({
+    queryKey: ['auto-weekly-awards', oneWeekAgo],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, tagline, slug, won_monthly, won_weekly, won_daily, launch_date')
+        .or('won_monthly.eq.true,won_weekly.eq.true,won_daily.eq.true')
+        .eq('status', 'launched')
+        .gte('launch_date', oneWeekAgo)
+        .order('launch_date', { ascending: false });
+
+      if (error) throw error;
+
+      // Map to SurfacedProduct with award tier label
+      const results: SurfacedProduct[] = [];
+      const gold = (data || []).find((p: any) => p.won_monthly);
+      const silver = (data || []).find((p: any) => p.won_weekly);
+      const bronze = (data || []).find((p: any) => p.won_daily);
+
+      [gold, silver, bronze].forEach((p, i) => {
+        if (p) {
+          const tierLabel = i === 0 ? '🥇 #1' : i === 1 ? '🥈 #2' : '🥉 #3';
+          results.push({
+            id: p.id,
+            name: `${tierLabel} ${p.name}`,
+            tagline: p.tagline,
+            slug: p.slug,
+          });
+        }
+      });
+
+      return results;
+    },
+  });
+
   // 5 Products You Missed This Week - top products from 7-14 days ago (excluding sponsored)
   const { data: missedProducts, isLoading: missedLoading } = useQuery({
     queryKey: ['auto-missed-products', oneWeekAgo, twoWeeksAgo, sponsoredProductIds],
@@ -857,6 +893,13 @@ export const AutoSurfacedContent = () => {
     if (enrichedWinners && enrichedWinners.length > 0) {
       const winnersText = enrichedWinners.map(formatProduct).join('\n\n');
       sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
+    }
+    
+    // Weekly Awards
+    const enrichedAwards = enrichWithIcons(weeklyAwards);
+    if (enrichedAwards && enrichedAwards.length > 0) {
+      const awardsText = enrichedAwards.map(formatProduct).join('\n\n');
+      sections.push(`## 🏅 Weekly Awards\n\n${awardsText}`);
     }
     
     // 5 Products You Missed This Week
@@ -953,6 +996,13 @@ export const AutoSurfacedContent = () => {
       icon: null,
       products: enrichWithIcons(weeklyWinners),
       isLoading: weeklyLoading,
+    },
+    {
+      title: "🏅 Weekly Awards",
+      description: "This week's Gold, Silver, and Bronze winners",
+      icon: null,
+      products: enrichWithIcons(weeklyAwards),
+      isLoading: awardsLoading,
     },
     {
       title: "🕐 5 Launch Products You Missed This Week",
