@@ -4,7 +4,7 @@ import { ExternalLink, MessageSquare } from 'lucide-react';
 
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
-import { isActiveLaunch, formatLaunchCountdown } from '@/lib/launchWindow';
+
 
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
@@ -96,12 +96,7 @@ export const HomeLaunchListItem = ({
                 Boosted
               </span>
             )}
-            {launchDate && isActiveLaunch(launchDate) && (
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 flex-shrink-0">
-                Live · {formatLaunchCountdown(launchDate)}
-              </span>
-            )}
-            {launchDate && !isActiveLaunch(launchDate) && (
+            {launchDate && (
               <>
                 <span className="text-xs text-muted-foreground">·</span>
                 <span className="text-xs text-muted-foreground">{formatTimeAgo(launchDate)}</span>

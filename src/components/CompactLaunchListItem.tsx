@@ -4,7 +4,7 @@ import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { isActiveLaunch, formatLaunchCountdown } from '@/lib/launchWindow';
+import { isActiveLaunch } from '@/lib/launchWindow';
 interface CompactLaunchListItemProps {
   rank: number;
   name: string;
@@ -89,11 +89,6 @@ export const CompactLaunchListItem = ({
            {isBoosted && (
               <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
                 Boosted
-              </span>
-            )}
-            {launchDate && isActiveLaunch(launchDate) && (
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 flex-shrink-0">
-                Live · {formatLaunchCountdown(launchDate)}
               </span>
             )}
           {domainUrl && (
