@@ -936,6 +936,13 @@ const MyProducts = () => {
                       productId={product.id}
                     />
                   )}
+                  {product.status === 'launched' && !sponsoredProductIds.has(product.id) && (
+                    <BoostNudgeCard
+                      productId={product.id}
+                      productName={product.name}
+                      rank={product.netVotes > 0 ? undefined : undefined}
+                    />
+                  )}
                   {product.status === 'launched' && product.slug && (
                     <Collapsible defaultOpen className="mt-4">
                       <CollapsibleTrigger asChild>
