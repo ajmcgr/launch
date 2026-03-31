@@ -86,11 +86,16 @@ export const CompactLaunchListItem = ({
               {rank === 1 ? 'Gold' : rank === 2 ? 'Silver' : 'Bronze'}
             </span>
           )}
-          {isBoosted && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
-              Boosted
-            </span>
-          )}
+           {isBoosted && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex-shrink-0">
+                Boosted
+              </span>
+            )}
+            {launchDate && isActiveLaunch(launchDate) && (
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 flex-shrink-0">
+                Live · {formatLaunchCountdown(launchDate)}
+              </span>
+            )}
           {domainUrl && (
             <a
               href={domainUrl}
