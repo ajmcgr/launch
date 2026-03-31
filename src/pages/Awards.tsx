@@ -5,7 +5,6 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Trophy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AwardProduct {
