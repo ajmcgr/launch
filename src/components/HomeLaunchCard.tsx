@@ -31,6 +31,7 @@ export const HomeLaunchCard = ({
   launchDate,
   platforms,
   userVote,
+  isBoosted = false,
   onVote,
 }: HomeLaunchCardProps) => {
   const navigate = useNavigate();
