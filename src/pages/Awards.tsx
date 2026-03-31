@@ -123,25 +123,23 @@ const Awards = () => {
     }[tier];
 
     return (
-      <Link to={`/launch/${product.slug}`} className="block">
-        <Card className={`p-4 ${config.border} ${config.bg} hover:shadow-md transition-all`}>
-          <div className="flex items-center gap-4">
-            <img src={config.badge} alt={config.label} className="h-12 w-auto shrink-0" />
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              {product.thumbnail && (
-                <Avatar className="h-10 w-10 rounded-lg">
-                  <AvatarImage src={product.thumbnail} alt={product.name} className="object-cover" />
-                  <AvatarFallback className="rounded-lg">{product.name[0]}</AvatarFallback>
-                </Avatar>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">{product.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
-              </div>
+      <Link to={`/launch/${product.slug}`} className="block group">
+        <div className="flex items-center gap-4 py-3 hover:bg-muted/30 rounded-lg px-3 transition-colors">
+          <img src={config.badge} alt={config.label} className="h-12 w-auto shrink-0" />
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {product.thumbnail && (
+              <Avatar className="h-10 w-10 rounded-lg">
+                <AvatarImage src={product.thumbnail} alt={product.name} className="object-cover" />
+                <AvatarFallback className="rounded-lg">{product.name[0]}</AvatarFallback>
+              </Avatar>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm truncate">{product.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
             </div>
-            <Badge variant="secondary" className="shrink-0">{product.netVotes} votes</Badge>
           </div>
-        </Card>
+          <Badge variant="secondary" className="shrink-0">{product.netVotes} votes</Badge>
+        </div>
       </Link>
     );
   };
