@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
     }
 
     // NOTE: We do NOT reset winner flags - once a product wins, it keeps that badge permanently
-    // won_monthly = Gold (#1 monthly), won_weekly = Silver (#2 monthly), won_daily = Bronze (#3 monthly)
+    // won_monthly = Gold (#1 weekly), won_weekly = Silver (#2 weekly), won_daily = Bronze (#3 weekly)
     console.log('Setting new winners (preserving past winners)...');
 
     const updates = [];
