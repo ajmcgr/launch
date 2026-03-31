@@ -117,15 +117,15 @@ const Awards = () => {
     if (!product) return null;
 
     const config = {
-      gold: { label: '#1 Product of the Week', badge: '/assets/badge-golden.svg', border: 'border-yellow-500/30', bg: 'bg-yellow-500/5' },
-      silver: { label: '#2 Product of the Week', badge: '/assets/badge-silver.png', border: 'border-muted-foreground/20', bg: 'bg-muted/10' },
-      bronze: { label: '#3 Product of the Week', badge: '/assets/badge-bronze.png', border: 'border-orange-700/20', bg: 'bg-orange-700/5' },
+      gold: { label: '#1 Product of the Week', rank: '#1', emoji: '🥇' },
+      silver: { label: '#2 Product of the Week', rank: '#2', emoji: '🥈' },
+      bronze: { label: '#3 Product of the Week', rank: '#3', emoji: '🥉' },
     }[tier];
 
     return (
       <Link to={`/launch/${product.slug}`} className="block group">
         <div className="flex items-center gap-4 py-3 hover:bg-muted/30 rounded-lg px-3 transition-colors">
-          <img src={config.badge} alt={config.label} className="h-12 w-auto shrink-0" />
+          <span className="text-lg font-bold shrink-0 w-8 text-center">{config.emoji}</span>
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {product.thumbnail && (
               <Avatar className="h-10 w-10 rounded-lg">
