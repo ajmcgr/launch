@@ -33,9 +33,9 @@ Deno.serve(async (req) => {
       .gte('products.launch_date', oneWeekAgo.toISOString())
       .eq('products.status', 'launched');
 
-    if (monthlyError) {
-      console.error('Error fetching monthly votes:', monthlyError);
-      throw monthlyError;
+    if (weeklyError) {
+      console.error('Error fetching weekly votes:', weeklyError);
+      throw weeklyError;
     }
 
     const winners = {
