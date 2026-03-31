@@ -96,7 +96,7 @@ export const HomeLaunchListItem = ({
                 Boosted
               </span>
             )}
-            {launchDate && !isActiveLaunch(launchDate) && (
+            {launchDate && (
               <>
                 <span className="text-xs text-muted-foreground">·</span>
                 <span className="text-xs text-muted-foreground">{formatTimeAgo(launchDate)}</span>
