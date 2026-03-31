@@ -83,11 +83,12 @@ const Awards = () => {
 
       enriched.forEach(p => {
         const d = new Date(p.launch_date);
-        // Use UTC to avoid timezone-based week splits
+        // Match PostgreSQL date_trunc('week'): Monday-start, UTC-based
         const utcDay = d.getUTCDay();
-        const startOfWeek = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - utcDay));
+        const daysFromMonday = (utcDay + 6) % 7;
+        const startOfWeek = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - daysFromMonday));
         const key = startOfWeek.toISOString().substring(0, 10);
-        const label = `Week of ${new Date(startOfWeek.getTime() + 86400000 * 0.5).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`;
+        const label = `Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`;
 
         if (!weekMap.has(key)) {
           weekMap.set(key, { weekLabel: label, gold: null, silver: null, bronze: null });
