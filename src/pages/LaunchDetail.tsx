@@ -885,15 +885,6 @@ const LaunchDetail = () => {
               {bestRanking && !isActiveLaunch(product?.launch_date) && (
                 <div className="pt-4 border-t border-border/30">
                   <div className="flex items-center gap-2 text-sm">
-                    {bestRanking.rank === 1 ? (
-                      <Trophy className="h-4 w-4 text-yellow-500" />
-                    ) : bestRanking.rank === 2 ? (
-                      <Medal className="h-4 w-4 text-gray-400" />
-                    ) : bestRanking.rank === 3 ? (
-                      <Award className="h-4 w-4 text-amber-600" />
-                    ) : (
-                      <Trophy className="h-4 w-4 text-muted-foreground" />
-                    )}
                     <div>
                       <div className="font-medium text-foreground text-xs flex items-center gap-1.5">
                         #{bestRanking.rank} {bestRanking.period}
