@@ -83,10 +83,11 @@ const Awards = () => {
 
       enriched.forEach(p => {
         const d = new Date(p.launch_date);
-        const startOfWeek = new Date(d);
-        startOfWeek.setDate(d.getDate() - d.getDay());
+        // Use UTC to avoid timezone-based week splits
+        const utcDay = d.getUTCDay();
+        const startOfWeek = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - utcDay));
         const key = startOfWeek.toISOString().substring(0, 10);
-        const label = `Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        const label = `Week of ${new Date(startOfWeek.getTime() + 86400000 * 0.5).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}`;
 
         if (!weekMap.has(key)) {
           weekMap.set(key, { weekLabel: label, gold: null, silver: null, bronze: null });
