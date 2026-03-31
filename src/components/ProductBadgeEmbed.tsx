@@ -189,9 +189,9 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
   };
 
   const getAwardLabel = (): string => {
-    if (wonMonthly) return '🥇 Gold — #1 Monthly Winner';
-    if (wonWeekly) return '🥈 Silver — #2 Weekly Winner';
-    if (wonDaily) return '🥉 Bronze — #3 Daily Winner';
+    if (wonMonthly) return '🥇 Gold — #1 Product of the Month';
+    if (wonWeekly) return '🥈 Silver — #2 Product of the Month';
+    if (wonDaily) return '🥉 Bronze — #3 Product of the Month';
     return '';
   };
 

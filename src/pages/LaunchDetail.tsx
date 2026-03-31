@@ -173,11 +173,11 @@ const LaunchDetail = () => {
 
         // Use stored winner flags as permanent awards (set by detect-winners cron)
         if (productData.won_monthly) {
-          setBestRanking({ rank: 1, period: 'Monthly Winner', date: productData.launch_date?.substring(0, 10) || '' });
+          setBestRanking({ rank: 1, period: '#1 Product of the Month', date: productData.launch_date?.substring(0, 10) || '' });
         } else if (productData.won_weekly) {
-          setBestRanking({ rank: 2, period: 'Weekly Winner', date: productData.launch_date?.substring(0, 10) || '' });
+          setBestRanking({ rank: 2, period: '#2 Product of the Month', date: productData.launch_date?.substring(0, 10) || '' });
         } else if (productData.won_daily) {
-          setBestRanking({ rank: 3, period: 'Daily Winner', date: productData.launch_date?.substring(0, 10) || '' });
+          setBestRanking({ rank: 3, period: '#3 Product of the Month', date: productData.launch_date?.substring(0, 10) || '' });
         }
 
         setProduct({

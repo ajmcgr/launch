@@ -192,9 +192,9 @@ const FAQ = () => {
             <AccordionContent>
               Products can earn permanent award badges based on their performance:
               <ul className="list-disc ml-5 mt-2 space-y-1">
-                <li><strong>🥇 Gold:</strong> Awarded to the top monthly winner</li>
-                <li><strong>🥈 Silver:</strong> Awarded to the top weekly winner</li>
-                <li><strong>🥉 Bronze:</strong> Awarded to the top daily winner</li>
+                <li><strong>🥇 Gold:</strong> Awarded to the #1 Product of the Month</li>
+                <li><strong>🥈 Silver:</strong> Awarded to the #2 Product of the Month</li>
+                <li><strong>🥉 Bronze:</strong> Awarded to the #3 Product of the Month</li>
               </ul>
               <p className="mt-2">
                 Awards are determined automatically at the end of each launch window based on net votes. Once a product earns a badge, it's permanent and displayed on the product page and in listings. These awards are product-level only — they do not appear on maker profiles or leaderboards.
