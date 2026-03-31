@@ -780,8 +780,8 @@ const LaunchDetail = () => {
                   variant="outline"
                   className={`border-2 border-muted-foreground/20 ${product.domain_url ? "w-20" : "w-full"}`}
                   onClick={() => {
-                    const url = window.location.href;
-                    navigator.clipboard.writeText(url);
+                    const ogUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${product.slug}`;
+                    navigator.clipboard.writeText(ogUrl);
                     toast.success('Link copied to clipboard!');
                   }}
                 >

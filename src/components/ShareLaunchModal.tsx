@@ -23,14 +23,15 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   const [copied, setCopied] = useState<string | null>(null);
   
   const productUrl = `https://trylaunch.ai/launch/${productSlug}`;
+  const ogShareUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${productSlug}`;
   
-  const xShareText = `🚀 Just launched ${productName} on @trylaunchai!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${productUrl}`;
+  const xShareText = `🚀 Just launched ${productName} on @trylaunchai!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${ogShareUrl}`;
   
-  const linkedInShareText = `🚀 Excited to announce: I just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nWould love your support - check it out and let me know what you think!\n\n${productUrl}`;
+  const linkedInShareText = `🚀 Excited to announce: I just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nWould love your support - check it out and let me know what you think!\n\n${ogShareUrl}`;
   
   const redditTitle = `🚀 Just launched ${productName}${productTagline ? ` - ${productTagline}` : ''}`;
   
-  const ctaText = `🚀 Check out ${productName} on Launch - ${productUrl}`;
+  const ctaText = `🚀 Check out ${productName} on Launch - ${ogShareUrl}`;
   
 
   const handleXShare = () => {
@@ -39,12 +40,12 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   };
   
   const handleLinkedInShare = () => {
-    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(productUrl)}`;
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(ogShareUrl)}`;
     window.open(url, '_blank', 'width=550,height=420');
   };
   
   const handleRedditShare = () => {
-    const url = `https://www.reddit.com/submit?url=${encodeURIComponent(productUrl)}&title=${encodeURIComponent(redditTitle)}`;
+    const url = `https://www.reddit.com/submit?url=${encodeURIComponent(ogShareUrl)}&title=${encodeURIComponent(redditTitle)}`;
     window.open(url, '_blank', 'width=550,height=620');
   };
   
