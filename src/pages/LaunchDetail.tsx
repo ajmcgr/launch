@@ -479,7 +479,7 @@ const LaunchDetail = () => {
                     bestRanking.rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
                     'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                   }`}>
-                    {bestRanking.rank === 1 ? '🥇 Gold' : bestRanking.rank === 2 ? '🥈 Silver' : '🥉 Bronze'}
+                    {bestRanking.rank === 1 ? 'Gold' : bestRanking.rank === 2 ? 'Silver' : 'Bronze'}
                   </span>
                 )}
               </div>
