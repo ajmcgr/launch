@@ -95,8 +95,8 @@ const Awards = () => {
         const group = weekMap.get(key)!;
 
         if (p.won_monthly && !group.gold) group.gold = p;
-        else if (p.won_weekly && !group.silver) group.silver = p;
-        else if (p.won_daily && !group.bronze) group.bronze = p;
+        if (p.won_weekly && !group.silver) group.silver = p;
+        if (p.won_daily && !group.bronze) group.bronze = p;
       });
 
       // Sort weeks descending
