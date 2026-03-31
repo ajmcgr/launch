@@ -40,7 +40,7 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   };
   
   const handleLinkedInShare = () => {
-    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(productUrl)}`;
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(ogShareUrl)}`;
     window.open(url, '_blank', 'width=550,height=420');
   };
   
