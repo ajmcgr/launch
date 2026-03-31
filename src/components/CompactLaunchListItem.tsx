@@ -51,7 +51,7 @@ export const CompactLaunchListItem = ({
   
   const metaAfterMrr: string[] = [];
   metaAfterMrr.push(`${commentCount} comment${commentCount !== 1 ? 's' : ''}`);
-  if (launchDate) metaAfterMrr.push(formatTimeAgo(launchDate));
+  if (launchDate && !isActiveLaunch(launchDate)) metaAfterMrr.push(formatTimeAgo(launchDate));
   
   const hasMrr = verifiedMrr !== null && verifiedMrr !== undefined;
 
