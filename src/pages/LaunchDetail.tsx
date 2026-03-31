@@ -673,8 +673,8 @@ const LaunchDetail = () => {
                 </div>
               )}
 
-              {/* Award Badge */}
-              {bestRanking && (
+              {/* Award Badge — only show after launch window closes */}
+              {bestRanking && !isActiveLaunch(product?.launch_date) && (
                 <div>
                   <h3 className="font-medium text-sm text-muted-foreground mb-2">Award</h3>
                   <Link to="/awards" className="block">
