@@ -154,10 +154,7 @@ const Awards = () => {
 
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Trophy className="h-7 w-7 text-primary" />
-            <h1 className="text-3xl font-bold">Weekly Awards</h1>
-          </div>
+          <h1 className="text-4xl font-bold font-reckless mb-3">Weekly Awards</h1>
           <p className="text-muted-foreground">
             The top 3 products each week earn Gold, Silver, and Bronze awards based on community votes.
           </p>
