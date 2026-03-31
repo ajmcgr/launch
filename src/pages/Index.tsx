@@ -133,7 +133,9 @@ const Index = () => {
 
       if (error) throw error;
 
-      const [voteCountsResult, userVotesResult] = await Promise.all([
+      const today = new Date().toISOString().split('T')[0];
+
+      const [voteCountsResult, userVotesResult, boostedResult] = await Promise.all([
         supabase
           .from('product_vote_counts')
           .select('product_id, net_votes'),
@@ -144,6 +146,12 @@ const Index = () => {
               .eq('user_id', currentUser.id)
               .eq('value', 1)
           : Promise.resolve({ data: null, error: null }),
+        supabase
+          .from('sponsored_products')
+          .select('product_id')
+          .eq('sponsorship_type', 'boost')
+          .lte('start_date', today)
+          .gte('end_date', today),
       ]);
 
       if (voteCountsResult.error) throw voteCountsResult.error;
@@ -151,6 +159,7 @@ const Index = () => {
 
       const voteMap = new Map(voteCountsResult.data?.map(v => [v.product_id, v.net_votes || 0]) || []);
       const userVoteMap = new Map(userVotesResult.data?.map(v => [v.product_id, 1 as const]) || []);
+      const boostedIds = new Set(boostedResult.data?.map(b => b.product_id) || []);
 
       const launches: Launch[] = (products || [])
         .map((p, index) => ({
