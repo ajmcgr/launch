@@ -639,9 +639,6 @@ const LaunchDetail = () => {
                       />
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm">{bestRanking.period}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Week of {bestRanking.date}
-                        </p>
                       </div>
                     </div>
                   </Link>
