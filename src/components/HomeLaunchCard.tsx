@@ -103,7 +103,13 @@ export const HomeLaunchCard = ({
         </p>
         {(launchDate || (platforms && platforms.length > 0)) && (
           <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mt-2">
-            {launchDate && <span>{formatTimeAgo(launchDate)}</span>}
+            {launchDate && isActiveLaunch(launchDate) ? (
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400">
+                Live · {formatLaunchCountdown(launchDate)}
+              </span>
+            ) : launchDate ? (
+              <span>{formatTimeAgo(launchDate)}</span>
+            ) : null}
             <PlatformIcons platforms={platforms} size="sm" />
           </div>
         )}
