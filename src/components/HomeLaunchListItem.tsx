@@ -58,7 +58,7 @@ export const HomeLaunchListItem = ({
 
   return (
     <div 
-      className="group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+      className={`group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer ${isBoosted ? 'ring-1 ring-primary/20' : ''}`}
       onClick={handleCardClick}
     >
       <div className="flex items-start gap-3 flex-1">
