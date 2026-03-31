@@ -19,6 +19,7 @@ interface CompactLaunchListItemProps {
   platforms?: Platform[];
   verifiedMrr?: number | null;
   mrrVerifiedAt?: string | null;
+  isBoosted?: boolean;
 }
 
 export const CompactLaunchListItem = ({
