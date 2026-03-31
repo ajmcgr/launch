@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         winners,
-        message: 'Winner detection completed — top 3 monthly products awarded'
+        message: 'Winner detection completed — top 3 weekly products awarded'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
