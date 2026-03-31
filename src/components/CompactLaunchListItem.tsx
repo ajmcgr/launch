@@ -37,6 +37,7 @@ export const CompactLaunchListItem = ({
   platforms,
   verifiedMrr,
   mrrVerifiedAt,
+  isBoosted = false,
 }: CompactLaunchListItemProps) => {
   const navigate = useNavigate();
   
