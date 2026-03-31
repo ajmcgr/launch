@@ -24,9 +24,9 @@ Deno.serve(async (req) => {
     console.log('Starting winner detection...');
 
     const now = new Date();
-    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Find top 3 monthly products (launched in last 30 days with most votes)
+    // Find top 3 weekly products (launched in last 7 days with most votes)
     const { data: monthlyVotes, error: monthlyError } = await supabaseClient
       .from('votes')
       .select('product_id, value, products!inner(launch_date, status)')
