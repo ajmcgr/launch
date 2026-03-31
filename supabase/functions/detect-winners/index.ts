@@ -115,10 +115,60 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Send celebratory emails to winners
+    const tierConfig = [
+      { id: winners.gold, rank: '#1', emoji: '🥇', label: 'Gold', color: '#D4AF37' },
+      { id: winners.silver, rank: '#2', emoji: '🥈', label: 'Silver', color: '#A8A9AD' },
+      { id: winners.bronze, rank: '#3', emoji: '🥉', label: 'Bronze', color: '#CD7F32' },
+    ];
+
+    let emailsSent = 0;
+
+    for (const tier of tierConfig) {
+      if (!tier.id) continue;
+
+      // Fetch product + owner info
+      const { data: product } = await supabaseClient
+        .from('products')
+        .select('name, slug, owner_id')
+        .eq('id', tier.id)
+        .single();
+
+      if (!product || !product.owner_id) continue;
+
+      const { data: owner } = await supabaseClient
+        .from('users')
+        .select('email, username, full_name')
+        .eq('id', product.owner_id)
+        .single();
+
+      if (!owner?.email) continue;
+
+      const ownerName = owner.full_name || owner.username || 'Maker';
+      const productUrl = PRODUCTION_URL + '/products/' + product.slug;
+      const awardsUrl = PRODUCTION_URL + '/awards';
+
+      try {
+        await resend.emails.send({
+          from: 'TryLaunch <launches@trylaunch.ai>',
+          to: [owner.email],
+          subject: tier.emoji + ' ' + product.name + ' is ' + tier.rank + ' Product of the Week!',
+          html: buildAwardEmail(ownerName, product.name, tier, productUrl, awardsUrl),
+        });
+        emailsSent++;
+        console.log('Award email sent to ' + owner.email + ' for ' + tier.label + ' (' + product.name + ')');
+      } catch (emailErr) {
+        console.error('Failed to send award email for ' + tier.label + ':', emailErr);
+      }
+    }
+
+    console.log('Total award emails sent: ' + emailsSent);
+
     return new Response(
       JSON.stringify({
         success: true,
         winners,
+        emailsSent,
         message: 'Winner detection completed — top 3 weekly products awarded'
       }),
       {
