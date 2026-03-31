@@ -45,7 +45,7 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   };
   
   const handleRedditShare = () => {
-    const url = `https://www.reddit.com/submit?url=${encodeURIComponent(productUrl)}&title=${encodeURIComponent(redditTitle)}`;
+    const url = `https://www.reddit.com/submit?url=${encodeURIComponent(ogShareUrl)}&title=${encodeURIComponent(redditTitle)}`;
     window.open(url, '_blank', 'width=550,height=620');
   };
   
