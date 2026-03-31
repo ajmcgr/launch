@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone, AlertTriangle, BarChart3 } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone, AlertTriangle, BarChart3, Sparkles, Clock } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
@@ -27,7 +27,7 @@ import UpgradeNudge from '@/components/UpgradeNudge';
 import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
 import { usePass } from '@/hooks/use-pass';
-import { Sparkles } from 'lucide-react';
+import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -734,6 +734,30 @@ const MyProducts = () => {
                             <span>
                               Plan: {product.orderPlan === 'free' ? 'Free' : product.orderPlan === 'join' ? 'Launch Lite' : product.orderPlan === 'skip' ? 'Launch' : product.orderPlan === 'relaunch' ? 'Relaunch' : product.orderPlan}
                             </span>
+                          </div>
+                        )}
+                        {/* Launch Window Status */}
+                        {product.status === 'launched' && product.launch_date && isActiveLaunch(product.launch_date) && (
+                          <div className="mt-2 p-3 rounded-lg border border-green-500/20 bg-green-500/5">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Clock className="h-4 w-4 text-green-600 dark:text-green-400" />
+                              <span className="font-medium text-green-600 dark:text-green-400">Your launch is live</span>
+                              <span className="text-muted-foreground">· Ends in <span className="font-semibold text-foreground">{formatLaunchCountdown(product.launch_date)}</span></span>
+                            </div>
+                            {product.netVotes !== undefined && (
+                              <p className="text-xs text-muted-foreground mt-1 pl-6">
+                                Currently ranked #{product.rank || '—'} today
+                                {product.rank && product.rank > 5 && ' · Top launches receive most of the traffic'}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        {product.status === 'launched' && product.launch_date && isActiveLaunch(product.launch_date) && isLaunchEndingSoon(product.launch_date) && (
+                          <div className="mt-1 p-2 rounded-lg border border-amber-500/20 bg-amber-500/5">
+                            <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                              <AlertTriangle className="h-3.5 w-3.5" />
+                              Your launch ends soon. Visibility will drop after this window.
+                            </p>
                           </div>
                         )}
                         {product.status === 'launched' && (
