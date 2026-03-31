@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone, AlertTriangle, BarChart3 } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Calendar, Trash2, Link2, CheckCircle, RefreshCw, DollarSign, ChevronDown, Eye, MousePointer, Megaphone, AlertTriangle, BarChart3, Sparkles, Clock } from 'lucide-react';
 import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
@@ -27,15 +27,7 @@ import UpgradeNudge from '@/components/UpgradeNudge';
 import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
 import { usePass } from '@/hooks/use-pass';
-import { Sparkles, Clock } from 'lucide-react';
 import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
-import ShareLaunchModal from '@/components/ShareLaunchModal';
-import BoostUpsellModal from '@/components/BoostUpsellModal';
-import UpgradeNudge from '@/components/UpgradeNudge';
-import BoostNudgeCard from '@/components/BoostNudgeCard';
-import { formatMRRRange } from '@/lib/revenue';
-import { usePass } from '@/hooks/use-pass';
-import { Sparkles } from 'lucide-react';
 
 const MyProducts = () => {
   const navigate = useNavigate();
