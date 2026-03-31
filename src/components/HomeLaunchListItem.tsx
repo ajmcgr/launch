@@ -25,6 +25,7 @@ interface HomeLaunchListItemProps {
   makers?: Array<{ username: string; avatar_url?: string }>;
   userVote?: 1 | null;
   commentCount?: number;
+  isBoosted?: boolean;
   onVote: () => void;
 }
 
