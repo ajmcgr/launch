@@ -91,11 +91,6 @@ export const CompactLaunchListItem = ({
                 Boosted
               </span>
             )}
-            {launchDate && isActiveLaunch(launchDate) && (
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 flex-shrink-0">
-                Live · {formatLaunchCountdown(launchDate)}
-              </span>
-            )}
           {domainUrl && (
             <a
               href={domainUrl}
