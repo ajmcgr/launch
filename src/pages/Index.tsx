@@ -177,7 +177,8 @@ const Index = () => {
           makers: (p.product_makers || [])
             .map((pm: any) => pm.users)
             .filter((u: any) => u && u.username)
-            .map((u: any) => ({ username: u.username, avatar_url: u.avatar_url }))
+            .map((u: any) => ({ username: u.username, avatar_url: u.avatar_url })),
+          isBoosted: boostedIds.has(p.id),
         }));
 
       setLaunches(launches);
