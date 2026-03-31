@@ -361,6 +361,7 @@ const Index = () => {
                 platforms={launch.platforms}
                 makers={launch.makers}
                 userVote={launch.userVote}
+                isBoosted={launch.isBoosted}
                 onVote={() => handleVote(launch.id)}
               />
             ))}
