@@ -85,12 +85,12 @@ const Admin = () => {
         supabase.from('comments').select('id', { count: 'exact', head: true }),
         supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'launched'),
         supabase.from('products').select('verified_mrr').not('verified_mrr', 'is', null),
-        // Historical data for sparklines (last 9 weeks)
-        supabase.from('products').select('created_at').order('created_at', { ascending: true }),
-        supabase.from('users').select('created_at').order('created_at', { ascending: true }),
-        supabase.from('votes').select('created_at').order('created_at', { ascending: true }),
-        supabase.from('product_ratings').select('created_at').order('created_at', { ascending: true }),
-        supabase.from('comments').select('created_at').order('created_at', { ascending: true }),
+        // Historical data for sparklines (last 10 weeks only, avoids 1000-row default limit)
+        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('products').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
+        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('users').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
+        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('votes').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
+        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('product_ratings').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
+        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('comments').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
       ]);
 
       // Helper to generate per-week new counts for sparklines (shows spikes)
