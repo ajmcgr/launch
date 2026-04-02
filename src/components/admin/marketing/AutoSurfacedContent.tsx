@@ -793,6 +793,7 @@ export const AutoSurfacedContent = () => {
             signups: o.signups || 0,
             revenue: o.revenue || 0,
             testimonial: o.testimonial,
+            icon_url: p.product_media?.find((m: any) => m.type === 'icon')?.url,
           };
         })
         .sort((a: any, b: any) => (b.signups + b.revenue) - (a.signups + a.revenue))
