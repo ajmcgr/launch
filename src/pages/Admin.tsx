@@ -594,6 +594,9 @@ const Admin = () => {
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
+                                  {sp.products?.id && adminIconMap?.get(sp.products.id) && (
+                                    <img src={adminIconMap.get(sp.products.id)} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
+                                  )}
                                   <h3 className="font-semibold text-lg">{sp.products?.name || 'Unknown Product'}</h3>
                                   {isActive && <Badge className="bg-green-600">Active</Badge>}
                                   {isUpcoming && <Badge variant="secondary">Upcoming</Badge>}
