@@ -905,103 +905,79 @@ export const AutoSurfacedContent = () => {
 
   // Master copy function for all newsletter content
   const handleMasterCopy = async () => {
-    const sections: string[] = [];
+    const htmlSections: string[] = [];
+    const plainSections: string[] = [];
     
-    // Helper to format product text with truncated taglines and icon
-    const formatProduct = (p: SurfacedProduct | SponsoredProduct) => {
-      const iconLine = (p as any).icon_url ? `![${p.name}](${(p as any).icon_url})\n` : '';
-      return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
+    const formatProductHtml = (p: SurfacedProduct | SponsoredProduct) => {
+      const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
+      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, (p as any).icon_url);
     };
-    
-    // Paid Launches
-    const enrichedPaid = enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined;
-    if (enrichedPaid && enrichedPaid.length > 0) {
-      const paidText = enrichedPaid.map(formatProduct).join('\n\n');
-      sections.push(`## 💰 Sponsored Launches\n\n${paidText}`);
-    }
-    
-    // Weekly Winners
-    const enrichedWinners = enrichWithIcons(weeklyWinners);
-    if (enrichedWinners && enrichedWinners.length > 0) {
-      const winnersText = enrichedWinners.map(formatProduct).join('\n\n');
-      sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
-    }
-    
-    // Weekly Awards
-    const enrichedAwards = enrichWithIcons(weeklyAwards);
-    if (enrichedAwards && enrichedAwards.length > 0) {
-      const awardsText = enrichedAwards.map(formatProduct).join('\n\n');
-      sections.push(`## 🏅 Weekly Awards\n\n${awardsText}`);
-    }
-    
-    // 5 Products You Missed This Week
-    const enrichedMissed = enrichWithIcons(missedProducts);
-    if (enrichedMissed && enrichedMissed.length > 0) {
-      const missedText = enrichedMissed.map(formatProduct).join('\n\n');
-      sections.push(`## 🕐 5 Launch Products You Missed This Week\n\n${missedText}`);
-    }
-    
-    // New & Noteworthy
-    const enrichedNew = enrichWithIcons(newNoteworthy);
-    if (enrichedNew && enrichedNew.length > 0) {
-      const newText = enrichedNew.map(formatProduct).join('\n\n');
-      sections.push(`## ✨ New & Noteworthy on Launch\n\n${newText}`);
-    }
-    
-    // Hidden Gems
-    const enrichedGems = enrichWithIcons(hiddenGems);
-    if (enrichedGems && enrichedGems.length > 0) {
-      const gemsText = enrichedGems.map(formatProduct).join('\n\n');
-      sections.push(`## 💎 Launch Hidden Gems\n\n${gemsText}`);
-    }
+    const formatProductPlain = (p: SurfacedProduct | SponsoredProduct) => {
+      const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
+      return productToPlain(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`);
+    };
+
+    const addProductSection = (title: string, emoji: string, items: (SurfacedProduct | SponsoredProduct)[] | undefined) => {
+      if (!items || items.length === 0) return;
+      htmlSections.push(`<h2>${emoji} ${title}</h2>` + items.map(formatProductHtml).join(''));
+      plainSections.push(`## ${emoji} ${title}\n\n` + items.map(formatProductPlain).join('\n\n'));
+    };
+
+    addProductSection('Sponsored Launches', '💰', enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined);
+    addProductSection('Launch Weekly Winners', '📈', enrichWithIcons(weeklyWinners));
+    addProductSection('Weekly Awards', '🏅', enrichWithIcons(weeklyAwards));
+    addProductSection('5 Launch Products You Missed This Week', '🕐', enrichWithIcons(missedProducts));
+    addProductSection('New & Noteworthy on Launch', '✨', enrichWithIcons(newNoteworthy));
+    addProductSection('Launch Hidden Gems', '💎', enrichWithIcons(hiddenGems));
     
     // Builders to Watch
     if (buildersToWatch && buildersToWatch.length > 0) {
-      const buildersText = buildersToWatch
-        .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
-        .join('\n\n');
-      sections.push(`## 👀 Launch Makers to Watch\n\n${buildersText}`);
+      htmlSections.push(`<h2>👀 Launch Makers to Watch</h2>` + buildersToWatch
+        .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`).join(''));
+      plainSections.push(`## 👀 Launch Makers to Watch\n\n` + buildersToWatch
+        .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`).join('\n\n'));
     }
     
     // Top Makers by Karma
     if (topMakersByKarma && topMakersByKarma.length > 0) {
-      const makersText = topMakersByKarma
-        .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`)
-        .join('\n\n');
-      sections.push(`## ⚡ Top Makers by Karma\n\n${makersText}`);
+      htmlSections.push(`<h2>⚡ Top Makers by Karma</h2>` + topMakersByKarma
+        .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`).join(''));
+      plainSections.push(`## ⚡ Top Makers by Karma\n\n` + topMakersByKarma
+        .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`).join('\n\n'));
     }
     
     // Popular Technology
     if (popularTech && popularTech.length > 0) {
-      const techText = popularTech
-        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`)
-        .join('\n\n');
-      sections.push(`## 🛠️ Most Popular Tech on Launch\n\n${techText}`);
+      htmlSections.push(`<h2>🛠️ Most Popular Tech on Launch</h2>` + popularTech
+        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`).join(''));
+      plainSections.push(`## 🛠️ Most Popular Tech on Launch\n\n` + popularTech
+        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
-    // Latest Tech on Launch
+    // Latest Tech
     if (latestTech && latestTech.length > 0) {
-      const latestTechText = latestTech
-        .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`)
-        .join('\n\n');
-      sections.push(`## 🆕 Latest Tech on Launch\n\n${latestTechText}`);
+      htmlSections.push(`<h2>🆕 Latest Tech on Launch</h2>` + latestTech
+        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a></p>`).join(''));
+      plainSections.push(`## 🆕 Latest Tech on Launch\n\n` + latestTech
+        .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
     // Top Monthly Success Stories
     if (topSuccessStories && topSuccessStories.length > 0) {
-      const storiesText = topSuccessStories
-        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`)
-        .join('\n\n');
-      sections.push(`## 🎯 Top Monthly Success Stories\n\n${storiesText}`);
+      htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>` + topSuccessStories
+        .map((s) => `<p><a href="https://trylaunch.ai/launch/${s.slug}">${s.name}</a> — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? ` "${truncateToOneSentence(s.testimonial)}"` : ''}</p>`).join(''));
+      plainSections.push(`## 🎯 Top Monthly Success Stories\n\n` + topSuccessStories
+        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`).join('\n\n'));
     }
     
-    if (sections.length === 0) {
+    if (htmlSections.length === 0) {
       toast.error('No content available to copy');
       return;
     }
     
-    const fullContent = sections.join('\n\n---\n\n');
-    await navigator.clipboard.writeText(fullContent);
+    const fullHtml = htmlSections.join('<hr />');
+    const fullPlain = plainSections.join('\n\n---\n\n');
+    await copyRichText(fullHtml, fullPlain);
     setMasterCopied(true);
     toast.success('All newsletter content copied!');
     setTimeout(() => setMasterCopied(false), 2000);
