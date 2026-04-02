@@ -487,9 +487,9 @@ export const AutoSurfacedContent = () => {
         sponsorship_type: sp.sponsorship_type,
         start_date: sp.start_date,
         end_date: sp.end_date,
+        product_media: sp.products?.product_media || [],
       }));
       
-      // Map orders (any paid plan - exclude 'free')
       const orderProducts = (ordersRes.data || [])
         .filter((o: any) => {
           const plan = (o.plan || '').toLowerCase();
@@ -503,6 +503,7 @@ export const AutoSurfacedContent = () => {
           sponsorship_type: o.plan,
           start_date: o.created_at?.split('T')[0] || '',
           end_date: '',
+          product_media: o.products?.product_media || [],
         }));
       
       // Combine and deduplicate by product id
