@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, Check, ExternalLink, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 // Rich clipboard helper: copies both text/html (for Beehiiv) and text/plain fallback
@@ -32,6 +32,18 @@ function productToPlain(name: string, tagline: string, url: string) {
   return `${name} — ${tagline}\n${url}`;
 }
 
+function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
+  const img = iconUrl
+    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;border-radius:4px" />`
+    : '';
+  const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
+  return `<p>${img}<a href="${url}">${name}</a> — ${summary}</p>`;
+}
+
+function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
+  return `${name} — ${signups} signups, $${revenue} revenue${testimonial ? `\n"${truncateToOneSentence(testimonial)}"` : ''}\n${url}`;
+}
+
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
   if (!text) return '';
@@ -46,6 +58,7 @@ interface SurfacedProduct {
   slug: string;
   net_votes?: number;
   icon_url?: string;
+  product_media?: { url: string; type: string }[];
 }
 
 interface SponsoredProduct {
@@ -57,6 +70,7 @@ interface SponsoredProduct {
   start_date: string;
   end_date: string;
   icon_url?: string;
+  product_media?: { url: string; type: string }[];
 }
 
 interface SurfacedBuilder {
@@ -80,6 +94,7 @@ interface SuccessStoryItem {
   signups: number;
   revenue: number;
   testimonial: string | null;
+  icon_url?: string;
 }
 
 interface ContentSection {
@@ -94,6 +109,9 @@ interface ContentSection {
   successStories?: SuccessStoryItem[];
   isLoading: boolean;
 }
+
+const getIconUrl = (product: { icon_url?: string; product_media?: { url: string; type: string }[] } | null | undefined) =>
+  product?.icon_url || product?.product_media?.find((media) => media.type === 'icon')?.url;
 
 const CopyButton = ({ html, plain, label }: { html: string; plain: string; label: string }) => {
   const [copied, setCopied] = useState(false);
@@ -121,14 +139,15 @@ const CopyButton = ({ html, plain, label }: { html: string; plain: string; label
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const htmlText = productToHtml(product.name, taglineText, productUrl, product.icon_url);
+  const iconUrl = getIconUrl(product);
+  const htmlText = productToHtml(product.name, taglineText, productUrl, iconUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        {product.icon_url && (
-          <img src={product.icon_url} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+        {iconUrl && (
+          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -165,19 +184,20 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const htmlText = productToHtml(product.name, taglineText, productUrl, product.icon_url);
+  const iconUrl = getIconUrl(product);
+  const htmlText = productToHtml(product.name, taglineText, productUrl, iconUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
-    <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
+    <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-border">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        {product.icon_url && (
-          <img src={product.icon_url} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+        {iconUrl && (
+          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-medium truncate">{product.name}</span>
-            <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
+            <Badge variant="secondary" className="text-xs">
               {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
                product.sponsorship_type === 'website' ? 'Website' : 
                product.sponsorship_type === 'newsletter' ? 'Newsletter' :
@@ -406,31 +426,10 @@ const CopyAllStackButton = ({ items, title }: { items: { name: string; slug: str
 export const AutoSurfacedContent = () => {
   const [masterCopied, setMasterCopied] = useState(false);
   
-  // Fetch all product icons for enrichment
-  const { data: iconMap } = useQuery({
-    queryKey: ['admin-product-icons'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('product_media')
-        .select('product_id, url')
-        .eq('type', 'icon')
-        .not('url', 'is', null)
-        .limit(5000);
-      if (error) throw error;
-      const map = new Map<string, string>();
-      (data || []).forEach((item: any) => {
-        if (!map.has(item.product_id)) map.set(item.product_id, item.url);
-      });
-      return map;
-    },
-    staleTime: 1000 * 60 * 10,
-  });
-
-  // Helper to enrich products with icon URLs
-  const enrichWithIcons = <T extends { id: string }>(items: T[] | undefined): T[] | undefined => {
-    if (!items || !iconMap) return items;
-    return items.map(item => ({ ...item, icon_url: iconMap.get(item.id) }));
-  };
+  const getIconUrl = (product: any) =>
+    product?.icon_url ||
+    product?.product_media?.find((media: any) => media.type === 'icon')?.url ||
+    undefined;
 
   // Get today's date range in UTC
   const now = new Date();
@@ -459,7 +458,7 @@ export const AutoSurfacedContent = () => {
             start_date,
             end_date,
             position,
-            products(id, name, tagline, slug)
+            products(id, name, tagline, slug, product_media(url, type))
           `)
           .lte('start_date', today)
           .gte('end_date', today)
@@ -471,7 +470,7 @@ export const AutoSurfacedContent = () => {
             plan,
             created_at,
             product_id,
-            products(id, name, tagline, slug)
+            products(id, name, tagline, slug, product_media(url, type))
           `)
           .gte('created_at', oneWeekAgo)
           .not('product_id', 'is', null)
@@ -488,9 +487,9 @@ export const AutoSurfacedContent = () => {
         sponsorship_type: sp.sponsorship_type,
         start_date: sp.start_date,
         end_date: sp.end_date,
+        product_media: sp.products?.product_media || [],
       }));
       
-      // Map orders (any paid plan - exclude 'free')
       const orderProducts = (ordersRes.data || [])
         .filter((o: any) => {
           const plan = (o.plan || '').toLowerCase();
@@ -504,6 +503,7 @@ export const AutoSurfacedContent = () => {
           sponsorship_type: o.plan,
           start_date: o.created_at?.split('T')[0] || '',
           end_date: '',
+          product_media: o.products?.product_media || [],
         }));
       
       // Combine and deduplicate by product id
@@ -545,7 +545,7 @@ export const AutoSurfacedContent = () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, tagline, slug, launch_date')
+          .select('id, name, tagline, slug, launch_date, product_media(url, type)')
           .eq('status', 'launched')
           .gte('launch_date', startOfDay)
           .lt('launch_date', endOfDay),
@@ -567,6 +567,7 @@ export const AutoSurfacedContent = () => {
           slug: p.slug,
           launch_date: p.launch_date,
           net_votes: votesMap.get(p.id) || 0,
+          product_media: p.product_media || [],
         }));
       
       // Sort by votes (desc), then by earliest launch_date as tiebreaker
@@ -904,6 +905,14 @@ export const AutoSurfacedContent = () => {
     enabled: sponsoredProductIds !== undefined,
   });
 
+  const paidLaunchesWithIcons = useMemo(() => (paidLaunches || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [paidLaunches]);
+  const launchOfDayWithIcons = useMemo(() => (launchOfDay || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [launchOfDay]);
+  const weeklyWinnersWithIcons = useMemo(() => (weeklyWinners || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [weeklyWinners]);
+  const weeklyAwardsWithIcons = useMemo(() => (weeklyAwards || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [weeklyAwards]);
+  const missedProductsWithIcons = useMemo(() => (missedProducts || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [missedProducts]);
+  const newNoteworthyWithIcons = useMemo(() => (newNoteworthy || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [newNoteworthy]);
+  const hiddenGemsWithIcons = useMemo(() => (hiddenGems || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [hiddenGems]);
+
   // Master copy function for all newsletter content
   const handleMasterCopy = async () => {
     const htmlSections: string[] = [];
@@ -911,7 +920,7 @@ export const AutoSurfacedContent = () => {
     
     const formatProductHtml = (p: SurfacedProduct | SponsoredProduct) => {
       const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
-      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, (p as any).icon_url);
+      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, getIconUrl(p));
     };
     const formatProductPlain = (p: SurfacedProduct | SponsoredProduct) => {
       const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
@@ -924,14 +933,13 @@ export const AutoSurfacedContent = () => {
       plainSections.push(`## ${emoji} ${title}\n\n` + items.map(formatProductPlain).join('\n\n'));
     };
 
-    addProductSection('Sponsored Launches', '💰', enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined);
-    addProductSection('Launch Weekly Winners', '📈', enrichWithIcons(weeklyWinners));
-    addProductSection('Weekly Awards', '🏅', enrichWithIcons(weeklyAwards));
-    addProductSection('5 Launch Products You Missed This Week', '🕐', enrichWithIcons(missedProducts));
-    addProductSection('New & Noteworthy on Launch', '✨', enrichWithIcons(newNoteworthy));
-    addProductSection('Launch Hidden Gems', '💎', enrichWithIcons(hiddenGems));
+    addProductSection('Sponsored Launches', '💰', paidLaunchesWithIcons as SponsoredProduct[] | undefined);
+    addProductSection('Launch Weekly Winners', '📈', weeklyWinnersWithIcons);
+    addProductSection('Weekly Awards', '🏅', weeklyAwardsWithIcons);
+    addProductSection('5 Launch Products You Missed This Week', '🕐', missedProductsWithIcons);
+    addProductSection('New & Noteworthy on Launch', '✨', newNoteworthyWithIcons);
+    addProductSection('Launch Hidden Gems', '💎', hiddenGemsWithIcons);
     
-    // Builders to Watch
     if (buildersToWatch && buildersToWatch.length > 0) {
       htmlSections.push(`<h2>👀 Launch Makers to Watch</h2>` + buildersToWatch
         .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`).join(''));
@@ -939,7 +947,6 @@ export const AutoSurfacedContent = () => {
         .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`).join('\n\n'));
     }
     
-    // Top Makers by Karma
     if (topMakersByKarma && topMakersByKarma.length > 0) {
       htmlSections.push(`<h2>⚡ Top Makers by Karma</h2>` + topMakersByKarma
         .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`).join(''));
@@ -947,7 +954,6 @@ export const AutoSurfacedContent = () => {
         .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`).join('\n\n'));
     }
     
-    // Popular Technology
     if (popularTech && popularTech.length > 0) {
       htmlSections.push(`<h2>🛠️ Most Popular Tech on Launch</h2>` + popularTech
         .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`).join(''));
@@ -955,7 +961,6 @@ export const AutoSurfacedContent = () => {
         .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
-    // Latest Tech
     if (latestTech && latestTech.length > 0) {
       htmlSections.push(`<h2>🆕 Latest Tech on Launch</h2>` + latestTech
         .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a></p>`).join(''));
@@ -963,12 +968,11 @@ export const AutoSurfacedContent = () => {
         .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
-    // Top Monthly Success Stories
     if (topSuccessStories && topSuccessStories.length > 0) {
       htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>` + topSuccessStories
-        .map((s) => `<p><a href="https://trylaunch.ai/launch/${s.slug}">${s.name}</a> — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? ` "${truncateToOneSentence(s.testimonial)}"` : ''}</p>`).join(''));
+        .map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`, s.icon_url)).join(''));
       plainSections.push(`## 🎯 Top Monthly Success Stories\n\n` + topSuccessStories
-        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`).join('\n\n'));
+        .map((s) => storyToPlain(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`)).join('\n\n'));
     }
     
     if (htmlSections.length === 0) {
@@ -989,49 +993,49 @@ export const AutoSurfacedContent = () => {
       title: "💰 Sponsored Launches",
       description: "Currently active sponsored products",
       icon: null,
-      sponsoredProducts: enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined,
+      sponsoredProducts: paidLaunchesWithIcons as SponsoredProduct[] | undefined,
       isLoading: paidLoading,
     },
     {
       title: "🏆 Launch of the Day",
       description: "Top voted product(s) launched today",
       icon: null,
-      products: enrichWithIcons(launchOfDay),
+      products: launchOfDayWithIcons,
       isLoading: launchLoading,
     },
     {
       title: "📈 Launch Weekly Winners",
       description: "Top 5 products from the past week",
       icon: null,
-      products: enrichWithIcons(weeklyWinners),
+      products: weeklyWinnersWithIcons,
       isLoading: weeklyLoading,
     },
     {
       title: "🏅 Weekly Awards",
       description: "This week's Gold, Silver, and Bronze winners",
       icon: null,
-      products: enrichWithIcons(weeklyAwards),
+      products: weeklyAwardsWithIcons,
       isLoading: awardsLoading,
     },
     {
       title: "🕐 5 Launch Products You Missed This Week",
       description: "Top performers from 7-14 days ago",
       icon: null,
-      products: enrichWithIcons(missedProducts),
+      products: missedProductsWithIcons,
       isLoading: missedLoading,
     },
     {
       title: "✨ New & Noteworthy on Launch",
       description: "Fresh launches gaining traction",
       icon: null,
-      products: enrichWithIcons(newNoteworthy),
+      products: newNoteworthyWithIcons,
       isLoading: newNoteworthyLoading,
     },
     {
       title: "💎 Launch Hidden Gems",
       description: "Quality products that deserve more attention",
       icon: null,
-      products: enrichWithIcons(hiddenGems),
+      products: hiddenGemsWithIcons,
       isLoading: gemsLoading,
     },
     {
