@@ -249,11 +249,14 @@ const CopyAllTopMakersButton = ({ makers, title }: { makers: TopMaker[]; title: 
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = makers
+    const plain = makers
       .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`)
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + makers
+      .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`)
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All top makers copied!');
     setTimeout(() => setCopied(false), 2000);
