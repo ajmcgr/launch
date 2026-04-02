@@ -776,7 +776,7 @@ export const AutoSurfacedContent = () => {
       const productIds = outcomes.map((o: any) => o.product_id);
       const { data: products } = await supabase
         .from('products')
-        .select('id, name, slug')
+        .select('id, name, slug, product_media(url, type)')
         .in('id', productIds)
         .eq('status', 'launched');
 
