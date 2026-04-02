@@ -1240,7 +1240,7 @@ export const AutoSurfacedContent = () => {
                         <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/launch/{story.slug}</p>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton html={`<p>${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? ` "${truncateToOneSentence(story.testimonial)}"` : ''} — <a href="https://trylaunch.ai/launch/${story.slug}">View</a></p>`} plain={`${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? `\n"${truncateToOneSentence(story.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${story.slug}`} label="story" />
+                        <CopyButton html={storyToHtml(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`, story.icon_url)} plain={storyToPlain(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} label="story" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
                           <a href={`/launch/${story.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
