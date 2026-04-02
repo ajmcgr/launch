@@ -902,6 +902,7 @@ export const AutoSurfacedContent = () => {
           tagline: p.tagline,
           slug: p.slug,
           net_votes: votesMap.get(p.id) || 0,
+          product_media: p.product_media || [],
         }));
       
       // Filter to products with at least 1 vote
