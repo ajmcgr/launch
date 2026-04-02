@@ -1200,7 +1200,7 @@ export const AutoSurfacedContent = () => {
                         <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/tech/{item.slug}</p>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton text={`${item.name} (${item.product_count} products)\nhttps://trylaunch.ai/tech/${item.slug}`} label="technology" />
+                        <CopyButton html={`<p>${item.name} (${item.product_count} products) — <a href="https://trylaunch.ai/tech/${item.slug}">View</a></p>`} plain={`${item.name} (${item.product_count} products)\nhttps://trylaunch.ai/tech/${item.slug}`} label="technology" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
                           <a href={`/tech/${item.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
