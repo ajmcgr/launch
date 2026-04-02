@@ -1214,7 +1214,11 @@ export const AutoSurfacedContent = () => {
                 section.successStories.length > 0 ? (
                   section.successStories.map((story) => (
                     <div key={story.product_id} className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
-                      <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {story.icon_url && (
+                          <img src={story.icon_url} alt={story.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium truncate">{story.name}</span>
                           {story.signups > 0 && (
