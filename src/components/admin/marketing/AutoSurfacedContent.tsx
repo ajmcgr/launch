@@ -567,6 +567,7 @@ export const AutoSurfacedContent = () => {
           slug: p.slug,
           launch_date: p.launch_date,
           net_votes: votesMap.get(p.id) || 0,
+          product_media: p.product_media || [],
         }));
       
       // Sort by votes (desc), then by earliest launch_date as tiebreaker
