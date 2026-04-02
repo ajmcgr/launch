@@ -136,14 +136,15 @@ const CopyButton = ({ html, plain, label }: { html: string; plain: string; label
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const htmlText = productToHtml(product.name, taglineText, productUrl, product.icon_url);
+  const iconUrl = getIconUrl(product);
+  const htmlText = productToHtml(product.name, taglineText, productUrl, iconUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        {product.icon_url && (
-          <img src={product.icon_url} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+        {iconUrl && (
+          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -180,19 +181,20 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const htmlText = productToHtml(product.name, taglineText, productUrl, product.icon_url);
+  const iconUrl = getIconUrl(product);
+  const htmlText = productToHtml(product.name, taglineText, productUrl, iconUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
-    <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
+    <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-border">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        {product.icon_url && (
-          <img src={product.icon_url} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+        {iconUrl && (
+          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-medium truncate">{product.name}</span>
-            <Badge className="text-xs bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30">
+            <Badge variant="secondary" className="text-xs">
               {product.sponsorship_type === 'combined' ? 'Website + Newsletter' : 
                product.sponsorship_type === 'website' ? 'Website' : 
                product.sponsorship_type === 'newsletter' ? 'Newsletter' :
