@@ -589,7 +589,7 @@ export const AutoSurfacedContent = () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, tagline, slug')
+          .select('id, name, tagline, slug, product_media(url, type)')
           .eq('status', 'launched')
           .gte('launch_date', twoWeeksAgo),
         supabase
@@ -610,6 +610,7 @@ export const AutoSurfacedContent = () => {
           tagline: p.tagline,
           slug: p.slug,
           net_votes: votesMap.get(p.id) || 0,
+          product_media: p.product_media || [],
         }));
       
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
@@ -628,7 +629,7 @@ export const AutoSurfacedContent = () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, tagline, slug')
+          .select('id, name, tagline, slug, product_media(url, type)')
           .eq('status', 'launched')
           .gte('launch_date', thirtyDaysAgo)
           .order('launch_date', { ascending: false })
@@ -650,6 +651,7 @@ export const AutoSurfacedContent = () => {
           tagline: p.tagline,
           slug: p.slug,
           net_votes: votesMap.get(p.id) || 0,
+          product_media: p.product_media || [],
         }));
       
       // Filter to products with 1-10 votes (hidden gems)
@@ -774,7 +776,7 @@ export const AutoSurfacedContent = () => {
       const productIds = outcomes.map((o: any) => o.product_id);
       const { data: products } = await supabase
         .from('products')
-        .select('id, name, slug')
+        .select('id, name, slug, product_media(url, type)')
         .in('id', productIds)
         .eq('status', 'launched');
 
@@ -791,6 +793,7 @@ export const AutoSurfacedContent = () => {
             signups: o.signups || 0,
             revenue: o.revenue || 0,
             testimonial: o.testimonial,
+            icon_url: p.product_media?.find((m: any) => m.type === 'icon')?.url,
           };
         })
         .sort((a: any, b: any) => (b.signups + b.revenue) - (a.signups + a.revenue))
@@ -804,7 +807,7 @@ export const AutoSurfacedContent = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, tagline, slug, won_monthly, won_weekly, won_daily, launch_date')
+        .select('id, name, tagline, slug, won_monthly, won_weekly, won_daily, launch_date, product_media(url, type)')
         .or('won_monthly.eq.true,won_weekly.eq.true,won_daily.eq.true')
         .eq('status', 'launched')
         .gte('launch_date', oneWeekAgo)
@@ -826,6 +829,7 @@ export const AutoSurfacedContent = () => {
             name: `${tierLabel} ${p.name}`,
             tagline: p.tagline,
             slug: p.slug,
+            product_media: p.product_media || [],
           });
         }
       });
@@ -841,7 +845,7 @@ export const AutoSurfacedContent = () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, tagline, slug')
+          .select('id, name, tagline, slug, product_media(url, type)')
           .eq('status', 'launched')
           .gte('launch_date', twoWeeksAgo)
           .lt('launch_date', oneWeekAgo),
@@ -862,6 +866,7 @@ export const AutoSurfacedContent = () => {
           tagline: p.tagline,
           slug: p.slug,
           net_votes: votesMap.get(p.id) || 0,
+          product_media: p.product_media || [],
         }));
       
       return mapped.sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0)).slice(0, 5);
@@ -876,7 +881,7 @@ export const AutoSurfacedContent = () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, tagline, slug')
+          .select('id, name, tagline, slug, product_media(url, type)')
           .eq('status', 'launched')
           .gte('launch_date', threeDaysAgo)
           .order('launch_date', { ascending: false }),
@@ -897,6 +902,7 @@ export const AutoSurfacedContent = () => {
           tagline: p.tagline,
           slug: p.slug,
           net_votes: votesMap.get(p.id) || 0,
+          product_media: p.product_media || [],
         }));
       
       // Filter to products with at least 1 vote
@@ -1208,7 +1214,11 @@ export const AutoSurfacedContent = () => {
                 section.successStories.length > 0 ? (
                   section.successStories.map((story) => (
                     <div key={story.product_id} className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
-                      <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {story.icon_url && (
+                          <img src={story.icon_url} alt={story.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium truncate">{story.name}</span>
                           {story.signups > 0 && (
@@ -1228,9 +1238,10 @@ export const AutoSurfacedContent = () => {
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/launch/{story.slug}</p>
+                        </div>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton html={`<p>${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? ` "${truncateToOneSentence(story.testimonial)}"` : ''} — <a href="https://trylaunch.ai/launch/${story.slug}">View</a></p>`} plain={`${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? `\n"${truncateToOneSentence(story.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${story.slug}`} label="story" />
+                        <CopyButton html={storyToHtml(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`, story.icon_url)} plain={storyToPlain(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} label="story" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
                           <a href={`/launch/${story.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
