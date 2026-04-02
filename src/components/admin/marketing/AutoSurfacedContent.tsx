@@ -7,6 +7,31 @@ import { Copy, Check, ExternalLink, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+// Rich clipboard helper: copies both text/html (for Beehiiv) and text/plain fallback
+async function copyRichText(html: string, plain: string) {
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([plain], { type: 'text/plain' }),
+      }),
+    ]);
+  } catch {
+    await navigator.clipboard.writeText(plain);
+  }
+}
+
+function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
+  const img = iconUrl
+    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;border-radius:4px" />`
+    : '';
+  return `<p>${img}<a href="${url}">${name}</a> — ${tagline}</p>`;
+}
+
+function productToPlain(name: string, tagline: string, url: string) {
+  return `${name} — ${tagline}\n${url}`;
+}
+
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
   if (!text) return '';
