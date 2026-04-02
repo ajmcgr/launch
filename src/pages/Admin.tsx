@@ -257,6 +257,26 @@ const Admin = () => {
     enabled: isAdmin,
   });
 
+  // Fetch product icons for display
+  const { data: adminIconMap } = useQuery({
+    queryKey: ['admin-product-icons-dashboard'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_media')
+        .select('product_id, url')
+        .eq('type', 'icon')
+        .not('url', 'is', null);
+      if (error) throw error;
+      const map = new Map<string, string>();
+      (data || []).forEach((item: any) => {
+        if (!map.has(item.product_id)) map.set(item.product_id, item.url);
+      });
+      return map;
+    },
+    staleTime: 1000 * 60 * 10,
+    enabled: isAdmin,
+  });
+
 
   const deleteSponsorship = async (sponsorshipId: string) => {
     const { error } = await supabase
@@ -507,6 +527,9 @@ const Admin = () => {
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
+                                  {order.products?.id && adminIconMap?.get(order.products.id) && (
+                                    <img src={adminIconMap.get(order.products.id)} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
+                                  )}
                                   <h3 className="font-semibold text-lg">{order.products?.name || 'Unknown Product'}</h3>
                                   <Badge variant={order.plan === 'skip' ? 'default' : 'secondary'}>
                                     {planLabel}
@@ -571,6 +594,9 @@ const Admin = () => {
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
+                                  {sp.products?.id && adminIconMap?.get(sp.products.id) && (
+                                    <img src={adminIconMap.get(sp.products.id)} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
+                                  )}
                                   <h3 className="font-semibold text-lg">{sp.products?.name || 'Unknown Product'}</h3>
                                   {isActive && <Badge className="bg-green-600">Active</Badge>}
                                   {isUpcoming && <Badge variant="secondary">Upcoming</Badge>}
