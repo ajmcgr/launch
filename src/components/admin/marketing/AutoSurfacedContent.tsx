@@ -829,6 +829,7 @@ export const AutoSurfacedContent = () => {
             name: `${tierLabel} ${p.name}`,
             tagline: p.tagline,
             slug: p.slug,
+            product_media: p.product_media || [],
           });
         }
       });
