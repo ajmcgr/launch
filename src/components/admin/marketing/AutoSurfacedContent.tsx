@@ -110,6 +110,9 @@ interface ContentSection {
   isLoading: boolean;
 }
 
+const getIconUrl = (product: { icon_url?: string; product_media?: { url: string; type: string }[] } | null | undefined) =>
+  product?.icon_url || product?.product_media?.find((media) => media.type === 'icon')?.url;
+
 const CopyButton = ({ html, plain, label }: { html: string; plain: string; label: string }) => {
   const [copied, setCopied] = useState(false);
 
