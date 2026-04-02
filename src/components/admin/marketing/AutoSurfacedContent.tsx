@@ -1238,6 +1238,7 @@ export const AutoSurfacedContent = () => {
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/launch/{story.slug}</p>
+                        </div>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
                         <CopyButton html={storyToHtml(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`, story.icon_url)} plain={storyToPlain(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} label="story" />
