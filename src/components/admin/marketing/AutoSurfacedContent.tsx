@@ -7,6 +7,31 @@ import { Copy, Check, ExternalLink, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+// Rich clipboard helper: copies both text/html (for Beehiiv) and text/plain fallback
+async function copyRichText(html: string, plain: string) {
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([plain], { type: 'text/plain' }),
+      }),
+    ]);
+  } catch {
+    await navigator.clipboard.writeText(plain);
+  }
+}
+
+function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
+  const img = iconUrl
+    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;border-radius:4px" />`
+    : '';
+  return `<p>${img}<a href="${url}">${name}</a> — ${tagline}</p>`;
+}
+
+function productToPlain(name: string, tagline: string, url: string) {
+  return `${name} — ${tagline}\n${url}`;
+}
+
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
   if (!text) return '';
@@ -70,11 +95,11 @@ interface ContentSection {
   isLoading: boolean;
 }
 
-const CopyButton = ({ text, label }: { text: string; label: string }) => {
+const CopyButton = ({ html, plain, label }: { html: string; plain: string; label: string }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text);
+    await copyRichText(html, plain);
     setCopied(true);
     toast.success('Copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
@@ -96,9 +121,8 @@ const CopyButton = ({ text, label }: { text: string; label: string }) => {
 const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const copyText = product.icon_url 
-    ? `![${product.name}](${product.icon_url})\n${product.name} - ${taglineText}\n${productUrl}`
-    : `${product.name} - ${taglineText}\n${productUrl}`;
+  const htmlText = productToHtml(product.name, taglineText, productUrl, product.icon_url);
+  const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors">
@@ -122,7 +146,7 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
         </div>
       </div>
       <div className="flex items-center gap-1 ml-2">
-        <CopyButton text={copyText} label="product" />
+        <CopyButton html={htmlText} plain={plainText} label="product" />
         <Button
           variant="ghost"
           size="sm"
@@ -141,9 +165,8 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const copyText = product.icon_url 
-    ? `![${product.name}](${product.icon_url})\n${product.name} - ${taglineText}\n${productUrl}`
-    : `${product.name} - ${taglineText}\n${productUrl}`;
+  const htmlText = productToHtml(product.name, taglineText, productUrl, product.icon_url);
+  const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
@@ -173,7 +196,7 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
         </div>
       </div>
       <div className="flex items-center gap-1 ml-2">
-        <CopyButton text={copyText} label="product" />
+        <CopyButton html={htmlText} plain={plainText} label="product" />
         <Button
           variant="ghost"
           size="sm"
@@ -206,7 +229,7 @@ const TopMakerCard = ({ maker }: { maker: TopMaker }) => {
         <p className="text-xs text-muted-foreground/70 mt-1 truncate">{profileUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
-        <CopyButton text={copyText} label="maker" />
+        <CopyButton html={`<p>${maker.name || maker.username} (@${maker.username}) — ${maker.karma} karma</p>`} plain={copyText} label="maker" />
         <Button
           variant="ghost"
           size="sm"
@@ -226,11 +249,14 @@ const CopyAllTopMakersButton = ({ makers, title }: { makers: TopMaker[]; title: 
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = makers
+    const plain = makers
       .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`)
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + makers
+      .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`)
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All top makers copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -261,7 +287,7 @@ const BuilderCard = ({ builder }: { builder: SurfacedBuilder }) => {
         <p className="text-xs text-muted-foreground/70 mt-1 truncate">{profileUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
-        <CopyButton text={copyText} label="builder" />
+        <CopyButton html={`<p>${builder.name || builder.username} (@${builder.username})</p>`} plain={copyText} label="builder" />
         <Button
           variant="ghost"
           size="sm"
@@ -281,14 +307,14 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = products
-      .map((p) => {
-        const iconLine = p.icon_url ? `![${p.name}](${p.icon_url})\n` : '';
-        return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
-      })
+    const plain = products
+      .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + products
+      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All products copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -306,14 +332,14 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = products
-      .map((p) => {
-        const iconLine = p.icon_url ? `![${p.name}](${p.icon_url})\n` : '';
-        return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
-      })
+    const plain = products
+      .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + products
+      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All products copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -331,11 +357,14 @@ const CopyAllBuildersButton = ({ builders, title }: { builders: SurfacedBuilder[
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = builders
+    const plain = builders
       .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + builders
+      .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`)
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All builders copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -353,11 +382,14 @@ const CopyAllStackButton = ({ items, title }: { items: { name: string; slug: str
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = items
+    const plain = items
       .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`)
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + items
+      .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`)
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All technologies copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -873,103 +905,79 @@ export const AutoSurfacedContent = () => {
 
   // Master copy function for all newsletter content
   const handleMasterCopy = async () => {
-    const sections: string[] = [];
+    const htmlSections: string[] = [];
+    const plainSections: string[] = [];
     
-    // Helper to format product text with truncated taglines and icon
-    const formatProduct = (p: SurfacedProduct | SponsoredProduct) => {
-      const iconLine = (p as any).icon_url ? `![${p.name}](${(p as any).icon_url})\n` : '';
-      return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
+    const formatProductHtml = (p: SurfacedProduct | SponsoredProduct) => {
+      const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
+      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, (p as any).icon_url);
     };
-    
-    // Paid Launches
-    const enrichedPaid = enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined;
-    if (enrichedPaid && enrichedPaid.length > 0) {
-      const paidText = enrichedPaid.map(formatProduct).join('\n\n');
-      sections.push(`## 💰 Sponsored Launches\n\n${paidText}`);
-    }
-    
-    // Weekly Winners
-    const enrichedWinners = enrichWithIcons(weeklyWinners);
-    if (enrichedWinners && enrichedWinners.length > 0) {
-      const winnersText = enrichedWinners.map(formatProduct).join('\n\n');
-      sections.push(`## 📈 Launch Weekly Winners\n\n${winnersText}`);
-    }
-    
-    // Weekly Awards
-    const enrichedAwards = enrichWithIcons(weeklyAwards);
-    if (enrichedAwards && enrichedAwards.length > 0) {
-      const awardsText = enrichedAwards.map(formatProduct).join('\n\n');
-      sections.push(`## 🏅 Weekly Awards\n\n${awardsText}`);
-    }
-    
-    // 5 Products You Missed This Week
-    const enrichedMissed = enrichWithIcons(missedProducts);
-    if (enrichedMissed && enrichedMissed.length > 0) {
-      const missedText = enrichedMissed.map(formatProduct).join('\n\n');
-      sections.push(`## 🕐 5 Launch Products You Missed This Week\n\n${missedText}`);
-    }
-    
-    // New & Noteworthy
-    const enrichedNew = enrichWithIcons(newNoteworthy);
-    if (enrichedNew && enrichedNew.length > 0) {
-      const newText = enrichedNew.map(formatProduct).join('\n\n');
-      sections.push(`## ✨ New & Noteworthy on Launch\n\n${newText}`);
-    }
-    
-    // Hidden Gems
-    const enrichedGems = enrichWithIcons(hiddenGems);
-    if (enrichedGems && enrichedGems.length > 0) {
-      const gemsText = enrichedGems.map(formatProduct).join('\n\n');
-      sections.push(`## 💎 Launch Hidden Gems\n\n${gemsText}`);
-    }
+    const formatProductPlain = (p: SurfacedProduct | SponsoredProduct) => {
+      const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
+      return productToPlain(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`);
+    };
+
+    const addProductSection = (title: string, emoji: string, items: (SurfacedProduct | SponsoredProduct)[] | undefined) => {
+      if (!items || items.length === 0) return;
+      htmlSections.push(`<h2>${emoji} ${title}</h2>` + items.map(formatProductHtml).join(''));
+      plainSections.push(`## ${emoji} ${title}\n\n` + items.map(formatProductPlain).join('\n\n'));
+    };
+
+    addProductSection('Sponsored Launches', '💰', enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined);
+    addProductSection('Launch Weekly Winners', '📈', enrichWithIcons(weeklyWinners));
+    addProductSection('Weekly Awards', '🏅', enrichWithIcons(weeklyAwards));
+    addProductSection('5 Launch Products You Missed This Week', '🕐', enrichWithIcons(missedProducts));
+    addProductSection('New & Noteworthy on Launch', '✨', enrichWithIcons(newNoteworthy));
+    addProductSection('Launch Hidden Gems', '💎', enrichWithIcons(hiddenGems));
     
     // Builders to Watch
     if (buildersToWatch && buildersToWatch.length > 0) {
-      const buildersText = buildersToWatch
-        .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
-        .join('\n\n');
-      sections.push(`## 👀 Launch Makers to Watch\n\n${buildersText}`);
+      htmlSections.push(`<h2>👀 Launch Makers to Watch</h2>` + buildersToWatch
+        .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`).join(''));
+      plainSections.push(`## 👀 Launch Makers to Watch\n\n` + buildersToWatch
+        .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`).join('\n\n'));
     }
     
     // Top Makers by Karma
     if (topMakersByKarma && topMakersByKarma.length > 0) {
-      const makersText = topMakersByKarma
-        .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`)
-        .join('\n\n');
-      sections.push(`## ⚡ Top Makers by Karma\n\n${makersText}`);
+      htmlSections.push(`<h2>⚡ Top Makers by Karma</h2>` + topMakersByKarma
+        .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`).join(''));
+      plainSections.push(`## ⚡ Top Makers by Karma\n\n` + topMakersByKarma
+        .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`).join('\n\n'));
     }
     
     // Popular Technology
     if (popularTech && popularTech.length > 0) {
-      const techText = popularTech
-        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`)
-        .join('\n\n');
-      sections.push(`## 🛠️ Most Popular Tech on Launch\n\n${techText}`);
+      htmlSections.push(`<h2>🛠️ Most Popular Tech on Launch</h2>` + popularTech
+        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`).join(''));
+      plainSections.push(`## 🛠️ Most Popular Tech on Launch\n\n` + popularTech
+        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
-    // Latest Tech on Launch
+    // Latest Tech
     if (latestTech && latestTech.length > 0) {
-      const latestTechText = latestTech
-        .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`)
-        .join('\n\n');
-      sections.push(`## 🆕 Latest Tech on Launch\n\n${latestTechText}`);
+      htmlSections.push(`<h2>🆕 Latest Tech on Launch</h2>` + latestTech
+        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a></p>`).join(''));
+      plainSections.push(`## 🆕 Latest Tech on Launch\n\n` + latestTech
+        .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
     // Top Monthly Success Stories
     if (topSuccessStories && topSuccessStories.length > 0) {
-      const storiesText = topSuccessStories
-        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`)
-        .join('\n\n');
-      sections.push(`## 🎯 Top Monthly Success Stories\n\n${storiesText}`);
+      htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>` + topSuccessStories
+        .map((s) => `<p><a href="https://trylaunch.ai/launch/${s.slug}">${s.name}</a> — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? ` "${truncateToOneSentence(s.testimonial)}"` : ''}</p>`).join(''));
+      plainSections.push(`## 🎯 Top Monthly Success Stories\n\n` + topSuccessStories
+        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`).join('\n\n'));
     }
     
-    if (sections.length === 0) {
+    if (htmlSections.length === 0) {
       toast.error('No content available to copy');
       return;
     }
     
-    const fullContent = sections.join('\n\n---\n\n');
-    await navigator.clipboard.writeText(fullContent);
+    const fullHtml = htmlSections.join('<hr />');
+    const fullPlain = plainSections.join('\n\n---\n\n');
+    await copyRichText(fullHtml, fullPlain);
     setMasterCopied(true);
     toast.success('All newsletter content copied!');
     setTimeout(() => setMasterCopied(false), 2000);
@@ -1177,7 +1185,7 @@ export const AutoSurfacedContent = () => {
                         <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/tech/{item.slug}</p>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton text={`${item.name} (${item.product_count} products)\nhttps://trylaunch.ai/tech/${item.slug}`} label="technology" />
+                        <CopyButton html={`<p>${item.name} (${item.product_count} products) — <a href="https://trylaunch.ai/tech/${item.slug}">View</a></p>`} plain={`${item.name} (${item.product_count} products)\nhttps://trylaunch.ai/tech/${item.slug}`} label="technology" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
                           <a href={`/tech/${item.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
@@ -1217,7 +1225,7 @@ export const AutoSurfacedContent = () => {
                         <p className="text-xs text-muted-foreground/70 mt-1 truncate">https://trylaunch.ai/launch/{story.slug}</p>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton text={`${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? `\n"${truncateToOneSentence(story.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${story.slug}`} label="story" />
+                        <CopyButton html={`<p>${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? ` "${truncateToOneSentence(story.testimonial)}"` : ''} — <a href="https://trylaunch.ai/launch/${story.slug}">View</a></p>`} plain={`${story.name} — ${story.signups} signups, $${story.revenue} revenue${story.testimonial ? `\n"${truncateToOneSentence(story.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${story.slug}`} label="story" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
                           <a href={`/launch/${story.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
