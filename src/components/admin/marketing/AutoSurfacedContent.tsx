@@ -307,14 +307,14 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = products
-      .map((p) => {
-        const iconLine = p.icon_url ? `![${p.name}](${p.icon_url})\n` : '';
-        return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
-      })
+    const plain = products
+      .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + products
+      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All products copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -332,14 +332,14 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = products
-      .map((p) => {
-        const iconLine = p.icon_url ? `![${p.name}](${p.icon_url})\n` : '';
-        return `${iconLine}${p.name} - ${p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline'}\nhttps://trylaunch.ai/launch/${p.slug}`;
-      })
+    const plain = products
+      .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + products
+      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All products copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -357,11 +357,14 @@ const CopyAllBuildersButton = ({ builders, title }: { builders: SurfacedBuilder[
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = builders
+    const plain = builders
       .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`)
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + builders
+      .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`)
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All builders copied!');
     setTimeout(() => setCopied(false), 2000);
@@ -379,11 +382,14 @@ const CopyAllStackButton = ({ items, title }: { items: { name: string; slug: str
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
-    const text = items
+    const plain = items
       .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`)
       .join('\n\n');
+    const html = `<h3>${title}</h3>` + items
+      .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`)
+      .join('');
     
-    await navigator.clipboard.writeText(`${title}\n\n${text}`);
+    await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
     toast.success('All technologies copied!');
     setTimeout(() => setCopied(false), 2000);
