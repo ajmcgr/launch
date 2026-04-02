@@ -527,6 +527,9 @@ const Admin = () => {
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
+                                  {order.products?.id && adminIconMap?.get(order.products.id) && (
+                                    <img src={adminIconMap.get(order.products.id)} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
+                                  )}
                                   <h3 className="font-semibold text-lg">{order.products?.name || 'Unknown Product'}</h3>
                                   <Badge variant={order.plan === 'skip' ? 'default' : 'secondary'}>
                                     {planLabel}
