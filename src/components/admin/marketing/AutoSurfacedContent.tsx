@@ -95,11 +95,11 @@ interface ContentSection {
   isLoading: boolean;
 }
 
-const CopyButton = ({ text, label }: { text: string; label: string }) => {
+const CopyButton = ({ html, plain, label }: { html: string; plain: string; label: string }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(text);
+    await copyRichText(html, plain);
     setCopied(true);
     toast.success('Copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
