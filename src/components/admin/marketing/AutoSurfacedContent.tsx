@@ -545,7 +545,7 @@ export const AutoSurfacedContent = () => {
       const [productsRes, votesRes] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, tagline, slug, launch_date')
+          .select('id, name, tagline, slug, launch_date, product_media(url, type)')
           .eq('status', 'launched')
           .gte('launch_date', startOfDay)
           .lt('launch_date', endOfDay),
