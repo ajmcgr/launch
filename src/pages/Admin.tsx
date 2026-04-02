@@ -257,6 +257,26 @@ const Admin = () => {
     enabled: isAdmin,
   });
 
+  // Fetch product icons for display
+  const { data: adminIconMap } = useQuery({
+    queryKey: ['admin-product-icons-dashboard'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('product_media')
+        .select('product_id, url')
+        .eq('type', 'icon')
+        .not('url', 'is', null);
+      if (error) throw error;
+      const map = new Map<string, string>();
+      (data || []).forEach((item: any) => {
+        if (!map.has(item.product_id)) map.set(item.product_id, item.url);
+      });
+      return map;
+    },
+    staleTime: 1000 * 60 * 10,
+    enabled: isAdmin,
+  });
+
 
   const deleteSponsorship = async (sponsorshipId: string) => {
     const { error } = await supabase
