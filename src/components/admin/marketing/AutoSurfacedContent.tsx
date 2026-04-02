@@ -32,6 +32,18 @@ function productToPlain(name: string, tagline: string, url: string) {
   return `${name} — ${tagline}\n${url}`;
 }
 
+function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
+  const img = iconUrl
+    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;border-radius:4px" />`
+    : '';
+  const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
+  return `<p>${img}<a href="${url}">${name}</a> — ${summary}</p>`;
+}
+
+function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
+  return `${name} — ${signups} signups, $${revenue} revenue${testimonial ? `\n"${truncateToOneSentence(testimonial)}"` : ''}\n${url}`;
+}
+
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
   if (!text) return '';
@@ -46,6 +58,7 @@ interface SurfacedProduct {
   slug: string;
   net_votes?: number;
   icon_url?: string;
+  product_media?: { url: string; type: string }[];
 }
 
 interface SponsoredProduct {
@@ -57,6 +70,7 @@ interface SponsoredProduct {
   start_date: string;
   end_date: string;
   icon_url?: string;
+  product_media?: { url: string; type: string }[];
 }
 
 interface SurfacedBuilder {
@@ -80,6 +94,7 @@ interface SuccessStoryItem {
   signups: number;
   revenue: number;
   testimonial: string | null;
+  icon_url?: string;
 }
 
 interface ContentSection {
