@@ -807,7 +807,7 @@ export const AutoSurfacedContent = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, tagline, slug, won_monthly, won_weekly, won_daily, launch_date')
+        .select('id, name, tagline, slug, won_monthly, won_weekly, won_daily, launch_date, product_media(url, type)')
         .or('won_monthly.eq.true,won_weekly.eq.true,won_daily.eq.true')
         .eq('status', 'launched')
         .gte('launch_date', oneWeekAgo)
