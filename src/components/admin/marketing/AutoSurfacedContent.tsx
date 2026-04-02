@@ -903,6 +903,14 @@ export const AutoSurfacedContent = () => {
     enabled: sponsoredProductIds !== undefined,
   });
 
+  const paidLaunchesWithIcons = useMemo(() => (paidLaunches || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [paidLaunches]);
+  const launchOfDayWithIcons = useMemo(() => (launchOfDay || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [launchOfDay]);
+  const weeklyWinnersWithIcons = useMemo(() => (weeklyWinners || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [weeklyWinners]);
+  const weeklyAwardsWithIcons = useMemo(() => (weeklyAwards || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [weeklyAwards]);
+  const missedProductsWithIcons = useMemo(() => (missedProducts || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [missedProducts]);
+  const newNoteworthyWithIcons = useMemo(() => (newNoteworthy || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [newNoteworthy]);
+  const hiddenGemsWithIcons = useMemo(() => (hiddenGems || []).map((p) => ({ ...p, icon_url: getIconUrl(p) })), [hiddenGems]);
+
   // Master copy function for all newsletter content
   const handleMasterCopy = async () => {
     const htmlSections: string[] = [];
@@ -910,7 +918,7 @@ export const AutoSurfacedContent = () => {
     
     const formatProductHtml = (p: SurfacedProduct | SponsoredProduct) => {
       const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
-      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, (p as any).icon_url);
+      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, getIconUrl(p));
     };
     const formatProductPlain = (p: SurfacedProduct | SponsoredProduct) => {
       const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
@@ -923,14 +931,13 @@ export const AutoSurfacedContent = () => {
       plainSections.push(`## ${emoji} ${title}\n\n` + items.map(formatProductPlain).join('\n\n'));
     };
 
-    addProductSection('Sponsored Launches', '💰', enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined);
-    addProductSection('Launch Weekly Winners', '📈', enrichWithIcons(weeklyWinners));
-    addProductSection('Weekly Awards', '🏅', enrichWithIcons(weeklyAwards));
-    addProductSection('5 Launch Products You Missed This Week', '🕐', enrichWithIcons(missedProducts));
-    addProductSection('New & Noteworthy on Launch', '✨', enrichWithIcons(newNoteworthy));
-    addProductSection('Launch Hidden Gems', '💎', enrichWithIcons(hiddenGems));
+    addProductSection('Sponsored Launches', '💰', paidLaunchesWithIcons as SponsoredProduct[] | undefined);
+    addProductSection('Launch Weekly Winners', '📈', weeklyWinnersWithIcons);
+    addProductSection('Weekly Awards', '🏅', weeklyAwardsWithIcons);
+    addProductSection('5 Launch Products You Missed This Week', '🕐', missedProductsWithIcons);
+    addProductSection('New & Noteworthy on Launch', '✨', newNoteworthyWithIcons);
+    addProductSection('Launch Hidden Gems', '💎', hiddenGemsWithIcons);
     
-    // Builders to Watch
     if (buildersToWatch && buildersToWatch.length > 0) {
       htmlSections.push(`<h2>👀 Launch Makers to Watch</h2>` + buildersToWatch
         .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`).join(''));
@@ -938,7 +945,6 @@ export const AutoSurfacedContent = () => {
         .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`).join('\n\n'));
     }
     
-    // Top Makers by Karma
     if (topMakersByKarma && topMakersByKarma.length > 0) {
       htmlSections.push(`<h2>⚡ Top Makers by Karma</h2>` + topMakersByKarma
         .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`).join(''));
@@ -946,7 +952,6 @@ export const AutoSurfacedContent = () => {
         .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`).join('\n\n'));
     }
     
-    // Popular Technology
     if (popularTech && popularTech.length > 0) {
       htmlSections.push(`<h2>🛠️ Most Popular Tech on Launch</h2>` + popularTech
         .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`).join(''));
@@ -954,7 +959,6 @@ export const AutoSurfacedContent = () => {
         .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
-    // Latest Tech
     if (latestTech && latestTech.length > 0) {
       htmlSections.push(`<h2>🆕 Latest Tech on Launch</h2>` + latestTech
         .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a></p>`).join(''));
@@ -962,12 +966,11 @@ export const AutoSurfacedContent = () => {
         .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
-    // Top Monthly Success Stories
     if (topSuccessStories && topSuccessStories.length > 0) {
       htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>` + topSuccessStories
-        .map((s) => `<p><a href="https://trylaunch.ai/launch/${s.slug}">${s.name}</a> — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? ` "${truncateToOneSentence(s.testimonial)}"` : ''}</p>`).join(''));
+        .map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`, s.icon_url)).join(''));
       plainSections.push(`## 🎯 Top Monthly Success Stories\n\n` + topSuccessStories
-        .map((s) => `${s.name} — ${s.signups} signups, $${s.revenue} revenue${s.testimonial ? `\n"${truncateToOneSentence(s.testimonial)}"` : ''}\nhttps://trylaunch.ai/launch/${s.slug}`).join('\n\n'));
+        .map((s) => storyToPlain(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`)).join('\n\n'));
     }
     
     if (htmlSections.length === 0) {
@@ -988,49 +991,49 @@ export const AutoSurfacedContent = () => {
       title: "💰 Sponsored Launches",
       description: "Currently active sponsored products",
       icon: null,
-      sponsoredProducts: enrichWithIcons(paidLaunches) as SponsoredProduct[] | undefined,
+      sponsoredProducts: paidLaunchesWithIcons as SponsoredProduct[] | undefined,
       isLoading: paidLoading,
     },
     {
       title: "🏆 Launch of the Day",
       description: "Top voted product(s) launched today",
       icon: null,
-      products: enrichWithIcons(launchOfDay),
+      products: launchOfDayWithIcons,
       isLoading: launchLoading,
     },
     {
       title: "📈 Launch Weekly Winners",
       description: "Top 5 products from the past week",
       icon: null,
-      products: enrichWithIcons(weeklyWinners),
+      products: weeklyWinnersWithIcons,
       isLoading: weeklyLoading,
     },
     {
       title: "🏅 Weekly Awards",
       description: "This week's Gold, Silver, and Bronze winners",
       icon: null,
-      products: enrichWithIcons(weeklyAwards),
+      products: weeklyAwardsWithIcons,
       isLoading: awardsLoading,
     },
     {
       title: "🕐 5 Launch Products You Missed This Week",
       description: "Top performers from 7-14 days ago",
       icon: null,
-      products: enrichWithIcons(missedProducts),
+      products: missedProductsWithIcons,
       isLoading: missedLoading,
     },
     {
       title: "✨ New & Noteworthy on Launch",
       description: "Fresh launches gaining traction",
       icon: null,
-      products: enrichWithIcons(newNoteworthy),
+      products: newNoteworthyWithIcons,
       isLoading: newNoteworthyLoading,
     },
     {
       title: "💎 Launch Hidden Gems",
       description: "Quality products that deserve more attention",
       icon: null,
-      products: enrichWithIcons(hiddenGems),
+      products: hiddenGemsWithIcons,
       isLoading: gemsLoading,
     },
     {
