@@ -284,7 +284,7 @@ const BuilderCard = ({ builder }: { builder: SurfacedBuilder }) => {
         <p className="text-xs text-muted-foreground/70 mt-1 truncate">{profileUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
-        <CopyButton text={copyText} label="builder" />
+        <CopyButton html={`<p>${builder.name || builder.username} (@${builder.username})</p>`} plain={copyText} label="builder" />
         <Button
           variant="ghost"
           size="sm"
