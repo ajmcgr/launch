@@ -165,9 +165,8 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
-  const copyText = product.icon_url 
-    ? `![${product.name}](${product.icon_url})\n${product.name} - ${taglineText}\n${productUrl}`
-    : `${product.name} - ${taglineText}\n${productUrl}`;
+  const htmlText = productToHtml(product.name, taglineText, productUrl, product.icon_url);
+  const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-amber-500/30">
@@ -197,7 +196,7 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
         </div>
       </div>
       <div className="flex items-center gap-1 ml-2">
-        <CopyButton text={copyText} label="product" />
+        <CopyButton html={htmlText} plain={plainText} label="product" />
         <Button
           variant="ghost"
           size="sm"
