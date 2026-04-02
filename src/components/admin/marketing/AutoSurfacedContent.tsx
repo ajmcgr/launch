@@ -414,7 +414,8 @@ export const AutoSurfacedContent = () => {
         .from('product_media')
         .select('product_id, url')
         .eq('type', 'icon')
-        .not('url', 'is', null);
+        .not('url', 'is', null)
+        .limit(5000);
       if (error) throw error;
       const map = new Map<string, string>();
       (data || []).forEach((item: any) => {
