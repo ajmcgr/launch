@@ -229,7 +229,7 @@ const TopMakerCard = ({ maker }: { maker: TopMaker }) => {
         <p className="text-xs text-muted-foreground/70 mt-1 truncate">{profileUrl}</p>
       </div>
       <div className="flex items-center gap-1 ml-2">
-        <CopyButton text={copyText} label="maker" />
+        <CopyButton html={`<p>${maker.name || maker.username} (@${maker.username}) — ${maker.karma} karma</p>`} plain={copyText} label="maker" />
         <Button
           variant="ghost"
           size="sm"
