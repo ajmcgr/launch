@@ -302,6 +302,34 @@ const LaunchDetail = () => {
       setUserVote(newVote);
       setProduct({ ...product, netVotes: product.netVotes + voteDiff });
 
+      // Social proof toast when upvoting a Pro product (one-time per session)
+      if (newVote === 1 && product.owner_id !== user.id) {
+        const toastKey = `social_proof_shown_${product.id}`;
+        if (!sessionStorage.getItem(toastKey)) {
+          // Check if product has a paid plan
+          const { data: orderData } = await supabase
+            .from('orders')
+            .select('plan')
+            .eq('product_id', product.id)
+            .in('plan', ['skip'])
+            .limit(1);
+          
+          if (orderData && orderData.length > 0) {
+            setTimeout(() => {
+              toast('Pro launches get 3–5x more views', {
+                description: 'Upgrade your launch for full promotion →',
+                action: {
+                  label: 'See plans',
+                  onClick: () => navigate('/pricing'),
+                },
+                duration: 5000,
+              });
+            }, 800);
+          }
+          sessionStorage.setItem(toastKey, '1');
+        }
+      }
+
       // Notification is handled by database trigger
     } catch (error) {
       console.error('Error voting:', error);
