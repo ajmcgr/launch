@@ -184,10 +184,19 @@ const LaunchDetail = () => {
           setBestRanking({ rank: 3, period: '#3 Product of the Week', date: productData.launch_date?.substring(0, 10) || '' });
         }
 
+        // Check if product has a paid plan (Pro/skip)
+        const { data: paidOrderData } = await supabase
+          .from('orders')
+          .select('plan')
+          .eq('product_id', productData.id)
+          .in('plan', ['skip'])
+          .limit(1);
+
         const productObj = {
           ...productData,
           netVotes: voteData?.net_votes || 0,
-          makers
+          makers,
+          _hasPaidPlan: !!(paidOrderData && paidOrderData.length > 0),
         };
         setProduct(productObj);
 
@@ -301,6 +310,34 @@ const LaunchDetail = () => {
       const voteDiff = (newVote || 0) - (userVote || 0);
       setUserVote(newVote);
       setProduct({ ...product, netVotes: product.netVotes + voteDiff });
+
+      // Social proof toast when upvoting a Pro product (one-time per session)
+      if (newVote === 1 && product.owner_id !== user.id) {
+        const toastKey = `social_proof_shown_${product.id}`;
+        if (!sessionStorage.getItem(toastKey)) {
+          // Check if product has a paid plan
+          const { data: orderData } = await supabase
+            .from('orders')
+            .select('plan')
+            .eq('product_id', product.id)
+            .in('plan', ['skip'])
+            .limit(1);
+          
+          if (orderData && orderData.length > 0) {
+            setTimeout(() => {
+              toast('Pro launches get 3–5x more views', {
+                description: 'Upgrade your launch for full promotion →',
+                action: {
+                  label: 'See plans',
+                  onClick: () => navigate('/pricing'),
+                },
+                duration: 5000,
+              });
+            }, 800);
+          }
+          sessionStorage.setItem(toastKey, '1');
+        }
+      }
 
       // Notification is handled by database trigger
     } catch (error) {
@@ -957,6 +994,28 @@ const LaunchDetail = () => {
               )}
 
             </div>
+
+              {/* Upgrade banner for free/Lite product makers */}
+              {user && product.owner_id === user.id && product.status === 'launched' && (() => {
+                // Show if product doesn't have a Pro (skip) order - checked via product plan field or lack of paid order
+                const showUpgradeBanner = !product._hasPaidPlan;
+                if (!showUpgradeBanner) return null;
+                return (
+                  <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 space-y-2">
+                    <p className="text-sm font-semibold">
+                      {product.name} isn't promoted
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Pro launches average 3–5x more views and get featured in our newsletter (2K+ subs) and on social media.
+                    </p>
+                    <Button size="sm" className="w-full mt-2" asChild>
+                      <Link to="/pricing">
+                        Upgrade to Pro — $39
+                      </Link>
+                    </Button>
+                  </div>
+                );
+              })()}
 
             {/* Sidebar Sponsored Ads */}
             <SidebarSponsoredAd />

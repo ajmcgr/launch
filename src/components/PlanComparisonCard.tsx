@@ -134,10 +134,32 @@ export const PlanComparisonCard = ({
           })}
         </ul>
         
-        {/* Value callout for paid plans */}
+        {/* Value callout with anchor pricing for Pro */}
         {plan.id === 'skip' && !isDisabled && (
-          <div className="mt-4 pt-3 border-t">
-            <p className="text-xs text-muted-foreground">
+          <div className="mt-4 pt-3 border-t space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground line-through">$99 value</span>
+              <span className="text-xs font-bold text-primary">Save 60%</span>
+            </div>
+            <div className="space-y-0.5 text-[11px] text-muted-foreground">
+              <div className="flex justify-between">
+                <span>X & LinkedIn promotion</span>
+                <span className="font-medium text-foreground">$25</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Newsletter feature (2K+ subs)</span>
+                <span className="font-medium text-foreground">$49</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Priority queue + choose date</span>
+                <span className="font-medium text-foreground">$15</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Verified badge</span>
+                <span className="font-medium text-foreground">$10</span>
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground pt-1">
               <span className="font-medium text-foreground">70K+ impressions/month</span> • Best for maximum visibility
             </p>
           </div>
