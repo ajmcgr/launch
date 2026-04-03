@@ -184,10 +184,19 @@ const LaunchDetail = () => {
           setBestRanking({ rank: 3, period: '#3 Product of the Week', date: productData.launch_date?.substring(0, 10) || '' });
         }
 
+        // Check if product has a paid plan (Pro/skip)
+        const { data: paidOrderData } = await supabase
+          .from('orders')
+          .select('plan')
+          .eq('product_id', productData.id)
+          .in('plan', ['skip'])
+          .limit(1);
+
         const productObj = {
           ...productData,
           netVotes: voteData?.net_votes || 0,
-          makers
+          makers,
+          _hasPaidPlan: !!(paidOrderData && paidOrderData.length > 0),
         };
         setProduct(productObj);
 
