@@ -184,8 +184,12 @@ const StackPage = () => {
 
   const handleVote = async (productId: string) => {
     if (!user) {
-      toast.error('Please login to vote');
-      navigate('/auth');
+      toast('Sign up to upvote your favorite launches', {
+        action: {
+          label: 'Sign up',
+          onClick: () => navigate('/auth?signup=true'),
+        },
+      });
       return;
     }
 

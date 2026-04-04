@@ -255,6 +255,7 @@ const BuilderItem = ({ builder, rank }: { builder: SurfacedBuilder; rank: number
 
 export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' | 'compact' }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [userVotes, setUserVotes] = useState<Map<string, 1>>(new Map());
   const [localVoteChanges, setLocalVoteChanges] = useState<Map<string, { voted: boolean; delta: number }>>(new Map());
@@ -293,7 +294,12 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
 
   const handleVote = async (productId: string) => {
     if (!user) {
-      toast.error('Please login to vote');
+      toast('Sign up to upvote your favorite launches', {
+        action: {
+          label: 'Sign up',
+          onClick: () => navigate('/auth?signup=true'),
+        },
+      });
       return;
     }
 

@@ -273,8 +273,12 @@ const LaunchDetail = () => {
 
   const handleVote = async (value: 1 | -1) => {
     if (!user) {
-      toast.error('Please login to vote');
-      navigate('/auth');
+      toast('Sign up to upvote your favorite launches', {
+        action: {
+          label: 'Sign up',
+          onClick: () => navigate('/auth?signup=true'),
+        },
+      });
       return;
     }
 
