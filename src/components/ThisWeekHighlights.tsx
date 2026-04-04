@@ -255,6 +255,7 @@ const BuilderItem = ({ builder, rank }: { builder: SurfacedBuilder; rank: number
 
 export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' | 'compact' }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [userVotes, setUserVotes] = useState<Map<string, 1>>(new Map());
   const [localVoteChanges, setLocalVoteChanges] = useState<Map<string, { voted: boolean; delta: number }>>(new Map());
