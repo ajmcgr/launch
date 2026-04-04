@@ -76,7 +76,12 @@ const Products = () => {
 
   const handleVote = async (productId: string) => {
     if (!user) {
-      window.location.href = '/auth';
+      toast('Sign up to upvote your favorite launches', {
+        action: {
+          label: 'Sign up',
+          onClick: () => { window.location.href = '/auth?signup=true'; },
+        },
+      });
       return;
     }
 
