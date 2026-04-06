@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
 import { usePass } from '@/hooks/use-pass';
+import { useQuery } from '@tanstack/react-query';
 import { PassOption } from '@/components/PassOption';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
@@ -145,6 +146,75 @@ const Submit = () => {
   // Pass status
   const { data: passStatus } = usePass(user?.id);
   const hasActivePass = passStatus?.hasActivePass || false;
+
+  // Fetch real avg votes for Free vs Pro launches
+  const { data: planStats } = useQuery({
+    queryKey: ['plan-performance-stats'],
+    queryFn: async () => {
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+      // Get all launched products in last 90 days
+      const { data: products } = await supabase
+        .from('products')
+        .select('id, launch_date')
+        .in('status', ['launched', 'scheduled'])
+        .gte('launch_date', ninetyDaysAgo.toISOString());
+
+      if (!products || products.length === 0) return null;
+
+      const productIds = products.map(p => p.id);
+
+      // Get orders to determine plan type
+      const { data: orders } = await supabase
+        .from('orders')
+        .select('product_id, plan')
+        .in('product_id', productIds);
+
+      // Get vote counts from view
+      const { data: voteCounts } = await supabase
+        .from('product_vote_counts')
+        .select('product_id, total_votes')
+        .in('product_id', productIds);
+
+      // Build maps
+      const orderMap = new Map<string, string>();
+      orders?.forEach(o => orderMap.set(o.product_id, o.plan));
+
+      const voteMap = new Map<string, number>();
+      voteCounts?.forEach(v => {
+        if (v.product_id) voteMap.set(v.product_id, v.total_votes || 0);
+      });
+
+      // Aggregate by plan type
+      let freeVotes = 0, freeCount = 0;
+      let proVotes = 0, proCount = 0;
+
+      products.forEach(p => {
+        const plan = orderMap.get(p.id) || 'free';
+        const pVotes = voteMap.get(p.id) || 0;
+
+        if (plan === 'skip') {
+          proVotes += pVotes;
+          proCount++;
+        } else if (plan === 'free' || !plan) {
+          freeVotes += pVotes;
+          freeCount++;
+        }
+      });
+
+      const freeAvg = freeCount > 0 ? Math.round(freeVotes / freeCount) : 0;
+      const proAvg = proCount > 0 ? Math.round(proVotes / proCount) : 0;
+
+      return {
+        freeAvgVotes: freeAvg,
+        proAvgVotes: proAvg,
+        multiplier: freeAvg > 0 ? Math.round(proAvg / freeAvg) : 0,
+        proCount,
+      };
+    },
+    staleTime: 1000 * 60 * 30,
+  });
 
   // Save to localStorage whenever formData changes
   useEffect(() => {
@@ -1678,7 +1748,7 @@ const Submit = () => {
               const canUpgrade = existingPlan === 'join'; // Allow upgrade from free 'join' plan
               
               // Filter out relaunch plan - users should use the other three options
-              const availablePlans = PRICING_PLANS.filter(plan => plan.id !== 'relaunch');
+              const availablePlans = PRICING_PLANS.filter(plan => plan.id !== 'relaunch' && plan.id !== 'join');
               
               const filteredPlans = isPaidPlan
                 ? availablePlans.filter(plan => plan.id === existingPlan)
@@ -1764,30 +1834,29 @@ const Submit = () => {
                         </div>
                       )}
 
-                      {/* Plan cards grid - 3 columns with Launch in center */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Reorder: Free | Launch (center) | Launch Lite */}
-                        {['free', 'skip', 'join'].map((planId) => {
-                          const plan = filteredPlans.find(p => p.id === planId);
-                          if (!plan) return null;
-                          
-                          const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
-                          const isSelected = formData.plan === plan.id;
-                          const isDisabled = isPaidPlan && !isCurrentPaidPlan;
-                          
-                          return (
-                            <PlanComparisonCard
-                              key={plan.id}
-                              plan={plan}
-                              isSelected={isSelected}
-                              isDisabled={isDisabled}
-                              isCurrentPlan={isCurrentPaidPlan}
-                              hasActivePass={hasActivePass}
-                              onClick={() => handleInputChange('plan', plan.id)}
-                            />
-                          );
-                        })}
-                      </div>
+                       {/* Plan cards grid - 2 columns: Free | Pro */}
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                         {['free', 'skip'].map((planId) => {
+                           const plan = filteredPlans.find(p => p.id === planId);
+                           if (!plan) return null;
+                           
+                           const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
+                           const isSelected = formData.plan === plan.id;
+                           const isDisabled = isPaidPlan && !isCurrentPaidPlan;
+                           
+                           return (
+                             <PlanComparisonCard
+                               key={plan.id}
+                               plan={plan}
+                               isSelected={isSelected}
+                               isDisabled={isDisabled}
+                               isCurrentPlan={isCurrentPaidPlan}
+                               hasActivePass={hasActivePass}
+                               onClick={() => handleInputChange('plan', plan.id)}
+                             />
+                           );
+                         })}
+                       </div>
                       
                       {/* Social proof section - below cards */}
                       {!isPaidPlan && !isRescheduling && (
@@ -1805,20 +1874,28 @@ const Submit = () => {
                               <p className="text-xs font-medium">— Jake, founder of AdGenerator</p>
                             </div>
                           </div>
-                          <div className="flex items-center justify-center gap-6 mt-4 pt-3 border-t border-primary/10">
-                            <div className="text-center">
-                              <span className="text-lg font-bold text-primary">87%</span>
-                              <p className="text-[10px] text-muted-foreground">of top launches use paid plans</p>
+                          {planStats && (
+                            <div className="flex items-center justify-center gap-6 mt-4 pt-3 border-t border-primary/10">
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-primary">{planStats.freeAvgVotes}</span>
+                                <p className="text-[10px] text-muted-foreground">avg votes (Free)</p>
+                              </div>
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-primary">{planStats.proAvgVotes}</span>
+                                <p className="text-[10px] text-muted-foreground">avg votes (Pro)</p>
+                              </div>
+                              {planStats.multiplier > 1 && (
+                                <div className="text-center">
+                                  <span className="text-lg font-bold text-primary">{planStats.multiplier}x</span>
+                                  <p className="text-[10px] text-muted-foreground">more engagement</p>
+                                </div>
+                              )}
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-primary">2K+</span>
+                                <p className="text-[10px] text-muted-foreground">newsletter subscribers</p>
+                              </div>
                             </div>
-                            <div className="text-center">
-                              <span className="text-lg font-bold text-primary">5–10x</span>
-                              <p className="text-[10px] text-muted-foreground">more views with promotion</p>
-                            </div>
-                            <div className="text-center">
-                              <span className="text-lg font-bold text-primary">2K+</span>
-                              <p className="text-[10px] text-muted-foreground">newsletter subscribers</p>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       )}
                       

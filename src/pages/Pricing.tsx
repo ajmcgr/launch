@@ -69,8 +69,8 @@ const Pricing = () => {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {PRICING_PLANS.filter(plan => plan.id !== 'relaunch').map((plan) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {PRICING_PLANS.filter(plan => plan.id !== 'relaunch' && plan.id !== 'join').map((plan) => (
             <Card 
               key={plan.id} 
               className={`relative hover:shadow-lg transition-shadow ${
@@ -115,7 +115,7 @@ const Pricing = () => {
                       <span>Standard launch queue</span>
                     </li>
                   )}
-                  {(plan.id === 'join' || plan.id === 'skip') && (
+                  {plan.id === 'skip' && (
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="h-4 w-4 text-primary flex-shrink-0" />
                       <span>Skip the queue</span>
@@ -128,13 +128,6 @@ const Pricing = () => {
                   <div className="pt-2 border-t">
                     <p className="text-xs text-muted-foreground">
                       <span className="font-medium text-foreground">70K+ impressions</span> • Best visibility
-                    </p>
-                  </div>
-                )}
-                {plan.id === 'join' && (
-                  <div className="pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">5x more views</span> than free
                     </p>
                   </div>
                 )}
