@@ -1678,7 +1678,7 @@ const Submit = () => {
               const canUpgrade = existingPlan === 'join'; // Allow upgrade from free 'join' plan
               
               // Filter out relaunch plan - users should use the other three options
-              const availablePlans = PRICING_PLANS.filter(plan => plan.id !== 'relaunch');
+              const availablePlans = PRICING_PLANS.filter(plan => plan.id !== 'relaunch' && plan.id !== 'join');
               
               const filteredPlans = isPaidPlan
                 ? availablePlans.filter(plan => plan.id === existingPlan)
