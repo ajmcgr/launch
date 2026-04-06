@@ -21,25 +21,83 @@ async function copyRichText(html: string, plain: string) {
   }
 }
 
-function iconRowHtml(contentHtml: string, iconUrl?: string, alt?: string) {
+const NEWSLETTER_ICON_SIZE = 20;
+const iconDataUrlCache = new Map<string, Promise<string | undefined>>();
+
+async function resizeImageBlobToDataUrl(blob: Blob, size: number) {
+  const objectUrl = URL.createObjectURL(blob);
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Failed to load icon image'));
+      img.src = objectUrl;
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Canvas context unavailable');
+    }
+
+    context.clearRect(0, 0, size, size);
+    context.drawImage(image, 0, 0, size, size);
+
+    return canvas.toDataURL('image/png');
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function getEmailSafeIconSrc(iconUrl?: string) {
   if (!iconUrl) {
+    return undefined;
+  }
+
+  if (!iconDataUrlCache.has(iconUrl)) {
+    iconDataUrlCache.set(iconUrl, (async () => {
+      try {
+        const response = await fetch(iconUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch icon');
+        }
+
+        const blob = await response.blob();
+        return await resizeImageBlobToDataUrl(blob, NEWSLETTER_ICON_SIZE);
+      } catch {
+        return undefined;
+      }
+    })());
+  }
+
+  return iconDataUrlCache.get(iconUrl)!;
+}
+
+function iconRowHtml(contentHtml: string, iconSrc?: string, alt?: string) {
+  if (!iconSrc) {
     return `<p style="margin:0 0 12px 0;">${contentHtml}</p>`;
   }
 
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-spacing:0;margin:0 0 12px 0;"><tr><td width="28" style="width:28px;min-width:28px;max-width:28px;padding:0 8px 0 0;vertical-align:middle;line-height:0;"><img src="${iconUrl}" alt="${alt || ''}" width="20" height="20" style="display:block;width:20px!important;height:20px!important;min-width:20px!important;max-width:20px!important;min-height:20px!important;max-height:20px!important;border-radius:4px;border:0;outline:none;text-decoration:none;" /></td><td style="vertical-align:middle;"><p style="margin:0;"><a href="${''}"></a>${contentHtml}</p></td></tr></table>`.replace('<a href=""></a>', '');
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-spacing:0;margin:0 0 12px 0;"><tr><td width="28" style="width:28px;min-width:28px;max-width:28px;padding:0 8px 0 0;vertical-align:middle;line-height:0;"><img src="${iconSrc}" alt="${alt || ''}" width="20" height="20" style="display:block;width:20px;height:20px;border-radius:4px;border:0;outline:none;text-decoration:none;" /></td><td style="vertical-align:middle;">${contentHtml}</td></tr></table>`;
 }
 
-function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, iconUrl, name);
+async function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
+  const iconSrc = await getEmailSafeIconSrc(iconUrl);
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, iconSrc, name);
 }
 
 function productToPlain(name: string, tagline: string, url: string) {
   return `${name} — ${tagline}\n${url}`;
 }
 
-function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
+async function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
   const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, iconUrl, name);
+  const iconSrc = await getEmailSafeIconSrc(iconUrl);
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, iconSrc, name);
 }
 
 function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
