@@ -919,16 +919,24 @@ export const AutoSurfacedContent = () => {
   // Master copy function for Beehiiv HTML Snippet blocks
   const handleMasterCopy = async () => {
     const htmlSections: string[] = [];
+    const plainSections: string[] = [];
     
-    const formatProductHtml = async (p: SurfacedProduct | SponsoredProduct) => {
+    const formatProductHtml = (p: SurfacedProduct | SponsoredProduct) => {
       const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
       return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`);
+    };
+
+    const formatProductPlain = (p: SurfacedProduct | SponsoredProduct) => {
+      const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
+      return productToPlain(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`);
     };
 
     const addProductSection = async (title: string, emoji: string, items: (SurfacedProduct | SponsoredProduct)[] | undefined) => {
       if (!items || items.length === 0) return;
       const htmlRows = await Promise.all(items.map(formatProductHtml));
+      const plainRows = items.map(formatProductPlain);
       htmlSections.push(`<h2>${emoji} ${title}</h2>${htmlRows.join('')}`);
+      plainSections.push(`${emoji} ${title}\n\n${plainRows.join('\n\n')}`);
     };
 
     await addProductSection('Sponsored Launches', '💰', paidLaunchesWithIcons as SponsoredProduct[] | undefined);
@@ -941,21 +949,29 @@ export const AutoSurfacedContent = () => {
     if (buildersToWatch && buildersToWatch.length > 0) {
       htmlSections.push(`<h2>👀 Launch Makers to Watch</h2>` + buildersToWatch
         .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`).join(''));
+      plainSections.push(`👀 Launch Makers to Watch\n\n` + buildersToWatch
+        .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`).join('\n\n'));
     }
     
     if (topMakersByKarma && topMakersByKarma.length > 0) {
       htmlSections.push(`<h2>⚡ Top Makers by Karma</h2>` + topMakersByKarma
         .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`).join(''));
+      plainSections.push(`⚡ Top Makers by Karma\n\n` + topMakersByKarma
+        .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`).join('\n\n'));
     }
     
     if (popularTech && popularTech.length > 0) {
       htmlSections.push(`<h2>🛠️ Most Popular Tech on Launch</h2>` + popularTech
         .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`).join(''));
+      plainSections.push(`🛠️ Most Popular Tech on Launch\n\n` + popularTech
+        .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
     if (latestTech && latestTech.length > 0) {
       htmlSections.push(`<h2>🆕 Latest Tech on Launch</h2>` + latestTech
         .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a></p>`).join(''));
+      plainSections.push(`🆕 Latest Tech on Launch\n\n` + latestTech
+        .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
     if (topSuccessStories && topSuccessStories.length > 0) {
@@ -963,6 +979,8 @@ export const AutoSurfacedContent = () => {
         topSuccessStories.map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`))
       );
       htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>${storyRows.join('')}`);
+      plainSections.push(`🎯 Top Monthly Success Stories\n\n` + topSuccessStories
+        .map((s) => storyToPlain(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`)).join('\n\n'));
     }
 
     if (htmlSections.length === 0) {
@@ -971,9 +989,10 @@ export const AutoSurfacedContent = () => {
     }
     
     const fullHtml = htmlSections.join('<hr />');
-    await navigator.clipboard.writeText(fullHtml);
+    const fullPlain = plainSections.join('\n\n--------------------\n\n');
+    await copyRichText(fullHtml, fullPlain);
     setMasterCopied(true);
-    toast.success('Beehiiv HTML copied — use / → HTML Snippet, then paste.');
+    toast.success('Newsletter content copied.');
     setTimeout(() => setMasterCopied(false), 2000);
   };
 
@@ -1070,7 +1089,7 @@ export const AutoSurfacedContent = () => {
         <div>
           <h2 className="text-xl font-semibold">This Week's Content</h2>
           <p className="text-sm text-muted-foreground">
-            Auto-surfaced products and builders ready for Beehiiv HTML Snippet paste
+            Auto-surfaced products and builders ready to paste into your newsletter
           </p>
         </div>
         <Button 
@@ -1079,7 +1098,7 @@ export const AutoSurfacedContent = () => {
           variant="default"
         >
           {masterCopied ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
-          Copy Beehiiv HTML
+          Copy Newsletter
         </Button>
       </div>
 
