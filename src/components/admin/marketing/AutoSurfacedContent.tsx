@@ -83,7 +83,7 @@ function iconRowHtml(contentHtml: string, iconSrc?: string, alt?: string) {
     return `<p style="margin:0 0 12px 0;">${contentHtml}</p>`;
   }
 
-  return `<p style="margin:0 0 12px 0;"><span role="img" aria-label="${alt || ''}" style="display:inline-block;width:20px;height:20px;min-width:20px;max-width:20px;min-height:20px;max-height:20px;margin-right:8px;vertical-align:middle;border-radius:4px;overflow:hidden;background-image:url('${iconSrc}');background-size:cover;background-position:center;background-repeat:no-repeat;">&nbsp;</span><span style="vertical-align:middle;">${contentHtml}</span></p>`;
+  return `<p style="margin:0 0 12px 0;"><img src="${iconSrc}" alt="${alt || ''}" width="20" height="20" style="width:20px;height:20px;min-width:20px;max-width:20px;min-height:20px;max-height:20px;display:inline-block;vertical-align:middle;margin-right:8px;border-radius:4px;border:0;outline:none;text-decoration:none;" /><span style="vertical-align:middle;">${contentHtml}</span></p>`;
 }
 
 async function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
