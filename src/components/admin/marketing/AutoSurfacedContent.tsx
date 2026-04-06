@@ -21,25 +21,83 @@ async function copyRichText(html: string, plain: string) {
   }
 }
 
-function iconRowHtml(contentHtml: string, iconUrl?: string, alt?: string) {
+const NEWSLETTER_ICON_SIZE = 20;
+const iconDataUrlCache = new Map<string, Promise<string | undefined>>();
+
+async function resizeImageBlobToDataUrl(blob: Blob, size: number) {
+  const objectUrl = URL.createObjectURL(blob);
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Failed to load icon image'));
+      img.src = objectUrl;
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Canvas context unavailable');
+    }
+
+    context.clearRect(0, 0, size, size);
+    context.drawImage(image, 0, 0, size, size);
+
+    return canvas.toDataURL('image/png');
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function getEmailSafeIconSrc(iconUrl?: string) {
   if (!iconUrl) {
+    return undefined;
+  }
+
+  if (!iconDataUrlCache.has(iconUrl)) {
+    iconDataUrlCache.set(iconUrl, (async () => {
+      try {
+        const response = await fetch(iconUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch icon');
+        }
+
+        const blob = await response.blob();
+        return await resizeImageBlobToDataUrl(blob, NEWSLETTER_ICON_SIZE);
+      } catch {
+        return undefined;
+      }
+    })());
+  }
+
+  return iconDataUrlCache.get(iconUrl)!;
+}
+
+function iconRowHtml(contentHtml: string, iconSrc?: string, alt?: string) {
+  if (!iconSrc) {
     return `<p style="margin:0 0 12px 0;">${contentHtml}</p>`;
   }
 
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-spacing:0;margin:0 0 12px 0;"><tr><td width="28" style="width:28px;min-width:28px;max-width:28px;padding:0 8px 0 0;vertical-align:middle;line-height:0;"><img src="${iconUrl}" alt="${alt || ''}" width="20" height="20" style="display:block;width:20px!important;height:20px!important;min-width:20px!important;max-width:20px!important;min-height:20px!important;max-height:20px!important;border-radius:4px;border:0;outline:none;text-decoration:none;" /></td><td style="vertical-align:middle;"><p style="margin:0;"><a href="${''}"></a>${contentHtml}</p></td></tr></table>`.replace('<a href=""></a>', '');
+  return `<p style="margin:0 0 12px 0;"><span role="img" aria-label="${alt || ''}" style="display:inline-block;width:20px;height:20px;min-width:20px;max-width:20px;min-height:20px;max-height:20px;margin-right:8px;vertical-align:middle;border-radius:4px;overflow:hidden;background-image:url('${iconSrc}');background-size:cover;background-position:center;background-repeat:no-repeat;">&nbsp;</span><span style="vertical-align:middle;">${contentHtml}</span></p>`;
 }
 
-function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, iconUrl, name);
+async function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
+  const iconSrc = await getEmailSafeIconSrc(iconUrl);
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, iconSrc, name);
 }
 
 function productToPlain(name: string, tagline: string, url: string) {
   return `${name} — ${tagline}\n${url}`;
 }
 
-function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
+async function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
   const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, iconUrl, name);
+  const iconSrc = await getEmailSafeIconSrc(iconUrl);
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, iconSrc, name);
 }
 
 function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
@@ -115,11 +173,12 @@ interface ContentSection {
 const getIconUrl = (product: { icon_url?: string; product_media?: { url: string; type: string }[] } | null | undefined) =>
   product?.icon_url || product?.product_media?.find((media) => media.type === 'icon')?.url;
 
-const CopyButton = ({ html, plain, label }: { html: string; plain: string; label: string }) => {
+const CopyButton = ({ html, plain, label }: { html: string | (() => string | Promise<string>); plain: string; label: string }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await copyRichText(html, plain);
+    const htmlContent = typeof html === 'function' ? await html() : html;
+    await copyRichText(htmlContent, plain);
     setCopied(true);
     toast.success('Copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
@@ -142,7 +201,7 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
   const iconUrl = getIconUrl(product);
-  const htmlText = productToHtml(product.name, taglineText, productUrl, iconUrl);
+  const htmlText = () => productToHtml(product.name, taglineText, productUrl, iconUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
@@ -187,7 +246,7 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
   const iconUrl = getIconUrl(product);
-  const htmlText = productToHtml(product.name, taglineText, productUrl, iconUrl);
+  const htmlText = () => productToHtml(product.name, taglineText, productUrl, iconUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
@@ -332,9 +391,10 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
     const plain = products
       .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
-    const html = `<h3>${title}</h3>` + products
-      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
-      .join('');
+    const htmlRows = await Promise.all(
+      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+    );
+    const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
     await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
@@ -357,9 +417,10 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
     const plain = products
       .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
-    const html = `<h3>${title}</h3>` + products
-      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
-      .join('');
+    const htmlRows = await Promise.all(
+      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+    );
+    const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
     await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
@@ -926,7 +987,7 @@ export const AutoSurfacedContent = () => {
     const htmlSections: string[] = [];
     const plainSections: string[] = [];
     
-    const formatProductHtml = (p: SurfacedProduct | SponsoredProduct) => {
+    const formatProductHtml = async (p: SurfacedProduct | SponsoredProduct) => {
       const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
       return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, getIconUrl(p));
     };
@@ -935,18 +996,19 @@ export const AutoSurfacedContent = () => {
       return productToPlain(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`);
     };
 
-    const addProductSection = (title: string, emoji: string, items: (SurfacedProduct | SponsoredProduct)[] | undefined) => {
+    const addProductSection = async (title: string, emoji: string, items: (SurfacedProduct | SponsoredProduct)[] | undefined) => {
       if (!items || items.length === 0) return;
-      htmlSections.push(`<h2>${emoji} ${title}</h2>` + items.map(formatProductHtml).join(''));
+      const htmlRows = await Promise.all(items.map(formatProductHtml));
+      htmlSections.push(`<h2>${emoji} ${title}</h2>${htmlRows.join('')}`);
       plainSections.push(`## ${emoji} ${title}\n\n` + items.map(formatProductPlain).join('\n\n'));
     };
 
-    addProductSection('Sponsored Launches', '💰', paidLaunchesWithIcons as SponsoredProduct[] | undefined);
-    addProductSection('Launch Weekly Winners', '📈', weeklyWinnersWithIcons);
-    addProductSection('Weekly Awards', '🏅', weeklyAwardsWithIcons);
-    addProductSection('5 Launch Products You Missed This Week', '🕐', missedProductsWithIcons);
-    addProductSection('New & Noteworthy on Launch', '✨', newNoteworthyWithIcons);
-    addProductSection('Launch Hidden Gems', '💎', hiddenGemsWithIcons);
+    await addProductSection('Sponsored Launches', '💰', paidLaunchesWithIcons as SponsoredProduct[] | undefined);
+    await addProductSection('Launch Weekly Winners', '📈', weeklyWinnersWithIcons);
+    await addProductSection('Weekly Awards', '🏅', weeklyAwardsWithIcons);
+    await addProductSection('5 Launch Products You Missed This Week', '🕐', missedProductsWithIcons);
+    await addProductSection('New & Noteworthy on Launch', '✨', newNoteworthyWithIcons);
+    await addProductSection('Launch Hidden Gems', '💎', hiddenGemsWithIcons);
     
     if (buildersToWatch && buildersToWatch.length > 0) {
       htmlSections.push(`<h2>👀 Launch Makers to Watch</h2>` + buildersToWatch
@@ -977,12 +1039,14 @@ export const AutoSurfacedContent = () => {
     }
 
     if (topSuccessStories && topSuccessStories.length > 0) {
-      htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>` + topSuccessStories
-        .map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`, s.icon_url)).join(''));
+      const storyRows = await Promise.all(
+        topSuccessStories.map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`, s.icon_url))
+      );
+      htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>${storyRows.join('')}`);
       plainSections.push(`## 🎯 Top Monthly Success Stories\n\n` + topSuccessStories
         .map((s) => storyToPlain(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`)).join('\n\n'));
     }
-    
+
     if (htmlSections.length === 0) {
       toast.error('No content available to copy');
       return;
@@ -1243,7 +1307,7 @@ export const AutoSurfacedContent = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton html={storyToHtml(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`, story.icon_url)} plain={storyToPlain(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} label="story" />
+                        <CopyButton html={() => storyToHtml(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`, story.icon_url)} plain={storyToPlain(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} label="story" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
                           <a href={`/launch/${story.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
