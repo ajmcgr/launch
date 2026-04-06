@@ -25,32 +25,33 @@ const NEWSLETTER_ICON_SIZE = 20;
 const iconDataUrlCache = new Map<string, Promise<string | undefined>>();
 
 async function resizeImageBlobToDataUrl(blob: Blob, size: number) {
-  const objectUrl = URL.createObjectURL(blob);
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
 
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error('Failed to load icon image'));
-      img.src = objectUrl;
-    });
+    reader.onload = () => {
+      const sourceImage = new Image();
+      sourceImage.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
+        const context = canvas.getContext('2d');
+        if (!context) {
+          reject(new Error('Canvas context unavailable'));
+          return;
+        }
 
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('Canvas context unavailable');
-    }
+        context.clearRect(0, 0, size, size);
+        context.drawImage(sourceImage, 0, 0, size, size);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      sourceImage.onerror = () => reject(new Error('Failed to load icon image'));
+      sourceImage.src = reader.result as string;
+    };
 
-    context.clearRect(0, 0, size, size);
-    context.drawImage(image, 0, 0, size, size);
-
-    return canvas.toDataURL('image/png');
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
+    reader.onerror = () => reject(new Error('Failed to read icon image'));
+    reader.readAsDataURL(blob);
+  });
 }
 
 async function getEmailSafeIconSrc(iconUrl?: string) {
@@ -82,7 +83,7 @@ function iconRowHtml(contentHtml: string, iconSrc?: string, alt?: string) {
     return `<p style="margin:0 0 12px 0;">${contentHtml}</p>`;
   }
 
-  return `<p style="margin:0 0 12px 0;"><span role="img" aria-label="${alt || ''}" style="display:inline-block;width:20px;height:20px;min-width:20px;max-width:20px;min-height:20px;max-height:20px;margin-right:8px;vertical-align:middle;border-radius:4px;overflow:hidden;background-image:url('${iconSrc}');background-size:cover;background-position:center;background-repeat:no-repeat;">&nbsp;</span><span style="vertical-align:middle;">${contentHtml}</span></p>`;
+  return `<p style="margin:0 0 12px 0;"><img src="${iconSrc}" alt="${alt || ''}" width="20" height="20" style="width:20px;height:20px;min-width:20px;max-width:20px;min-height:20px;max-height:20px;display:inline-block;vertical-align:middle;margin-right:8px;border-radius:4px;border:0;outline:none;text-decoration:none;" /><span style="vertical-align:middle;">${contentHtml}</span></p>`;
 }
 
 async function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
