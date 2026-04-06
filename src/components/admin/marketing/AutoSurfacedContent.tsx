@@ -21,11 +21,16 @@ async function copyRichText(html: string, plain: string) {
   }
 }
 
+function iconRowHtml(contentHtml: string, iconUrl?: string, alt?: string) {
+  if (!iconUrl) {
+    return `<p style="margin:0 0 12px 0;">${contentHtml}</p>`;
+  }
+
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-spacing:0;margin:0 0 12px 0;"><tr><td width="28" style="width:28px;min-width:28px;max-width:28px;padding:0 8px 0 0;vertical-align:middle;line-height:0;"><img src="${iconUrl}" alt="${alt || ''}" width="20" height="20" style="display:block;width:20px!important;height:20px!important;min-width:20px!important;max-width:20px!important;min-height:20px!important;max-height:20px!important;border-radius:4px;border:0;outline:none;text-decoration:none;" /></td><td style="vertical-align:middle;"><p style="margin:0;"><a href="${''}"></a>${contentHtml}</p></td></tr></table>`.replace('<a href=""></a>', '');
+}
+
 function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
-  const img = iconUrl
-    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;vertical-align:middle;margin-right:8px;border-radius:4px;display:inline-block" />`
-    : '';
-  return `<p>${img}<a href="${url}">${name}</a> — ${tagline}</p>`;
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, iconUrl, name);
 }
 
 function productToPlain(name: string, tagline: string, url: string) {
@@ -33,11 +38,8 @@ function productToPlain(name: string, tagline: string, url: string) {
 }
 
 function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
-  const img = iconUrl
-    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;vertical-align:middle;margin-right:8px;border-radius:4px;display:inline-block" />`
-    : '';
   const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
-  return `<p>${img}<a href="${url}">${name}</a> — ${summary}</p>`;
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, iconUrl, name);
 }
 
 function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
