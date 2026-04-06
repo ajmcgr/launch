@@ -115,7 +115,7 @@ const Pricing = () => {
                       <span>Standard launch queue</span>
                     </li>
                   )}
-                  {(plan.id === 'join' || plan.id === 'skip') && (
+                  {plan.id === 'skip' && (
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="h-4 w-4 text-primary flex-shrink-0" />
                       <span>Skip the queue</span>
