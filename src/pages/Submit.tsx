@@ -1874,20 +1874,28 @@ const Submit = () => {
                               <p className="text-xs font-medium">— Jake, founder of AdGenerator</p>
                             </div>
                           </div>
-                          <div className="flex items-center justify-center gap-6 mt-4 pt-3 border-t border-primary/10">
-                            <div className="text-center">
-                              <span className="text-lg font-bold text-primary">87%</span>
-                              <p className="text-[10px] text-muted-foreground">of top launches use paid plans</p>
+                          {planStats && (
+                            <div className="flex items-center justify-center gap-6 mt-4 pt-3 border-t border-primary/10">
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-primary">{planStats.freeAvgVotes}</span>
+                                <p className="text-[10px] text-muted-foreground">avg votes (Free)</p>
+                              </div>
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-primary">{planStats.proAvgVotes}</span>
+                                <p className="text-[10px] text-muted-foreground">avg votes (Pro)</p>
+                              </div>
+                              {planStats.multiplier > 1 && (
+                                <div className="text-center">
+                                  <span className="text-lg font-bold text-primary">{planStats.multiplier}x</span>
+                                  <p className="text-[10px] text-muted-foreground">more engagement</p>
+                                </div>
+                              )}
+                              <div className="text-center">
+                                <span className="text-lg font-bold text-primary">2K+</span>
+                                <p className="text-[10px] text-muted-foreground">newsletter subscribers</p>
+                              </div>
                             </div>
-                            <div className="text-center">
-                              <span className="text-lg font-bold text-primary">5–10x</span>
-                              <p className="text-[10px] text-muted-foreground">more views with promotion</p>
-                            </div>
-                            <div className="text-center">
-                              <span className="text-lg font-bold text-primary">2K+</span>
-                              <p className="text-[10px] text-muted-foreground">newsletter subscribers</p>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       )}
                       
