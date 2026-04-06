@@ -21,36 +21,17 @@ async function copyRichText(html: string, plain: string) {
   }
 }
 
-const NEWSLETTER_ICON_SIZE = 20;
-
-function getResizedIconUrl(iconUrl?: string) {
-  if (!iconUrl) {
-    return undefined;
-  }
-
-  const separator = iconUrl.includes('?') ? '&' : '?';
-  return `${iconUrl}${separator}width=${NEWSLETTER_ICON_SIZE}&height=${NEWSLETTER_ICON_SIZE}&resize=cover`;
-}
-
-function iconRowHtml(contentHtml: string, iconSrc?: string, alt?: string) {
-  if (!iconSrc) {
-    return `<p style="margin:0 0 12px 0;">${contentHtml}</p>`;
-  }
-
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-spacing:0;margin:0 0 12px 0;"><tr><td style="padding:0 8px 0 0;vertical-align:middle;"><img src="${iconSrc}" alt="${alt || ''}" width="20" height="20" style="display:block;width:20px;height:20px;border-radius:4px;border:0;outline:none;text-decoration:none;" /></td><td style="vertical-align:middle;">${contentHtml}</td></tr></table>`;
-}
-
-async function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, getResizedIconUrl(iconUrl), name);
+function productToHtml(name: string, tagline: string, url: string) {
+  return `<p style="margin:0 0 12px 0;"><a href="${url}">${name}</a> — ${tagline}</p>`;
 }
 
 function productToPlain(name: string, tagline: string, url: string) {
   return `${name} — ${tagline}\n${url}`;
 }
 
-async function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
+function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
   const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, getResizedIconUrl(iconUrl), name);
+  return `<p style="margin:0 0 12px 0;"><a href="${url}">${name}</a> — ${summary}</p>`;
 }
 
 function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
@@ -154,7 +135,7 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
   const iconUrl = getIconUrl(product);
-  const htmlText = () => productToHtml(product.name, taglineText, productUrl, iconUrl);
+  const htmlText = () => productToHtml(product.name, taglineText, productUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
@@ -199,7 +180,7 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
   const iconUrl = getIconUrl(product);
-  const htmlText = () => productToHtml(product.name, taglineText, productUrl, iconUrl);
+  const htmlText = () => productToHtml(product.name, taglineText, productUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
@@ -345,7 +326,7 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
       .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
     const htmlRows = await Promise.all(
-      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
     );
     const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
@@ -371,7 +352,7 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
       .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
     const htmlRows = await Promise.all(
-      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
     );
     const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
@@ -941,7 +922,7 @@ export const AutoSurfacedContent = () => {
     
     const formatProductHtml = async (p: SurfacedProduct | SponsoredProduct) => {
       const tagline = p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline';
-      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`, getIconUrl(p));
+      return productToHtml(p.name, tagline, `https://trylaunch.ai/launch/${p.slug}`);
     };
 
     const addProductSection = async (title: string, emoji: string, items: (SurfacedProduct | SponsoredProduct)[] | undefined) => {
@@ -979,7 +960,7 @@ export const AutoSurfacedContent = () => {
 
     if (topSuccessStories && topSuccessStories.length > 0) {
       const storyRows = await Promise.all(
-        topSuccessStories.map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`, s.icon_url))
+        topSuccessStories.map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`))
       );
       htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>${storyRows.join('')}`);
     }
@@ -1243,7 +1224,7 @@ export const AutoSurfacedContent = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
-                        <CopyButton html={() => storyToHtml(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`, story.icon_url)} plain={storyToPlain(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} label="story" />
+                        <CopyButton html={() => storyToHtml(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} plain={storyToPlain(story.name, story.signups, story.revenue, story.testimonial, `https://trylaunch.ai/launch/${story.slug}`)} label="story" />
                         <Button variant="ghost" size="sm" className="h-8 px-2" asChild>
                           <a href={`/launch/${story.slug}`} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-4 w-4" />
