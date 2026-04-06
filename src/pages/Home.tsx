@@ -547,48 +547,70 @@ const Home = () => {
       return;
     }
 
-    // Optimistic update
+    let voteDelta = 0;
+    let revertedUserVote: 1 | null = null;
+
     setProducts(prev => prev.map(p => {
-      if (p.id === productId) {
-        const currentVote = p.userVote;
-        let newNetVotes = p.netVotes;
-        let newUserVote: 1 | null = null;
+      if (p.id !== productId) return p;
 
-        if (currentVote === 1) {
-          // Remove vote
-          newNetVotes -= 1;
-          newUserVote = null;
-        } else {
-          // Add vote
-          newNetVotes += 1;
-          newUserVote = 1;
-        }
+      const isRemovingVote = p.userVote === 1;
+      voteDelta = isRemovingVote ? -1 : 1;
+      revertedUserVote = isRemovingVote ? 1 : null;
 
-        return { ...p, netVotes: newNetVotes, userVote: newUserVote };
-      }
-      return p;
+      return {
+        ...p,
+        netVotes: p.netVotes + voteDelta,
+        userVote: isRemovingVote ? null : 1,
+      };
     }));
 
     try {
-      const { data: existingVote } = await supabase
+      const { data: existingVotes, error: existingVotesError } = await supabase
         .from('votes')
         .select('id, value')
         .eq('product_id', productId)
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .eq('user_id', user.id);
 
-      if (existingVote) {
-        if (existingVote.value === 1) {
-          await supabase.from('votes').delete().eq('id', existingVote.id);
+      if (existingVotesError) throw existingVotesError;
+
+      if (existingVotes && existingVotes.length > 0) {
+        const hasActiveUpvote = existingVotes.some(vote => vote.value === 1);
+
+        if (hasActiveUpvote) {
+          const { error: deleteError } = await supabase
+            .from('votes')
+            .delete()
+            .eq('product_id', productId)
+            .eq('user_id', user.id);
+
+          if (deleteError) throw deleteError;
         } else {
-          await supabase.from('votes').update({ value: 1 }).eq('id', existingVote.id);
+          const voteIds = existingVotes.map(vote => vote.id);
+          const { error: updateError } = await supabase
+            .from('votes')
+            .update({ value: 1 })
+            .in('id', voteIds);
+
+          if (updateError) throw updateError;
         }
       } else {
-        // Notification is handled by database trigger
-        await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
+        const { error: insertError } = await supabase
+          .from('votes')
+          .insert({ product_id: productId, user_id: user.id, value: 1 });
+
+        if (insertError) throw insertError;
       }
     } catch (error) {
       console.error('Error voting:', error);
+      setProducts(prev => prev.map(p => {
+        if (p.id !== productId) return p;
+
+        return {
+          ...p,
+          netVotes: Math.max(0, p.netVotes - voteDelta),
+          userVote: revertedUserVote,
+        };
+      }));
       toast.error('Failed to record vote');
     }
   };

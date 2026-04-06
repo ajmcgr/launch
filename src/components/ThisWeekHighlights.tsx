@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowUp, MessageSquare, ExternalLink, Globe } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -16,288 +16,21 @@ import bioBanner from '@/assets/sponsors/bio-banner.png';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
-
-interface SurfacedProduct {
-  id: string;
-  name: string;
-  tagline: string | null;
-  slug: string;
-  iconUrl?: string;
-  domainUrl?: string;
-  net_votes?: number;
-  userVote?: 1 | null;
-  categories?: string[];
-  platforms?: Platform[];
-  makers?: Array<{ username: string; avatar_url?: string }>;
-  commentCount?: number;
-  launch_date?: string;
-}
-
-interface SurfacedBuilder {
-  id: string;
-  username: string;
-  name: string | null;
-  avatar_url?: string;
-  product_count: number;
-}
-
-const ProductListItem = ({ 
-  product, 
-  rank,
-  onVote 
-}: { 
-  product: SurfacedProduct; 
-  rank: number;
-  onVote: (productId: string) => void;
-}) => {
-  const navigate = useNavigate();
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('a') || target.closest('button')) {
-      return;
-    }
-    navigate(`/launch/${product.slug}`);
-  };
-
-  return (
-    <div 
-      className="group/card hover:bg-muted/30 transition-colors cursor-pointer"
-      onClick={handleCardClick}
-    >
-      <div className="flex items-start gap-3 py-4 px-2">
-        <div className="flex-shrink-0">
-          <div className="w-10 h-10 overflow-hidden bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-            {product.iconUrl ? (
-              <img 
-                src={product.iconUrl} 
-                alt={product.name} 
-                className="w-full h-full object-cover rounded-lg"
-                onError={(e) => {
-                  e.currentTarget.src = defaultProductIcon;
-                }}
-              />
-            ) : (
-              <img 
-                src={defaultProductIcon} 
-                alt={product.name} 
-                className="w-full h-full object-cover rounded-lg"
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-muted-foreground">
-              {rank}.
-            </span>
-            <h3 className="font-semibold text-base hover:text-primary transition-colors">
-              {product.name}
-            </h3>
-            {product.domainUrl && (
-              <a
-                href={product.domainUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
-          </div>
-          
-          <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1">
-            {product.tagline}
-          </p>
-          
-          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-            {product.categories && product.categories.slice(0, 3).map((category, index, arr) => (
-              <span key={category}>
-                <Link 
-                  to={`/products?category=${encodeURIComponent(category)}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="hover:text-primary transition-colors"
-                >
-                  {category}
-                </Link>
-                {index < arr.length - 1 && ', '}
-              </span>
-            ))}
-            
-            {product.makers && product.makers.length > 0 && (
-              <>
-                <span>·</span>
-                <div className="flex items-center gap-1">
-                  {product.makers.filter(m => m && m.username).slice(0, 2).map((maker, index, arr) => (
-                    <span key={maker.username} className="text-xs text-muted-foreground">
-                      <Link 
-                        to={`/@${maker.username}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="hover:text-primary transition-colors"
-                      >
-                        @{maker.username}
-                      </Link>
-                      {index < arr.length - 1 && ','}
-                    </span>
-                  ))}
-                </div>
-              </>
-            )}
-            
-            {/* Comment count inline - mobile only (desktop shows button) */}
-            <span className="md:hidden">·</span>
-            <div className="flex items-center gap-0.5 md:hidden">
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span>{product.commentCount || 0}</span>
-            </div>
-            
-            {product.launch_date && (
-              <>
-                <span>·</span>
-                <span>{formatTimeAgo(product.launch_date)}</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-start self-start gap-3">
-          {/* Comment button - desktop only */}
-          <Link
-            to={`/launch/${product.slug}#comments`}
-            onClick={(e) => e.stopPropagation()}
-            className="hidden md:flex"
-          >
-            <Button
-              size="sm"
-              variant="outline"
-              className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 transition-colors touch-manipulation border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary"
-            >
-              <MessageSquare className="h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground" strokeWidth={2.5} />
-              <span className="font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground">{product.commentCount || 0}</span>
-            </Button>
-          </Link>
-          
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onVote(product.id);
-            }}
-            className="group flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0 transition-colors touch-manipulation active:scale-95 border-2 border-muted-foreground/20 [@media(hover:hover)]:hover:border-primary [@media(hover:hover)]:hover:bg-primary"
-          >
-            <ArrowUp className={`h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground ${product.userVote === 1 ? 'text-primary' : ''}`} strokeWidth={2.5} />
-            <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${product.userVote === 1 ? 'text-primary' : ''}`}>{product.net_votes || 0}</span>
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const BuilderItem = ({ builder, rank }: { builder: SurfacedBuilder; rank: number }) => {
-  const navigate = useNavigate();
-  
-  const handleClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('a')) return;
-    navigate(`/@${builder.username}`);
-  };
-
-  return (
-    <div 
-      className="group/card hover:bg-muted/30 transition-colors cursor-pointer"
-      onClick={handleClick}
-    >
-      <div className="flex items-start gap-3 py-3 px-2">
-        <div className="flex-shrink-0">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={builder.avatar_url} alt={builder.name || builder.username} />
-            <AvatarFallback className="text-sm">
-              {(builder.name || builder.username).slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-muted-foreground">
-              {rank}.
-            </span>
-            <h3 className="font-semibold text-base hover:text-primary transition-colors">
-              {builder.name || builder.username}
-            </h3>
-          </div>
-          
-          <p className="text-sm text-muted-foreground mb-1.5">
-            Building in public
-          </p>
-          
-          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-            <Link 
-              to={`/@${builder.username}`}
-              onClick={(e) => e.stopPropagation()}
-              className="hover:text-primary transition-colors"
-            >
-              @{builder.username}
-            </Link>
-            <span>·</span>
-            <span>{builder.product_count} product{builder.product_count !== 1 ? 's' : ''}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+...
 export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' | 'compact' }) => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [userVotes, setUserVotes] = useState<Map<string, 1>>(new Map());
   const [localVoteChanges, setLocalVoteChanges] = useState<Map<string, { voted: boolean; delta: number }>>(new Map());
   // Date calculations are now done inside each query function to ensure stability
-
-  // Fetch user and their votes
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        const { data: votes } = await supabase
-          .from('votes')
-          .select('product_id')
-          .eq('user_id', session.user.id)
-          .eq('value', 1);
-        
-        const voteMap = new Map<string, 1>();
-        votes?.forEach(v => voteMap.set(v.product_id, 1));
-        setUserVotes(voteMap);
-      }
-    };
-    
-    fetchUser();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
-        setUserVotes(new Map());
-      }
-    });
-    
-    return () => subscription.unsubscribe();
-  }, []);
-
+...
   const handleVote = async (productId: string) => {
     if (!user) {
       toast('Sign up to upvote your favorite launches', {
         action: {
           label: 'Sign up',
-          onClick: () => navigate('/auth?signup=true'),
+          onClick: () => {
+            window.location.href = '/auth?signup=true';
+          },
         },
       });
       return;
@@ -307,18 +40,16 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
     const newVoted = !currentVoted;
     const delta = newVoted ? 1 : -1;
 
-    // Optimistic update
     setLocalVoteChanges(prev => {
       const newMap = new Map(prev);
       const existing = newMap.get(productId);
       newMap.set(productId, {
         voted: newVoted,
-        delta: (existing?.delta || 0) + delta
+        delta: (existing?.delta || 0) + delta,
       });
       return newMap;
     });
 
-    // Update userVotes for immediate UI feedback
     setUserVotes(prev => {
       const newMap = new Map(prev);
       if (newVoted) {
@@ -330,33 +61,51 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
     });
 
     try {
-      const { data: existingVote } = await supabase
+      const { data: existingVotes, error: existingVotesError } = await supabase
         .from('votes')
         .select('id, value')
         .eq('product_id', productId)
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .eq('user_id', user.id);
 
-      if (existingVote) {
-        if (existingVote.value === 1) {
-          await supabase.from('votes').delete().eq('id', existingVote.id);
+      if (existingVotesError) throw existingVotesError;
+
+      if (existingVotes && existingVotes.length > 0) {
+        const hasActiveUpvote = existingVotes.some(vote => vote.value === 1);
+
+        if (hasActiveUpvote) {
+          const { error: deleteError } = await supabase
+            .from('votes')
+            .delete()
+            .eq('product_id', productId)
+            .eq('user_id', user.id);
+
+          if (deleteError) throw deleteError;
         } else {
-          await supabase.from('votes').update({ value: 1 }).eq('id', existingVote.id);
+          const voteIds = existingVotes.map(vote => vote.id);
+          const { error: updateError } = await supabase
+            .from('votes')
+            .update({ value: 1 })
+            .in('id', voteIds);
+
+          if (updateError) throw updateError;
         }
       } else {
-        await supabase.from('votes').insert({ product_id: productId, user_id: user.id, value: 1 });
+        const { error: insertError } = await supabase
+          .from('votes')
+          .insert({ product_id: productId, user_id: user.id, value: 1 });
+
+        if (insertError) throw insertError;
       }
     } catch (error) {
       console.error('Error voting:', error);
       toast.error('Failed to record vote');
-      // Revert optimistic update on error
       setLocalVoteChanges(prev => {
         const newMap = new Map(prev);
         const existing = newMap.get(productId);
         if (existing) {
           newMap.set(productId, {
             voted: !newVoted,
-            delta: existing.delta - delta
+            delta: existing.delta - delta,
           });
         }
         return newMap;
