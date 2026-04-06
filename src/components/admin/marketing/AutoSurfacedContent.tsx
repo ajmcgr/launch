@@ -21,8 +21,17 @@ async function copyRichText(html: string, plain: string) {
   }
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function productToHtml(name: string, tagline: string, url: string) {
-  return `<p style="margin:0 0 12px 0;"><a href="${url}">${name}</a> — ${tagline}</p>`;
+  return `<p style="margin:0 0 12px 0;"><a href="${url}">${escapeHtml(name)}</a> — ${escapeHtml(tagline)}</p>`;
 }
 
 function productToPlain(name: string, tagline: string, url: string) {
@@ -31,7 +40,7 @@ function productToPlain(name: string, tagline: string, url: string) {
 
 function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
   const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
-  return `<p style="margin:0 0 12px 0;"><a href="${url}">${name}</a> — ${summary}</p>`;
+  return `<p style="margin:0 0 12px 0;"><a href="${url}">${escapeHtml(name)}</a> — ${escapeHtml(summary)}</p>`;
 }
 
 function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
@@ -935,7 +944,7 @@ export const AutoSurfacedContent = () => {
       if (!items || items.length === 0) return;
       const htmlRows = await Promise.all(items.map(formatProductHtml));
       const plainRows = items.map(formatProductPlain);
-      htmlSections.push(`<h2>${emoji} ${title}</h2>${htmlRows.join('')}`);
+      htmlSections.push(`<h2>${escapeHtml(`${emoji} ${title}`)}</h2>${htmlRows.join('')}`);
       plainSections.push(`${emoji} ${title}\n\n${plainRows.join('\n\n')}`);
     };
 
@@ -947,29 +956,29 @@ export const AutoSurfacedContent = () => {
     await addProductSection('Launch Hidden Gems', '💎', hiddenGemsWithIcons);
     
     if (buildersToWatch && buildersToWatch.length > 0) {
-      htmlSections.push(`<h2>👀 Launch Makers to Watch</h2>` + buildersToWatch
-        .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${b.name || b.username}</a> (@${b.username})</p>`).join(''));
+      htmlSections.push(`<h2>${escapeHtml('👀 Launch Makers to Watch')}</h2>` + buildersToWatch
+        .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${escapeHtml(b.name || b.username)}</a> (@${escapeHtml(b.username)})</p>`).join(''));
       plainSections.push(`👀 Launch Makers to Watch\n\n` + buildersToWatch
         .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`).join('\n\n'));
     }
     
     if (topMakersByKarma && topMakersByKarma.length > 0) {
-      htmlSections.push(`<h2>⚡ Top Makers by Karma</h2>` + topMakersByKarma
-        .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${m.name || m.username}</a> (@${m.username}) — ${m.karma} karma</p>`).join(''));
+      htmlSections.push(`<h2>${escapeHtml('⚡ Top Makers by Karma')}</h2>` + topMakersByKarma
+        .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${escapeHtml(m.name || m.username)}</a> (@${escapeHtml(m.username)}) — ${m.karma} karma</p>`).join(''));
       plainSections.push(`⚡ Top Makers by Karma\n\n` + topMakersByKarma
         .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`).join('\n\n'));
     }
     
     if (popularTech && popularTech.length > 0) {
-      htmlSections.push(`<h2>🛠️ Most Popular Tech on Launch</h2>` + popularTech
-        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a> (${t.product_count} products)</p>`).join(''));
+      htmlSections.push(`<h2>${escapeHtml('🛠️ Most Popular Tech on Launch')}</h2>` + popularTech
+        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${escapeHtml(t.name)}</a> (${t.product_count} products)</p>`).join(''));
       plainSections.push(`🛠️ Most Popular Tech on Launch\n\n` + popularTech
         .map((t) => `${t.name} (${t.product_count} products)\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
 
     if (latestTech && latestTech.length > 0) {
-      htmlSections.push(`<h2>🆕 Latest Tech on Launch</h2>` + latestTech
-        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${t.name}</a></p>`).join(''));
+      htmlSections.push(`<h2>${escapeHtml('🆕 Latest Tech on Launch')}</h2>` + latestTech
+        .map((t) => `<p><a href="https://trylaunch.ai/tech/${t.slug}">${escapeHtml(t.name)}</a></p>`).join(''));
       plainSections.push(`🆕 Latest Tech on Launch\n\n` + latestTech
         .map((t) => `${t.name}\nhttps://trylaunch.ai/tech/${t.slug}`).join('\n\n'));
     }
@@ -978,7 +987,7 @@ export const AutoSurfacedContent = () => {
       const storyRows = await Promise.all(
         topSuccessStories.map((s) => storyToHtml(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`))
       );
-      htmlSections.push(`<h2>🎯 Top Monthly Success Stories</h2>${storyRows.join('')}`);
+      htmlSections.push(`<h2>${escapeHtml('🎯 Top Monthly Success Stories')}</h2>${storyRows.join('')}`);
       plainSections.push(`🎯 Top Monthly Success Stories\n\n` + topSuccessStories
         .map((s) => storyToPlain(s.name, s.signups, s.revenue, s.testimonial, `https://trylaunch.ai/launch/${s.slug}`)).join('\n\n'));
     }
