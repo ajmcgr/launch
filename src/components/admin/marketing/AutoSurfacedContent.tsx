@@ -1085,20 +1085,20 @@ export const AutoSurfacedContent = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold">This Week's Content</h2>
           <p className="text-sm text-muted-foreground">
-            Auto-surfaced products and builders ready to copy & paste
+            Auto-surfaced products and builders ready for Beehiiv HTML Snippet paste
           </p>
         </div>
         <Button 
           onClick={handleMasterCopy} 
-          className="gap-2"
+          className="gap-2 shrink-0"
           variant="default"
         >
           {masterCopied ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
-          Copy All for Newsletter
+          Copy Beehiiv HTML
         </Button>
       </div>
 
