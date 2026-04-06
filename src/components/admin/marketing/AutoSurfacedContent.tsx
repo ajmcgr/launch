@@ -22,60 +22,14 @@ async function copyRichText(html: string, plain: string) {
 }
 
 const NEWSLETTER_ICON_SIZE = 20;
-const iconDataUrlCache = new Map<string, Promise<string | undefined>>();
 
-async function resizeImageBlobToDataUrl(blob: Blob, size: number) {
-  return await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const sourceImage = new Image();
-      sourceImage.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-
-        const context = canvas.getContext('2d');
-        if (!context) {
-          reject(new Error('Canvas context unavailable'));
-          return;
-        }
-
-        context.clearRect(0, 0, size, size);
-        context.drawImage(sourceImage, 0, 0, size, size);
-        resolve(canvas.toDataURL('image/png'));
-      };
-      sourceImage.onerror = () => reject(new Error('Failed to load icon image'));
-      sourceImage.src = reader.result as string;
-    };
-
-    reader.onerror = () => reject(new Error('Failed to read icon image'));
-    reader.readAsDataURL(blob);
-  });
-}
-
-async function getEmailSafeIconSrc(iconUrl?: string) {
+function getResizedIconUrl(iconUrl?: string) {
   if (!iconUrl) {
     return undefined;
   }
 
-  if (!iconDataUrlCache.has(iconUrl)) {
-    iconDataUrlCache.set(iconUrl, (async () => {
-      try {
-        const response = await fetch(iconUrl);
-        if (!response.ok) {
-          throw new Error('Failed to fetch icon');
-        }
-
-        const blob = await response.blob();
-        return await resizeImageBlobToDataUrl(blob, NEWSLETTER_ICON_SIZE);
-      } catch {
-        return undefined;
-      }
-    })());
-  }
-
-  return iconDataUrlCache.get(iconUrl)!;
+  const separator = iconUrl.includes('?') ? '&' : '?';
+  return `${iconUrl}${separator}width=${NEWSLETTER_ICON_SIZE}&height=${NEWSLETTER_ICON_SIZE}&resize=cover`;
 }
 
 function iconRowHtml(contentHtml: string, iconSrc?: string, alt?: string) {
@@ -83,12 +37,11 @@ function iconRowHtml(contentHtml: string, iconSrc?: string, alt?: string) {
     return `<p style="margin:0 0 12px 0;">${contentHtml}</p>`;
   }
 
-  return `<p style="margin:0 0 12px 0;"><img src="${iconSrc}" alt="${alt || ''}" width="20" height="20" style="width:20px;height:20px;min-width:20px;max-width:20px;min-height:20px;max-height:20px;display:inline-block;vertical-align:middle;margin-right:8px;border-radius:4px;border:0;outline:none;text-decoration:none;" /><span style="vertical-align:middle;">${contentHtml}</span></p>`;
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-spacing:0;margin:0 0 12px 0;"><tr><td style="padding:0 8px 0 0;vertical-align:middle;"><img src="${iconSrc}" alt="${alt || ''}" width="20" height="20" style="display:block;width:20px;height:20px;border-radius:4px;border:0;outline:none;text-decoration:none;" /></td><td style="vertical-align:middle;">${contentHtml}</td></tr></table>`;
 }
 
 async function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
-  const iconSrc = await getEmailSafeIconSrc(iconUrl);
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, iconSrc, name);
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${tagline}`, getResizedIconUrl(iconUrl), name);
 }
 
 function productToPlain(name: string, tagline: string, url: string) {
@@ -97,8 +50,7 @@ function productToPlain(name: string, tagline: string, url: string) {
 
 async function storyToHtml(name: string, signups: number, revenue: number, testimonial: string | null, url: string, iconUrl?: string) {
   const summary = `${signups} signups, $${revenue} revenue${testimonial ? ` \"${truncateToOneSentence(testimonial)}\"` : ''}`;
-  const iconSrc = await getEmailSafeIconSrc(iconUrl);
-  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, iconSrc, name);
+  return iconRowHtml(`<a href="${url}">${name}</a> — ${summary}`, getResizedIconUrl(iconUrl), name);
 }
 
 function storyToPlain(name: string, signups: number, revenue: number, testimonial: string | null, url: string) {
