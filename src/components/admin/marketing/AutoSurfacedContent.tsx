@@ -25,32 +25,33 @@ const NEWSLETTER_ICON_SIZE = 20;
 const iconDataUrlCache = new Map<string, Promise<string | undefined>>();
 
 async function resizeImageBlobToDataUrl(blob: Blob, size: number) {
-  const objectUrl = URL.createObjectURL(blob);
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
 
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error('Failed to load icon image'));
-      img.src = objectUrl;
-    });
+    reader.onload = () => {
+      const sourceImage = new Image();
+      sourceImage.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
+        const context = canvas.getContext('2d');
+        if (!context) {
+          reject(new Error('Canvas context unavailable'));
+          return;
+        }
 
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('Canvas context unavailable');
-    }
+        context.clearRect(0, 0, size, size);
+        context.drawImage(sourceImage, 0, 0, size, size);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      sourceImage.onerror = () => reject(new Error('Failed to load icon image'));
+      sourceImage.src = reader.result as string;
+    };
 
-    context.clearRect(0, 0, size, size);
-    context.drawImage(image, 0, 0, size, size);
-
-    return canvas.toDataURL('image/png');
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
+    reader.onerror = () => reject(new Error('Failed to read icon image'));
+    reader.readAsDataURL(blob);
+  });
 }
 
 async function getEmailSafeIconSrc(iconUrl?: string) {
