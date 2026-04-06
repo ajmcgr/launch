@@ -69,7 +69,7 @@ const Pricing = () => {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {PRICING_PLANS.filter(plan => plan.id !== 'relaunch' && plan.id !== 'join').map((plan) => (
             <Card 
               key={plan.id} 

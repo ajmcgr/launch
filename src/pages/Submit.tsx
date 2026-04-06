@@ -1764,30 +1764,29 @@ const Submit = () => {
                         </div>
                       )}
 
-                      {/* Plan cards grid - 3 columns with Launch in center */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Reorder: Free | Launch (center) | Launch Lite */}
-                        {['free', 'skip', 'join'].map((planId) => {
-                          const plan = filteredPlans.find(p => p.id === planId);
-                          if (!plan) return null;
-                          
-                          const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
-                          const isSelected = formData.plan === plan.id;
-                          const isDisabled = isPaidPlan && !isCurrentPaidPlan;
-                          
-                          return (
-                            <PlanComparisonCard
-                              key={plan.id}
-                              plan={plan}
-                              isSelected={isSelected}
-                              isDisabled={isDisabled}
-                              isCurrentPlan={isCurrentPaidPlan}
-                              hasActivePass={hasActivePass}
-                              onClick={() => handleInputChange('plan', plan.id)}
-                            />
-                          );
-                        })}
-                      </div>
+                       {/* Plan cards grid - 2 columns: Free | Pro */}
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                         {['free', 'skip'].map((planId) => {
+                           const plan = filteredPlans.find(p => p.id === planId);
+                           if (!plan) return null;
+                           
+                           const isCurrentPaidPlan = isPaidPlan && plan.id === existingPlan;
+                           const isSelected = formData.plan === plan.id;
+                           const isDisabled = isPaidPlan && !isCurrentPaidPlan;
+                           
+                           return (
+                             <PlanComparisonCard
+                               key={plan.id}
+                               plan={plan}
+                               isSelected={isSelected}
+                               isDisabled={isDisabled}
+                               isCurrentPlan={isCurrentPaidPlan}
+                               hasActivePass={hasActivePass}
+                               onClick={() => handleInputChange('plan', plan.id)}
+                             />
+                           );
+                         })}
+                       </div>
                       
                       {/* Social proof section - below cards */}
                       {!isPaidPlan && !isRescheduling && (
