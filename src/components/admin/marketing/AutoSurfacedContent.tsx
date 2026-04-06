@@ -173,11 +173,12 @@ interface ContentSection {
 const getIconUrl = (product: { icon_url?: string; product_media?: { url: string; type: string }[] } | null | undefined) =>
   product?.icon_url || product?.product_media?.find((media) => media.type === 'icon')?.url;
 
-const CopyButton = ({ html, plain, label }: { html: string; plain: string; label: string }) => {
+const CopyButton = ({ html, plain, label }: { html: string | (() => string | Promise<string>); plain: string; label: string }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await copyRichText(html, plain);
+    const htmlContent = typeof html === 'function' ? await html() : html;
+    await copyRichText(htmlContent, plain);
     setCopied(true);
     toast.success('Copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
