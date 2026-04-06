@@ -201,7 +201,7 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
   const iconUrl = getIconUrl(product);
-  const htmlText = productToHtml(product.name, taglineText, productUrl, iconUrl);
+  const htmlText = () => productToHtml(product.name, taglineText, productUrl, iconUrl);
   const plainText = productToPlain(product.name, taglineText, productUrl);
 
   return (
