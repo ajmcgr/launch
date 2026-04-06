@@ -147,7 +147,7 @@ const Submit = () => {
   const { data: passStatus } = usePass(user?.id);
   const hasActivePass = passStatus?.hasActivePass || false;
 
-  // Fetch real avg views for Free vs Pro launches
+  // Fetch real avg votes for Free vs Pro launches
   const { data: planStats } = useQuery({
     queryKey: ['plan-performance-stats'],
     queryFn: async () => {
@@ -171,59 +171,49 @@ const Submit = () => {
         .select('product_id, plan')
         .in('product_id', productIds);
 
-      // Get view counts
-      const { data: views } = await supabase
-        .from('product_views')
-        .select('product_id')
+      // Get vote counts from view
+      const { data: voteCounts } = await supabase
+        .from('product_vote_counts')
+        .select('product_id, total_votes')
         .in('product_id', productIds);
 
-      // Get vote counts
-      const { data: votes } = await supabase
-        .from('votes')
-        .select('product_id')
-        .in('product_id', productIds);
-
-      // Build per-product maps
+      // Build maps
       const orderMap = new Map<string, string>();
       orders?.forEach(o => orderMap.set(o.product_id, o.plan));
 
-      const viewCounts = new Map<string, number>();
-      views?.forEach(v => viewCounts.set(v.product_id, (viewCounts.get(v.product_id) || 0) + 1));
-
-      const voteCounts = new Map<string, number>();
-      votes?.forEach(v => voteCounts.set(v.product_id, (voteCounts.get(v.product_id) || 0) + 1));
+      const voteMap = new Map<string, number>();
+      voteCounts?.forEach(v => {
+        if (v.product_id) voteMap.set(v.product_id, v.total_votes || 0);
+      });
 
       // Aggregate by plan type
-      let freeViews = 0, freeCount = 0, freeVotes = 0;
-      let proViews = 0, proCount = 0, proVotes = 0;
+      let freeVotes = 0, freeCount = 0;
+      let proVotes = 0, proCount = 0;
 
       products.forEach(p => {
         const plan = orderMap.get(p.id) || 'free';
-        const pViews = viewCounts.get(p.id) || 0;
-        const pVotes = voteCounts.get(p.id) || 0;
+        const pVotes = voteMap.get(p.id) || 0;
 
         if (plan === 'skip') {
-          proViews += pViews;
           proVotes += pVotes;
           proCount++;
         } else if (plan === 'free' || !plan) {
-          freeViews += pViews;
           freeVotes += pVotes;
           freeCount++;
         }
       });
 
+      const freeAvg = freeCount > 0 ? Math.round(freeVotes / freeCount) : 0;
+      const proAvg = proCount > 0 ? Math.round(proVotes / proCount) : 0;
+
       return {
-        freeAvgViews: freeCount > 0 ? Math.round(freeViews / freeCount) : 0,
-        freeAvgVotes: freeCount > 0 ? Math.round(freeVotes / freeCount) : 0,
-        proAvgViews: proCount > 0 ? Math.round(proViews / proCount) : 0,
-        proAvgVotes: proCount > 0 ? Math.round(proVotes / proCount) : 0,
-        multiplier: freeCount > 0 && proCount > 0 && freeViews > 0
-          ? Math.round((proViews / proCount) / (freeViews / freeCount))
-          : 0,
+        freeAvgVotes: freeAvg,
+        proAvgVotes: proAvg,
+        multiplier: freeAvg > 0 ? Math.round(proAvg / freeAvg) : 0,
+        proCount,
       };
     },
-    staleTime: 1000 * 60 * 30, // Cache 30 min
+    staleTime: 1000 * 60 * 30,
   });
 
   // Save to localStorage whenever formData changes
