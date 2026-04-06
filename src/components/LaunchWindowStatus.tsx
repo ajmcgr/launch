@@ -38,7 +38,7 @@ const LaunchWindowStatus = ({ launchDate, rank, showPressureContext = true }: La
             <span className="font-semibold text-foreground">{countdown}</span>
           </span>
         ) : (
-          <span className="text-muted-foreground">Launch complete · Visibility reduced</span>
+          <span className="text-muted-foreground">Launch complete</span>
         )}
       </div>
 
