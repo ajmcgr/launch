@@ -131,13 +131,6 @@ const Pricing = () => {
                     </p>
                   </div>
                 )}
-                {plan.id === 'join' && (
-                  <div className="pt-2 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">5x more views</span> than free
-                    </p>
-                  </div>
-                )}
 
                 <Button 
                   asChild
