@@ -23,7 +23,7 @@ async function copyRichText(html: string, plain: string) {
 
 function productToHtml(name: string, tagline: string, url: string, iconUrl?: string) {
   const img = iconUrl
-    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;border-radius:4px" />`
+    ? `<img src="${iconUrl}" alt="${name}" width="20" height="20" style="width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;vertical-align:middle;margin-right:8px;border-radius:4px;display:inline-block" />`
     : '';
   return `<p>${img}<a href="${url}">${name}</a> — ${tagline}</p>`;
 }
