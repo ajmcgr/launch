@@ -391,9 +391,10 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
     const plain = products
       .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
-    const html = `<h3>${title}</h3>` + products
-      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
-      .join('');
+    const htmlRows = await Promise.all(
+      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+    );
+    const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
     await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
@@ -416,9 +417,10 @@ const CopyAllSponsoredButton = ({ products, title }: { products: SponsoredProduc
     const plain = products
       .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
-    const html = `<h3>${title}</h3>` + products
-      .map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
-      .join('');
+    const htmlRows = await Promise.all(
+      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`, p.icon_url))
+    );
+    const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
     await copyRichText(html, `${title}\n\n${plain}`);
     setCopied(true);
