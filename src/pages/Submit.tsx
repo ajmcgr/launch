@@ -21,6 +21,7 @@ import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
 import { usePass } from '@/hooks/use-pass';
+import { useQuery } from '@tanstack/react-query';
 import { PassOption } from '@/components/PassOption';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
