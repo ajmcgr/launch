@@ -208,7 +208,6 @@ const MediaKit = () => {
                 </div>
               </div>
             </div>
-            </div>
           </div>
 
           {/* CTA */}
