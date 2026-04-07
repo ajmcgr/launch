@@ -62,6 +62,50 @@ const MediaKit = () => {
                 <p className="text-4xl font-bold text-primary">25%</p>
                 <p className="text-sm text-muted-foreground font-medium mt-1">Email Open Rate</p>
               </div>
+              {/* Traffic Sources */}
+              <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
+                <h3 className="text-xl font-bold mb-4 text-foreground">
+                  📊 Traffic Sources
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-muted-foreground">Direct</span>
+                      <span className="font-semibold text-foreground">55%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '55%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-muted-foreground">Organic Social</span>
+                      <span className="font-semibold text-foreground">25%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '25%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-muted-foreground">Organic Search</span>
+                      <span className="font-semibold text-foreground">15%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '15%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-muted-foreground">Referral</span>
+                      <span className="font-semibold text-foreground">5%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '5%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right Column - Audience & Traffic */}
@@ -161,47 +205,6 @@ const MediaKit = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">50+ employees</span>
                         <span className="font-semibold text-foreground">10%</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="border-t border-border pt-3">
-                    <p className="text-sm font-medium text-foreground mb-2">📊 Traffic Sources</p>
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-muted-foreground">Direct</span>
-                          <span className="font-semibold text-foreground">55%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div className="bg-primary h-2 rounded-full" style={{ width: '55%' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-muted-foreground">Organic Social</span>
-                          <span className="font-semibold text-foreground">25%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div className="bg-primary h-2 rounded-full" style={{ width: '25%' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-muted-foreground">Organic Search</span>
-                          <span className="font-semibold text-foreground">15%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div className="bg-primary h-2 rounded-full" style={{ width: '15%' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-muted-foreground">Referral</span>
-                          <span className="font-semibold text-foreground">5%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div className="bg-primary h-2 rounded-full" style={{ width: '5%' }}></div>
-                        </div>
                       </div>
                     </div>
                   </div>
