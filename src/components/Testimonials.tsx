@@ -97,7 +97,7 @@ export const Testimonials = ({
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{subtitle}</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {displayTestimonials.map((testimonial, index) => (
           <Card key={index} className="p-6 bg-muted/30 border-0 flex flex-col">
             <div className="flex gap-1 mb-4">

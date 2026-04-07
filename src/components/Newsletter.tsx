@@ -39,7 +39,7 @@ export const Newsletter = () => {
 
   return (
     <section className="px-4">
-      <Card className="p-8 bg-muted/30 border-0 max-w-6xl mx-auto">
+      <Card className="p-8 bg-muted/30 border-0 max-w-7xl mx-auto">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-4">Get the Newsletter</h2>
           <p className="text-muted-foreground mb-8">

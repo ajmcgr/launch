@@ -157,7 +157,7 @@ const SuccessStories = () => {
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Hero */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight mb-3 font-['Reckless']">

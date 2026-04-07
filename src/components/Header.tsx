@@ -115,7 +115,7 @@ export const Header = () => {
             className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
             tabIndex={isScrolled ? -1 : 0}
           >
-            <div className="container mx-auto px-4 max-w-6xl">
+            <div className="container mx-auto px-4 max-w-7xl">
               <p className="text-center text-sm font-medium">
                 {showLaunchPassPromo 
                   ? `Trusted by ${formattedMemberCount} makers → Get Launch Pass`
@@ -127,7 +127,7 @@ export const Header = () => {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-14 items-center justify-between">
           {/* Left: Logo + Navigation */}
           <div className="flex items-center gap-6">
