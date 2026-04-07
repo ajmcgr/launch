@@ -817,7 +817,7 @@ const Home = () => {
       <OrganizationSchema />
       <WebSiteSchema />
       <FAQSchema faqs={homepageFaqs} />
-      <div className="container mx-auto px-4 py-6 max-w-6xl">
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-6">
             <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
