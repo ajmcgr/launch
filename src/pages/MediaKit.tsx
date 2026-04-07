@@ -95,6 +95,78 @@ const MediaKit = () => {
                 </div>
               </div>
 
+              {/* Audience Profile */}
+              <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
+                <h3 className="text-xl font-bold mb-4 text-foreground">
+                  👤 Audience Profile
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">Role / Job Title</p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Founders / CEOs</span>
+                        <span className="font-semibold text-foreground">35%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Developers / Engineers</span>
+                        <span className="font-semibold text-foreground">30%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Product / Marketing</span>
+                        <span className="font-semibold text-foreground">20%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Designers / Other</span>
+                        <span className="font-semibold text-foreground">15%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-border pt-3">
+                    <p className="text-sm font-medium text-foreground mb-2">Industry</p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">SaaS / Software</span>
+                        <span className="font-semibold text-foreground">40%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">AI / Machine Learning</span>
+                        <span className="font-semibold text-foreground">25%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">E-commerce / SMB</span>
+                        <span className="font-semibold text-foreground">15%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Other (fintech, edtech…)</span>
+                        <span className="font-semibold text-foreground">20%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-border pt-3">
+                    <p className="text-sm font-medium text-foreground mb-2">Company Size</p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Solo / Side project</span>
+                        <span className="font-semibold text-foreground">40%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">1–10 employees (SMB)</span>
+                        <span className="font-semibold text-foreground">35%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">11–50 employees</span>
+                        <span className="font-semibold text-foreground">15%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">50+ employees</span>
+                        <span className="font-semibold text-foreground">10%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Traffic Sources */}
               <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
                 <h3 className="text-xl font-bold mb-4 text-foreground">
