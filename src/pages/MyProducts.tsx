@@ -137,6 +137,7 @@ const MyProducts = () => {
       const productIds = launchedProducts.map(p => p.id);
       
       let voteCounts: Record<string, number> = {};
+      let rankMap: Record<string, number> = {};
       if (productIds.length > 0) {
         const { data: votesData } = await supabase
           .from('product_vote_counts')
@@ -146,6 +147,33 @@ const MyProducts = () => {
         votesData?.forEach(vote => {
           voteCounts[vote.product_id] = vote.net_votes || 0;
         });
+
+        // Fetch daily ranks for active launches
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayStr = today.toISOString();
+        const { data: todayProducts } = await supabase
+          .from('products')
+          .select('id')
+          .eq('status', 'launched')
+          .gte('launch_date', todayStr)
+          .order('launch_date', { ascending: true });
+
+        // Calculate rank by vote count among today's launches
+        if (todayProducts) {
+          const todayIds = todayProducts.map(p => p.id);
+          const { data: todayVotes } = await supabase
+            .from('product_vote_counts')
+            .select('product_id, net_votes')
+            .in('product_id', todayIds);
+
+          const sorted = (todayVotes || []).sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0));
+          sorted.forEach((item, idx) => {
+            if (productIds.includes(item.product_id)) {
+              rankMap[item.product_id] = idx + 1;
+            }
+          });
+        }
       }
 
       // Get orders to check which plan was used
@@ -167,6 +195,7 @@ const MyProducts = () => {
         iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         netVotes: voteCounts[product.id] || 0,
+        rank: rankMap[product.id] || undefined,
         won_daily: product.won_daily || false,
         won_weekly: product.won_weekly || false,
         won_monthly: product.won_monthly || false,
