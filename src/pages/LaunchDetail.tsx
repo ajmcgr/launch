@@ -18,7 +18,7 @@ import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 import InlineAdSlot from '@/components/InlineAdSlot';
 import LaunchWindowStatus from '@/components/LaunchWindowStatus';
-import BoostNudgeCard from '@/components/BoostNudgeCard';
+import ProUpgradeCard from '@/components/ProUpgradeCard';
 import { isActiveLaunch } from '@/lib/launchWindow';
 
 
