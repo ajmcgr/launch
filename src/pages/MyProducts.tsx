@@ -40,7 +40,8 @@ const MyProducts = () => {
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
   const [showShareModal, setShowShareModal] = useState(false);
   const [showBoostModal, setShowBoostModal] = useState(false);
-  const [recentProduct, setRecentProduct] = useState<{ id: string; name: string; slug: string; tagline?: string } | null>(null);
+  const [showProUpgradeModal, setShowProUpgradeModal] = useState(false);
+  const [recentProduct, setRecentProduct] = useState<{ id: string; name: string; slug: string; tagline?: string; plan?: string } | null>(null);
   const [stripeActionLoading, setStripeActionLoading] = useState<string | null>(null);
   const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
   const [sponsorAnalytics, setSponsorAnalytics] = useState<Record<string, { impressions: number; clicks: number }>>({});
