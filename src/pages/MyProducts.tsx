@@ -23,9 +23,11 @@ import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
-import UpgradeNudge from '@/components/UpgradeNudge';
+import ProUpgradeCard from '@/components/ProUpgradeCard';
+import PostSubmissionUpgradeModal from '@/components/PostSubmissionUpgradeModal';
 import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
+import { getBestTrigger } from '@/lib/upgradeTracking';
 import { usePass } from '@/hooks/use-pass';
 import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
 
