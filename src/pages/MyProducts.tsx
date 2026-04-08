@@ -23,9 +23,11 @@ import defaultIcon from '@/assets/default-product-icon.png';
 import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
-import UpgradeNudge from '@/components/UpgradeNudge';
+import ProUpgradeCard from '@/components/ProUpgradeCard';
+import PostSubmissionUpgradeModal from '@/components/PostSubmissionUpgradeModal';
 import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
+import { getBestTrigger } from '@/lib/upgradeTracking';
 import { usePass } from '@/hooks/use-pass';
 import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
 
@@ -38,7 +40,8 @@ const MyProducts = () => {
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
   const [showShareModal, setShowShareModal] = useState(false);
   const [showBoostModal, setShowBoostModal] = useState(false);
-  const [recentProduct, setRecentProduct] = useState<{ id: string; name: string; slug: string; tagline?: string } | null>(null);
+  const [showProUpgradeModal, setShowProUpgradeModal] = useState(false);
+  const [recentProduct, setRecentProduct] = useState<{ id: string; name: string; slug: string; tagline?: string; plan?: string } | null>(null);
   const [stripeActionLoading, setStripeActionLoading] = useState<string | null>(null);
   const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
   const [sponsorAnalytics, setSponsorAnalytics] = useState<Record<string, { impressions: number; clicks: number }>>({});
@@ -86,7 +89,7 @@ const MyProducts = () => {
       const showShareModalForLatest = async () => {
         await fetchProducts(user.id);
         
-        // Get the most recently scheduled/launched product
+        // Get the most recently scheduled/launched product with its order plan
         const { data: latestProduct } = await supabase
           .from('products')
           .select('id, name, slug, tagline')
@@ -95,13 +98,24 @@ const MyProducts = () => {
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
-        
+
         if (latestProduct && latestProduct.slug) {
+          // Check the order plan for this product
+          const { data: orderData } = await supabase
+            .from('orders')
+            .select('plan')
+            .eq('product_id', latestProduct.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          const plan = orderData?.plan || 'free';
           setRecentProduct({
             id: latestProduct.id,
             name: latestProduct.name || 'Your Product',
             slug: latestProduct.slug,
-            tagline: latestProduct.tagline || undefined
+            tagline: latestProduct.tagline || undefined,
+            plan,
           });
           // Small delay to let the page settle before showing modal
           setTimeout(() => setShowShareModal(true), 500);
@@ -134,6 +148,7 @@ const MyProducts = () => {
       const productIds = launchedProducts.map(p => p.id);
       
       let voteCounts: Record<string, number> = {};
+      let rankMap: Record<string, number> = {};
       if (productIds.length > 0) {
         const { data: votesData } = await supabase
           .from('product_vote_counts')
@@ -143,6 +158,33 @@ const MyProducts = () => {
         votesData?.forEach(vote => {
           voteCounts[vote.product_id] = vote.net_votes || 0;
         });
+
+        // Fetch daily ranks for active launches
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayStr = today.toISOString();
+        const { data: todayProducts } = await supabase
+          .from('products')
+          .select('id')
+          .eq('status', 'launched')
+          .gte('launch_date', todayStr)
+          .order('launch_date', { ascending: true });
+
+        // Calculate rank by vote count among today's launches
+        if (todayProducts) {
+          const todayIds = todayProducts.map(p => p.id);
+          const { data: todayVotes } = await supabase
+            .from('product_vote_counts')
+            .select('product_id, net_votes')
+            .in('product_id', todayIds);
+
+          const sorted = (todayVotes || []).sort((a, b) => (b.net_votes || 0) - (a.net_votes || 0));
+          sorted.forEach((item, idx) => {
+            if (productIds.includes(item.product_id)) {
+              rankMap[item.product_id] = idx + 1;
+            }
+          });
+        }
       }
 
       // Get orders to check which plan was used
@@ -164,6 +206,7 @@ const MyProducts = () => {
         iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
         categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
         netVotes: voteCounts[product.id] || 0,
+        rank: rankMap[product.id] || undefined,
         won_daily: product.won_daily || false,
         won_weekly: product.won_weekly || false,
         won_monthly: product.won_monthly || false,
@@ -953,18 +996,32 @@ const MyProducts = () => {
                       </AlertDialog>
                     )}
                   </div>
-                  {product.status === 'launched' && (
-                    <UpgradeNudge 
-                      productName={product.name}
-                      currentPlan={product.orderPlan}
-                      productId={product.id}
-                    />
-                  )}
+                  {product.status === 'launched' && (() => {
+                    const trigger = getBestTrigger({
+                      id: product.id,
+                      orderPlan: product.orderPlan,
+                      status: product.status,
+                      launch_date: product.launch_date,
+                      rank: product.rank,
+                      pageViews: analytics[product.id]?.page_views || 0,
+                      netVotes: product.netVotes,
+                    });
+                    if (!trigger) return null;
+                    return (
+                      <ProUpgradeCard
+                        productId={product.id}
+                        productName={product.name}
+                        triggerType={trigger}
+                        rank={product.rank}
+                        variant="inline"
+                      />
+                    );
+                  })()}
                   {product.status === 'launched' && !sponsoredProductIds.has(product.id) && (
                     <BoostNudgeCard
                       productId={product.id}
                       productName={product.name}
-                      rank={product.netVotes > 0 ? undefined : undefined}
+                      rank={product.rank}
                     />
                   )}
                   {product.status === 'launched' && product.slug && (
@@ -1006,12 +1063,26 @@ const MyProducts = () => {
           open={showShareModal}
           onClose={() => {
             setShowShareModal(false);
-            // Show boost upsell after share modal closes
-            setTimeout(() => setShowBoostModal(true), 300);
+            // For free plans, show Pro upgrade modal; otherwise show boost
+            if (recentProduct.plan === 'free') {
+              setTimeout(() => setShowProUpgradeModal(true), 300);
+            } else {
+              setTimeout(() => setShowBoostModal(true), 300);
+            }
           }}
           productName={recentProduct.name}
           productSlug={recentProduct.slug}
           productTagline={recentProduct.tagline}
+        />
+      )}
+
+      {/* Pro Upgrade Modal — shown to free plan users after submission */}
+      {recentProduct && (
+        <PostSubmissionUpgradeModal
+          open={showProUpgradeModal}
+          onClose={() => setShowProUpgradeModal(false)}
+          productId={recentProduct.id}
+          productName={recentProduct.name}
         />
       )}
 
