@@ -1063,12 +1063,26 @@ const MyProducts = () => {
           open={showShareModal}
           onClose={() => {
             setShowShareModal(false);
-            // Show boost upsell after share modal closes
-            setTimeout(() => setShowBoostModal(true), 300);
+            // For free plans, show Pro upgrade modal; otherwise show boost
+            if (recentProduct.plan === 'free') {
+              setTimeout(() => setShowProUpgradeModal(true), 300);
+            } else {
+              setTimeout(() => setShowBoostModal(true), 300);
+            }
           }}
           productName={recentProduct.name}
           productSlug={recentProduct.slug}
           productTagline={recentProduct.tagline}
+        />
+      )}
+
+      {/* Pro Upgrade Modal — shown to free plan users after submission */}
+      {recentProduct && (
+        <PostSubmissionUpgradeModal
+          open={showProUpgradeModal}
+          onClose={() => setShowProUpgradeModal(false)}
+          productId={recentProduct.id}
+          productName={recentProduct.name}
         />
       )}
 
