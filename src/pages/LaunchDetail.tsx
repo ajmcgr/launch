@@ -999,27 +999,15 @@ const LaunchDetail = () => {
 
             </div>
 
-              {/* Upgrade banner for free/Lite product makers */}
-              {user && product.owner_id === user.id && product.status === 'launched' && (() => {
-                // Show if product doesn't have a Pro (skip) order - checked via product plan field or lack of paid order
-                const showUpgradeBanner = !product._hasPaidPlan;
-                if (!showUpgradeBanner) return null;
-                return (
-                  <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 space-y-2">
-                    <p className="text-sm font-semibold">
-                      {product.name} isn't promoted
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Pro launches average 3–5x more views and get featured in our newsletter (2K+ subs) and on social media.
-                    </p>
-                    <Button size="sm" className="w-full mt-2" asChild>
-                      <Link to="/pricing">
-                        Upgrade to Pro — $39
-                      </Link>
-                    </Button>
-                  </div>
-                );
-              })()}
+              {/* Contextual Pro upgrade for free/Lite product makers */}
+              {user && product.owner_id === user.id && product.status === 'launched' && !product._hasPaidPlan && (
+                <ProUpgradeCard
+                  productId={product.id}
+                  productName={product.name}
+                  triggerType="product_detail_sidebar"
+                  rank={product.currentRank}
+                />
+              )}
 
             {/* Sidebar Sponsored Ads */}
             <SidebarSponsoredAd />
