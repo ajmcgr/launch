@@ -985,18 +985,32 @@ const MyProducts = () => {
                       </AlertDialog>
                     )}
                   </div>
-                  {product.status === 'launched' && (
-                    <UpgradeNudge 
-                      productName={product.name}
-                      currentPlan={product.orderPlan}
-                      productId={product.id}
-                    />
-                  )}
+                  {product.status === 'launched' && (() => {
+                    const trigger = getBestTrigger({
+                      id: product.id,
+                      orderPlan: product.orderPlan,
+                      status: product.status,
+                      launch_date: product.launch_date,
+                      rank: product.rank,
+                      pageViews: analytics[product.id]?.page_views || 0,
+                      netVotes: product.netVotes,
+                    });
+                    if (!trigger) return null;
+                    return (
+                      <ProUpgradeCard
+                        productId={product.id}
+                        productName={product.name}
+                        triggerType={trigger}
+                        rank={product.rank}
+                        variant="inline"
+                      />
+                    );
+                  })()}
                   {product.status === 'launched' && !sponsoredProductIds.has(product.id) && (
                     <BoostNudgeCard
                       productId={product.id}
                       productName={product.name}
-                      rank={product.netVotes > 0 ? undefined : undefined}
+                      rank={product.rank}
                     />
                   )}
                   {product.status === 'launched' && product.slug && (
