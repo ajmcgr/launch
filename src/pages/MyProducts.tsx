@@ -89,7 +89,7 @@ const MyProducts = () => {
       const showShareModalForLatest = async () => {
         await fetchProducts(user.id);
         
-        // Get the most recently scheduled/launched product
+        // Get the most recently scheduled/launched product with its order plan
         const { data: latestProduct } = await supabase
           .from('products')
           .select('id, name, slug, tagline')
@@ -98,13 +98,24 @@ const MyProducts = () => {
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
-        
+
         if (latestProduct && latestProduct.slug) {
+          // Check the order plan for this product
+          const { data: orderData } = await supabase
+            .from('orders')
+            .select('plan')
+            .eq('product_id', latestProduct.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          const plan = orderData?.plan || 'free';
           setRecentProduct({
             id: latestProduct.id,
             name: latestProduct.name || 'Your Product',
             slug: latestProduct.slug,
-            tagline: latestProduct.tagline || undefined
+            tagline: latestProduct.tagline || undefined,
+            plan,
           });
           // Small delay to let the page settle before showing modal
           setTimeout(() => setShowShareModal(true), 500);
