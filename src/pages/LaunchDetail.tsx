@@ -703,12 +703,14 @@ const LaunchDetail = () => {
                     launchDate={product.launch_date}
                     rank={currentRank}
                   />
-                  {/* Inline boost upsell during active window */}
-                  {isActiveLaunch(product.launch_date) && currentRank && currentRank > 5 && user && product.owner_id === user.id && (
-                    <BoostNudgeCard
+                  {/* Inline upgrade nudge during active window for low-ranked free launches */}
+                  {isActiveLaunch(product.launch_date) && currentRank && currentRank > 5 && user && product.owner_id === user.id && !product._hasPaidPlan && (
+                    <ProUpgradeCard
                       productId={product.id}
                       productName={product.name}
+                      triggerType="low_rank"
                       rank={currentRank}
+                      variant="inline"
                     />
                   )}
                 </div>
