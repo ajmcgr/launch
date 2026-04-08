@@ -334,9 +334,11 @@ const Products = () => {
 
       // Apply search filter BEFORE sorting and slicing to search all products
       if (searchQuery) {
+        const q = searchQuery.toLowerCase();
         formattedProducts = formattedProducts.filter((p: any) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.tagline.toLowerCase().includes(searchQuery.toLowerCase())
+          p.name.toLowerCase().includes(q) ||
+          p.tagline.toLowerCase().includes(q) ||
+          p.categories.some((c: string) => c.toLowerCase().includes(q))
         );
       }
 
