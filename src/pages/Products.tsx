@@ -271,9 +271,14 @@ const Products = () => {
           product_category_map(category_id),
           product_makers(user_id, users(username, avatar_url))
         `)
-        .eq('status', 'launched')
-        .gte('launch_date', dateRange.start)
-        .lte('launch_date', dateRange.end);
+        .eq('status', 'launched');
+
+      // Only apply date range filter when there's no search query
+      if (!searchQuery) {
+        query = query
+          .gte('launch_date', dateRange.start)
+          .lte('launch_date', dateRange.end);
+      }
 
       const { data: allProducts, error } = await query;
       if (error) throw error;
