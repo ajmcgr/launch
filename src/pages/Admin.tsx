@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { Calendar, Tags, Mail, Loader2, Megaphone } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import AdminMarketingTab from '@/components/admin/AdminMarketingTab';
-import Sparkline from '@/components/Sparkline';
+
 import { format } from 'date-fns';
 
 const Admin = () => {
@@ -69,12 +69,6 @@ const Admin = () => {
         commentsRes,
         badgesRes,
         mrrRes,
-        // Fetch historical data for sparklines
-        productsHistory,
-        usersHistory,
-        votesHistory,
-        ratingsHistory,
-        commentsHistory,
       ] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('users').select('id', { count: 'exact', head: true }),
@@ -85,34 +79,8 @@ const Admin = () => {
         supabase.from('comments').select('id', { count: 'exact', head: true }),
         supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'launched'),
         supabase.from('products').select('verified_mrr').not('verified_mrr', 'is', null),
-        // Historical data for sparklines (last 10 weeks only, avoids 1000-row default limit)
-        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('products').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
-        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('users').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
-        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('votes').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
-        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('product_ratings').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
-        (() => { const d = new Date(); d.setDate(d.getDate() - 70); return supabase.from('comments').select('created_at').gte('created_at', d.toISOString()).limit(5000); })(),
       ]);
 
-      // Helper to generate per-week new counts for sparklines (shows spikes)
-      const generateWeeklySparkline = (data: { created_at: string | null }[] | null, weeks: number = 9): number[] => {
-        if (!data || data.length === 0) return Array(weeks).fill(0);
-        
-        const now = new Date();
-        const result: number[] = [];
-        
-        for (let i = weeks - 1; i >= 0; i--) {
-          const weekStart = new Date(now);
-          weekStart.setDate(weekStart.getDate() - ((i + 1) * 7));
-          const weekEnd = new Date(now);
-          weekEnd.setDate(weekEnd.getDate() - (i * 7));
-          const count = data.filter(item => 
-            item.created_at && new Date(item.created_at) > weekStart && new Date(item.created_at) <= weekEnd
-          ).length;
-          result.push(count);
-        }
-        
-        return result;
-      };
 
       // Calculate advertising revenue from all sponsorships
       const sponsorships = sponsoredRes.data || [];
@@ -130,34 +98,6 @@ const Admin = () => {
         else if (order.plan === 'skip') totalRevenue += 39;
       });
 
-      // Generate revenue sparkline
-      const revenueByWeek: number[] = [];
-      const now = new Date();
-      for (let i = 8; i >= 0; i--) {
-        const weekEnd = new Date(now);
-        weekEnd.setDate(weekEnd.getDate() - (i * 7));
-        
-        let weekRevenue = 0;
-        sponsorships.forEach(sp => {
-          if (sp.start_date && new Date(sp.start_date) <= weekEnd) {
-            if (sp.sponsorship_type === 'website') weekRevenue += 750;
-            else if (sp.sponsorship_type === 'newsletter') weekRevenue += 500;
-            else if (sp.sponsorship_type === 'combined') weekRevenue += 1000;
-          }
-        });
-        orders.forEach(order => {
-          if (order.created_at && new Date(order.created_at) <= weekEnd) {
-            if (order.plan === 'join') weekRevenue += 9;
-            else if (order.plan === 'skip') weekRevenue += 39;
-          }
-        });
-        revenueByWeek.push(weekRevenue);
-      }
-
-      // Generate sponsors sparkline
-      const sponsorsSparkline = generateWeeklySparkline(
-        sponsorships.map(s => ({ created_at: s.start_date }))
-      );
 
       // Calculate total verified MRR (stored in cents, convert to dollars)
       const mrrProducts = mrrRes.data || [];
@@ -174,16 +114,6 @@ const Admin = () => {
         totalComments: commentsRes.count || 0,
         totalBadges: badgesRes.count || 0,
         totalVerifiedMRR: totalVerifiedMRR,
-        // Sparkline data
-        productsSparkline: generateWeeklySparkline(productsHistory.data),
-        usersSparkline: generateWeeklySparkline(usersHistory.data),
-        votesSparkline: generateWeeklySparkline(votesHistory.data),
-        ratingsSparkline: generateWeeklySparkline(ratingsHistory.data),
-        commentsSparkline: generateWeeklySparkline(commentsHistory.data),
-        sponsorsSparkline,
-        badgesSparkline: generateWeeklySparkline(productsHistory.data?.filter(p => p.created_at)),
-        revenueSparkline: revenueByWeek,
-        mrrSparkline: Array(9).fill(totalVerifiedMRR), // MRR is a snapshot, show flat line at current value
       };
     },
     enabled: isAdmin,
@@ -362,9 +292,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Products</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
-                  <Sparkline data={stats?.productsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -373,9 +302,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Makers</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
-                  <Sparkline data={stats?.usersSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -384,9 +312,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Votes</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
-                  <Sparkline data={stats?.votesSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -395,9 +322,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Ratings</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
-                  <Sparkline data={stats?.ratingsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -406,9 +332,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Comments</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
-                  <Sparkline data={stats?.commentsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -417,9 +342,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Advertisers</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">🎯 {(stats?.totalPromotions || 0) + (stats?.totalSponsorships || 0)}</div>
-                  <Sparkline data={stats?.sponsorsSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -428,9 +352,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Badges Awarded</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
-                  <Sparkline data={stats?.badgesSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -439,9 +362,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Verified MRR</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
-                  <Sparkline data={stats?.mrrSparkline || []} />
                 </CardContent>
               </Card>
 
@@ -450,9 +372,8 @@ const Admin = () => {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-medium text-muted-foreground">Revenue</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
-                  <Sparkline data={stats?.revenueSparkline || []} />
                 </CardContent>
               </Card>
             </div>
