@@ -653,14 +653,13 @@ const LaunchDetail = () => {
               <InlineAdSlot />
             </div>
 
-            <div className="space-y-5 pt-10 border-t border-border/40">
-              <h2 className="text-xl font-semibold">Comments</h2>
+            <div className="space-y-4 pt-10 border-t border-border/40">
               {user ? (
                 <CommentForm productId={product.id} onCommentAdded={handleCommentAdded} />
               ) : (
                 <div className="p-4 bg-muted/30 rounded-xl">
-                  <p className="text-muted-foreground mb-3">Login to leave a comment</p>
-                  <Button onClick={() => navigate('/auth')}>Login</Button>
+                  <p className="text-sm text-muted-foreground mb-3">Login to leave a comment</p>
+                  <Button size="sm" onClick={() => navigate('/auth')}>Login</Button>
                 </div>
               )}
               <CommentList productId={product.id} productOwnerId={product.owner_id} refreshTrigger={commentRefreshTrigger} />
