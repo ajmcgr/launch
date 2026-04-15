@@ -114,7 +114,7 @@ const Submit = () => {
         slug: '',
         couponCode: '',
         couponDescription: '',
-        plan: 'join' as 'join' | 'skip' | 'relaunch',
+        plan: 'free' as 'free' | 'skip' | 'relaunch',
         selectedDate: null as string | null,
       };
     }
@@ -132,7 +132,7 @@ const Submit = () => {
       slug: '',
       couponCode: '',
       couponDescription: '',
-      plan: 'join' as 'join' | 'skip' | 'relaunch',
+      plan: 'free' as 'free' | 'skip' | 'relaunch',
       selectedDate: null as string | null,
     };
   });
