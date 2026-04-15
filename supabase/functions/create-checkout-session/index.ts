@@ -50,7 +50,7 @@ serve(async (req) => {
 
     // Plan pricing configuration (amounts in cents)
     const planConfig: Record<string, { amount: number; name: string; isSubscription?: boolean }> = {
-      join: { amount: 900, name: 'Launch Lite - $9' },
+      // 'join' (Lite $9) plan removed — users should choose Free or Pro ($39)
       skip: { amount: 3900, name: 'Launch - $39' },
       relaunch: { amount: 1900, name: 'Relaunch - $19' },
       boost: { amount: 1900, name: 'Featured Boost - $19' },
