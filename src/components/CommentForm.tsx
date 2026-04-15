@@ -68,7 +68,7 @@ export const CommentForm = ({ productId, onCommentAdded, parentCommentId, onCanc
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-4 py-2">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-4 py-2">
       <input
         ref={inputRef}
         type="text"
@@ -91,7 +91,7 @@ export const CommentForm = ({ productId, onCommentAdded, parentCommentId, onCanc
         type="submit"
         disabled={isSubmitting || !content.trim()}
         size="sm"
-        className="rounded-full h-8 px-4 text-xs font-semibold"
+        className="rounded-md h-8 px-4 text-xs font-semibold"
       >
         {isSubmitting ? '...' : 'Post'}
       </Button>
