@@ -1,7 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { notifyProductComment } from '@/lib/notifications';
@@ -16,6 +14,7 @@ interface CommentFormProps {
 export const CommentForm = ({ productId, onCommentAdded, parentCommentId, onCancel }: CommentFormProps) => {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,14 +45,12 @@ export const CommentForm = ({ productId, onCommentAdded, parentCommentId, onCanc
 
       if (error) throw error;
 
-      // Get user's username for notification
       const { data: userData } = await supabase
         .from('users')
         .select('username')
         .eq('id', user.id)
         .single();
 
-      // Send notification to product owner
       if (userData?.username) {
         notifyProductComment(productId, userData.username);
       }
@@ -71,31 +68,33 @@ export const CommentForm = ({ productId, onCommentAdded, parentCommentId, onCanc
   };
 
   return (
-    <Card className="p-4">
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <Textarea
-          placeholder={parentCommentId ? "Write a reply..." : "Share your thoughts..."}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="min-h-[100px]"
-          maxLength={1000}
-        />
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">
-            {content.length}/1000
-          </span>
-          <div className="flex gap-2">
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-            <Button type="submit" disabled={isSubmitting || !content.trim()}>
-              {isSubmitting ? 'Posting...' : (parentCommentId ? 'Post Reply' : 'Post Comment')}
-            </Button>
-          </div>
-        </div>
-      </form>
-    </Card>
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-4 py-2">
+      <input
+        ref={inputRef}
+        type="text"
+        placeholder={parentCommentId ? "Write a reply..." : "Add a comment..."}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        maxLength={1000}
+        className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+      />
+      {onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Cancel
+        </button>
+      )}
+      <Button
+        type="submit"
+        disabled={isSubmitting || !content.trim()}
+        size="sm"
+        className="rounded-full h-8 px-4 text-xs font-semibold"
+      >
+        {isSubmitting ? '...' : 'Post'}
+      </Button>
+    </form>
   );
 };
