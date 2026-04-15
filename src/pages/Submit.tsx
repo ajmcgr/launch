@@ -114,7 +114,7 @@ const Submit = () => {
         slug: '',
         couponCode: '',
         couponDescription: '',
-        plan: 'join' as 'join' | 'skip' | 'relaunch',
+        plan: 'free' as 'free' | 'skip' | 'relaunch',
         selectedDate: null as string | null,
       };
     }
@@ -132,7 +132,7 @@ const Submit = () => {
       slug: '',
       couponCode: '',
       couponDescription: '',
-      plan: 'join' as 'join' | 'skip' | 'relaunch',
+      plan: 'free' as 'free' | 'skip' | 'relaunch',
       selectedDate: null as string | null,
     };
   });
@@ -392,7 +392,7 @@ const Submit = () => {
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
-          plan: 'join',
+          plan: 'free',
           selectedDate: isDraftDateInPast ? null : product.launch_date, // Clear past dates
         });
 
@@ -454,7 +454,7 @@ const Submit = () => {
           slug: '',
           couponCode: '',
           couponDescription: '',
-          plan: 'join',
+          plan: 'free',
           selectedDate: null,
         });
         setUploadedMedia({ screenshots: [] });
@@ -490,7 +490,7 @@ const Submit = () => {
       };
 
       // Set form data with the paid plan pre-selected
-      const paidPlan = (order?.plan as 'join' | 'skip' | 'relaunch') || 'join';
+      const paidPlan = (order?.plan as 'free' | 'skip' | 'relaunch') || 'free';
       
       setFormData({
         name: product.name || '',
