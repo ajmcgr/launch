@@ -254,10 +254,6 @@ export const CommentList = ({ productId, productOwnerId, refreshTrigger }: Comme
 
             {/* Action row */}
             <div className="flex items-center gap-4 mt-2">
-              <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                <Heart className="h-3.5 w-3.5" />
-                <span>0</span>
-              </button>
               {user && (
                 <button
                   onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
