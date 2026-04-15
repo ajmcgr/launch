@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { CommentForm } from './CommentForm';
-import { Heart, MessageCircle, Pin, PinOff, Trash2, MoreHorizontal } from 'lucide-react';
+import { MessageCircle, Pin, PinOff, Trash2, MoreHorizontal } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
