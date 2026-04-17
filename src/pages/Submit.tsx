@@ -1022,6 +1022,15 @@ const Submit = () => {
               return;
             }
             launchDate = fromZonedTime(selectedPST, PST_TIMEZONE);
+          } else if (hasActivePass && formData.selectedDate) {
+            // Pass users can choose any date
+            const selectedPST = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
+            launchDate = fromZonedTime(selectedPST, PST_TIMEZONE);
+          } else if (!existingPlan || existingPlan === null) {
+            // Free plan reschedule - auto-queue at least 7 days out
+            launchDate = new Date();
+            launchDate.setDate(launchDate.getDate() + 7);
+            launchDate.setHours(0, 1, 0, 0);
           } else {
             toast.error('Please select a launch date');
             return;
