@@ -928,7 +928,7 @@ export const AutoSurfacedContent = () => {
   // Master copy function for Beehiiv HTML Snippet blocks
   const handleMasterCopy = async () => {
     // Guard: warn if any data sources are still loading
-    const stillLoading = paidLoading || launchLoading || weeklyLoading || awardsLoading || missedLoading || newNoteworthyLoading || hiddenGemsLoading || buildersLoading || topMakersLoading || popularTechLoading || latestTechLoading || successStoriesLoading;
+    const stillLoading = paidLoading || launchLoading || weeklyLoading || awardsLoading || missedLoading || newNoteworthyLoading || gemsLoading || buildersLoading || topMakersLoading || techLoading || latestTechLoading || successStoriesLoading;
     if (stillLoading) {
       toast.error('Content still loading — please wait a moment and try again.');
       return;
