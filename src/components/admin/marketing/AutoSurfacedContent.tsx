@@ -949,6 +949,7 @@ export const AutoSurfacedContent = () => {
     };
 
     await addProductSection('Sponsored Launches', '💰', paidLaunchesWithIcons as SponsoredProduct[] | undefined);
+    await addProductSection('Launch of the Day', '🚀', launchOfDayWithIcons);
     await addProductSection('Launch Weekly Winners', '📈', weeklyWinnersWithIcons);
     await addProductSection('Weekly Awards', '🏅', weeklyAwardsWithIcons);
     await addProductSection('5 Launch Products You Missed This Week', '🕐', missedProductsWithIcons);
