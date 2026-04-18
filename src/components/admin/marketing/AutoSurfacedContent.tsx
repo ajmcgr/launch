@@ -927,6 +927,13 @@ export const AutoSurfacedContent = () => {
 
   // Master copy function for Beehiiv HTML Snippet blocks
   const handleMasterCopy = async () => {
+    // Guard: warn if any data sources are still loading
+    const stillLoading = paidLoading || launchLoading || weeklyLoading || awardsLoading || missedLoading || newNoteworthyLoading || gemsLoading || buildersLoading || topMakersLoading || techLoading || latestTechLoading || successStoriesLoading;
+    if (stillLoading) {
+      toast.error('Content still loading — please wait a moment and try again.');
+      return;
+    }
+
     const htmlSections: string[] = [];
     const plainSections: string[] = [];
     
@@ -949,6 +956,7 @@ export const AutoSurfacedContent = () => {
     };
 
     await addProductSection('Sponsored Launches', '💰', paidLaunchesWithIcons as SponsoredProduct[] | undefined);
+    await addProductSection('Launch of the Day', '🚀', launchOfDayWithIcons);
     await addProductSection('Launch Weekly Winners', '📈', weeklyWinnersWithIcons);
     await addProductSection('Weekly Awards', '🏅', weeklyAwardsWithIcons);
     await addProductSection('5 Launch Products You Missed This Week', '🕐', missedProductsWithIcons);
