@@ -54,6 +54,7 @@ import Awards from "./pages/Awards";
 import DiscourseSso from "./pages/DiscourseSso";
 import MediaKit from "./pages/MediaKit";
 import Leaderboard from "./pages/Leaderboard";
+import Start from "./pages/Start";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const AppContent = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/start" element={<Start />} />
           <Route path="/products" element={<Products />} />
           <Route path="/submit" element={<Submit />} />
           <Route path="/pricing" element={<Pricing />} />
