@@ -33,6 +33,11 @@ export const Footer = () => {
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-1">
               <li>
+                <Link to="/start" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Start Here
+                </Link>
+              </li>
+              <li>
                 <Link to="/faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   FAQ
                 </Link>
