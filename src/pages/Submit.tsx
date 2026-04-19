@@ -57,7 +57,7 @@ const Submit = () => {
   const [productId, setProductId] = useState<string | null>(draftId || productIdParam);
   const [productStatus, setProductStatus] = useState<string | null>(null);
   const [isRescheduling, setIsRescheduling] = useState(false);
-  const [existingPlan, setExistingPlan] = useState<'join' | 'skip' | 'relaunch' | null>(null);
+  const [existingPlan, setExistingPlan] = useState<'free' | 'join' | 'skip' | 'relaunch' | null>(null);
   const [isLoadingProduct, setIsLoadingProduct] = useState(!!productIdParam);
   const [showFirstCommentModal, setShowFirstCommentModal] = useState(false);
   const [submittedProductId, setSubmittedProductId] = useState<string | null>(null);
@@ -321,7 +321,7 @@ const Submit = () => {
         .maybeSingle();
       
       if (order && order.plan) {
-        const planValue = order.plan as 'join' | 'skip' | 'relaunch';
+        const planValue = order.plan as 'free' | 'join' | 'skip' | 'relaunch';
         
         // Force formData.plan to match the paid plan
         const categories = product.product_category_map?.map((c: any) => c.product_categories.name) || [];
@@ -473,8 +473,8 @@ const Submit = () => {
         .maybeSingle();
 
       // If product is scheduled and has an order, treat it as rescheduling
-      if (product.status === 'scheduled' && order && order.plan) {
-        const planValue = order.plan as 'join' | 'skip' | 'relaunch';
+        if (product.status === 'scheduled' && order && order.plan) {
+          const planValue = order.plan as 'free' | 'join' | 'skip' | 'relaunch';
         setExistingPlan(planValue);
         setIsRescheduling(true);
       }
@@ -1026,7 +1026,7 @@ const Submit = () => {
             // Pass users can choose any date
             const selectedPST = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
             launchDate = fromZonedTime(selectedPST, PST_TIMEZONE);
-          } else if (!existingPlan || existingPlan === null) {
+          } else if (!existingPlan || existingPlan === null || existingPlan === 'free') {
             // Free plan reschedule - auto-queue at least 7 days out
             launchDate = new Date();
             launchDate.setDate(launchDate.getDate() + 7);
