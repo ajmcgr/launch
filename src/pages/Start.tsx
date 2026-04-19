@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -9,7 +10,6 @@ import {
   Trophy,
   Calendar,
   Share2,
-  Mail,
   Sparkles,
   Users,
   ArrowRight,
@@ -17,81 +17,277 @@ import {
   Compass,
   Megaphone,
   MessageCircle,
+  HelpCircle,
+  Tag,
+  type LucideIcon,
 } from 'lucide-react';
 
-const sections = [
-  { id: 'what-is-launch', label: 'What is Launch' },
-  { id: 'for-makers', label: 'For Makers' },
-  { id: 'for-discoverers', label: 'For Discoverers' },
-  { id: 'pricing', label: 'Pricing' },
-  { id: 'community', label: 'Community' },
-  { id: 'faq', label: 'FAQ' },
+type Section = {
+  id: string;
+  label: string;
+  eyebrow: string;
+  eyebrowIcon: LucideIcon;
+  title: string;
+  description: string;
+};
+
+const sections: Section[] = [
+  {
+    id: 'what-is-launch',
+    label: 'What is Launch',
+    eyebrow: 'Overview',
+    eyebrowIcon: Sparkles,
+    title: 'What is Launch?',
+    description:
+      'A daily product discovery platform where founders ship new AI and tech products, and the community upvotes the best ones. Friendlier and founder-first — built for makers who actually want to grow.',
+  },
+  {
+    id: 'for-makers',
+    label: 'For Makers',
+    eyebrow: 'For Makers',
+    eyebrowIcon: Megaphone,
+    title: 'Launch your product in four steps',
+    description:
+      'Whether you\'re shipping your first SaaS or your tenth side project, Launch helps you reach the people most likely to try it.',
+  },
+  {
+    id: 'for-discoverers',
+    label: 'For Discoverers',
+    eyebrow: 'For Discoverers',
+    eyebrowIcon: Search,
+    title: 'Find tools before everyone else does',
+    description:
+      'Launch is the easiest way to keep up with what\'s actually being built — not just what\'s trending on Twitter.',
+  },
+  {
+    id: 'pricing',
+    label: 'Pricing',
+    eyebrow: 'Pricing',
+    eyebrowIcon: Tag,
+    title: 'Simple pricing',
+    description:
+      'You can launch for free. Upgrade only if you want speed, scheduling, and extra promotion.',
+  },
+  {
+    id: 'community',
+    label: 'Community',
+    eyebrow: 'Community',
+    eyebrowIcon: Users,
+    title: 'Join the conversation',
+    description:
+      'Launch is more than a leaderboard. Share what you\'re building, get feedback, and meet other founders.',
+  },
+  {
+    id: 'faq',
+    label: 'FAQ',
+    eyebrow: 'FAQ',
+    eyebrowIcon: HelpCircle,
+    title: 'Quick answers',
+    description: 'The basics — answered in one line each.',
+  },
+];
+
+const overviewCards = [
+  {
+    icon: Rocket,
+    title: 'Daily launches',
+    description: 'New products every day across every category.',
+  },
+  {
+    icon: ThumbsUp,
+    title: 'Upvote-only',
+    description: 'No downvotes. Just signal what you love.',
+  },
+  {
+    icon: Trophy,
+    title: 'Real rewards',
+    description: 'Awards, backlinks, newsletter & social features.',
+  },
 ];
 
 const makerSteps = [
   {
     icon: Rocket,
     title: 'Submit your product',
-    description:
-      'Add your name, tagline, screenshots, categories, and tech stack. Takes ~5 minutes.',
+    description: 'Add your name, tagline, screenshots, categories, and tech stack. ~5 minutes.',
   },
   {
     icon: Calendar,
     title: 'Pick a launch date',
-    description:
-      'Free launches are queued 7+ days out. Pro and Pass let you choose any date.',
+    description: 'Free launches are queued 7+ days out. Pro and Pass let you choose any date.',
   },
   {
     icon: Share2,
     title: 'Rally your network',
-    description:
-      'Share your launch link on X, LinkedIn, and Telegram. The first 24 hours decide your rank.',
+    description: 'Share on X, LinkedIn, and Telegram. The first 24 hours decide your rank.',
   },
   {
     icon: Trophy,
     title: 'Win awards & grow',
-    description:
-      'Top products earn daily, weekly, and monthly badges plus newsletter and social features.',
+    description: 'Top products earn daily, weekly, and monthly badges plus newsletter features.',
   },
-];
-
-const makerBenefits = [
-  'Reach thousands of founders, builders, and early adopters',
-  'Dofollow backlinks on every product page (great for SEO)',
-  'Featured in our weekly newsletter (2K+ subscribers)',
-  'Auto-promoted on X and LinkedIn',
-  'Verified badges to embed on your site',
-  'Built-in analytics for views, votes, and clicks',
 ];
 
 const discovererPerks = [
   {
     icon: Compass,
     title: 'Daily fresh launches',
-    description:
-      'A new batch of products every day across AI, SaaS, no-code, web3, and more.',
+    description: 'A new batch of products every day across AI, SaaS, no-code, web3, and more.',
   },
   {
     icon: ThumbsUp,
     title: 'Upvote what you love',
-    description:
-      'Help the best products rise. No downvotes — Launch is upvote-only.',
+    description: 'Help the best products rise. No downvotes — Launch is upvote-only.',
   },
   {
     icon: MessageCircle,
     title: 'Talk to the makers',
-    description:
-      'Comment, ask questions, and share feedback directly with founders.',
+    description: 'Comment, ask questions, and share feedback directly with founders.',
   },
   {
     icon: Sparkles,
     title: 'Track winners over time',
-    description:
-      'Browse daily, weekly, monthly, and yearly archives to see what won.',
+    description: 'Browse daily, weekly, monthly, and yearly archives to see what won.',
   },
 ];
 
+const pricingPlans = [
+  {
+    name: 'Free',
+    price: '$0',
+    suffix: '',
+    description: 'Basic listing in our launch queue (7+ days out).',
+    cta: 'Start free',
+    href: '/submit',
+    highlight: false,
+  },
+  {
+    name: 'Pro · Most popular',
+    price: '$39',
+    suffix: '',
+    description: 'Choose your date, newsletter feature, social promotion, badges.',
+    cta: 'See Pro',
+    href: '/pricing',
+    highlight: true,
+  },
+  {
+    name: 'Pass',
+    price: '$99',
+    suffix: '/yr',
+    description: 'Unlimited Pro launches for a full year.',
+    cta: 'Get the Pass',
+    href: '/pass',
+    highlight: false,
+  },
+];
+
+const communityCards = [
+  {
+    icon: MessageCircle,
+    title: 'Forums',
+    description: 'Discuss launches, share strategy, and ask for feedback.',
+    cta: 'Visit forums',
+    href: 'https://forums.trylaunch.ai',
+    external: true,
+  },
+  {
+    icon: Sparkles,
+    title: 'Newsletter',
+    description: 'Top launches and winners delivered every Monday.',
+    cta: 'Subscribe',
+    href: '/newsletter',
+    external: false,
+  },
+];
+
+const faqs = [
+  {
+    icon: HelpCircle,
+    title: 'Is launching really free?',
+    description: 'Yes. Free launches enter a queue 7+ days out. Pro ($39) lets you pick any date and adds promotion.',
+  },
+  {
+    icon: HelpCircle,
+    title: 'Do I get a backlink?',
+    description: 'Yes — every product page links to your site with a dofollow link. No badge required.',
+  },
+  {
+    icon: HelpCircle,
+    title: 'How do I win an award?',
+    description: 'Daily, weekly, and monthly winners are based on upvotes during the launch window. Rally your network in the first 24 hours.',
+  },
+  {
+    icon: HelpCircle,
+    title: 'Can I just browse without launching?',
+    description: 'Absolutely. Browse today\'s launches, follow makers, and subscribe to the newsletter.',
+  },
+];
+
+// Reusable section header — keeps every block visually consistent
+const SectionHeader = ({
+  eyebrow,
+  EyebrowIcon,
+  title,
+  description,
+}: {
+  eyebrow: string;
+  EyebrowIcon: LucideIcon;
+  title: string;
+  description: string;
+}) => (
+  <div className="mb-8">
+    <div className="flex items-center gap-2 mb-3 text-sm font-medium text-primary">
+      <EyebrowIcon className="h-4 w-4" />
+      {eyebrow}
+    </div>
+    <h2 className="font-reckless text-3xl font-bold mb-3">{title}</h2>
+    <p className="text-muted-foreground max-w-2xl">{description}</p>
+  </div>
+);
+
+// Reusable info card — same layout everywhere
+const InfoCard = ({
+  icon: Icon,
+  title,
+  description,
+  children,
+}: {
+  icon?: LucideIcon;
+  title: string;
+  description: string;
+  children?: React.ReactNode;
+}) => (
+  <Card>
+    <CardContent className="p-6">
+      {Icon && <Icon className="h-5 w-5 text-primary mb-3" />}
+      <h3 className="font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
+      {children && <div className="mt-4">{children}</div>}
+    </CardContent>
+  </Card>
+);
+
 const Start = () => {
+  const [activeId, setActiveId] = useState<string>(sections[0].id);
+
+  // Scroll-spy for the right-side TOC
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActiveId(visible[0].target.id);
+      },
+      { rootMargin: '-30% 0px -55% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+    sections.forEach((s) => {
+      const el = document.getElementById(s.id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -140,313 +336,229 @@ const Start = () => {
           </div>
         </section>
 
-        {/* Anchor nav */}
-        <nav className="sticky top-16 z-30 bg-background/80 backdrop-blur border-y border-border">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <ul className="flex gap-1 overflow-x-auto py-2 text-sm">
-              {sections.map((s) => (
-                <li key={s.id} className="shrink-0">
-                  <a
-                    href={`#${s.id}`}
-                    className="px-3 py-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
+        {/* Body: content + sticky right-side TOC */}
+        <div className="container mx-auto px-4 max-w-7xl pb-12">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_220px] gap-12">
+            {/* Main content column */}
+            <div className="min-w-0 max-w-3xl mx-auto lg:mx-0 w-full space-y-16">
+              {/* What is Launch */}
+              <section id={sections[0].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[0].eyebrow}
+                  EyebrowIcon={sections[0].eyebrowIcon}
+                  title={sections[0].title}
+                  description={sections[0].description}
+                />
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {overviewCards.map((c) => (
+                    <InfoCard key={c.title} icon={c.icon} title={c.title} description={c.description} />
+                  ))}
+                </div>
+              </section>
 
-        {/* What is Launch */}
-        <section id="what-is-launch" className="py-16 scroll-mt-32">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="font-reckless text-3xl font-bold mb-4">What is Launch?</h2>
-            <p className="text-lg text-muted-foreground mb-6">
-              Launch is a daily product discovery platform. Founders submit new AI and tech
-              products, the community upvotes the best ones, and the top launches earn awards,
-              backlinks, and newsletter features. Think of it as a friendlier, founder-first
-              alternative to traditional launch sites — built for makers who actually want to grow.
-            </p>
-            <div className="grid sm:grid-cols-3 gap-4">
-              <Card>
-                <CardContent className="p-5">
-                  <Rocket className="h-5 w-5 text-primary mb-2" />
-                  <p className="font-semibold mb-1">Daily launches</p>
-                  <p className="text-sm text-muted-foreground">
-                    New products every day across every category.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-5">
-                  <ThumbsUp className="h-5 w-5 text-primary mb-2" />
-                  <p className="font-semibold mb-1">Upvote-only</p>
-                  <p className="text-sm text-muted-foreground">
-                    No downvotes. Just signal what you love.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-5">
-                  <Trophy className="h-5 w-5 text-primary mb-2" />
-                  <p className="font-semibold mb-1">Real rewards</p>
-                  <p className="text-sm text-muted-foreground">
-                    Awards, backlinks, newsletter & social features.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* For Makers */}
-        <section id="for-makers" className="py-16 bg-muted/30 scroll-mt-32">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <div className="flex items-center gap-2 mb-3 text-sm font-medium text-primary">
-              <Megaphone className="h-4 w-4" />
-              For Makers
-            </div>
-            <h2 className="font-reckless text-3xl font-bold mb-4">
-              Launch your product in four steps
-            </h2>
-            <p className="text-muted-foreground mb-10 max-w-2xl">
-              Whether you're shipping your first SaaS or your tenth side project, Launch helps
-              you reach the people most likely to try it.
-            </p>
-
-            <div className="grid md:grid-cols-2 gap-4 mb-10">
-              {makerSteps.map((step, i) => (
-                <Card key={step.title}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="shrink-0 w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
-                        {i + 1}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <step.icon className="h-4 w-4 text-muted-foreground" />
-                          <h3 className="font-semibold">{step.title}</h3>
+              {/* For Makers */}
+              <section id={sections[1].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[1].eyebrow}
+                  EyebrowIcon={sections[1].eyebrowIcon}
+                  title={sections[1].title}
+                  description={sections[1].description}
+                />
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  {makerSteps.map((step, i) => (
+                    <Card key={step.title}>
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="shrink-0 w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold">
+                            {i + 1}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <step.icon className="h-4 w-4 text-muted-foreground" />
+                              <h3 className="font-semibold">{step.title}</h3>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{step.description}</p>
+                          </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">{step.description}</p>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button asChild>
+                    <Link to="/submit">
+                      Submit your product
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link to="/product-launch-strategy">Read the launch playbook</Link>
+                  </Button>
+                </div>
+              </section>
+
+              {/* For Discoverers */}
+              <section id={sections[2].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[2].eyebrow}
+                  EyebrowIcon={sections[2].eyebrowIcon}
+                  title={sections[2].title}
+                  description={sections[2].description}
+                />
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  {discovererPerks.map((p) => (
+                    <InfoCard key={p.title} icon={p.icon} title={p.title} description={p.description} />
+                  ))}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button asChild>
+                    <Link to="/">
+                      Browse today's launches
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link to="/categories">Explore categories</Link>
+                  </Button>
+                </div>
+              </section>
+
+              {/* Pricing */}
+              <section id={sections[3].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[3].eyebrow}
+                  EyebrowIcon={sections[3].eyebrowIcon}
+                  title={sections[3].title}
+                  description={sections[3].description}
+                />
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {pricingPlans.map((plan) => (
+                    <Card key={plan.name} className={plan.highlight ? 'border-primary' : ''}>
+                      <CardContent className="p-6">
+                        <p className={`text-sm font-medium mb-1 ${plan.highlight ? 'text-primary' : 'text-muted-foreground'}`}>
+                          {plan.name}
+                        </p>
+                        <p className="text-3xl font-bold mb-3">
+                          {plan.price}
+                          {plan.suffix && (
+                            <span className="text-base font-normal text-muted-foreground">{plan.suffix}</span>
+                          )}
+                        </p>
+                        <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
+                        <Button asChild variant={plan.highlight ? 'default' : 'outline'} className="w-full">
+                          <Link to={plan.href}>{plan.cta}</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+
+              {/* Community */}
+              <section id={sections[4].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[4].eyebrow}
+                  EyebrowIcon={sections[4].eyebrowIcon}
+                  title={sections[4].title}
+                  description={sections[4].description}
+                />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {communityCards.map((c) => (
+                    <InfoCard key={c.title} icon={c.icon} title={c.title} description={c.description}>
+                      <Button asChild variant="outline" size="sm">
+                        {c.external ? (
+                          <a href={c.href} target="_blank" rel="noopener noreferrer">
+                            {c.cta}
+                          </a>
+                        ) : (
+                          <Link to={c.href}>{c.cta}</Link>
+                        )}
+                      </Button>
+                    </InfoCard>
+                  ))}
+                </div>
+              </section>
+
+              {/* FAQ */}
+              <section id={sections[5].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[5].eyebrow}
+                  EyebrowIcon={sections[5].eyebrowIcon}
+                  title={sections[5].title}
+                  description={sections[5].description}
+                />
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  {faqs.map((f) => (
+                    <InfoCard key={f.title} icon={f.icon} title={f.title} description={f.description} />
+                  ))}
+                </div>
+                <Button asChild variant="outline">
+                  <Link to="/faq">Read the full FAQ</Link>
+                </Button>
+              </section>
+
+              {/* Maker benefits — kept consistent as a final card grid before CTA */}
+              <section className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow="Why founders choose Launch"
+                  EyebrowIcon={CheckCircle}
+                  title="What you get on every launch"
+                  description="The same set of perks for everyone who ships on Launch — free or paid."
+                />
+                <Card>
+                  <CardContent className="p-6">
+                    <ul className="grid sm:grid-cols-2 gap-3">
+                      {[
+                        'Reach thousands of founders, builders, and early adopters',
+                        'Dofollow backlinks on every product page (great for SEO)',
+                        'Featured in our weekly newsletter (2K+ subscribers)',
+                        'Auto-promoted on X and LinkedIn',
+                        'Verified badges to embed on your site',
+                        'Built-in analytics for views, votes, and clicks',
+                      ].map((b) => (
+                        <li key={b} className="flex items-start gap-3 text-sm">
+                          <CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </CardContent>
                 </Card>
-              ))}
+              </section>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 items-start">
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Why founders choose Launch</h3>
-                <ul className="space-y-3">
-                  {makerBenefits.map((b) => (
-                    <li key={b} className="flex items-start gap-3 text-sm">
-                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
+            {/* Right-side sticky TOC (desktop only) */}
+            <aside className="hidden lg:block">
+              <div className="sticky top-24">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                  On this page
+                </p>
+                <ul className="space-y-1 border-l border-border">
+                  {sections.map((s) => {
+                    const active = activeId === s.id;
+                    return (
+                      <li key={s.id}>
+                        <a
+                          href={`#${s.id}`}
+                          className={`block pl-4 -ml-px py-1.5 text-sm border-l-2 transition-colors ${
+                            active
+                              ? 'border-primary text-foreground font-medium'
+                              : 'border-transparent text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {s.label}
+                        </a>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-3">Ready to launch?</h3>
-                  <p className="text-sm text-muted-foreground mb-5">
-                    Submission is free. Upgrade only if you want to choose your date or get
-                    extra promotion.
-                  </p>
-                  <div className="flex flex-col gap-2">
-                    <Button asChild>
-                      <Link to="/submit">
-                        Submit your product
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline">
-                      <Link to="/product-launch-strategy">Read the launch playbook</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            </aside>
           </div>
-        </section>
-
-        {/* For Discoverers */}
-        <section id="for-discoverers" className="py-16 scroll-mt-32">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <div className="flex items-center gap-2 mb-3 text-sm font-medium text-primary">
-              <Search className="h-4 w-4" />
-              For Discoverers
-            </div>
-            <h2 className="font-reckless text-3xl font-bold mb-4">
-              Find tools before everyone else does
-            </h2>
-            <p className="text-muted-foreground mb-10 max-w-2xl">
-              Launch is the easiest way to keep up with what's actually being built —
-              not just what's trending on Twitter.
-            </p>
-
-            <div className="grid sm:grid-cols-2 gap-4 mb-8">
-              {discovererPerks.map((p) => (
-                <Card key={p.title}>
-                  <CardContent className="p-6">
-                    <p.icon className="h-5 w-5 text-primary mb-3" />
-                    <h3 className="font-semibold mb-1">{p.title}</h3>
-                    <p className="text-sm text-muted-foreground">{p.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button asChild>
-                <Link to="/">
-                  Browse today's launches
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/categories">Explore categories</Link>
-              </Button>
-              <Button asChild variant="ghost">
-                <Link to="/newsletter">Get the weekly newsletter</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing */}
-        <section id="pricing" className="py-16 bg-muted/30 scroll-mt-32">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="font-reckless text-3xl font-bold mb-4">Simple pricing</h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl">
-              You can launch for free. Upgrade only if you want speed, scheduling, and
-              extra promotion.
-            </p>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Card>
-                <CardContent className="p-6">
-                  <p className="text-sm font-medium text-muted-foreground mb-1">Free</p>
-                  <p className="text-3xl font-bold mb-3">$0</p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Basic listing in our launch queue (7+ days out).
-                  </p>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link to="/submit">Start free</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card className="border-primary">
-                <CardContent className="p-6">
-                  <p className="text-sm font-medium text-primary mb-1">Pro · Most popular</p>
-                  <p className="text-3xl font-bold mb-3">$39</p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Choose your date, newsletter feature, social promotion, badges.
-                  </p>
-                  <Button asChild className="w-full">
-                    <Link to="/pricing">See Pro</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <p className="text-sm font-medium text-muted-foreground mb-1">Pass</p>
-                  <p className="text-3xl font-bold mb-3">$99<span className="text-base font-normal text-muted-foreground">/yr</span></p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Unlimited Pro launches for a full year.
-                  </p>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link to="/pass">Get the Pass</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Community */}
-        <section id="community" className="py-16 scroll-mt-32">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <div className="flex items-center gap-2 mb-3 text-sm font-medium text-primary">
-              <Users className="h-4 w-4" />
-              Community
-            </div>
-            <h2 className="font-reckless text-3xl font-bold mb-4">Join the conversation</h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl">
-              Launch is more than a leaderboard. Share what you're building, get feedback,
-              and meet other founders.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-1">Forums</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Discuss launches, share strategy, and ask for feedback.
-                  </p>
-                  <Button asChild variant="outline" size="sm">
-                    <a href="https://forums.trylaunch.ai" target="_blank" rel="noopener noreferrer">
-                      Visit forums
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-1">Newsletter</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Top launches and winners delivered every Monday.
-                  </p>
-                  <Button asChild variant="outline" size="sm">
-                    <Link to="/newsletter">Subscribe</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section id="faq" className="py-16 bg-muted/30 scroll-mt-32">
-          <div className="container mx-auto px-4 max-w-4xl">
-            <h2 className="font-reckless text-3xl font-bold mb-6">Quick answers</h2>
-            <div className="space-y-4">
-              {[
-                {
-                  q: 'Is launching really free?',
-                  a: 'Yes. Free launches enter a queue 7+ days out. Pro ($39) lets you pick any date and adds promotion.',
-                },
-                {
-                  q: 'Do I get a backlink?',
-                  a: 'Yes — every product page links to your site with a dofollow link. No badge required.',
-                },
-                {
-                  q: 'How do I win an award?',
-                  a: 'Daily, weekly, and monthly winners are based on upvotes during the launch window. Rally your network in the first 24 hours.',
-                },
-                {
-                  q: 'Can I just browse without launching?',
-                  a: 'Absolutely. Browse today\u2019s launches, follow makers, and subscribe to the newsletter.',
-                },
-              ].map((item) => (
-                <Card key={item.q}>
-                  <CardContent className="p-5">
-                    <p className="font-semibold mb-1">{item.q}</p>
-                    <p className="text-sm text-muted-foreground">{item.a}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <Button asChild variant="outline">
-                <Link to="/faq">Read the full FAQ</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        </div>
 
         {/* Final CTA */}
-        <section className="py-20">
+        <section className="py-20 border-t border-border">
           <div className="container mx-auto px-4 max-w-3xl text-center">
             <h2 className="font-reckless text-4xl font-bold mb-4">Ready to dive in?</h2>
             <p className="text-muted-foreground mb-8">
@@ -460,10 +572,7 @@ const Start = () => {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <Link to="/">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Discover products
-                </Link>
+                <Link to="/">Discover products</Link>
               </Button>
             </div>
           </div>
