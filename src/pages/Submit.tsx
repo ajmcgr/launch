@@ -1026,7 +1026,7 @@ const Submit = () => {
             // Pass users can choose any date
             const selectedPST = toZonedTime(new Date(formData.selectedDate), PST_TIMEZONE);
             launchDate = fromZonedTime(selectedPST, PST_TIMEZONE);
-          } else if (!existingPlan || existingPlan === null) {
+          } else if (!existingPlan || existingPlan === null || existingPlan === 'free') {
             // Free plan reschedule - auto-queue at least 7 days out
             launchDate = new Date();
             launchDate.setDate(launchDate.getDate() + 7);
