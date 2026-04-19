@@ -242,7 +242,7 @@ const Start = () => {
                 <ul className="space-y-3">
                   {makerBenefits.map((b) => (
                     <li key={b} className="flex items-start gap-3 text-sm">
-                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>{b}</span>
                     </li>
                   ))}
