@@ -338,9 +338,9 @@ const Start = () => {
 
         {/* Body: content + sticky right-side TOC */}
         <div className="container mx-auto px-4 max-w-7xl pb-12">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_220px] gap-12">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_220px] gap-12 justify-center">
             {/* Main content column */}
-            <div className="min-w-0 max-w-3xl mx-auto lg:mx-0 w-full space-y-16">
+            <div className="min-w-0 max-w-3xl mx-auto w-full space-y-16">
               {/* What is Launch */}
               <section id={sections[0].id} className="scroll-mt-24">
                 <SectionHeader
