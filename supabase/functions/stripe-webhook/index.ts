@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import Stripe from 'https://esm.sh/stripe@12.18.0?target=deno';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
+import { postAlexComment } from '../_shared/auto-comment.ts';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
@@ -12,9 +13,6 @@ const corsHeaders = {
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2023-10-16',
 });
-
-const AUTO_COMMENT_USER_ID = '5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc';
-const AUTO_COMMENT_USERNAME = 'alex';
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -835,55 +833,7 @@ Deno.serve(async (req) => {
           console.error(`Error creating forum thread for launched product ${product.id}:`, forumError);
         }
 
-        // Auto-post a friendly comment from @alex
-        try {
-          const ALEX_COMMENTS = [
-            "Congrats on the launch! What inspired you to build this?",
-            "Nice work — what's next on the roadmap?",
-            "Looks great! Curious, who's the ideal user for this?",
-            "Congrats! What was the hardest part of building it?",
-            "Love the direction. How long did this take to put together?",
-            "Awesome launch — what made you pick this problem to solve?",
-            "Cool product! What's the one feature you're most proud of?",
-            "Congrats on shipping! Any unexpected lessons along the way?",
-            "Nice one — what's the story behind the name?",
-            "Looks promising. What's the biggest challenge you're tackling next?",
-            "Congrats! Curious how you're thinking about distribution?",
-            "Great work. What would you do differently if you started over?",
-            "Love this. Who's it for and what makes it different?",
-            "Congrats on launching! What's been the best feedback so far?",
-            "Nice launch — what tech stack did you build it on?",
-            "Cool concept! How are you planning to grow from here?",
-            "Congrats! What problem were you personally trying to solve?",
-            "Looks solid. What's the v2 going to look like?",
-          ];
-          const { data: alex } = await supabaseClient
-            .from('users')
-            .select('id')
-            .or(`id.eq.${AUTO_COMMENT_USER_ID},username.ilike.${AUTO_COMMENT_USERNAME}`)
-            .maybeSingle();
-          if (alex?.id) {
-            const { data: existing } = await supabaseClient
-              .from('comments')
-              .select('id')
-              .eq('product_id', product.id)
-              .eq('user_id', alex.id)
-              .maybeSingle();
-            if (!existing) {
-              const content = ALEX_COMMENTS[Math.floor(Math.random() * ALEX_COMMENTS.length)];
-              await supabaseClient.from('comments').insert({
-                product_id: product.id,
-                user_id: alex.id,
-                content,
-              });
-              console.log(`Auto-comment posted on ${product.id}: "${content}"`);
-            }
-          } else {
-            console.log('Auto-comment skipped: @alex user not found');
-          }
-        } catch (commentErr) {
-          console.error('Auto-comment error:', commentErr);
-        }
+        await postAlexComment(supabaseClient, product.id);
       }
 
       // Create order record
