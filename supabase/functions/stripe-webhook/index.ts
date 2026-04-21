@@ -13,6 +13,9 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2023-10-16',
 });
 
+const AUTO_COMMENT_USER_ID = '5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc';
+const AUTO_COMMENT_USERNAME = 'alex';
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -857,7 +860,7 @@ Deno.serve(async (req) => {
           const { data: alex } = await supabaseClient
             .from('users')
             .select('id')
-            .ilike('username', 'alex')
+            .or(`id.eq.${AUTO_COMMENT_USER_ID},username.ilike.${AUTO_COMMENT_USERNAME}`)
             .maybeSingle();
           if (alex?.id) {
             const { data: existing } = await supabaseClient

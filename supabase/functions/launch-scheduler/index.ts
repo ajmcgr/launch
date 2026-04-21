@@ -10,6 +10,8 @@ const corsHeaders = {
 };
 
 const PST_TIMEZONE = 'America/Los_Angeles';
+const AUTO_COMMENT_USER_ID = '5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc';
+const AUTO_COMMENT_USERNAME = 'alex';
 
 const ALEX_COMMENTS = [
   "Congrats on the launch! What inspired you to build this?",
@@ -37,7 +39,7 @@ async function postAlexComment(supabaseAdmin: any, productId: string) {
     const { data: alex } = await supabaseAdmin
       .from('users')
       .select('id')
-      .ilike('username', 'alex')
+      .or(`id.eq.${AUTO_COMMENT_USER_ID},username.ilike.${AUTO_COMMENT_USERNAME}`)
       .maybeSingle();
 
     if (!alex?.id) {
