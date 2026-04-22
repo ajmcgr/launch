@@ -7,9 +7,9 @@ interface PlatformStats {
   launched: number;
   makers: number;
   clicksSent: number;
-  visitorsYTD: number | null;
-  pageviewsYTD: number | null;
-  sessionsYTD: number | null;
+  visitorsMTD: number | null;
+  pageviewsMTD: number | null;
+  sessionsMTD: number | null;
   liveVisitors: number | null;
 }
 
@@ -38,12 +38,12 @@ export const SiteStatsWidget = () => {
     refetchInterval: 1000 * 60 * 5,
   });
 
-  const hasGAData = data && data.visitorsYTD !== null && data.visitorsYTD > 0;
+  const hasGAData = data && data.visitorsMTD !== null && data.visitorsMTD > 0;
 
   return (
     <div className="bg-muted/30 rounded-lg p-4">
       <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
-        Launch Stats
+        Monthly Stats
       </h3>
 
       {isLoading || !data ? (
@@ -60,25 +60,25 @@ export const SiteStatsWidget = () => {
                 <Eye className="h-3.5 w-3.5" />
                 Visitors
               </span>
-              <span className="font-semibold text-foreground">{formatStat(data.visitorsYTD!)}</span>
+              <span className="font-semibold text-foreground">{formatStat(data.visitorsMTD!)}</span>
             </li>
           )}
-          {data.pageviewsYTD !== null && data.pageviewsYTD > 0 && (
+          {data.pageviewsMTD !== null && data.pageviewsMTD > 0 && (
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <FileText className="h-3.5 w-3.5" />
                 Pageviews
               </span>
-              <span className="font-semibold text-foreground">{formatStat(data.pageviewsYTD)}</span>
+              <span className="font-semibold text-foreground">{formatStat(data.pageviewsMTD)}</span>
             </li>
           )}
-          {data.sessionsYTD !== null && data.sessionsYTD > 0 && (
+          {data.sessionsMTD !== null && data.sessionsMTD > 0 && (
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Activity className="h-3.5 w-3.5" />
                 Sessions
               </span>
-              <span className="font-semibold text-foreground">{formatStat(data.sessionsYTD)}</span>
+              <span className="font-semibold text-foreground">{formatStat(data.sessionsMTD)}</span>
             </li>
           )}
           <li className="flex items-center justify-between">
@@ -91,7 +91,7 @@ export const SiteStatsWidget = () => {
           <li className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-3.5 w-3.5" />
-              Makers
+              New makers
             </span>
             <span className="font-semibold text-foreground">{formatStat(data.makers)}</span>
           </li>
