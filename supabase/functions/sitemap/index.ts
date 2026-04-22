@@ -43,6 +43,13 @@ Deno.serve(async (req) => {
       .select("slug, updated_at")
       .order("name");
 
+    // Fetch all published blog posts
+    const { data: blogPosts } = await (supabase as any)
+      .from("blog_posts")
+      .select("slug, published_at, updated_at")
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+
     const createSlug = (name: string) => {
       return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     };
@@ -93,6 +100,7 @@ Deno.serve(async (req) => {
       { loc: "/product-launch-platform", priority: "0.8", changefreq: "monthly" },
       { loc: "/product-launch-strategy", priority: "0.8", changefreq: "monthly" },
       { loc: "/about", priority: "0.5", changefreq: "monthly" },
+      { loc: "/blog", priority: "0.8", changefreq: "weekly" },
       { loc: "/pricing", priority: "0.6", changefreq: "monthly" },
       { loc: "/faq", priority: "0.5", changefreq: "monthly" },
       { loc: "/advertise", priority: "0.5", changefreq: "monthly" },
