@@ -35,7 +35,7 @@ const BlogPostPage = () => {
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('blog_posts')
         .select('*')
         .eq('slug', slug)
@@ -46,16 +46,17 @@ const BlogPostPage = () => {
         setLoading(false);
         return;
       }
-      setPost(data as BlogPost);
+      const typed = data as BlogPost;
+      setPost(typed);
 
-      const { data: rel } = await supabase
+      const { data: rel } = await (supabase as any)
         .from('blog_posts')
         .select('slug, title')
         .eq('status', 'published')
-        .neq('id', data.id)
+        .neq('id', typed.id)
         .order('published_at', { ascending: false })
         .limit(3);
-      setRelated(rel || []);
+      setRelated((rel as { slug: string; title: string }[]) || []);
       setLoading(false);
     };
     if (slug) fetch();

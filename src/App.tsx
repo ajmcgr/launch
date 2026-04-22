@@ -23,6 +23,8 @@ import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import NewsletterRedirect from "./pages/NewsletterRedirect";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Followers from "./pages/Followers";
@@ -96,7 +98,9 @@ const AppContent = () => {
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
-          <Route path="/newsletter" element={<Blog />} />
+          <Route path="/newsletter" element={<NewsletterRedirect />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/discourse-sso" element={<DiscourseSso />} />
           <Route path="/api/discourse-sso" element={<DiscourseSso />} />

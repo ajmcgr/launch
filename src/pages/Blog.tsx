@@ -24,13 +24,13 @@ const Blog = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('blog_posts')
         .select('id, slug, title, excerpt, cover_image_url, tags, published_at')
         .eq('status', 'published')
         .order('published_at', { ascending: false })
         .limit(50);
-      setPosts(data || []);
+      setPosts((data as BlogPost[]) || []);
       setLoading(false);
     };
     fetchPosts();
