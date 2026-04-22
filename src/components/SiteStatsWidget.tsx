@@ -53,7 +53,7 @@ export const SiteStatsWidget = () => {
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-3.5 w-3.5" />
-                Monthly visitors
+                Visitors (30d)
               </span>
               <span className="font-semibold text-foreground">{formatStat(data.visitors30d)}</span>
             </li>
@@ -82,6 +82,11 @@ export const SiteStatsWidget = () => {
             </li>
           )}
         </ul>
+      )}
+      {!isLoading && data && data.visitors30d !== null && data.visitors30d > 0 && (
+        <p className="mt-3 pt-3 border-t border-border/50 text-[10px] uppercase tracking-wider text-muted-foreground">
+          Visitor data via Google Analytics
+        </p>
       )}
     </div>
   );
