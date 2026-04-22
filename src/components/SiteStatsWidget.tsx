@@ -43,7 +43,7 @@ export const SiteStatsWidget = () => {
   return (
     <div className="bg-muted/30 rounded-lg p-4">
       <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
-        Launch Community
+        Launch Stats
       </h3>
 
       {isLoading || !data ? (
@@ -58,7 +58,7 @@ export const SiteStatsWidget = () => {
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-3.5 w-3.5" />
-                Visitors (YTD)
+                Visitors
               </span>
               <span className="font-semibold text-foreground">{formatStat(data.visitorsYTD!)}</span>
             </li>
@@ -67,7 +67,7 @@ export const SiteStatsWidget = () => {
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <FileText className="h-3.5 w-3.5" />
-                Pageviews (YTD)
+                Pageviews
               </span>
               <span className="font-semibold text-foreground">{formatStat(data.pageviewsYTD)}</span>
             </li>
@@ -76,7 +76,7 @@ export const SiteStatsWidget = () => {
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Activity className="h-3.5 w-3.5" />
-                Sessions (YTD)
+                Sessions
               </span>
               <span className="font-semibold text-foreground">{formatStat(data.sessionsYTD)}</span>
             </li>
