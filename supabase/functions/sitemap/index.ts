@@ -196,6 +196,20 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Add blog posts
+    if (blogPosts) {
+      for (const post of blogPosts) {
+        const lastmod = post.updated_at || post.published_at;
+        xml += `
+  <url>
+    <loc>${SITE_URL}/blog/${post.slug}</loc>
+    ${lastmod ? `<lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>` : ''}
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+      }
+    }
+
     xml += `
 </urlset>`;
 
