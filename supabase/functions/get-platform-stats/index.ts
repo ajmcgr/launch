@@ -75,9 +75,9 @@ async function getGA4AccessToken(serviceAccount: { client_email: string; private
 }
 
 async function fetchGA4Data(): Promise<{
-  visitorsYTD: number;
-  pageviewsYTD: number;
-  sessionsYTD: number;
+  visitorsMTD: number;
+  pageviewsMTD: number;
+  sessionsMTD: number;
   liveVisitors: number;
 } | null> {
   const propertyId = Deno.env.get("GA4_PROPERTY_ID");
@@ -90,7 +90,10 @@ async function fetchGA4Data(): Promise<{
     const sa = JSON.parse(saJsonRaw);
     const token = await getGA4AccessToken(sa);
 
-    // 30-day report
+    const now = new Date();
+    const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
+      .toISOString().split("T")[0];
+
     const reportResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
       {
@@ -100,7 +103,7 @@ async function fetchGA4Data(): Promise<{
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          dateRanges: [{ startDate: new Date(new Date().getUTCFullYear(), 0, 1).toISOString().split("T")[0], endDate: "today" }],
+          dateRanges: [{ startDate: monthStart, endDate: "today" }],
           metrics: [
             { name: "activeUsers" },
             { name: "screenPageViews" },
@@ -116,7 +119,6 @@ async function fetchGA4Data(): Promise<{
     }
     const row = reportData.rows?.[0]?.metricValues ?? [];
 
-    // Realtime report — active users right now
     const realtimeResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`,
       {
@@ -142,9 +144,9 @@ async function fetchGA4Data(): Promise<{
     }
 
     return {
-      visitorsYTD: parseInt(row[0]?.value ?? "0", 10),
-      pageviewsYTD: parseInt(row[1]?.value ?? "0", 10),
-      sessionsYTD: parseInt(row[2]?.value ?? "0", 10),
+      visitorsMTD: parseInt(row[0]?.value ?? "0", 10),
+      pageviewsMTD: parseInt(row[1]?.value ?? "0", 10),
+      sessionsMTD: parseInt(row[2]?.value ?? "0", 10),
       liveVisitors,
     };
   } catch (err) {
@@ -162,9 +164,12 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    const now = new Date();
+    const monthStartISO = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+
     const [productsRes, usersRes, clicksRes, ga4] = await Promise.all([
-      supabase.from("products").select("*", { count: "exact", head: true }).eq("status", "launched"),
-      supabase.from("users").select("*", { count: "exact", head: true }),
+      supabase.from("products").select("*", { count: "exact", head: true }).eq("status", "launched").gte("launch_date", monthStartISO),
+      supabase.from("users").select("*", { count: "exact", head: true }).gte("created_at", monthStartISO),
       supabase.from("product_analytics_summary").select("total_website_clicks"),
       fetchGA4Data(),
     ]);
@@ -179,9 +184,9 @@ Deno.serve(async (req) => {
         launched: productsRes.count ?? 0,
         makers: usersRes.count ?? 0,
         clicksSent,
-        visitorsYTD: ga4?.visitorsYTD ?? null,
-        pageviewsYTD: ga4?.pageviewsYTD ?? null,
-        sessionsYTD: ga4?.sessionsYTD ?? null,
+        visitorsMTD: ga4?.visitorsMTD ?? null,
+        pageviewsMTD: ga4?.pageviewsMTD ?? null,
+        sessionsMTD: ga4?.sessionsMTD ?? null,
         liveVisitors: ga4?.liveVisitors ?? null,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
