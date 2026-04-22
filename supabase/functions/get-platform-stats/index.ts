@@ -75,9 +75,9 @@ async function getGA4AccessToken(serviceAccount: { client_email: string; private
 }
 
 async function fetchGA4Data(): Promise<{
-  visitors30d: number;
-  pageviews30d: number;
-  sessions30d: number;
+  visitorsYTD: number;
+  pageviewsYTD: number;
+  sessionsYTD: number;
   liveVisitors: number;
 } | null> {
   const propertyId = Deno.env.get("GA4_PROPERTY_ID");
@@ -100,7 +100,7 @@ async function fetchGA4Data(): Promise<{
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+          dateRanges: [{ startDate: new Date(new Date().getUTCFullYear(), 0, 1).toISOString().split("T")[0], endDate: "today" }],
           metrics: [
             { name: "activeUsers" },
             { name: "screenPageViews" },
@@ -142,9 +142,9 @@ async function fetchGA4Data(): Promise<{
     }
 
     return {
-      visitors30d: parseInt(row[0]?.value ?? "0", 10),
-      pageviews30d: parseInt(row[1]?.value ?? "0", 10),
-      sessions30d: parseInt(row[2]?.value ?? "0", 10),
+      visitorsYTD: parseInt(row[0]?.value ?? "0", 10),
+      pageviewsYTD: parseInt(row[1]?.value ?? "0", 10),
+      sessionsYTD: parseInt(row[2]?.value ?? "0", 10),
       liveVisitors,
     };
   } catch (err) {
@@ -179,9 +179,9 @@ Deno.serve(async (req) => {
         launched: productsRes.count ?? 0,
         makers: usersRes.count ?? 0,
         clicksSent,
-        visitors30d: ga4?.visitors30d ?? null,
-        pageviews30d: ga4?.pageviews30d ?? null,
-        sessions30d: ga4?.sessions30d ?? null,
+        visitorsYTD: ga4?.visitorsYTD ?? null,
+        pageviewsYTD: ga4?.pageviewsYTD ?? null,
+        sessionsYTD: ga4?.sessionsYTD ?? null,
         liveVisitors: ga4?.liveVisitors ?? null,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
