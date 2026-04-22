@@ -157,6 +157,7 @@ ${trendingProducts.slice(0, 8).map((p) => `  * ${p.name} (https://trylaunch.ai/l
 - NO emojis in headings
 - NO "Conclusion" header — call the final section something specific
 - Include the target keyword naturally in: title, first paragraph, one H2, and 3-5x throughout
+- CRITICAL: content_md must be RAW markdown only. Do NOT wrap the entire article in triple backticks (\`\`\`) or any code fence. Do NOT prefix with "```markdown". Start directly with the first paragraph or heading. Only use code fences for actual code snippets inside the article.
 
 Also produce: a 150-160 char meta description, a 120-160 char excerpt, and a URL-friendly slug.
 
@@ -192,6 +193,16 @@ Return everything via the tool call.`;
     const articleCall = articleResp.choices?.[0]?.message?.tool_calls?.[0];
     if (!articleCall) throw new Error("AI failed to generate article");
     const article = JSON.parse(articleCall.function.arguments);
+
+    // Strip any accidental wrapping code fences from the markdown body
+    if (typeof article.content_md === "string") {
+      let md = article.content_md.trim();
+      // Remove opening fence like ``` or ```markdown / ```md
+      md = md.replace(/^`{3,}\s*(?:markdown|md)?\s*\r?\n/i, "");
+      // Remove trailing fence
+      md = md.replace(/\r?\n`{3,}\s*$/i, "");
+      article.content_md = md.trim();
+    }
 
     // Ensure slug uniqueness
     let finalSlug = slugify(article.slug || article.title);
