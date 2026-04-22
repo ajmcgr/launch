@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Calendar, Tags, Mail, Loader2, Megaphone } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import AdminMarketingTab from '@/components/admin/AdminMarketingTab';
+import AdminBlogTab from '@/components/admin/AdminBlogTab';
 
 import { format } from 'date-fns';
 
@@ -387,6 +388,7 @@ const Admin = () => {
                 <TabsTrigger value="users" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Members</TabsTrigger>
                 <TabsTrigger value="promotion" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Promotion</TabsTrigger>
                 <TabsTrigger value="advertising" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Advertising</TabsTrigger>
+                <TabsTrigger value="blog" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Blog</TabsTrigger>
                 <TabsTrigger value="seo" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">SEO</TabsTrigger>
               </TabsList>
 
@@ -569,6 +571,10 @@ const Admin = () => {
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="blog" className="space-y-4">
+                <AdminBlogTab />
               </TabsContent>
 
               <TabsContent value="seo" className="space-y-4">
