@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Rocket, MousePointerClick, Eye, FileText, Activity, Circle } from 'lucide-react';
+import { Users, Rocket, MousePointerClick, Eye, FileText, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PlatformStats {
@@ -57,7 +57,10 @@ export const SiteStatsWidget = () => {
           {data.liveVisitors !== null && data.liveVisitors > 0 && (
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
-                <Circle className="h-2 w-2 fill-green-500 text-green-500 animate-pulse" />
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+                </span>
                 Live visitors
               </span>
               <span className="font-semibold text-foreground">{data.liveVisitors}</span>
