@@ -33,6 +33,7 @@ import { SponsorBanner } from '@/components/SponsorBanner';
 import { PlatformStats } from '@/components/PlatformStats';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
 import { ForumActivityWidget } from '@/components/ForumActivityWidget';
+import { SiteStatsWidget } from '@/components/SiteStatsWidget';
 import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
@@ -1007,6 +1008,7 @@ const Home = () => {
             {/* Right sidebar (hidden on mobile) */}
             <div className="hidden lg:block w-72 flex-shrink-0 space-y-6">
               <SidebarSponsoredAd />
+              <SiteStatsWidget />
               <div>
                 <ForumActivityWidget />
               </div>
