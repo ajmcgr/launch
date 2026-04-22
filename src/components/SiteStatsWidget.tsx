@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Rocket, MousePointerClick, Eye } from 'lucide-react';
+import { Users, Rocket, MousePointerClick, Eye, FileText, Activity, Circle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PlatformStats {
@@ -9,6 +9,8 @@ interface PlatformStats {
   clicksSent: number;
   visitors30d: number | null;
   pageviews30d: number | null;
+  sessions30d: number | null;
+  liveVisitors: number | null;
 }
 
 function formatStat(n: number): string {
@@ -32,8 +34,11 @@ export const SiteStatsWidget = () => {
       if (error) throw error;
       return data as PlatformStats;
     },
-    staleTime: 1000 * 60 * 30, // 30 min
+    staleTime: 1000 * 60 * 5, // 5 min (so live visitors stay fresh-ish)
+    refetchInterval: 1000 * 60 * 5,
   });
+
+  const hasGAData = data && data.visitors30d !== null && data.visitors30d > 0;
 
   return (
     <div className="bg-muted/30 rounded-lg p-4">
@@ -43,19 +48,46 @@ export const SiteStatsWidget = () => {
 
       {isLoading || !data ? (
         <div className="space-y-2">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <Skeleton key={i} className="h-6 w-full" />
           ))}
         </div>
       ) : (
         <ul className="space-y-2 text-sm">
-          {data.visitors30d !== null && data.visitors30d > 0 && (
+          {data.liveVisitors !== null && data.liveVisitors > 0 && (
+            <li className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-muted-foreground">
+                <Circle className="h-2 w-2 fill-green-500 text-green-500 animate-pulse" />
+                Live visitors
+              </span>
+              <span className="font-semibold text-foreground">{data.liveVisitors}</span>
+            </li>
+          )}
+          {hasGAData && (
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-3.5 w-3.5" />
                 Visitors (30d)
               </span>
-              <span className="font-semibold text-foreground">{formatStat(data.visitors30d)}</span>
+              <span className="font-semibold text-foreground">{formatStat(data.visitors30d!)}</span>
+            </li>
+          )}
+          {data.pageviews30d !== null && data.pageviews30d > 0 && (
+            <li className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-muted-foreground">
+                <FileText className="h-3.5 w-3.5" />
+                Pageviews (30d)
+              </span>
+              <span className="font-semibold text-foreground">{formatStat(data.pageviews30d)}</span>
+            </li>
+          )}
+          {data.sessions30d !== null && data.sessions30d > 0 && (
+            <li className="flex items-center justify-between">
+              <span className="flex items-center gap-2 text-muted-foreground">
+                <Activity className="h-3.5 w-3.5" />
+                Sessions (30d)
+              </span>
+              <span className="font-semibold text-foreground">{formatStat(data.sessions30d)}</span>
             </li>
           )}
           <li className="flex items-center justify-between">
@@ -83,7 +115,7 @@ export const SiteStatsWidget = () => {
           )}
         </ul>
       )}
-      {!isLoading && data && data.visitors30d !== null && data.visitors30d > 0 && (
+      {!isLoading && hasGAData && (
         <p className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
           Visitor data via Google Analytics
         </p>
