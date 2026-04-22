@@ -142,9 +142,9 @@ async function fetchGA4Data(): Promise<{
     }
 
     return {
-      visitors30d: parseInt(row[0]?.value ?? "0", 10),
-      pageviews30d: parseInt(row[1]?.value ?? "0", 10),
-      sessions30d: parseInt(row[2]?.value ?? "0", 10),
+      visitorsYTD: parseInt(row[0]?.value ?? "0", 10),
+      pageviewsYTD: parseInt(row[1]?.value ?? "0", 10),
+      sessionsYTD: parseInt(row[2]?.value ?? "0", 10),
       liveVisitors,
     };
   } catch (err) {
