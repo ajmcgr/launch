@@ -74,7 +74,12 @@ async function getGA4AccessToken(serviceAccount: { client_email: string; private
   return data.access_token as string;
 }
 
-async function fetchGA4Visitors(): Promise<{ visitors30d: number; pageviews30d: number } | null> {
+async function fetchGA4Data(): Promise<{
+  visitors30d: number;
+  pageviews30d: number;
+  sessions30d: number;
+  liveVisitors: number;
+} | null> {
   const propertyId = Deno.env.get("GA4_PROPERTY_ID");
   const saJsonRaw = Deno.env.get("GA4_SERVICE_ACCOUNT_JSON");
   if (!propertyId || !saJsonRaw) {
@@ -84,7 +89,9 @@ async function fetchGA4Visitors(): Promise<{ visitors30d: number; pageviews30d: 
   try {
     const sa = JSON.parse(saJsonRaw);
     const token = await getGA4AccessToken(sa);
-    const resp = await fetch(
+
+    // 30-day report
+    const reportResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
       {
         method: "POST",
@@ -94,19 +101,51 @@ async function fetchGA4Visitors(): Promise<{ visitors30d: number; pageviews30d: 
         },
         body: JSON.stringify({
           dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
-          metrics: [{ name: "activeUsers" }, { name: "screenPageViews" }],
+          metrics: [
+            { name: "activeUsers" },
+            { name: "screenPageViews" },
+            { name: "sessions" },
+          ],
         }),
       },
     );
-    const data = await resp.json();
-    if (!resp.ok) {
-      console.error("GA4 runReport failed:", data);
+    const reportData = await reportResp.json();
+    if (!reportResp.ok) {
+      console.error("GA4 runReport failed:", reportData);
       return null;
     }
-    const row = data.rows?.[0]?.metricValues ?? [];
+    const row = reportData.rows?.[0]?.metricValues ?? [];
+
+    // Realtime report — active users right now
+    const realtimeResp = await fetch(
+      `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          metrics: [{ name: "activeUsers" }],
+        }),
+      },
+    );
+    const realtimeData = await realtimeResp.json();
+    let liveVisitors = 0;
+    if (realtimeResp.ok) {
+      liveVisitors = parseInt(
+        realtimeData.rows?.[0]?.metricValues?.[0]?.value ?? "0",
+        10,
+      );
+    } else {
+      console.error("GA4 realtime report failed:", realtimeData);
+    }
+
     return {
       visitors30d: parseInt(row[0]?.value ?? "0", 10),
       pageviews30d: parseInt(row[1]?.value ?? "0", 10),
+      sessions30d: parseInt(row[2]?.value ?? "0", 10),
+      liveVisitors,
     };
   } catch (err) {
     console.error("GA4 fetch error:", err);
@@ -127,7 +166,7 @@ Deno.serve(async (req) => {
       supabase.from("products").select("*", { count: "exact", head: true }).eq("status", "launched"),
       supabase.from("users").select("*", { count: "exact", head: true }),
       supabase.from("product_analytics_summary").select("total_website_clicks"),
-      fetchGA4Visitors(),
+      fetchGA4Data(),
     ]);
 
     const clicksSent = (clicksRes.data ?? []).reduce(
@@ -142,6 +181,8 @@ Deno.serve(async (req) => {
         clicksSent,
         visitors30d: ga4?.visitors30d ?? null,
         pageviews30d: ga4?.pageviews30d ?? null,
+        sessions30d: ga4?.sessions30d ?? null,
+        liveVisitors: ga4?.liveVisitors ?? null,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
