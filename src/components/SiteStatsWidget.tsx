@@ -54,18 +54,6 @@ export const SiteStatsWidget = () => {
         </div>
       ) : (
         <ul className="space-y-2 text-sm">
-          {data.liveVisitors !== null && data.liveVisitors > 0 && (
-            <li className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-                </span>
-                Live visitors
-              </span>
-              <span className="font-semibold text-foreground">{data.liveVisitors}</span>
-            </li>
-          )}
           {hasGAData && (
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
