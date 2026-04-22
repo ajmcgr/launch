@@ -84,7 +84,7 @@ export const SiteStatsWidget = () => {
         </ul>
       )}
       {!isLoading && data && data.visitors30d !== null && data.visitors30d > 0 && (
-        <p className="mt-3 pt-3 border-t border-border/50 text-[10px] uppercase tracking-wider text-muted-foreground">
+        <p className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
           Visitor data via Google Analytics
         </p>
       )}
