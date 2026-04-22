@@ -38,7 +38,7 @@ export const SiteStatsWidget = () => {
   return (
     <div className="bg-muted/30 rounded-lg p-4">
       <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
-        Launch Stats
+        Launch Community
       </h3>
 
       {isLoading || !data ? (
