@@ -7,9 +7,9 @@ interface PlatformStats {
   launched: number;
   makers: number;
   clicksSent: number;
-  visitors30d: number | null;
-  pageviews30d: number | null;
-  sessions30d: number | null;
+  visitorsYTD: number | null;
+  pageviewsYTD: number | null;
+  sessionsYTD: number | null;
   liveVisitors: number | null;
 }
 
@@ -34,11 +34,11 @@ export const SiteStatsWidget = () => {
       if (error) throw error;
       return data as PlatformStats;
     },
-    staleTime: 1000 * 60 * 5, // 5 min (so live visitors stay fresh-ish)
+    staleTime: 1000 * 60 * 5,
     refetchInterval: 1000 * 60 * 5,
   });
 
-  const hasGAData = data && data.visitors30d !== null && data.visitors30d > 0;
+  const hasGAData = data && data.visitorsYTD !== null && data.visitorsYTD > 0;
 
   return (
     <div className="bg-muted/30 rounded-lg p-4">
@@ -70,27 +70,27 @@ export const SiteStatsWidget = () => {
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-3.5 w-3.5" />
-                Visitors (30d)
+                Visitors (YTD)
               </span>
-              <span className="font-semibold text-foreground">{formatStat(data.visitors30d!)}</span>
+              <span className="font-semibold text-foreground">{formatStat(data.visitorsYTD!)}</span>
             </li>
           )}
-          {data.pageviews30d !== null && data.pageviews30d > 0 && (
+          {data.pageviewsYTD !== null && data.pageviewsYTD > 0 && (
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <FileText className="h-3.5 w-3.5" />
-                Pageviews (30d)
+                Pageviews (YTD)
               </span>
-              <span className="font-semibold text-foreground">{formatStat(data.pageviews30d)}</span>
+              <span className="font-semibold text-foreground">{formatStat(data.pageviewsYTD)}</span>
             </li>
           )}
-          {data.sessions30d !== null && data.sessions30d > 0 && (
+          {data.sessionsYTD !== null && data.sessionsYTD > 0 && (
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Activity className="h-3.5 w-3.5" />
-                Sessions (30d)
+                Sessions (YTD)
               </span>
-              <span className="font-semibold text-foreground">{formatStat(data.sessions30d)}</span>
+              <span className="font-semibold text-foreground">{formatStat(data.sessionsYTD)}</span>
             </li>
           )}
           <li className="flex items-center justify-between">
