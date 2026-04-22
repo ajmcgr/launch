@@ -75,9 +75,9 @@ async function getGA4AccessToken(serviceAccount: { client_email: string; private
 }
 
 async function fetchGA4Data(): Promise<{
-  visitors30d: number;
-  pageviews30d: number;
-  sessions30d: number;
+  visitorsYTD: number;
+  pageviewsYTD: number;
+  sessionsYTD: number;
   liveVisitors: number;
 } | null> {
   const propertyId = Deno.env.get("GA4_PROPERTY_ID");
