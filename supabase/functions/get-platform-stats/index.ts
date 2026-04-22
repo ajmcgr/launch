@@ -100,7 +100,7 @@ async function fetchGA4Data(): Promise<{
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+          dateRanges: [{ startDate: new Date(new Date().getUTCFullYear(), 0, 1).toISOString().split("T")[0], endDate: "today" }],
           metrics: [
             { name: "activeUsers" },
             { name: "screenPageViews" },
