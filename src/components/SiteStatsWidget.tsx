@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { TrendingUp, Users, Rocket, MousePointerClick, Eye } from 'lucide-react';
+import { Users, Rocket, MousePointerClick, Eye } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PlatformStats {
@@ -37,10 +37,9 @@ export const SiteStatsWidget = () => {
 
   return (
     <div className="bg-muted/30 rounded-lg p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <TrendingUp className="h-4 w-4 text-primary" />
-        <h3 className="font-reckless text-base font-semibold">By the numbers</h3>
-      </div>
+      <h3 className="text-sm font-semibold mb-3 flex items-center gap-2 text-foreground">
+        Launch Stats
+      </h3>
 
       {isLoading || !data ? (
         <div className="space-y-2">
