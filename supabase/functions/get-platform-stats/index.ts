@@ -90,7 +90,9 @@ async function fetchGA4Data(): Promise<{
     const sa = JSON.parse(saJsonRaw);
     const token = await getGA4AccessToken(sa);
 
-    // Use a rolling 30-day window to match common "Last 30 days" GA reports.
+    // Match the GA mobile card for "Trend of Seven-day active users" over the
+    // selected 30-day range. GA shows the sum of the daily active7DayUsers
+    // time-series values, not a single distinct-user total for the whole range.
     const reportResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
       {
@@ -101,11 +103,13 @@ async function fetchGA4Data(): Promise<{
         },
         body: JSON.stringify({
           dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+          dimensions: [{ name: "date" }],
           metrics: [
-            { name: "totalUsers" },
+            { name: "active7DayUsers" },
             { name: "screenPageViews" },
             { name: "sessions" },
           ],
+          orderBys: [{ dimension: { dimensionName: "date" } }],
         }),
       },
     );
@@ -114,7 +118,20 @@ async function fetchGA4Data(): Promise<{
       console.error("GA4 runReport failed:", reportData);
       return null;
     }
-    const row = reportData.rows?.[0]?.metricValues ?? [];
+
+    const rows = reportData.rows ?? [];
+    const visitorsMTD = rows.reduce(
+      (sum: number, row: any) => sum + parseInt(row.metricValues?.[0]?.value ?? "0", 10),
+      0,
+    );
+    const pageviewsMTD = rows.reduce(
+      (sum: number, row: any) => sum + parseInt(row.metricValues?.[1]?.value ?? "0", 10),
+      0,
+    );
+    const sessionsMTD = rows.reduce(
+      (sum: number, row: any) => sum + parseInt(row.metricValues?.[2]?.value ?? "0", 10),
+      0,
+    );
 
     const realtimeResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`,
@@ -141,9 +158,9 @@ async function fetchGA4Data(): Promise<{
     }
 
     return {
-      visitorsMTD: parseInt(row[0]?.value ?? "0", 10),
-      pageviewsMTD: parseInt(row[1]?.value ?? "0", 10),
-      sessionsMTD: parseInt(row[2]?.value ?? "0", 10),
+      visitorsMTD,
+      pageviewsMTD,
+      sessionsMTD,
       liveVisitors,
     };
   } catch (err) {
