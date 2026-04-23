@@ -259,19 +259,34 @@ const Home = () => {
       const from = pageNum * ITEMS_PER_PAGE;
       const to = Math.min(from + ITEMS_PER_PAGE - 1, MAX_HOMEPAGE_PRODUCTS - 1);
 
-      // Fetch vote counts first if sorting by popular
-      const { data: voteCounts } = await supabase
-        .from('product_vote_counts')
-        .select('product_id, net_votes');
+      // Pre-fetch product IDs in the period so we only pull votes/ratings for those rows
+      const { data: periodProductIds } = await supabase
+        .from('products')
+        .select('id')
+        .eq('status', 'launched')
+        .gte('launch_date', startDate.toISOString());
 
-      const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
+      const idsInPeriod = (periodProductIds || []).map((p: any) => p.id);
 
-      // Fetch rating stats for sorting by rating
-      const { data: ratingStats } = await supabase
-        .from('product_rating_stats')
-        .select('product_id, average_rating, rating_count');
+      // Fetch vote counts only for products in the active period
+      const { data: voteCounts } = idsInPeriod.length
+        ? await supabase
+            .from('product_vote_counts')
+            .select('product_id, net_votes')
+            .in('product_id', idsInPeriod)
+        : { data: [] as any[] };
 
-      const ratingMap = new Map(ratingStats?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
+      const voteMap = new Map((voteCounts || [])?.map(v => [v.product_id, v.net_votes || 0]) || []);
+
+      // Fetch rating stats only for products in the active period
+      const { data: ratingStats } = idsInPeriod.length
+        ? await supabase
+            .from('product_rating_stats')
+            .select('product_id, average_rating, rating_count')
+            .in('product_id', idsInPeriod)
+        : { data: [] as any[] };
+
+      const ratingMap = new Map((ratingStats || [])?.map(r => [r.product_id, { avg: r.average_rating || 0, count: r.rating_count || 0 }]) || []);
 
       let allProducts: any[] = [];
 
