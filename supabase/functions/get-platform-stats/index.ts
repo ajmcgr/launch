@@ -90,10 +90,8 @@ async function fetchGA4Data(): Promise<{
     const sa = JSON.parse(saJsonRaw);
     const token = await getGA4AccessToken(sa);
 
-    const now = new Date();
-    const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
-      .toISOString().split("T")[0];
-
+    // Use a rolling 7-day window so the number matches what users typically
+    // see in GA "Last 7 days" reports (instead of partial month-to-date).
     const reportResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
       {
@@ -103,9 +101,9 @@ async function fetchGA4Data(): Promise<{
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          dateRanges: [{ startDate: monthStart, endDate: "today" }],
+          dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
           metrics: [
-            { name: "activeUsers" },
+            { name: "totalUsers" },
             { name: "screenPageViews" },
             { name: "sessions" },
           ],
