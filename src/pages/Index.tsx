@@ -134,17 +134,22 @@ const Index = () => {
       if (error) throw error;
 
       const today = new Date().toISOString().split('T')[0];
+      const todayProductIds = (products || []).map((p: any) => p.id);
 
       const [voteCountsResult, userVotesResult, boostedResult] = await Promise.all([
-        supabase
-          .from('product_vote_counts')
-          .select('product_id, net_votes'),
-        currentUser
+        todayProductIds.length
+          ? supabase
+              .from('product_vote_counts')
+              .select('product_id, net_votes')
+              .in('product_id', todayProductIds)
+          : Promise.resolve({ data: [] as any[], error: null }),
+        currentUser && todayProductIds.length
           ? supabase
               .from('votes')
               .select('product_id, value')
               .eq('user_id', currentUser.id)
               .eq('value', 1)
+              .in('product_id', todayProductIds)
           : Promise.resolve({ data: null, error: null }),
         supabase
           .from('sponsored_products')
