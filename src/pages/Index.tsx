@@ -162,8 +162,8 @@ const Index = () => {
       if (voteCountsResult.error) throw voteCountsResult.error;
       if (userVotesResult.error) throw userVotesResult.error;
 
-      const voteMap = new Map(voteCountsResult.data?.map(v => [v.product_id, v.net_votes || 0]) || []);
-      const userVoteMap = new Map(userVotesResult.data?.map(v => [v.product_id, 1 as const]) || []);
+      const voteMap = new Map<string, number>(((voteCountsResult.data as any[] | null) || []).map((v: any) => [v.product_id, (v.net_votes || 0) as number]));
+      const userVoteMap = new Map<string, 1>(((userVotesResult.data as any[] | null) || []).map((v: any) => [v.product_id, 1 as const]));
       const boostedIds = new Set(boostedResult.data?.map(b => b.product_id) || []);
 
       const launches: Launch[] = (products || [])
