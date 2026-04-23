@@ -90,8 +90,7 @@ async function fetchGA4Data(): Promise<{
     const sa = JSON.parse(saJsonRaw);
     const token = await getGA4AccessToken(sa);
 
-    // Use a rolling 7-day window so the number matches what users typically
-    // see in GA "Last 7 days" reports (instead of partial month-to-date).
+    // Use a rolling 30-day window to match common "Last 30 days" GA reports.
     const reportResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
       {
@@ -101,7 +100,7 @@ async function fetchGA4Data(): Promise<{
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
+          dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
           metrics: [
             { name: "totalUsers" },
             { name: "screenPageViews" },
