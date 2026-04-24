@@ -39,6 +39,7 @@ import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
 import { CommunityCallout } from '@/components/CommunityCallout';
+import { Newsletter } from '@/components/Newsletter';
 import { PopularSections } from '@/components/PopularSections';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
@@ -834,6 +835,11 @@ const Home = () => {
       <WebSiteSchema />
       <FAQSchema faqs={homepageFaqs} />
       <div className="container mx-auto px-4 py-6 max-w-7xl">
+        {!user && (
+          <div className="mb-6">
+            <Newsletter />
+          </div>
+        )}
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-6">
             <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
