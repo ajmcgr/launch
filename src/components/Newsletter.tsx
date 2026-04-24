@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
+import { Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -11,23 +11,22 @@ export const Newsletter = () => {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast.error('Please enter your email');
       return;
     }
 
     setLoading(true);
-    
+
     try {
-      // Call edge function to subscribe
-      const { data, error } = await supabase.functions.invoke('subscribe-to-newsletter', {
+      const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
         body: { email },
       });
 
       if (error) throw error;
 
-      toast.success('Successfully subscribed to our newsletter!');
+      toast.success('Successfully subscribed!');
       setEmail('');
     } catch (error: any) {
       console.error('Newsletter subscription error:', error);
@@ -38,29 +37,27 @@ export const Newsletter = () => {
   };
 
   return (
-    <section className="px-4">
-      <Card className="p-8 bg-muted/30 border-0 max-w-7xl mx-auto">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4">Get the Newsletter</h2>
-          <p className="text-muted-foreground mb-8">
-            Subscribe for free. Weekly updates on launches, no filler.
-          </p>
-          
-          <form onSubmit={handleSubscribe} className="flex gap-4 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1"
-              disabled={loading}
-            />
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Subscribing...' : 'Subscribe'}
-            </Button>
-          </form>
+    <div className="w-full bg-muted/30 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="flex items-center gap-2 text-center md:text-left">
+        <Mail className="h-4 w-4 text-muted-foreground hidden md:block" />
+        <div>
+          <h3 className="text-sm font-semibold leading-tight">Get the Newsletter</h3>
+          <p className="text-xs text-muted-foreground">Weekly launches, no filler.</p>
         </div>
-      </Card>
-    </section>
+      </div>
+      <form onSubmit={handleSubscribe} className="flex gap-2 w-full md:w-auto md:min-w-[360px]">
+        <Input
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="flex-1 h-9 text-sm"
+          disabled={loading}
+        />
+        <Button type="submit" size="sm" disabled={loading}>
+          {loading ? '...' : 'Subscribe'}
+        </Button>
+      </form>
+    </div>
   );
 };
