@@ -835,11 +835,6 @@ const Home = () => {
       <WebSiteSchema />
       <FAQSchema faqs={homepageFaqs} />
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {!user && (
-          <div className="mb-6">
-            <Newsletter />
-          </div>
-        )}
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-6">
             <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
@@ -869,6 +864,13 @@ const Home = () => {
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Main feed column */}
             <div className="flex-1 min-w-0">
+              {/* Newsletter signup (logged-out) */}
+              {!user && (
+                <div className="mb-6">
+                  <Newsletter />
+                </div>
+              )}
+
               {/* Logged-out CTA */}
               {!user && (
                 <div className="w-full bg-muted/30 px-6 py-6 md:py-0 flex items-center md:aspect-[7/1] mb-6">
