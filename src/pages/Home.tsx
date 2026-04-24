@@ -39,7 +39,7 @@ import mediaBanner from '@/assets/sponsors/media-banner.png';
 import bioBanner from '@/assets/sponsors/bio-banner.png';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
 import { CommunityCallout } from '@/components/CommunityCallout';
-import { Newsletter } from '@/components/Newsletter';
+import { NewsletterCompact } from '@/components/NewsletterCompact';
 import { PopularSections } from '@/components/PopularSections';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
@@ -884,7 +884,7 @@ const Home = () => {
               {/* Newsletter signup (logged-out) */}
               {!user && (
                 <div className="mb-6">
-                  <Newsletter />
+                  <NewsletterCompact />
                 </div>
               )}
 
