@@ -61,6 +61,24 @@ const AdminBlogTab = () => {
     }
   };
 
+  const backfillImages = async () => {
+    setBackfilling(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('backfill-blog-images', {
+        body: {},
+      });
+      if (error) throw error;
+      toast.success(
+        `Generated ${data?.succeeded ?? 0} of ${data?.processed ?? 0} cover images`,
+      );
+      queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to backfill images');
+    } finally {
+      setBackfilling(false);
+    }
+  };
+
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const updates: any = { status };
