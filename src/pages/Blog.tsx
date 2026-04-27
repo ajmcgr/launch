@@ -79,30 +79,43 @@ const Blog = () => {
         </p>
       </header>
 
+      {activeTag && (
+        <div className="mb-10 flex items-center gap-3 flex-wrap">
+          <span className="text-sm text-muted-foreground">Filtered by tag:</span>
+          <Badge variant="default" className="text-sm">{activeTag}</Badge>
+          <button
+            onClick={() => setSearchParams({})}
+            className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+          >
+            Clear filter
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="space-y-16">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-72 rounded-2xl" />
           ))}
         </div>
-      ) : posts.length === 0 ? (
+      ) : filteredPosts.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
-          <p>New articles arriving soon.</p>
+          <p>{activeTag ? `No articles tagged "${activeTag}".` : 'New articles arriving soon.'}</p>
         </div>
       ) : (
         <>
           {/* Featured (first) post */}
-          {posts[0] && (
+          {filteredPosts[0] && (
             <Link
-              to={`/blog/${posts[0].slug}`}
+              to={`/blog/${filteredPosts[0].slug}`}
               className="group block mb-20 md:mb-28"
             >
               <article className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
-                {posts[0].cover_image_url && (
+                {filteredPosts[0].cover_image_url && (
                   <div className="md:col-span-7 aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
                     <img
-                      src={posts[0].cover_image_url}
-                      alt={posts[0].title}
+                      src={filteredPosts[0].cover_image_url}
+                      alt={filteredPosts[0].title}
                       loading="eager"
                       width={1200}
                       height={750}
@@ -110,10 +123,10 @@ const Blog = () => {
                     />
                   </div>
                 )}
-                <div className={posts[0].cover_image_url ? 'md:col-span-5' : 'md:col-span-12'}>
-                  {posts[0].tags && posts[0].tags.length > 0 && (
+                <div className={filteredPosts[0].cover_image_url ? 'md:col-span-5' : 'md:col-span-12'}>
+                  {filteredPosts[0].tags && filteredPosts[0].tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-5">
-                      {posts[0].tags.slice(0, 2).map((t) => (
+                      {filteredPosts[0].tags.slice(0, 2).map((t) => (
                         <Badge key={t} variant="secondary" className="text-xs font-normal">
                           {t}
                         </Badge>
@@ -121,16 +134,16 @@ const Blog = () => {
                     </div>
                   )}
                   <h2 className="font-reckless text-3xl md:text-5xl leading-[1.1] tracking-tight mb-5 group-hover:text-primary transition-colors">
-                    {posts[0].title}
+                    {filteredPosts[0].title}
                   </h2>
-                  {posts[0].excerpt && (
+                  {filteredPosts[0].excerpt && (
                     <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-5 line-clamp-3">
-                      {posts[0].excerpt}
+                      {filteredPosts[0].excerpt}
                     </p>
                   )}
-                  {posts[0].published_at && (
+                  {filteredPosts[0].published_at && (
                     <p className="text-sm text-muted-foreground">
-                      {format(new Date(posts[0].published_at), 'MMMM d, yyyy')}
+                      {format(new Date(filteredPosts[0].published_at), 'MMMM d, yyyy')}
                     </p>
                   )}
                 </div>
@@ -139,7 +152,7 @@ const Blog = () => {
           )}
 
           {/* Section divider */}
-          {posts.length > 1 && (
+          {filteredPosts.length > 1 && (
             <div className="border-t border-border/60 pt-16 md:pt-20 mb-12">
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
                 More articles
@@ -149,7 +162,7 @@ const Blog = () => {
 
           {/* Rest of posts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16 md:gap-y-20">
-            {posts.slice(1).map((post) => (
+            {filteredPosts.slice(1).map((post) => (
               <Link key={post.id} to={`/blog/${post.slug}`} className="group block">
                 <article>
                   {post.cover_image_url && (
