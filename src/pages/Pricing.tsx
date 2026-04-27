@@ -98,16 +98,12 @@ const Pricing = () => {
                     </div>
                     <p className="text-xs font-medium text-primary">Save $40 — limited intro pricing</p>
                   </div>
-                ) : plan.id === 'free' ? (
+                ) : (
                   <div className="space-y-1">
                     <div className="text-3xl font-bold">
                       ${plan.price}<span className="text-sm font-normal text-muted-foreground"> USD</span>
                     </div>
                     <p className="text-xs text-muted-foreground">Queued — launches in ~7–14 days</p>
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold">
-                    ${plan.price}<span className="text-sm font-normal text-muted-foreground"> USD</span>
                   </div>
                 )}
 
