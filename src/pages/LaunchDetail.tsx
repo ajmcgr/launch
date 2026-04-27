@@ -992,6 +992,8 @@ const LaunchDetail = () => {
 
             </div>
 
+            <AdvertiseCTA compact />
+
               {/* Contextual Pro upgrade for free/Lite product makers */}
               {user && product.owner_id === user.id && product.status === 'launched' && !product._hasPaidPlan && (
                 <ProUpgradeCard
