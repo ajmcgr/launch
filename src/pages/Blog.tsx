@@ -21,6 +21,8 @@ interface BlogPost {
 const Blog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTag = searchParams.get('tag');
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -35,6 +37,11 @@ const Blog = () => {
     };
     fetchPosts();
   }, []);
+
+  const filteredPosts = useMemo(() => {
+    if (!activeTag) return posts;
+    return posts.filter((p) => p.tags?.some((t) => t.toLowerCase() === activeTag.toLowerCase()));
+  }, [posts, activeTag]);
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-20 md:py-28">
