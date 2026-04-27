@@ -2152,6 +2152,14 @@ const Submit = () => {
           userId={user.id}
         />
       )}
+
+      {showVerifyRevenueModal && (
+        <VerifyRevenueModal
+          open={showVerifyRevenueModal}
+          onClose={handleVerifyRevenueClose}
+          productName={submittedProductName}
+        />
+      )}
     </div>
   );
 };
