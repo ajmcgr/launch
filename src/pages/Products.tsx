@@ -592,6 +592,25 @@ const Products = () => {
           }
         </h2>
 
+        {/* Verified Revenue leaderboard callout */}
+        {sort === 'revenue' && (
+          <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg border bg-muted/30 px-4 py-3">
+            <div className="flex items-start gap-2 text-sm">
+              <span className="text-base">✓</span>
+              <div>
+                <span className="font-medium text-foreground">Verified Revenue leaderboard</span>
+                <span className="text-muted-foreground"> — only products with Stripe-verified MRR appear here.</span>
+              </div>
+            </div>
+            <Link
+              to="/settings?tab=integrations"
+              className="text-xs font-medium text-primary hover:underline whitespace-nowrap"
+            >
+              Verify your revenue →
+            </Link>
+          </div>
+        )}
+
         {/* Selected categories tags */}
         {selectedCategories.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
