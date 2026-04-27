@@ -61,6 +61,7 @@ const Submit = () => {
   const [existingPlan, setExistingPlan] = useState<'free' | 'join' | 'skip' | 'relaunch' | null>(null);
   const [isLoadingProduct, setIsLoadingProduct] = useState(!!productIdParam);
   const [showFirstCommentModal, setShowFirstCommentModal] = useState(false);
+  const [showVerifyRevenueModal, setShowVerifyRevenueModal] = useState(false);
   const [submittedProductId, setSubmittedProductId] = useState<string | null>(null);
   const [submittedProductName, setSubmittedProductName] = useState<string>('');
 
@@ -76,6 +77,11 @@ const Submit = () => {
 
   const handleFirstCommentClose = useCallback(() => {
     setShowFirstCommentModal(false);
+    setShowVerifyRevenueModal(true);
+  }, []);
+
+  const handleVerifyRevenueClose = useCallback(() => {
+    setShowVerifyRevenueModal(false);
     navigate('/my-products?success=true');
   }, [navigate]);
   const [step, setStep] = useState(() => {
