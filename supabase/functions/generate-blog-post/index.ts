@@ -194,14 +194,23 @@ Return everything via the tool call.`;
     if (!articleCall) throw new Error("AI failed to generate article");
     const article = JSON.parse(articleCall.function.arguments);
 
-    // Strip any accidental wrapping code fences from the markdown body
+    // Strip any accidental wrapping fences/quotes from the markdown body.
+    // Models sometimes wrap output in ```, ```markdown, ''', """, or even '''markdown.
     if (typeof article.content_md === "string") {
       let md = article.content_md.trim();
-      // Remove opening fence like ``` or ```markdown / ```md
-      md = md.replace(/^`{3,}\s*(?:markdown|md)?\s*\r?\n/i, "");
-      // Remove trailing fence
-      md = md.replace(/\r?\n`{3,}\s*$/i, "");
-      article.content_md = md.trim();
+      // Run a few passes to peel off layered wrappers
+      for (let i = 0; i < 3; i++) {
+        const before = md;
+        // Opening fence: ```, ''', """ optionally followed by 'markdown'/'md'
+        md = md.replace(/^(?:`{3,}|'{3,}|"{3,})\s*(?:markdown|md)?\s*\r?\n?/i, "");
+        // Trailing fence
+        md = md.replace(/\r?\n?\s*(?:`{3,}|'{3,}|"{3,})\s*\.?\s*$/i, "");
+        // Stray trailing ''' or ``` even with punctuation glued on (e.g. ". '''")
+        md = md.replace(/[\s.]*(?:`{3,}|'{3,}|"{3,})\s*$/i, "");
+        md = md.trim();
+        if (md === before) break;
+      }
+      article.content_md = md;
     }
 
     // Ensure slug uniqueness
