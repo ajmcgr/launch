@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { X, CalendarIcon, Plus, Zap } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { FirstCommentModal } from '@/components/FirstCommentModal';
+import VerifyRevenueModal from '@/components/VerifyRevenueModal';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS, PLAN_FEATURE_LABELS } from '@/lib/constants';
