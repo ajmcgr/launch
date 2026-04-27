@@ -283,6 +283,7 @@ Return everything via the tool call.`;
         meta_description: article.meta_description,
         excerpt: article.excerpt,
         content_md: article.content_md,
+        cover_image_url: coverImageUrl,
         tags: topic.tags,
         topic_seed: topic.target_keyword,
         ai_generated: true,
