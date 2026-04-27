@@ -89,9 +89,23 @@ const Pricing = () => {
                 <CardDescription className="text-sm">{plan.description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-3xl font-bold">
-                  ${plan.price}<span className="text-sm font-normal text-muted-foreground"> USD</span>
-                </div>
+                {plan.id === 'skip' ? (
+                  <div className="space-y-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-lg text-muted-foreground line-through">$79</span>
+                      <span className="text-3xl font-bold">${plan.price}</span>
+                      <span className="text-sm text-muted-foreground">USD</span>
+                    </div>
+                    <p className="text-xs font-medium text-primary">Save $40 — limited intro pricing</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <div className="text-3xl font-bold">
+                      ${plan.price}<span className="text-sm font-normal text-muted-foreground"> USD</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Queued — launches in ~7–14 days</p>
+                  </div>
+                )}
 
                 <ul className="space-y-2">
                   {FEATURE_CONFIG.map(({ key, label }) => {
@@ -111,23 +125,26 @@ const Pricing = () => {
                   })}
                   {plan.id === 'free' && (
                     <li className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span>Standard launch queue</span>
+                      <X className="h-4 w-4 text-muted-foreground/40 flex-shrink-0" />
+                      <span className="text-muted-foreground/60">Standard launch queue</span>
                     </li>
                   )}
                   {plan.id === 'skip' && (
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span>Skip the queue</span>
+                      <span>Skip the queue — launch today</span>
                     </li>
                   )}
                 </ul>
 
                 {/* Value callout */}
                 {plan.id === 'skip' && (
-                  <div className="pt-2 border-t">
+                  <div className="pt-2 border-t space-y-1">
                     <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">70K+ impressions</span> • Best visibility
+                      <span className="font-medium text-foreground">~380 views avg</span> vs ~12 on Free
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      8 of last week's top 10 launches were Pro
                     </p>
                   </div>
                 )}
@@ -203,9 +220,12 @@ const Pricing = () => {
                 </li>
               </ul>
 
-              <div className="pt-2 border-t">
+              <div className="pt-2 border-t space-y-1">
                 <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">Save 60%+</span> vs per-launch pricing
+                  <span className="font-medium text-foreground">Pays for itself in 3 launches</span> ($117 vs $99)
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Best for makers shipping multiple products
                 </p>
               </div>
 

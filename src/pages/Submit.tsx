@@ -223,6 +223,41 @@ const Submit = () => {
     staleTime: 1000 * 60 * 30,
   });
 
+  // Real-time queue depth for Free launches (used to show "launches in ~X days")
+  const { data: freeQueueInfo } = useQuery({
+    queryKey: ['free-queue-depth'],
+    queryFn: async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { data: freeOrders } = await supabase
+        .from('orders')
+        .select('product_id')
+        .eq('plan', 'free');
+
+      const freeIds = freeOrders?.map(o => o.product_id).filter(Boolean) || [];
+      if (freeIds.length === 0) {
+        return { queuePosition: 1, estimatedDays: 7 };
+      }
+
+      const { count } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'scheduled')
+        .in('id', freeIds)
+        .gte('launch_date', today.toISOString());
+
+      const queuedAhead = count || 0;
+      // Free capacity ~50/day, but free queue waits behind paid. Floor at 7 days.
+      const estimatedDays = Math.max(7, Math.ceil(queuedAhead / 50) + 7);
+      return {
+        queuePosition: queuedAhead + 1,
+        estimatedDays,
+      };
+    },
+    staleTime: 1000 * 60 * 10,
+  });
+
   // Save to localStorage whenever formData changes
   useEffect(() => {
     localStorage.setItem('submitFormData', JSON.stringify(formData));
@@ -1849,6 +1884,19 @@ const Submit = () => {
                           <span className="text-xs text-muted-foreground hidden sm:inline">Most makers choose Pro for full promotion</span>
                         </div>
                       )}
+
+                       {/* Live launch-timing comparison — drives the cost of "going Free" */}
+                       {!isPaidPlan && !hasActivePass && freeQueueInfo && (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto -mb-2">
+                           <div className="text-center text-xs px-3 py-2 rounded-md bg-muted/60 text-muted-foreground">
+                             <span className="font-semibold text-foreground">Launches in ~{freeQueueInfo.estimatedDays} days</span>
+                             {' '}· queue position #{freeQueueInfo.queuePosition}
+                           </div>
+                           <div className="text-center text-xs px-3 py-2 rounded-md bg-primary/10 text-primary">
+                             <span className="font-semibold">Launches today</span> · pick any date
+                           </div>
+                         </div>
+                       )}
 
                        {/* Plan cards grid - 2 columns: Free | Pro */}
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
