@@ -223,6 +223,41 @@ const Submit = () => {
     staleTime: 1000 * 60 * 30,
   });
 
+  // Real-time queue depth for Free launches (used to show "launches in ~X days")
+  const { data: freeQueueInfo } = useQuery({
+    queryKey: ['free-queue-depth'],
+    queryFn: async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { data: freeOrders } = await supabase
+        .from('orders')
+        .select('product_id')
+        .eq('plan', 'free');
+
+      const freeIds = freeOrders?.map(o => o.product_id).filter(Boolean) || [];
+      if (freeIds.length === 0) {
+        return { queuePosition: 1, estimatedDays: 7 };
+      }
+
+      const { count } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'scheduled')
+        .in('id', freeIds)
+        .gte('launch_date', today.toISOString());
+
+      const queuedAhead = count || 0;
+      // Free capacity ~50/day, but free queue waits behind paid. Floor at 7 days.
+      const estimatedDays = Math.max(7, Math.ceil(queuedAhead / 50) + 7);
+      return {
+        queuePosition: queuedAhead + 1,
+        estimatedDays,
+      };
+    },
+    staleTime: 1000 * 60 * 10,
+  });
+
   // Save to localStorage whenever formData changes
   useEffect(() => {
     localStorage.setItem('submitFormData', JSON.stringify(formData));
