@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, Sparkles, Eye, Edit, Trash2, Archive, CheckCircle2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Sparkles, Eye, Edit, Trash2, Archive, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface BlogPost {
@@ -30,7 +30,6 @@ interface BlogPost {
 const AdminBlogTab = () => {
   const queryClient = useQueryClient();
   const [generating, setGenerating] = useState(false);
-  const [backfilling, setBackfilling] = useState(false);
   const [editing, setEditing] = useState<BlogPost | null>(null);
 
   const { data: posts, isLoading } = useQuery({
@@ -58,26 +57,6 @@ const AdminBlogTab = () => {
       toast.error(e?.message || 'Failed to generate post');
     } finally {
       setGenerating(false);
-    }
-  };
-
-  const backfillImages = async () => {
-    setBackfilling(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('backfill-blog-images', {
-        body: {},
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      toast.success(
-        `Generated ${data?.succeeded ?? 0} of ${data?.processed ?? 0} cover images`,
-      );
-      queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
-    } catch (e: any) {
-      const context = e?.context?.error || e?.context?.msg || e?.context?.message;
-      toast.error(context || e?.message || 'Failed to backfill images');
-    } finally {
-      setBackfilling(false);
     }
   };
 
@@ -142,17 +121,6 @@ const AdminBlogTab = () => {
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-shrink-0">
-              <Button variant="outline" onClick={backfillImages} disabled={backfilling}>
-                {backfilling ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating images…
-                  </>
-                ) : (
-                  <>
-                    <ImageIcon className="h-4 w-4 mr-2" /> Backfill cover images
-                  </>
-                )}
-              </Button>
               <Button onClick={generateNow} disabled={generating}>
                 {generating ? (
                   <>
