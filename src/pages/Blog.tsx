@@ -37,7 +37,7 @@ const Blog = () => {
   }, []);
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-12">
+    <div className="container mx-auto max-w-6xl px-4 py-20 md:py-28">
       <Helmet>
         <title>Blog — Launch Strategy, Indie Hacker Tactics & AI Tools | Launch</title>
         <meta
@@ -59,18 +59,23 @@ const Blog = () => {
         ]}
       />
 
-      <header className="mb-10 text-center">
-        <h1 className="font-reckless text-4xl md:text-5xl mb-3">The Launch Blog</h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Playbooks, tactics, and case studies for founders, indie hackers, and makers
-          shipping AI and tech products.
+      <header className="mb-16 md:mb-24 max-w-3xl">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">
+          The Launch Blog
+        </p>
+        <h1 className="font-reckless text-5xl md:text-7xl leading-[1.05] tracking-tight mb-6">
+          Playbooks for founders shipping in public.
+        </h1>
+        <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+          Tactics, case studies, and field notes on launching, distribution,
+          and building durable products.
         </p>
       </header>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-64 rounded-xl" />
+        <div className="space-y-16">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-72 rounded-2xl" />
           ))}
         </div>
       ) : posts.length === 0 ? (
@@ -78,48 +83,107 @@ const Blog = () => {
           <p>New articles arriving soon.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => (
-            <Link key={post.id} to={`/blog/${post.slug}`} className="group">
-              <Card className="h-full overflow-hidden hover:border-foreground/20 transition-colors">
-                {post.cover_image_url && (
-                  <div className="aspect-[16/9] overflow-hidden bg-muted">
+        <>
+          {/* Featured (first) post */}
+          {posts[0] && (
+            <Link
+              to={`/blog/${posts[0].slug}`}
+              className="group block mb-20 md:mb-28"
+            >
+              <article className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                {posts[0].cover_image_url && (
+                  <div className="md:col-span-7 aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
                     <img
-                      src={post.cover_image_url}
-                      alt={post.title}
-                      loading="lazy"
-                      width={640}
-                      height={360}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      src={posts[0].cover_image_url}
+                      alt={posts[0].title}
+                      loading="eager"
+                      width={1200}
+                      height={750}
+                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
                     />
                   </div>
                 )}
-                <CardContent className="p-5 space-y-3">
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {post.tags.slice(0, 2).map((t) => (
-                        <Badge key={t} variant="secondary" className="text-xs">
+                <div className={posts[0].cover_image_url ? 'md:col-span-5' : 'md:col-span-12'}>
+                  {posts[0].tags && posts[0].tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      {posts[0].tags.slice(0, 2).map((t) => (
+                        <Badge key={t} variant="secondary" className="text-xs font-normal">
                           {t}
                         </Badge>
                       ))}
                     </div>
                   )}
-                  <h2 className="font-reckless text-xl leading-tight group-hover:text-primary transition-colors">
-                    {post.title}
+                  <h2 className="font-reckless text-3xl md:text-5xl leading-[1.1] tracking-tight mb-5 group-hover:text-primary transition-colors">
+                    {posts[0].title}
                   </h2>
-                  {post.excerpt && (
-                    <p className="text-sm text-muted-foreground line-clamp-3">{post.excerpt}</p>
-                  )}
-                  {post.published_at && (
-                    <p className="text-xs text-muted-foreground pt-1">
-                      {format(new Date(post.published_at), 'MMM d, yyyy')}
+                  {posts[0].excerpt && (
+                    <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-5 line-clamp-3">
+                      {posts[0].excerpt}
                     </p>
                   )}
-                </CardContent>
-              </Card>
+                  {posts[0].published_at && (
+                    <p className="text-sm text-muted-foreground">
+                      {format(new Date(posts[0].published_at), 'MMMM d, yyyy')}
+                    </p>
+                  )}
+                </div>
+              </article>
             </Link>
-          ))}
-        </div>
+          )}
+
+          {/* Section divider */}
+          {posts.length > 1 && (
+            <div className="border-t border-border/60 pt-16 md:pt-20 mb-12">
+              <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
+                More articles
+              </p>
+            </div>
+          )}
+
+          {/* Rest of posts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16 md:gap-y-20">
+            {posts.slice(1).map((post) => (
+              <Link key={post.id} to={`/blog/${post.slug}`} className="group block">
+                <article>
+                  {post.cover_image_url && (
+                    <div className="aspect-[16/10] overflow-hidden rounded-xl bg-muted mb-6">
+                      <img
+                        src={post.cover_image_url}
+                        alt={post.title}
+                        loading="lazy"
+                        width={800}
+                        height={500}
+                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {post.tags.slice(0, 2).map((t) => (
+                        <Badge key={t} variant="secondary" className="text-xs font-normal">
+                          {t}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <h3 className="font-reckless text-2xl md:text-3xl leading-[1.15] tracking-tight mb-3 group-hover:text-primary transition-colors">
+                    {post.title}
+                  </h3>
+                  {post.excerpt && (
+                    <p className="text-base text-muted-foreground leading-relaxed line-clamp-3 mb-4">
+                      {post.excerpt}
+                    </p>
+                  )}
+                  {post.published_at && (
+                    <p className="text-sm text-muted-foreground">
+                      {format(new Date(post.published_at), 'MMMM d, yyyy')}
+                    </p>
+                  )}
+                </article>
+              </Link>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
