@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, Sparkles, Eye, Edit, Trash2, Archive, CheckCircle2 } from 'lucide-react';
+import { Loader2, Sparkles, Eye, Edit, Trash2, Archive, CheckCircle2, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface BlogPost {
