@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { X, CalendarIcon, Plus, Zap } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { FirstCommentModal } from '@/components/FirstCommentModal';
+import VerifyRevenueModal from '@/components/VerifyRevenueModal';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS, PLAN_FEATURE_LABELS } from '@/lib/constants';
@@ -60,6 +61,7 @@ const Submit = () => {
   const [existingPlan, setExistingPlan] = useState<'free' | 'join' | 'skip' | 'relaunch' | null>(null);
   const [isLoadingProduct, setIsLoadingProduct] = useState(!!productIdParam);
   const [showFirstCommentModal, setShowFirstCommentModal] = useState(false);
+  const [showVerifyRevenueModal, setShowVerifyRevenueModal] = useState(false);
   const [submittedProductId, setSubmittedProductId] = useState<string | null>(null);
   const [submittedProductName, setSubmittedProductName] = useState<string>('');
 
@@ -75,6 +77,11 @@ const Submit = () => {
 
   const handleFirstCommentClose = useCallback(() => {
     setShowFirstCommentModal(false);
+    setShowVerifyRevenueModal(true);
+  }, []);
+
+  const handleVerifyRevenueClose = useCallback(() => {
+    setShowVerifyRevenueModal(false);
     navigate('/my-products?success=true');
   }, [navigate]);
   const [step, setStep] = useState(() => {
@@ -2143,6 +2150,14 @@ const Submit = () => {
           productId={submittedProductId}
           productName={submittedProductName}
           userId={user.id}
+        />
+      )}
+
+      {showVerifyRevenueModal && (
+        <VerifyRevenueModal
+          open={showVerifyRevenueModal}
+          onClose={handleVerifyRevenueClose}
+          productName={submittedProductName}
         />
       )}
     </div>
