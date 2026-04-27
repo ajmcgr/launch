@@ -224,7 +224,8 @@ Return everything via the tool call.`;
       finalSlug = `${finalSlug}-${Date.now().toString(36)}`;
     }
 
-    // 4. Generate a cover image for the post
+    // 4. Generate a cover image for the post. If the image cannot be created,
+    // stop publishing so future blog posts never go live without artwork.
     let coverImageUrl: string | null = null;
     try {
       const imagePrompt = `Editorial blog cover illustration for an article titled "${article.title}". Topic: ${topic.angle}. Style: modern, minimal, clean tech editorial illustration with bold geometric shapes and a confident color palette. No text, no words, no letters, no logos. Wide 16:9 composition suitable for a blog header.`;
@@ -242,35 +243,41 @@ Return everything via the tool call.`;
         }),
       });
 
-      if (imgResp.ok) {
-        const imgData = await imgResp.json();
-        const dataUrl: string | undefined =
-          imgData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-        if (dataUrl?.startsWith("data:image/")) {
-          // Parse data URL: data:image/png;base64,XXXX
-          const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
-          if (match) {
-            const mime = match[1];
-            const ext = mime.split("/")[1].replace("jpeg", "jpg");
-            const b64 = match[2];
-            const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-            const path = `${finalSlug}-${Date.now()}.${ext}`;
-            const { error: uploadErr } = await supabase.storage
-              .from("blog-images")
-              .upload(path, bytes, { contentType: mime, upsert: true });
-            if (uploadErr) {
-              console.error("Image upload failed:", uploadErr);
-            } else {
-              const { data: pub } = supabase.storage.from("blog-images").getPublicUrl(path);
-              coverImageUrl = pub.publicUrl;
-            }
-          }
-        }
-      } else {
-        console.error("Image generation failed:", imgResp.status, await imgResp.text());
+      if (!imgResp.ok) {
+        throw new Error(`Image generation failed: ${imgResp.status} ${await imgResp.text()}`);
+      }
+
+      const imgData = await imgResp.json();
+      const dataUrl: string | undefined =
+        imgData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+      if (!dataUrl?.startsWith("data:image/")) {
+        throw new Error("Image generation returned no image data");
+      }
+
+      // Parse data URL: data:image/png;base64,XXXX
+      const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+      if (!match) throw new Error("Image generation returned an invalid image data URL");
+
+      const mime = match[1];
+      const ext = mime.split("/")[1].replace("jpeg", "jpg");
+      const b64 = match[2];
+      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      const path = `${finalSlug}-${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("blog-images")
+        .upload(path, bytes, { contentType: mime, upsert: true });
+      if (uploadErr) {
+        throw new Error(`Image upload failed: ${uploadErr.message}`);
+      }
+
+      const { data: pub } = supabase.storage.from("blog-images").getPublicUrl(path);
+      coverImageUrl = pub.publicUrl;
+      if (!coverImageUrl) {
+        throw new Error("Image upload completed without a public URL");
       }
     } catch (imgErr) {
-      console.error("Cover image generation error (non-fatal):", imgErr);
+      console.error("Cover image generation error:", imgErr);
+      throw imgErr;
     }
 
     // 4. Insert and auto-publish
