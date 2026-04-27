@@ -149,9 +149,11 @@ const BlogPostPage = () => {
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-4">
             {post.tags.map((t) => (
-              <Badge key={t} variant="secondary" className="text-xs">
-                {t}
-              </Badge>
+              <Link key={t} to={`/blog?tag=${encodeURIComponent(t)}`}>
+                <Badge variant="secondary" className="text-xs cursor-pointer">
+                  {t}
+                </Badge>
+              </Link>
             ))}
           </div>
         )}
