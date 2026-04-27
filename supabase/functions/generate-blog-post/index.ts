@@ -274,7 +274,7 @@ Return everything via the tool call.`;
       coverImageUrl = pub.publicUrl;
       if (!coverImageUrl) {
         throw new Error("Image upload completed without a public URL");
-        }
+      }
     } catch (imgErr) {
       console.error("Cover image generation error:", imgErr);
       throw imgErr;
