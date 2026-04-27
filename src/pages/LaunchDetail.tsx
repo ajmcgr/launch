@@ -686,7 +686,6 @@ const LaunchDetail = () => {
           {/* Right Sidebar - Desktop Only */}
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
-            <AdvertiseCTA compact />
             <div className="p-5 bg-muted/30 rounded-xl space-y-5">
               {/* Launch Window Status */}
               {product.launch_date && product.status === 'launched' && (
