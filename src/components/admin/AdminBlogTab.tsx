@@ -30,6 +30,7 @@ interface BlogPost {
 const AdminBlogTab = () => {
   const queryClient = useQueryClient();
   const [generating, setGenerating] = useState(false);
+  const [backfilling, setBackfilling] = useState(false);
   const [editing, setEditing] = useState<BlogPost | null>(null);
 
   const { data: posts, isLoading } = useQuery({
