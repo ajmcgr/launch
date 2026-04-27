@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail } from 'lucide-react';
+
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -39,7 +39,6 @@ export const NewsletterCompact = () => {
   return (
     <div className="w-full bg-muted/30 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
       <div className="flex items-center gap-2 text-center md:text-left">
-        <Mail className="h-4 w-4 text-muted-foreground hidden md:block" />
         <div>
           <h3 className="text-sm font-semibold leading-tight">Get the Newsletter</h3>
           <p className="text-xs text-muted-foreground">Weekly launches, no filler.</p>
