@@ -1885,6 +1885,19 @@ const Submit = () => {
                         </div>
                       )}
 
+                       {/* Live launch-timing comparison — drives the cost of "going Free" */}
+                       {!isPaidPlan && !hasActivePass && freeQueueInfo && (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto -mb-2">
+                           <div className="text-center text-xs px-3 py-2 rounded-md bg-muted/60 text-muted-foreground">
+                             <span className="font-semibold text-foreground">Launches in ~{freeQueueInfo.estimatedDays} days</span>
+                             {' '}· queue position #{freeQueueInfo.queuePosition}
+                           </div>
+                           <div className="text-center text-xs px-3 py-2 rounded-md bg-primary/10 text-primary">
+                             <span className="font-semibold">Launches today</span> · pick any date
+                           </div>
+                         </div>
+                       )}
+
                        {/* Plan cards grid - 2 columns: Free | Pro */}
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                          {['free', 'skip'].map((planId) => {
