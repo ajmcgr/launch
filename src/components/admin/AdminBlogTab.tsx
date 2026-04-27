@@ -68,12 +68,14 @@ const AdminBlogTab = () => {
         body: {},
       });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
       toast.success(
         `Generated ${data?.succeeded ?? 0} of ${data?.processed ?? 0} cover images`,
       );
       queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
     } catch (e: any) {
-      toast.error(e?.message || 'Failed to backfill images');
+      const context = e?.context?.error || e?.context?.msg || e?.context?.message;
+      toast.error(context || e?.message || 'Failed to backfill images');
     } finally {
       setBackfilling(false);
     }
