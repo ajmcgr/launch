@@ -157,7 +157,7 @@ ${trendingProducts.slice(0, 8).map((p) => `  * ${p.name} (https://trylaunch.ai/l
 - NO emojis in headings
 - NO "Conclusion" header — call the final section something specific
 - Include the target keyword naturally in: title, first paragraph, one H2, and 3-5x throughout
-- CRITICAL: content_md must be RAW markdown only. Do NOT wrap the entire article in triple backticks (\`\`\`) or any code fence. Do NOT prefix with "```markdown". Start directly with the first paragraph or heading. Only use code fences for actual code snippets inside the article.
+- CRITICAL: content_md must be RAW markdown only. Do NOT wrap the entire article in triple backticks (\`\`\`), triple single-quotes ('''), triple double-quotes ("""), or any other delimiter. Do NOT prefix with "\`\`\`markdown". Do NOT add stray quote marks at the start or end. Start directly with the first paragraph or heading and end with the final sentence. Only use code fences for actual code snippets inside the article.
 
 Also produce: a 150-160 char meta description, a 120-160 char excerpt, and a URL-friendly slug.
 
@@ -194,14 +194,23 @@ Return everything via the tool call.`;
     if (!articleCall) throw new Error("AI failed to generate article");
     const article = JSON.parse(articleCall.function.arguments);
 
-    // Strip any accidental wrapping code fences from the markdown body
+    // Strip any accidental wrapping fences/quotes from the markdown body.
+    // Models sometimes wrap output in ```, ```markdown, ''', """, or even '''markdown.
     if (typeof article.content_md === "string") {
       let md = article.content_md.trim();
-      // Remove opening fence like ``` or ```markdown / ```md
-      md = md.replace(/^`{3,}\s*(?:markdown|md)?\s*\r?\n/i, "");
-      // Remove trailing fence
-      md = md.replace(/\r?\n`{3,}\s*$/i, "");
-      article.content_md = md.trim();
+      // Run a few passes to peel off layered wrappers
+      for (let i = 0; i < 3; i++) {
+        const before = md;
+        // Opening fence: ```, ''', """ optionally followed by 'markdown'/'md'
+        md = md.replace(/^(?:`{3,}|'{3,}|"{3,})\s*(?:markdown|md)?\s*\r?\n?/i, "");
+        // Trailing fence
+        md = md.replace(/\r?\n?\s*(?:`{3,}|'{3,}|"{3,})\s*\.?\s*$/i, "");
+        // Stray trailing ''' or ``` even with punctuation glued on (e.g. ". '''")
+        md = md.replace(/[\s.]*(?:`{3,}|'{3,}|"{3,})\s*$/i, "");
+        md = md.trim();
+        if (md === before) break;
+      }
+      article.content_md = md;
     }
 
     // Ensure slug uniqueness
