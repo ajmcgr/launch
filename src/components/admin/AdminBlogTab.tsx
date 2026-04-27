@@ -139,17 +139,30 @@ const AdminBlogTab = () => {
                 on demand.
               </CardDescription>
             </div>
-            <Button onClick={generateNow} disabled={generating}>
-              {generating ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating…
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4 mr-2" /> Generate Now
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button variant="outline" onClick={backfillImages} disabled={backfilling}>
+                {backfilling ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating images…
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="h-4 w-4 mr-2" /> Backfill cover images
+                  </>
+                )}
+              </Button>
+              <Button onClick={generateNow} disabled={generating}>
+                {generating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" /> Generate Now
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
