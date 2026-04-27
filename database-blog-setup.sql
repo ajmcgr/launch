@@ -52,17 +52,19 @@ CREATE TRIGGER trg_blog_posts_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at_blog_posts();
 
 -- ===============================================================
--- WEEKLY CRON: Tuesdays 14:00 UTC -> generate-blog-post
+-- CRON: Every 3 days at 14:00 UTC -> generate-blog-post
 -- (requires pg_cron + pg_net extensions, which you already have)
 -- ===============================================================
 
--- Remove any prior schedule of this name
 SELECT cron.unschedule('generate-blog-post-weekly')
 WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'generate-blog-post-weekly');
 
+SELECT cron.unschedule('generate-blog-post-every-3-days')
+WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'generate-blog-post-every-3-days');
+
 SELECT cron.schedule(
-  'generate-blog-post-weekly',
-  '0 14 * * 2',
+  'generate-blog-post-every-3-days',
+  '0 14 */3 * *',
   $$
   SELECT net.http_post(
     url := 'https://qzwoyflbcozbfcjkqglv.supabase.co/functions/v1/generate-blog-post',

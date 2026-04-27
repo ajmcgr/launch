@@ -116,7 +116,7 @@ const AdminBlogTab = () => {
             <div>
               <CardTitle>Blog Posts</CardTitle>
               <CardDescription>
-                AI auto-publishes a new article every Tuesday at 14:00 UTC. You can also generate one
+                AI auto-publishes a new article every 3 days at 14:00 UTC. You can also generate one
                 on demand.
               </CardDescription>
             </div>
