@@ -20,27 +20,27 @@ const UpgradeNudge = ({ productName, currentPlan, productId }: UpgradeNudgeProps
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold mb-1">
-            Get more eyes on {productName}
+            {productName}: ~12 views vs ~380 with Pro
           </p>
           <div className="flex flex-col gap-1 mb-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Megaphone className="h-3 w-3 text-muted-foreground/60" />
-              <span>Not promoted on X & LinkedIn</span>
+              <span>Missing X & LinkedIn promotion</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Mail className="h-3 w-3 text-muted-foreground/60" />
-              <span>Not featured in newsletter (2K+ subs)</span>
+              <span>Missing newsletter (2K+ subs, 25% open rate)</span>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <Button size="sm" className="h-7 text-xs" asChild>
-              <Link to="/advertise">
+              <Link to="/pricing">
                 <Zap className="h-3 w-3 mr-1" />
-                Boost Visibility — from $9
+                Upgrade to Pro — $39
               </Link>
             </Button>
             <span className="text-[10px] text-muted-foreground">
-              Pro launches get 3–5x more views
+              4x more upvotes on average
             </span>
           </div>
         </div>
