@@ -220,9 +220,12 @@ const Pricing = () => {
                 </li>
               </ul>
 
-              <div className="pt-2 border-t">
+              <div className="pt-2 border-t space-y-1">
                 <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">Save 60%+</span> vs per-launch pricing
+                  <span className="font-medium text-foreground">Pays for itself in 3 launches</span> ($117 vs $99)
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Best for makers shipping multiple products
                 </p>
               </div>
 
