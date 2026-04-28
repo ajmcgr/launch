@@ -19,6 +19,7 @@ import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 import InlineAdSlot from '@/components/InlineAdSlot';
 import LaunchWindowStatus from '@/components/LaunchWindowStatus';
 import ProUpgradeCard from '@/components/ProUpgradeCard';
+import RelatedLaunches from '@/components/RelatedLaunches';
 import { isActiveLaunch } from '@/lib/launchWindow';
 
 
@@ -681,6 +682,14 @@ const LaunchDetail = () => {
                 </a>
               </Button>
             </div>
+
+            {/* Related Launches — internal linking for SEO */}
+            <RelatedLaunches
+              productId={product.id}
+              tagIds={tags.map((t) => t.id)}
+              categoryNames={categories}
+              stackItemIds={stackItems.map((s) => s.id)}
+            />
           </div>
 
           {/* Right Sidebar - Desktop Only */}

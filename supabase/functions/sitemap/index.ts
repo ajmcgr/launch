@@ -18,11 +18,11 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch all published products
+    // Fetch all launched products (status='launched' is the active state, see Core memory)
     const { data: products } = await supabase
       .from("products")
       .select("slug, created_at, launch_date")
-      .eq("status", "published")
+      .eq("status", "launched")
       .order("launch_date", { ascending: false });
 
     // Fetch all tags
@@ -99,6 +99,11 @@ Deno.serve(async (req) => {
       { loc: "/product-hunt-alternative", priority: "0.8", changefreq: "monthly" },
       { loc: "/product-launch-platform", priority: "0.8", changefreq: "monthly" },
       { loc: "/product-launch-strategy", priority: "0.8", changefreq: "monthly" },
+      { loc: "/compare", priority: "0.8", changefreq: "monthly" },
+      { loc: "/compare/launch-vs-product-hunt", priority: "0.8", changefreq: "monthly" },
+      { loc: "/compare/launch-vs-betalist", priority: "0.8", changefreq: "monthly" },
+      { loc: "/compare/launch-vs-peerlist", priority: "0.8", changefreq: "monthly" },
+      { loc: "/compare/launch-vs-uneed", priority: "0.8", changefreq: "monthly" },
       { loc: "/about", priority: "0.5", changefreq: "monthly" },
       { loc: "/blog", priority: "0.8", changefreq: "weekly" },
       { loc: "/pricing", priority: "0.6", changefreq: "monthly" },

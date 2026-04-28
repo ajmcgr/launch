@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
+import { buildFaqJsonLd, categoryFaqs, categoryIntroFallback } from '@/lib/seoFaq';
 
 interface Product {
   id: string;
@@ -349,6 +350,8 @@ const CategoryPage = () => {
   const pageTitle = `${categoryInfo?.name || 'Category'} AI Apps - Launch`;
   const pageDescription = categoryInfo?.meta_description || 
     `Discover the best ${categoryInfo?.name} AI apps. Browse and vote on the top ${categoryInfo?.name?.toLowerCase()} tools and products.`;
+  const introText = categoryInfo?.intro_copy || (categoryInfo ? categoryIntroFallback(categoryInfo.name, products.length) : '');
+  const faqs = categoryInfo ? categoryFaqs(categoryInfo.name, products.length) : [];
 
   return (
     <>
@@ -367,14 +370,17 @@ const CategoryPage = () => {
             { "@type": "ListItem", "position": 3, "name": categoryInfo?.name, "item": `https://trylaunch.ai/category/${categoryInfo?.slug}` }
           ]
         })}</script>
+        {faqs.length > 0 && (
+          <script type="application/ld+json">{JSON.stringify(buildFaqJsonLd(faqs))}</script>
+        )}
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">{categoryInfo?.name}</h1>
-          {categoryInfo?.intro_copy && (
+          {introText && (
             <p className="text-lg text-muted-foreground leading-relaxed">
-              {categoryInfo.intro_copy}
+              {introText}
             </p>
           )}
         </div>
@@ -451,6 +457,19 @@ const CategoryPage = () => {
               )}
             </Button>
           </div>
+        )}
+        {faqs.length > 0 && (
+          <section className="mt-16 pt-10 border-t border-border/40">
+            <h2 className="text-2xl font-bold mb-6">Frequently asked questions</h2>
+            <div className="space-y-6">
+              {faqs.map((f) => (
+                <div key={f.question}>
+                  <h3 className="font-semibold mb-1">{f.question}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
       </div>
     </>
