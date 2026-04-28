@@ -33,6 +33,7 @@ import Following from "./pages/Following";
 import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import Unsubscribe from "./pages/Unsubscribe";
 import Advertise from "./pages/Advertise";
 import TagPage from "./pages/TagPage";
 import Tags from "./pages/Tags";
@@ -98,6 +99,7 @@ const AppContent = () => {
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
