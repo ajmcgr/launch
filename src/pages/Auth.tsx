@@ -184,6 +184,13 @@ const Auth = () => {
           } catch (error) {
             console.error('Error subscribing to newsletter:', error);
           }
+
+          // Also add to Resend daily digest audience (auto-add everyone)
+          try {
+            await supabase.functions.invoke('subscribe-to-daily-digest', { body: {} });
+          } catch (error) {
+            console.error('Error adding to Resend audience:', error);
+          }
         }
       }
     });

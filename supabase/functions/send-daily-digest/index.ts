@@ -29,17 +29,16 @@ Deno.serve(async (req) => {
 
   try {
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const recipient = Deno.env.get('DAILY_DIGEST_RECIPIENT');
+    const audienceId = Deno.env.get('RESEND_AUDIENCE_DAILY_DIGEST_ID');
 
-    if (!resendApiKey) throw new Error('RESEND_API_KEY is not configured');
-    if (!recipient) throw new Error('DAILY_DIGEST_RECIPIENT is not configured');
+    if (!resendApiKey) throw new Error('RESEND_API_KEY missing');
+    if (!audienceId) throw new Error('RESEND_AUDIENCE_DAILY_DIGEST_ID missing');
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    // Yesterday in UTC
     const now = new Date();
     const startUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1, 0, 0, 0));
     const endUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
@@ -60,7 +59,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Vote counts
     const productIds = products.map((p) => p.id);
     const { data: votes } = await supabase
       .from('votes')
@@ -104,35 +102,57 @@ Deno.serve(async (req) => {
     html += '<div style="font-size:14px;color:#777;margin-bottom:8px;">' + escapeHtml(dateLabel) + '</div></td></tr>';
     html += '<tr><td><table width="100%" cellpadding="0" cellspacing="0">' + itemsHtml + '</table></td></tr>';
     html += '<tr><td style="padding-top:24px;"><a href="' + PRODUCTION_URL + '" style="display:inline-block;background:#111;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">See all launches</a></td></tr>';
+    html += '<tr><td style="padding-top:32px;font-size:12px;color:#999;">You\'re receiving this because you signed up for Launch. <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#999;text-decoration:underline;">Unsubscribe</a>.</td></tr>';
     html += '</table></td></tr></table></body></html>';
 
     const subject = 'Top 5 launches yesterday on Launch 🚀';
 
-    const resendResp = await fetch('https://api.resend.com/emails', {
+    // 1. Create the broadcast
+    const createResp = await fetch('https://api.resend.com/broadcasts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + resendApiKey,
       },
       body: JSON.stringify({
+        audience_id: audienceId,
         from: 'Launch <notifications@trylaunch.ai>',
-        to: [recipient],
         subject: subject,
         html: html,
       }),
     });
 
-    const resendData = await resendResp.json();
+    const createData = await createResp.json();
 
-    if (!resendResp.ok) {
-      console.error('Resend API error:', resendResp.status, JSON.stringify(resendData));
-      throw new Error('Resend API error: ' + resendResp.status + ' - ' + JSON.stringify(resendData));
+    if (!createResp.ok) {
+      console.error('Resend create broadcast error:', createResp.status, JSON.stringify(createData));
+      throw new Error('Create broadcast failed: ' + createResp.status + ' - ' + JSON.stringify(createData));
     }
 
-    console.log('Daily digest sent', { count: top5.length, id: resendData?.id });
+    const broadcastId = createData?.id;
+    if (!broadcastId) throw new Error('No broadcast id returned');
+
+    // 2. Send the broadcast immediately
+    const sendResp = await fetch('https://api.resend.com/broadcasts/' + broadcastId + '/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + resendApiKey,
+      },
+      body: JSON.stringify({}),
+    });
+
+    const sendData = await sendResp.json();
+
+    if (!sendResp.ok) {
+      console.error('Resend send broadcast error:', sendResp.status, JSON.stringify(sendData));
+      throw new Error('Send broadcast failed: ' + sendResp.status + ' - ' + JSON.stringify(sendData));
+    }
+
+    console.log('Daily digest broadcast sent', { broadcastId, top5: top5.length });
 
     return new Response(
-      JSON.stringify({ sent: top5.length, id: resendData?.id ?? null, recipient: recipient }),
+      JSON.stringify({ sent: top5.length, broadcast_id: broadcastId }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (error) {
