@@ -111,6 +111,7 @@ const Outreach = () => {
       if (l.score < minScore) return false;
       if (vcOnly && l.funding_status !== 'VC Backed') return false;
       if (paidOnly && (!l.plan || l.plan === 'free')) return false;
+      if (hideEmailed && l.last_emailed_at) return false;
       if (recentOnly) {
         if (!l.launch_date) return false;
         const days = (Date.now() - new Date(l.launch_date).getTime()) / 86400000;
@@ -118,7 +119,7 @@ const Outreach = () => {
       }
       return true;
     });
-  }, [leads, minScore, vcOnly, paidOnly, recentOnly]);
+  }, [leads, minScore, vcOnly, paidOnly, recentOnly, hideEmailed]);
 
   const toggle = (id: string) => {
     setSelected(s => {
