@@ -71,6 +71,7 @@ const Outreach = () => {
   const [paidOnly, setPaidOnly] = useState(false);
   const [recentOnly, setRecentOnly] = useState(false);
   const [hideEmailed, setHideEmailed] = useState(true);
+  const [autoRunning, setAutoRunning] = useState(false);
 
   useEffect(() => {
     (async () => {
