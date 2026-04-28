@@ -31,6 +31,7 @@ interface Lead {
   funding_confidence: number | null;
   funding_evidence: string | null;
   scored_at: string;
+  last_emailed_at: string | null;
 }
 
 const DEFAULT_SUBJECT = 'Need help after launching?';
@@ -69,6 +70,7 @@ const Outreach = () => {
   const [vcOnly, setVcOnly] = useState(false);
   const [paidOnly, setPaidOnly] = useState(false);
   const [recentOnly, setRecentOnly] = useState(false);
+  const [hideEmailed, setHideEmailed] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -109,6 +111,7 @@ const Outreach = () => {
       if (l.score < minScore) return false;
       if (vcOnly && l.funding_status !== 'VC Backed') return false;
       if (paidOnly && (!l.plan || l.plan === 'free')) return false;
+      if (hideEmailed && l.last_emailed_at) return false;
       if (recentOnly) {
         if (!l.launch_date) return false;
         const days = (Date.now() - new Date(l.launch_date).getTime()) / 86400000;
@@ -116,7 +119,7 @@ const Outreach = () => {
       }
       return true;
     });
-  }, [leads, minScore, vcOnly, paidOnly, recentOnly]);
+  }, [leads, minScore, vcOnly, paidOnly, recentOnly, hideEmailed]);
 
   const toggle = (id: string) => {
     setSelected(s => {
@@ -127,7 +130,7 @@ const Outreach = () => {
   };
 
   const selectTop = (n: number) => {
-    setSelected(new Set(filtered.slice(0, n).map(l => l.user_id)));
+    setSelected(new Set(filtered.filter(l => !l.last_emailed_at).slice(0, n).map(l => l.user_id)));
   };
 
   const stats = useMemo(() => ({
@@ -217,6 +220,7 @@ const Outreach = () => {
           <label className="flex items-center gap-2 text-sm"><Checkbox checked={vcOnly} onCheckedChange={v => setVcOnly(!!v)} /> VC Backed only</label>
           <label className="flex items-center gap-2 text-sm"><Checkbox checked={paidOnly} onCheckedChange={v => setPaidOnly(!!v)} /> Paid users only</label>
           <label className="flex items-center gap-2 text-sm"><Checkbox checked={recentOnly} onCheckedChange={v => setRecentOnly(!!v)} /> Launched in last 30d</label>
+          <label className="flex items-center gap-2 text-sm"><Checkbox checked={hideEmailed} onCheckedChange={v => setHideEmailed(!!v)} /> Hide already emailed</label>
           <div className="ml-auto flex gap-2">
             <Button size="sm" variant="outline" onClick={() => selectTop(25)}>Select Top 25</Button>
             <Button size="sm" variant="outline" onClick={() => selectTop(50)}>Select Top 50</Button>
@@ -245,13 +249,14 @@ const Outreach = () => {
                     <th className="p-2 text-left">Startup</th>
                     <th className="p-2 text-left">Email</th>
                     <th className="p-2 text-left">Launched</th>
+                    <th className="p-2 text-left">Status</th>
                     <th className="p-2 text-left">Reason</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map(l => (
-                    <tr key={l.user_id} className="border-t hover:bg-muted/30">
-                      <td className="p-2"><Checkbox checked={selected.has(l.user_id)} onCheckedChange={() => toggle(l.user_id)} /></td>
+                    <tr key={l.user_id} className={`border-t hover:bg-muted/30 ${l.last_emailed_at ? 'opacity-60' : ''}`}>
+                      <td className="p-2"><Checkbox checked={selected.has(l.user_id)} onCheckedChange={() => toggle(l.user_id)} disabled={!!l.last_emailed_at} /></td>
                       <td className="p-2 font-mono font-bold">{l.score}</td>
                       <td className="p-2">
                         {l.funding_status && (
@@ -271,6 +276,13 @@ const Outreach = () => {
                       </td>
                       <td className="p-2 text-xs text-muted-foreground">{l.email}</td>
                       <td className="p-2 text-xs">{l.launch_date ? format(new Date(l.launch_date), 'MMM d') : '—'}</td>
+                      <td className="p-2 text-xs">
+                        {l.last_emailed_at ? (
+                          <Badge variant="secondary" className="text-[10px]">Emailed {format(new Date(l.last_emailed_at), 'MMM d')}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
                       <td className="p-2 text-xs text-muted-foreground max-w-md">{l.reason}</td>
                     </tr>
                   ))}
