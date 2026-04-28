@@ -140,54 +140,69 @@ const CategoryPage = () => {
       const from = pageNum * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
-      // Get product IDs for this category
-      const { data: categoryProducts } = await supabase
-        .from('product_category_map')
-        .select('product_id')
-        .eq('category_id', categoryInfo.id);
+      // Get all product IDs for this category (paginate to bypass 1000-row default cap)
+      const allCategoryProducts: { product_id: string }[] = [];
+      const PAGE = 1000;
+      for (let offset = 0; ; offset += PAGE) {
+        const { data: chunk, error: mapError } = await supabase
+          .from('product_category_map')
+          .select('product_id')
+          .eq('category_id', categoryInfo.id)
+          .range(offset, offset + PAGE - 1);
+        if (mapError) throw mapError;
+        if (!chunk || chunk.length === 0) break;
+        allCategoryProducts.push(...chunk);
+        if (chunk.length < PAGE) break;
+      }
 
-      if (!categoryProducts || categoryProducts.length === 0) {
+      if (allCategoryProducts.length === 0) {
         setProducts([]);
         setHasMore(false);
         setLoading(false);
         return;
       }
 
-      const productIds = categoryProducts.map(cp => cp.product_id);
+      const productIds = allCategoryProducts.map(cp => cp.product_id);
 
-      // Fetch vote counts
+      // Fetch vote counts (scoped to this category's products)
       const { data: voteCounts } = await supabase
         .from('product_vote_counts')
-        .select('product_id, net_votes');
+        .select('product_id, net_votes')
+        .in('product_id', productIds.slice(0, 1000));
 
       const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes || 0]) || []);
 
-      // Fetch products
-      let query = supabase
-        .from('products')
-        .select(`
-          id,
-          slug,
-          name,
-          tagline,
-          launch_date,
-          domain_url,
-          verified_mrr,
-          mrr_verified_at,
-          product_media(url, type),
-          product_category_map(category_id),
-          product_makers(user_id, users(username, avatar_url))
-        `)
-        .eq('status', 'launched')
-        .in('id', productIds);
+      // Fetch products in chunks to avoid URL-length limits with large IN clauses
+      const CHUNK = 150;
+      const productsData: any[] = [];
+      for (let i = 0; i < productIds.length; i += CHUNK) {
+        const idsChunk = productIds.slice(i, i + CHUNK);
+        let query = supabase
+          .from('products')
+          .select(`
+            id,
+            slug,
+            name,
+            tagline,
+            launch_date,
+            domain_url,
+            verified_mrr,
+            mrr_verified_at,
+            product_media(url, type),
+            product_category_map(category_id),
+            product_makers(user_id, users(username, avatar_url))
+          `)
+          .eq('status', 'launched')
+          .in('id', idsChunk);
 
-      if (sort === 'latest') {
-        query = query.order('launch_date', { ascending: false });
+        if (sort === 'latest') {
+          query = query.order('launch_date', { ascending: false });
+        }
+
+        const { data: chunkData, error } = await query;
+        if (error) throw error;
+        if (chunkData) productsData.push(...chunkData);
       }
-
-      const { data: productsData, error } = await query;
-
-      if (error) throw error;
 
       let sortedProducts = productsData || [];
 
