@@ -130,7 +130,7 @@ const Outreach = () => {
   };
 
   const selectTop = (n: number) => {
-    setSelected(new Set(filtered.slice(0, n).map(l => l.user_id)));
+    setSelected(new Set(filtered.filter(l => !l.last_emailed_at).slice(0, n).map(l => l.user_id)));
   };
 
   const stats = useMemo(() => ({
