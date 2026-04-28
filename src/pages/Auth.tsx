@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -21,6 +22,7 @@ const Auth = () => {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [dailyDigest, setDailyDigest] = useState(true);
 
   // Sync isSignUp state with URL parameter
   useEffect(() => {
@@ -142,35 +144,38 @@ const Auth = () => {
 
   // Subscribe ALL new users to newsletter (email and OAuth signups)
   useEffect(() => {
-    // Track signup intent when on signup mode
+    // Track signup intent + daily digest preference when on signup mode
     if (isSignUp) {
       localStorage.setItem('pendingNewsletterSignup', 'true');
+      localStorage.setItem('pendingDailyDigest', dailyDigest ? 'true' : 'false');
     }
-  }, [isSignUp]);
+  }, [isSignUp, dailyDigest]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Handle newsletter subscription for new users
       if (event === 'SIGNED_IN' && session?.user?.email) {
         const isPendingSignup = localStorage.getItem('pendingNewsletterSignup') === 'true';
+        const wantsDailyDigest = localStorage.getItem('pendingDailyDigest') === 'true';
         const subscribedKey = `beehiiv_subscribed_${session.user.id}`;
         const alreadySubscribed = localStorage.getItem(subscribedKey) === 'true';
-        
+
         // Subscribe if: pending signup OR new user (check created_at is within last 5 minutes)
         const userCreatedAt = new Date(session.user.created_at).getTime();
         const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
         const isNewUser = userCreatedAt > fiveMinutesAgo;
-        
+
         if ((isPendingSignup || isNewUser) && !alreadySubscribed) {
           localStorage.removeItem('pendingNewsletterSignup');
+          localStorage.removeItem('pendingDailyDigest');
           localStorage.setItem(subscribedKey, 'true');
-          
+
           try {
-            console.log('Subscribing new user to newsletter:', session.user.email);
+            console.log('Subscribing new user to newsletter:', session.user.email, 'dailyDigest:', wantsDailyDigest);
             const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
-              body: { email: session.user.email },
+              body: { email: session.user.email, dailyDigest: wantsDailyDigest },
             });
-            
+
             if (error) {
               console.error('Newsletter subscription failed:', error);
             } else {
@@ -294,6 +299,18 @@ const Auth = () => {
                   </button>
                 )}
               </div>
+            )}
+            {isSignUp && !isForgotPassword && (
+              <label className="flex items-start gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+                <Checkbox
+                  checked={dailyDigest}
+                  onCheckedChange={(c) => setDailyDigest(c === true)}
+                  className="mt-0.5"
+                />
+                <span>
+                  Email me a daily digest of top launches
+                </span>
+              </label>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading 

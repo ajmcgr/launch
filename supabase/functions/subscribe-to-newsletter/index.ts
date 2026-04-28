@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email } = await req.json();
+    const { email, dailyDigest } = await req.json();
 
     if (!email) {
       throw new Error('Email is required');
@@ -24,6 +24,21 @@ serve(async (req) => {
       throw new Error('Beehiiv configuration is missing');
     }
 
+    const payload: Record<string, unknown> = {
+      email,
+      reactivate_existing: true,
+      send_welcome_email: true,
+    };
+
+    // Tag user for daily digest segmentation in Beehiiv
+    if (dailyDigest) {
+      payload.custom_fields = [
+        { name: 'daily_digest', value: 'true' },
+      ];
+      // Beehiiv supports tags via "utm_source" or custom fields; tags array also accepted
+      (payload as any).tags = ['daily_digest'];
+    }
+
     // Subscribe to Beehiiv
     const response = await fetch(
       `https://api.beehiiv.com/v2/publications/${beehiivPubId}/subscriptions`,
@@ -33,11 +48,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${beehiivApiKey}`,
         },
-        body: JSON.stringify({
-          email,
-          reactivate_existing: false,
-          send_welcome_email: true,
-        }),
+        body: JSON.stringify(payload),
       }
     );
 
