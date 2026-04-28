@@ -32,7 +32,7 @@ function bodyToHtml(body: string): string {
 
 const PRODUCTION_URL = 'https://trylaunch.ai';
 
-function wrapEmail(inner: string, subject: string): string {
+function wrapEmail(inner: string, subject: string, unsubUrl: string): string {
   return '<!DOCTYPE html><html><head><meta charset="utf-8"/><title>' + escapeHtml(subject) + '</title>'
     + '<style>'
     + 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0;background:#f9fafb;}'
@@ -47,7 +47,8 @@ function wrapEmail(inner: string, subject: string): string {
     + '<div class="container"><div class="card">'
     + '<div class="header"><img src="' + PRODUCTION_URL + '/images/launch-logo.png" alt="Launch" class="logo"/></div>'
     + '<div class="content">' + inner + '</div>'
-    + '<div class="footer"><p>Sent by <a href="' + PRODUCTION_URL + '">Launch</a> · alex@trylaunch.ai</p></div>'
+    + '<div class="footer"><p>Sent by <a href="' + PRODUCTION_URL + '">Launch</a> · alex@trylaunch.ai</p>'
+    + '<p style="margin-top:8px;">Not interested? <a href="' + unsubUrl + '">Unsubscribe</a></p></div>'
     + '</div></div></body></html>';
 }
 
@@ -117,7 +118,8 @@ Deno.serve(async (req) => {
         const vars = { first_name: r.first_name || 'there', startup_name: r.startup_name || 'your startup' };
         const renderedSubject = render(subject, vars);
         const renderedBody = render(body, vars);
-        const html = wrapEmail(bodyToHtml(renderedBody), renderedSubject);
+        const unsubUrl = PRODUCTION_URL + '/unsubscribe?email=' + encodeURIComponent(r.email);
+        const html = wrapEmail(bodyToHtml(renderedBody) + '<p style="margin-top:24px;color:#9ca3af;font-size:12px;">If you\'d rather not hear from us, <a href="' + unsubUrl + '" style="color:#9ca3af;">unsubscribe here</a>.</p>', renderedSubject, unsubUrl);
         try {
           const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -128,7 +130,11 @@ Deno.serve(async (req) => {
               reply_to: 'alex@trylaunch.ai',
               subject: renderedSubject,
               html,
-              text: renderedBody,
+              text: renderedBody + '\n\n---\nUnsubscribe: ' + unsubUrl,
+              headers: {
+                'List-Unsubscribe': '<' + unsubUrl + '>, <mailto:alex@trylaunch.ai?subject=unsubscribe>',
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+              },
             }),
           });
           if (!res.ok) {
