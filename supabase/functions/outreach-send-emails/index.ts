@@ -32,7 +32,7 @@ function bodyToHtml(body: string): string {
 
 const PRODUCTION_URL = 'https://trylaunch.ai';
 
-function wrapEmail(inner: string, subject: string): string {
+function wrapEmail(inner: string, subject: string, unsubUrl: string): string {
   return '<!DOCTYPE html><html><head><meta charset="utf-8"/><title>' + escapeHtml(subject) + '</title>'
     + '<style>'
     + 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0;background:#f9fafb;}'
@@ -47,7 +47,8 @@ function wrapEmail(inner: string, subject: string): string {
     + '<div class="container"><div class="card">'
     + '<div class="header"><img src="' + PRODUCTION_URL + '/images/launch-logo.png" alt="Launch" class="logo"/></div>'
     + '<div class="content">' + inner + '</div>'
-    + '<div class="footer"><p>Sent by <a href="' + PRODUCTION_URL + '">Launch</a> · alex@trylaunch.ai</p></div>'
+    + '<div class="footer"><p>Sent by <a href="' + PRODUCTION_URL + '">Launch</a> · alex@trylaunch.ai</p>'
+    + '<p style="margin-top:8px;">Not interested? <a href="' + unsubUrl + '">Unsubscribe</a></p></div>'
     + '</div></div></body></html>';
 }
 
