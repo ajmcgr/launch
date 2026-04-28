@@ -3,8 +3,69 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PER_PAGE = 500;
+const RESEND_BATCH_SIZE = 5;
+const RESEND_BATCH_DELAY_MS = 1050;
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function readJsonBody(req: Request) {
+  const rawBody = await req.text();
+  if (!rawBody) return {};
+
+  try {
+    return JSON.parse(rawBody);
+  } catch (_error) {
+    return {};
+  }
+}
+
+function getPositiveInt(value: unknown, fallback: number, max: number) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+  return Math.min(Math.floor(parsed), max);
+}
+
+async function addContactToResend(audienceId: string, resendApiKey: string, user: any, profile: any) {
+  const fullName = (profile?.full_name as string) || (profile?.username as string) || '';
+  const [first, ...rest] = fullName.trim().split(/\s+/).filter(Boolean);
+
+  try {
+    const resp = await fetch(
+      'https://api.resend.com/audiences/' + audienceId + '/contacts',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + resendApiKey,
+        },
+        body: JSON.stringify({
+          email: user.email,
+          first_name: first || '',
+          last_name: rest.join(' ') || '',
+          unsubscribed: false,
+        }),
+      },
+    );
+
+    if (resp.ok) return 'added';
+    if (resp.status === 422 || resp.status === 409) return 'skipped';
+    if (resp.status === 429) {
+      await wait(RESEND_BATCH_DELAY_MS);
+      return addContactToResend(audienceId, resendApiKey, user, profile);
+    }
+
+    console.error('add failed', user.email, resp.status, await resp.text());
+    return 'error';
+  } catch (error) {
+    console.error('add exception', user.email, error);
+    return 'error';
+  }
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -23,6 +84,10 @@ serve(async (req) => {
     const matchingEnvKeys = Object.keys(Deno.env.toObject())
       .filter((key) => key.includes('RESEND') || key.includes('AUDIENCE'))
       .sort();
+    const requestUrl = new URL(req.url);
+    const body = await readJsonBody(req);
+    const page = getPositiveInt(body.page ?? requestUrl.searchParams.get('page'), DEFAULT_PAGE, 100000);
+    const perPage = getPositiveInt(body.perPage ?? requestUrl.searchParams.get('perPage'), DEFAULT_PER_PAGE, DEFAULT_PER_PAGE);
 
     if (!resendApiKey) throw new Error('RESEND_API_KEY missing');
     if (!audienceId) {
@@ -45,67 +110,42 @@ serve(async (req) => {
 
     const admin = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Page through all auth users
     let added = 0;
     let skipped = 0;
     let errors = 0;
-    let page = 1;
-    const perPage = 1000;
 
-    while (true) {
-      const { data: list, error } = await admin.auth.admin.listUsers({ page, perPage });
-      if (error) throw error;
-      if (!list?.users || list.users.length === 0) break;
+    const { data: list, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error) throw error;
+    const users = list?.users || [];
+    const ids = users.map((u) => u.id);
+    const { data: profiles } = ids.length
+      ? await admin.from('profiles').select('id, username, full_name').in('id', ids)
+      : { data: [] };
+    const profileMap = new Map<string, any>();
+    profiles?.forEach((p: any) => profileMap.set(p.id, p));
+    const usersWithEmail = users.filter((u) => Boolean(u.email));
+    skipped += users.length - usersWithEmail.length;
 
-      // Get profiles for names
-      const ids = list.users.map((u) => u.id);
-      const { data: profiles } = await admin
-        .from('profiles')
-        .select('id, username, full_name')
-        .in('id', ids);
-      const profileMap = new Map<string, any>();
-      profiles?.forEach((p: any) => profileMap.set(p.id, p));
+    for (let i = 0; i < usersWithEmail.length; i += RESEND_BATCH_SIZE) {
+      const batch = usersWithEmail.slice(i, i + RESEND_BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map((u) => addContactToResend(audienceId, resendApiKey, u, profileMap.get(u.id))),
+      );
 
-      for (const u of list.users) {
-        if (!u.email) { skipped++; continue; }
-        const p = profileMap.get(u.id);
-        const fullName = (p?.full_name as string) || (p?.username as string) || '';
-        const [first, ...rest] = fullName.split(' ');
-
-        try {
-          const resp = await fetch(
-            'https://api.resend.com/audiences/' + audienceId + '/contacts',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + resendApiKey,
-              },
-              body: JSON.stringify({
-                email: u.email,
-                first_name: first || '',
-                last_name: rest.join(' ') || '',
-                unsubscribed: false,
-              }),
-            },
-          );
-          if (resp.ok) added++;
-          else if (resp.status === 422 || resp.status === 409) skipped++;
-          else { errors++; console.error('add failed', u.email, resp.status, await resp.text()); }
-        } catch (e) {
-          errors++;
-          console.error('add exception', u.email, e);
-        }
-
-        // Throttle: Resend ~10 req/s
-        await new Promise((r) => setTimeout(r, 110));
+      for (const result of results) {
+        if (result === 'added') added++;
+        else if (result === 'skipped') skipped++;
+        else errors++;
       }
 
-      if (list.users.length < perPage) break;
-      page++;
+      if (i + RESEND_BATCH_SIZE < usersWithEmail.length) {
+        await wait(RESEND_BATCH_DELAY_MS);
+      }
     }
 
-    return new Response(JSON.stringify({ added, skipped, errors }), {
+    const hasMore = users.length === perPage;
+
+    return new Response(JSON.stringify({ added, skipped, errors, page, perPage, hasMore, nextPage: hasMore ? page + 1 : null }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
