@@ -91,6 +91,7 @@ Deno.serve(async (req) => {
         funding_confidence: s.funding_confidence,
         funding_evidence: s.funding_evidence,
         scored_at: s.scored_at,
+        last_emailed_at: lastSentMap.get(s.user_id) || null,
       };
     }).filter(l => l.email);
 
