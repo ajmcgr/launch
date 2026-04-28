@@ -300,6 +300,18 @@ const Auth = () => {
                 )}
               </div>
             )}
+            {isSignUp && !isForgotPassword && (
+              <label className="flex items-start gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+                <Checkbox
+                  checked={dailyDigest}
+                  onCheckedChange={(c) => setDailyDigest(c === true)}
+                  className="mt-0.5"
+                />
+                <span>
+                  Email me a daily digest of top launches
+                </span>
+              </label>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading 
                 ? (isForgotPassword ? 'Sending...' : (isSignUp ? 'Signing up...' : 'Signing in...'))
