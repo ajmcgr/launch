@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
     const onlyMissing = body.onlyMissing !== false;
 
     // Pull launched products, prefer recent + with tagline
-    const { data: products } = await admin
+    const { data: products, error: productsErr } = await admin
       .from('products')
       .select('id, owner_id, name, slug, tagline, description, domain_url, launch_date, status')
       .eq('status', 'launched')
@@ -100,7 +100,14 @@ Deno.serve(async (req) => {
       .order('launch_date', { ascending: false, nullsFirst: false })
       .limit(500);
 
-    if (!products?.length) return new Response(JSON.stringify({ scored: 0 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    console.log('[outreach-score] products query:', { count: products?.length, error: productsErr?.message });
+
+    if (!products?.length) {
+      // Diagnostic: check what statuses exist
+      const { data: anyProducts } = await admin.from('products').select('status, owner_id').limit(20);
+      console.log('[outreach-score] sample products:', anyProducts);
+      return new Response(JSON.stringify({ scored: 0, debug: 'no products matched status=launched with owner_id', sample: anyProducts }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
 
     const ownerIds = [...new Set(products.map(p => p.owner_id))];
     const productIds = products.map(p => p.id);
@@ -189,7 +196,17 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ scored, candidates_total: candidates.length }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    console.log('[outreach-score] funnel:', {
+      products: products.length,
+      uniqueOwners: ownerIds.length,
+      bestPerOwner: bestPerOwner.size,
+      emailsFound: emailMap.size,
+      candidates: candidates.length,
+      toScore: toScore.length,
+      scored,
+    });
+
+    return new Response(JSON.stringify({ scored, candidates_total: candidates.length, debug: { products: products.length, uniqueOwners: ownerIds.length, emailsFound: emailMap.size } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
     console.error('outreach-score-leads error', e);
     return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
