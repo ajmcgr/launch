@@ -223,12 +223,24 @@ Deno.serve(async (req) => {
       const vars = { first_name: r.first_name || 'there', startup_name: r.startup_name || 'your startup' };
       const subject = render(DEFAULT_SUBJECT, vars);
       const text = render(DEFAULT_BODY, vars);
-      const html = wrapEmail(bodyToHtml(text), subject);
+      const unsubUrl = PRODUCTION_URL + '/unsubscribe?email=' + encodeURIComponent(r.email);
+      const html = wrapEmail(bodyToHtml(text) + '<p style="margin-top:24px;color:#9ca3af;font-size:12px;">If you\'d rather not hear from us, <a href="' + unsubUrl + '" style="color:#9ca3af;">unsubscribe here</a>.</p>', subject, unsubUrl);
       try {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + RESEND_API_KEY },
-          body: JSON.stringify({ from: FROM, to: [r.email], reply_to: 'alex@trylaunch.ai', subject, html, text }),
+          body: JSON.stringify({
+            from: FROM,
+            to: [r.email],
+            reply_to: 'alex@trylaunch.ai',
+            subject,
+            html,
+            text: text + '\n\n---\nUnsubscribe: ' + unsubUrl,
+            headers: {
+              'List-Unsubscribe': '<' + unsubUrl + '>, <mailto:alex@trylaunch.ai?subject=unsubscribe>',
+              'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+            },
+          }),
         });
         if (!res.ok) {
           const errText = await res.text();
