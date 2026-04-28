@@ -255,8 +255,8 @@ const Outreach = () => {
                 </thead>
                 <tbody>
                   {filtered.map(l => (
-                    <tr key={l.user_id} className="border-t hover:bg-muted/30">
-                      <td className="p-2"><Checkbox checked={selected.has(l.user_id)} onCheckedChange={() => toggle(l.user_id)} /></td>
+                    <tr key={l.user_id} className={`border-t hover:bg-muted/30 ${l.last_emailed_at ? 'opacity-60' : ''}`}>
+                      <td className="p-2"><Checkbox checked={selected.has(l.user_id)} onCheckedChange={() => toggle(l.user_id)} disabled={!!l.last_emailed_at} /></td>
                       <td className="p-2 font-mono font-bold">{l.score}</td>
                       <td className="p-2">
                         {l.funding_status && (
