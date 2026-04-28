@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
+import { buildFaqJsonLd, techFaqs, techIntroFallback } from '@/lib/seoFaq';
 
 interface Product {
   id: string;
@@ -250,7 +251,11 @@ const StackPage = () => {
   };
 
   const pageTitle = stackInfo ? `Products built with ${stackInfo.name}` : 'Stack';
-  const pageDescription = stackInfo ? `Discover products built with ${stackInfo.name} on Launch` : '';
+  const pageDescription = stackInfo
+    ? `Discover ${products.length} products built with ${stackInfo.name} on Launch — submitted and verified by their makers.`
+    : '';
+  const introText = stackInfo ? techIntroFallback(stackInfo.name, products.length) : '';
+  const faqs = stackInfo ? techFaqs(stackInfo.name, products.length) : [];
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -258,6 +263,9 @@ const StackPage = () => {
         <title>{pageTitle} - Launch</title>
         <meta name="description" content={pageDescription} />
         <link rel="canonical" href={`https://trylaunch.ai/tech/${slug}`} />
+        {faqs.length > 0 && (
+          <script type="application/ld+json">{JSON.stringify(buildFaqJsonLd(faqs))}</script>
+        )}
       </Helmet>
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="mb-8">
@@ -265,6 +273,11 @@ const StackPage = () => {
           <p className="text-muted-foreground">
             {products.length} {products.length === 1 ? 'product' : 'products'} built with {stackInfo?.name || slug}
           </p>
+          {introText && (
+            <p className="text-base text-muted-foreground leading-relaxed mt-4 max-w-3xl">
+              {introText}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center justify-between mb-6">
