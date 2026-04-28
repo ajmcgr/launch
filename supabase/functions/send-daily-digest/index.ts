@@ -115,8 +115,9 @@ Deno.serve(async (req) => {
     html += '</table></td></tr></table></body></html>';
 
     const subject = 'Top 5 launches yesterday on Launch 🚀';
+    const TEMPLATE_ID = '8ef467dd-a7af-47e8-ae7d-9d78bc592a1d'; // Launch V4
 
-    // Create + schedule a Beehiiv post targeting the daily_digest segment
+    // Create + schedule a Beehiiv post from the Launch V4 template, targeting the daily_digest segment
     const beehiivResp = await fetch(
       'https://api.beehiiv.com/v2/publications/' + beehiivPubId + '/posts',
       {
@@ -126,6 +127,7 @@ Deno.serve(async (req) => {
           'Authorization': 'Bearer ' + beehiivApiKey,
         },
         body: JSON.stringify({
+          template_post_id: TEMPLATE_ID,
           title: subject,
           subtitle: 'Yesterday\'s most upvoted products on Launch',
           body_content: html,
