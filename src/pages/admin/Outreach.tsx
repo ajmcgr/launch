@@ -71,7 +71,7 @@ const Outreach = () => {
   const [paidOnly, setPaidOnly] = useState(false);
   const [recentOnly, setRecentOnly] = useState(false);
   const [hideEmailed, setHideEmailed] = useState(true);
-  const [autoRunning, setAutoRunning] = useState(false);
+  // autoRunning state removed — automation is fully cron-driven
 
   useEffect(() => {
     (async () => {
@@ -107,23 +107,7 @@ const Outreach = () => {
     }
   };
 
-  const handleAutoRun = async (dryRun: boolean) => {
-    setAutoRunning(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('outreach-auto-send', { body: { dryRun } });
-      if (error) throw error;
-      if (dryRun) {
-        toast.success(`Dry run: would send ${data.would_send || 0} emails (${data.scored || 0} newly scored)`);
-      } else {
-        toast.success(`Auto: scored ${data.scored || 0}, sent ${data.sent || 0}, failed ${data.failed || 0}`);
-        await loadLeads();
-      }
-    } catch (e: any) {
-      toast.error(e.message || 'Auto-run failed');
-    } finally {
-      setAutoRunning(false);
-    }
-  };
+  // Automation runs via daily pg_cron — no manual trigger needed.
 
   const filtered = useMemo(() => {
     return leads.filter(l => {
@@ -226,24 +210,15 @@ const Outreach = () => {
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Sent Today</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{sentToday}</div></CardContent></Card>
       </div>
 
-      {/* Automation */}
+      {/* Automation status (informational) */}
       <Card className="bg-muted/30">
-        <CardHeader className="pb-3"><CardTitle className="text-base">Automation</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
+        <CardHeader className="pb-3"><CardTitle className="text-base">Automation status</CardTitle></CardHeader>
+        <CardContent>
           <p className="text-sm text-muted-foreground">
-            Daily cron at <strong>14:00 UTC</strong> scores newly-launched makers and emails the top 25 (score ≥ 7).
-            Skips: already-emailed, opted-out, suppressed addresses. Run <code>database-outreach-automation.sql</code> in Supabase to enable.
+            ✅ Running daily at <strong>14:00 UTC</strong>. Scores newly-launched makers and emails the top 25 (score ≥ 7).
+            Skips already-emailed, opted-out, and suppressed addresses. Monitor results in the table below — leads marked
+            <Badge variant="secondary" className="mx-1">Emailed</Badge> were sent by either the daily cron or your manual sends.
           </p>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => handleAutoRun(true)} disabled={autoRunning}>
-              {autoRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              Dry run (preview)
-            </Button>
-            <Button size="sm" onClick={() => handleAutoRun(false)} disabled={autoRunning}>
-              {autoRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              Run automation now
-            </Button>
-          </div>
         </CardContent>
       </Card>
       <Card>
