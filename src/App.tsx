@@ -27,6 +27,7 @@ import BlogPost from "./pages/BlogPost";
 import NewsletterRedirect from "./pages/NewsletterRedirect";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import Outreach from "./pages/admin/Outreach";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import Notifications from "./pages/Notifications";
@@ -104,6 +105,7 @@ const AppContent = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/outreach" element={<Outreach />} />
           <Route path="/discourse-sso" element={<DiscourseSso />} />
           <Route path="/api/discourse-sso" element={<DiscourseSso />} />
           <Route path="/notifications" element={<Notifications />} />
