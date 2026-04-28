@@ -18,11 +18,11 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch all published products
+    // Fetch all launched products (status='launched' is the active state, see Core memory)
     const { data: products } = await supabase
       .from("products")
       .select("slug, created_at, launch_date")
-      .eq("status", "published")
+      .eq("status", "launched")
       .order("launch_date", { ascending: false });
 
     // Fetch all tags
