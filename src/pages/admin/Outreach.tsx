@@ -220,6 +220,7 @@ const Outreach = () => {
           <label className="flex items-center gap-2 text-sm"><Checkbox checked={vcOnly} onCheckedChange={v => setVcOnly(!!v)} /> VC Backed only</label>
           <label className="flex items-center gap-2 text-sm"><Checkbox checked={paidOnly} onCheckedChange={v => setPaidOnly(!!v)} /> Paid users only</label>
           <label className="flex items-center gap-2 text-sm"><Checkbox checked={recentOnly} onCheckedChange={v => setRecentOnly(!!v)} /> Launched in last 30d</label>
+          <label className="flex items-center gap-2 text-sm"><Checkbox checked={hideEmailed} onCheckedChange={v => setHideEmailed(!!v)} /> Hide already emailed</label>
           <div className="ml-auto flex gap-2">
             <Button size="sm" variant="outline" onClick={() => selectTop(25)}>Select Top 25</Button>
             <Button size="sm" variant="outline" onClick={() => selectTop(50)}>Select Top 50</Button>
