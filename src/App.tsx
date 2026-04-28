@@ -52,6 +52,8 @@ import ProductAnalytics from "./pages/ProductAnalytics";
 import GoRedirect from "./pages/GoRedirect";
 import SuccessStories from "./pages/SuccessStories";
 import Awards from "./pages/Awards";
+import CompareHub from "./pages/CompareHub";
+import ComparePage from "./pages/ComparePage";
 
 import DiscourseSso from "./pages/DiscourseSso";
 import MediaKit from "./pages/MediaKit";
@@ -121,6 +123,8 @@ const AppContent = () => {
           <Route path="/makers" element={<Leaderboard />} />
           <Route path="/success-stories" element={<SuccessStories />} />
           <Route path="/awards" element={<Awards />} />
+          <Route path="/compare" element={<CompareHub />} />
+          <Route path="/compare/:slug" element={<ComparePage />} />
           <Route path="/launches/today" element={<LaunchArchive />} />
           <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
           <Route path="/launches/:param" element={<LaunchArchive />} />
