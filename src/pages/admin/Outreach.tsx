@@ -9,23 +9,25 @@ import { format } from 'date-fns';
 
 interface Lead {
   user_id: string;
-  product_id: string | null;
-  email: string;
+  score: number;
+  funding_status: string | null;
+}
+
+interface Emailed {
+  user_id: string | null;
+  sent_at: string;
+  email: string | null;
+  subject: string | null;
   founder_name: string | null;
   username: string | null;
-  plan: string;
+  plan: string | null;
   startup_name: string | null;
   slug: string | null;
-  tagline: string | null;
-  domain_url: string | null;
   launch_date: string | null;
-  score: number;
-  reason: string | null;
+  score: number | null;
   funding_status: string | null;
   funding_confidence: number | null;
-  funding_evidence: string | null;
-  scored_at: string;
-  last_emailed_at: string | null;
+  reason: string | null;
 }
 
 const Outreach = () => {
@@ -33,6 +35,7 @@ const Outreach = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [emailed, setEmailed] = useState<Emailed[]>([]);
   const [sentToday, setSentToday] = useState(0);
 
   useEffect(() => {
@@ -52,16 +55,9 @@ const Outreach = () => {
     const { data, error } = await supabase.functions.invoke('outreach-list-leads');
     if (error) { toast.error('Failed to load leads'); return; }
     setLeads(data?.leads || []);
+    setEmailed(data?.emailed || []);
     setSentToday(data?.sent_today || 0);
   };
-
-  // Show only emailed leads, most recent first
-  const emailed = useMemo(
-    () => leads
-      .filter(l => l.last_emailed_at)
-      .sort((a, b) => new Date(b.last_emailed_at!).getTime() - new Date(a.last_emailed_at!).getTime()),
-    [leads]
-  );
 
   const stats = useMemo(() => ({
     totalEmailed: emailed.length,
@@ -141,17 +137,16 @@ const Outreach = () => {
                     <th className="p-2 text-left">Founder</th>
                     <th className="p-2 text-left">Startup</th>
                     <th className="p-2 text-left">Email</th>
-                    <th className="p-2 text-left">Launched</th>
-                    <th className="p-2 text-left">Reason</th>
+                    <th className="p-2 text-left">Subject</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {emailed.map(l => (
-                    <tr key={l.user_id} className="border-t hover:bg-muted/30">
+                  {emailed.map((l, idx) => (
+                    <tr key={`${l.user_id || l.email}-${l.sent_at}-${idx}`} className="border-t hover:bg-muted/30">
                       <td className="p-2 text-xs whitespace-nowrap">
-                        <Badge variant="secondary" className="text-[10px]">{format(new Date(l.last_emailed_at!), 'MMM d')}</Badge>
+                        <Badge variant="secondary" className="text-[10px]">{format(new Date(l.sent_at), 'MMM d HH:mm')}</Badge>
                       </td>
-                      <td className="p-2 font-mono font-bold">{l.score}</td>
+                      <td className="p-2 font-mono font-bold">{l.score ?? '—'}</td>
                       <td className="p-2">
                         {l.funding_status && (
                           <Badge variant={l.funding_status === 'VC Backed' ? 'default' : 'secondary'} className="text-[10px]">
@@ -159,18 +154,17 @@ const Outreach = () => {
                           </Badge>
                         )}
                       </td>
-                      <td className="p-2">{l.founder_name || l.username}</td>
+                      <td className="p-2">{l.founder_name || l.username || '—'}</td>
                       <td className="p-2">
                         {l.slug ? (
                           <a href={`/launch/${l.slug}`} target="_blank" rel="noreferrer" className="hover:underline inline-flex items-center gap-1">
                             {l.startup_name} <ExternalLink className="h-3 w-3" />
                           </a>
-                        ) : l.startup_name}
+                        ) : l.startup_name || '—'}
                         {l.plan && l.plan !== 'free' && <Badge variant="outline" className="ml-2 text-[10px]">{l.plan}</Badge>}
                       </td>
                       <td className="p-2 text-xs text-muted-foreground">{l.email}</td>
-                      <td className="p-2 text-xs">{l.launch_date ? format(new Date(l.launch_date), 'MMM d') : '—'}</td>
-                      <td className="p-2 text-xs text-muted-foreground max-w-md">{l.reason}</td>
+                      <td className="p-2 text-xs text-muted-foreground max-w-md truncate">{l.subject}</td>
                     </tr>
                   ))}
                 </tbody>
