@@ -58,6 +58,18 @@ Deno.serve(async (req) => {
       .gte('sent_at', todayStart.toISOString())
       .eq('status', 'sent');
 
+    // last sent timestamp per user_id (any sent log)
+    const { data: sentLogs } = await admin
+      .from('outreach_email_logs')
+      .select('user_id, sent_at')
+      .in('user_id', userIds)
+      .eq('status', 'sent')
+      .order('sent_at', { ascending: false });
+    const lastSentMap = new Map<string, string>();
+    (sentLogs || []).forEach((l: any) => {
+      if (!lastSentMap.has(l.user_id)) lastSentMap.set(l.user_id, l.sent_at);
+    });
+
     const leads = scores.map(s => {
       const u = userMap.get(s.user_id) as any;
       const p = s.product_id ? productMap.get(s.product_id) as any : null;
