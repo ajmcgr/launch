@@ -162,10 +162,31 @@ const Outreach = () => {
   if (loading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   if (!isAdmin) return null;
 
+  const adminTabs = [
+    { value: 'metrics', label: 'Metrics', path: '/admin' },
+    { value: 'manage', label: 'Ops', path: '/admin' },
+    { value: 'marketing', label: 'Marketing', path: '/admin' },
+    { value: 'outreach', label: 'Outreach', path: '/admin/outreach' },
+  ];
+
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Outreach</h1>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-1 border rounded-md p-1 bg-muted/30">
+          {adminTabs.map(t => (
+            <button
+              key={t.value}
+              onClick={() => navigate(t.path)}
+              className={`text-sm px-3 h-8 rounded-md transition-colors ${
+                t.value === 'outreach'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleScore} disabled={scoring}>
             {scoring ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
@@ -173,6 +194,7 @@ const Outreach = () => {
           </Button>
         </div>
       </div>
+      <h1 className="text-3xl font-bold">Outreach</h1>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
