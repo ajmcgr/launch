@@ -457,6 +457,19 @@ const TagPage = () => {
             </Button>
           </div>
         )}
+        {faqs.length > 0 && (
+          <section className="mt-16 pt-10 border-t border-border/40">
+            <h2 className="text-2xl font-bold mb-6">Frequently asked questions</h2>
+            <div className="space-y-6">
+              {faqs.map((f) => (
+                <div key={f.question}>
+                  <h3 className="font-semibold mb-1">{f.question}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </>
   );
