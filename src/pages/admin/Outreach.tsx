@@ -2,15 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Loader2, Sparkles, Send, ExternalLink } from 'lucide-react';
+import { Loader2, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Lead {
@@ -34,44 +28,12 @@ interface Lead {
   last_emailed_at: string | null;
 }
 
-const DEFAULT_SUBJECT = 'Need help after launching?';
-const DEFAULT_BODY = `Hey {{first_name}},
-
-Launching is only step one.
-
-Many startups get attention for a few days, then momentum fades.
-
-We're opening a small number of support slots for Launch startups who want help with:
-
-• Public relations
-• Influencer marketing
-• Community growth
-• More users after launch
-
-Reply interested if you'd like details.
-
-– Alex
-Launch`;
-
 const Outreach = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [sentToday, setSentToday] = useState(0);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [scoring, setScoring] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [subject, setSubject] = useState(DEFAULT_SUBJECT);
-  const [body, setBody] = useState(DEFAULT_BODY);
-
-  // Filters
-  const [minScore, setMinScore] = useState(7);
-  const [vcOnly, setVcOnly] = useState(false);
-  const [paidOnly, setPaidOnly] = useState(false);
-  const [recentOnly, setRecentOnly] = useState(false);
-  const [hideEmailed, setHideEmailed] = useState(true);
-  // autoRunning state removed — automation is fully cron-driven
 
   useEffect(() => {
     (async () => {
@@ -93,77 +55,19 @@ const Outreach = () => {
     setSentToday(data?.sent_today || 0);
   };
 
-  const handleScore = async () => {
-    setScoring(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('outreach-score-leads', { body: { limit: 25, onlyMissing: true } });
-      if (error) throw error;
-      toast.success(`Scored ${data.scored} new startups (${data.candidates_total} candidates total)`);
-      await loadLeads();
-    } catch (e: any) {
-      toast.error(e.message || 'Scoring failed');
-    } finally {
-      setScoring(false);
-    }
-  };
-
-  // Automation runs via daily pg_cron — no manual trigger needed.
-
-  const filtered = useMemo(() => {
-    return leads.filter(l => {
-      if (l.score < minScore) return false;
-      if (vcOnly && l.funding_status !== 'VC Backed') return false;
-      if (paidOnly && (!l.plan || l.plan === 'free')) return false;
-      if (hideEmailed && l.last_emailed_at) return false;
-      if (recentOnly) {
-        if (!l.launch_date) return false;
-        const days = (Date.now() - new Date(l.launch_date).getTime()) / 86400000;
-        if (days > 30) return false;
-      }
-      return true;
-    });
-  }, [leads, minScore, vcOnly, paidOnly, recentOnly, hideEmailed]);
-
-  const toggle = (id: string) => {
-    setSelected(s => {
-      const n = new Set(s);
-      n.has(id) ? n.delete(id) : n.add(id);
-      return n;
-    });
-  };
-
-  const selectTop = (n: number) => {
-    setSelected(new Set(filtered.filter(l => !l.last_emailed_at).slice(0, n).map(l => l.user_id)));
-  };
+  // Show only emailed leads, most recent first
+  const emailed = useMemo(
+    () => leads
+      .filter(l => l.last_emailed_at)
+      .sort((a, b) => new Date(b.last_emailed_at!).getTime() - new Date(a.last_emailed_at!).getTime()),
+    [leads]
+  );
 
   const stats = useMemo(() => ({
+    totalEmailed: emailed.length,
     qualified: leads.length,
     vc: leads.filter(l => l.funding_status === 'VC Backed').length,
-    selected: selected.size,
-  }), [leads, selected]);
-
-  const handleSend = async () => {
-    if (!selected.size) { toast.error('Select recipients first'); return; }
-    if (!confirm(`Send to ${selected.size} recipient(s)?`)) return;
-    setSending(true);
-    try {
-      const recipients = leads.filter(l => selected.has(l.user_id)).map(l => ({
-        user_id: l.user_id,
-        email: l.email,
-        first_name: (l.founder_name || l.username || '').split(' ')[0] || '',
-        startup_name: l.startup_name || '',
-      }));
-      const { data, error } = await supabase.functions.invoke('outreach-send-emails', { body: { recipients, subject, body } });
-      if (error) throw error;
-      toast.success(`Sent: ${data.sent} · Failed: ${data.failed} · Skipped (dedup/unsub): ${data.skipped}`);
-      setSelected(new Set());
-      await loadLeads();
-    } catch (e: any) {
-      toast.error(e.message || 'Send failed');
-    } finally {
-      setSending(false);
-    }
-  };
+  }), [leads, emailed]);
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   if (!isAdmin) return null;
@@ -178,12 +82,7 @@ const Outreach = () => {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-4 md:py-6 space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex-1 flex justify-start">
-          <Button variant="outline" onClick={handleScore} disabled={scoring}>
-            {scoring ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            Score Startups
-          </Button>
-        </div>
+        <div className="flex-1" />
         <h1 className="text-4xl font-reckless">Admin</h1>
         <div className="flex-1 flex justify-end">
           <div className="flex items-center gap-1 border rounded-md p-1 bg-muted/30">
@@ -206,72 +105,52 @@ const Outreach = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Sent Today</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{sentToday}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Emailed</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{stats.totalEmailed}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Qualified Leads</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{stats.qualified}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">VC Backed</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{stats.vc}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Selected</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{stats.selected}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Sent Today</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{sentToday}</div></CardContent></Card>
       </div>
 
-      {/* Automation status (informational) */}
+      {/* Automation status */}
       <Card className="bg-muted/30">
         <CardHeader className="pb-3"><CardTitle className="text-base">Automation status</CardTitle></CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
             ✅ Running daily at <strong>14:00 UTC</strong>. Scores newly-launched makers and emails the top 25 (score ≥ 7).
-            Skips already-emailed, opted-out, and suppressed addresses. Monitor results in the table below — leads marked
-            <Badge variant="secondary" className="mx-1">Emailed</Badge> were sent by either the daily cron or your manual sends.
+            Skips already-emailed, opted-out, and suppressed addresses.
           </p>
         </CardContent>
       </Card>
-      <Card>
-        <CardContent className="pt-6 flex flex-wrap items-end gap-4">
-          <div>
-            <Label className="text-xs">Min score</Label>
-            <Select value={String(minScore)} onValueChange={v => setMinScore(parseInt(v))}>
-              <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
-              <SelectContent>{[0,5,6,7,8,9,10].map(n => <SelectItem key={n} value={String(n)}>{n}+</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          <label className="flex items-center gap-2 text-sm"><Checkbox checked={vcOnly} onCheckedChange={v => setVcOnly(!!v)} /> VC Backed only</label>
-          <label className="flex items-center gap-2 text-sm"><Checkbox checked={paidOnly} onCheckedChange={v => setPaidOnly(!!v)} /> Paid users only</label>
-          <label className="flex items-center gap-2 text-sm"><Checkbox checked={recentOnly} onCheckedChange={v => setRecentOnly(!!v)} /> Launched in last 30d</label>
-          <label className="flex items-center gap-2 text-sm"><Checkbox checked={hideEmailed} onCheckedChange={v => setHideEmailed(!!v)} /> Hide already emailed</label>
-          <div className="ml-auto flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => selectTop(25)}>Select Top 25</Button>
-            <Button size="sm" variant="outline" onClick={() => selectTop(50)}>Select Top 50</Button>
-            <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>Clear</Button>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Table */}
+      {/* Emailed table */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Qualified startups ({filtered.length})</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">Emailed startups ({emailed.length})</CardTitle></CardHeader>
         <CardContent className="p-0">
-          {filtered.length === 0 ? (
+          {emailed.length === 0 ? (
             <div className="p-12 text-center text-sm text-muted-foreground">
-              {leads.length === 0 ? 'No scored leads yet. Click "Score Startups" to begin.' : 'No leads match these filters.'}
+              No emails sent yet. The daily cron runs at 14:00 UTC.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
                   <tr>
-                    <th className="p-2 w-8"></th>
+                    <th className="p-2 text-left">Sent</th>
                     <th className="p-2 text-left">Score</th>
                     <th className="p-2 text-left">Funding</th>
                     <th className="p-2 text-left">Founder</th>
                     <th className="p-2 text-left">Startup</th>
                     <th className="p-2 text-left">Email</th>
                     <th className="p-2 text-left">Launched</th>
-                    <th className="p-2 text-left">Status</th>
                     <th className="p-2 text-left">Reason</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map(l => (
-                    <tr key={l.user_id} className={`border-t hover:bg-muted/30 ${l.last_emailed_at ? 'opacity-60' : ''}`}>
-                      <td className="p-2"><Checkbox checked={selected.has(l.user_id)} onCheckedChange={() => toggle(l.user_id)} disabled={!!l.last_emailed_at} /></td>
+                  {emailed.map(l => (
+                    <tr key={l.user_id} className="border-t hover:bg-muted/30">
+                      <td className="p-2 text-xs whitespace-nowrap">
+                        <Badge variant="secondary" className="text-[10px]">{format(new Date(l.last_emailed_at!), 'MMM d')}</Badge>
+                      </td>
                       <td className="p-2 font-mono font-bold">{l.score}</td>
                       <td className="p-2">
                         {l.funding_status && (
@@ -291,13 +170,6 @@ const Outreach = () => {
                       </td>
                       <td className="p-2 text-xs text-muted-foreground">{l.email}</td>
                       <td className="p-2 text-xs">{l.launch_date ? format(new Date(l.launch_date), 'MMM d') : '—'}</td>
-                      <td className="p-2 text-xs">
-                        {l.last_emailed_at ? (
-                          <Badge variant="secondary" className="text-[10px]">Emailed {format(new Date(l.last_emailed_at), 'MMM d')}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </td>
                       <td className="p-2 text-xs text-muted-foreground max-w-md">{l.reason}</td>
                     </tr>
                   ))}
@@ -305,30 +177,6 @@ const Outreach = () => {
               </table>
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Email editor */}
-      <Card>
-        <CardHeader><CardTitle className="text-base">Email — sent from alex@trylaunch.ai</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <Label className="text-xs">Subject</Label>
-            <Input value={subject} onChange={e => setSubject(e.target.value)} />
-          </div>
-          <div>
-            <Label className="text-xs">Body — tokens: <code>{'{{first_name}}'}</code> <code>{'{{startup_name}}'}</code></Label>
-            <Textarea rows={14} value={body} onChange={e => setBody(e.target.value)} className="font-mono text-sm" />
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={handleSend} disabled={sending || !selected.size}>
-              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              Send to {selected.size} recipient{selected.size === 1 ? '' : 's'}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Batched 50/at-a-time. Auto-skips: emails sent in the last 30 days, suppressed addresses, and users with notifications disabled.
-          </p>
         </CardContent>
       </Card>
     </div>
