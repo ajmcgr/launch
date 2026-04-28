@@ -276,6 +276,13 @@ const Outreach = () => {
                       </td>
                       <td className="p-2 text-xs text-muted-foreground">{l.email}</td>
                       <td className="p-2 text-xs">{l.launch_date ? format(new Date(l.launch_date), 'MMM d') : '—'}</td>
+                      <td className="p-2 text-xs">
+                        {l.last_emailed_at ? (
+                          <Badge variant="secondary" className="text-[10px]">Emailed {format(new Date(l.last_emailed_at), 'MMM d')}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
                       <td className="p-2 text-xs text-muted-foreground max-w-md">{l.reason}</td>
                     </tr>
                   ))}
