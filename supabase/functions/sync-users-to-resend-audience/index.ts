@@ -18,11 +18,17 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const audienceId = Deno.env.get('RESEND_AUDIENCE_DAILY_DIGEST_ID');
+    const resendApiKey = Deno.env.get('RESEND_API_KEY')?.trim();
+    const audienceId = Deno.env.get('RESEND_AUDIENCE_DAILY_DIGEST_ID')?.trim();
+    const matchingEnvKeys = Object.keys(Deno.env.toObject())
+      .filter((key) => key.includes('RESEND') || key.includes('AUDIENCE'))
+      .sort();
 
     if (!resendApiKey) throw new Error('RESEND_API_KEY missing');
-    if (!audienceId) throw new Error('RESEND_AUDIENCE_DAILY_DIGEST_ID missing');
+    if (!audienceId) {
+      console.error('Missing RESEND_AUDIENCE_DAILY_DIGEST_ID. Matching env keys:', matchingEnvKeys);
+      throw new Error('RESEND_AUDIENCE_DAILY_DIGEST_ID missing. Matching env keys: ' + matchingEnvKeys.join(', '));
+    }
 
     // Verify admin
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
