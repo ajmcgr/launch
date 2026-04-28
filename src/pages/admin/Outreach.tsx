@@ -249,6 +249,7 @@ const Outreach = () => {
                     <th className="p-2 text-left">Startup</th>
                     <th className="p-2 text-left">Email</th>
                     <th className="p-2 text-left">Launched</th>
+                    <th className="p-2 text-left">Status</th>
                     <th className="p-2 text-left">Reason</th>
                   </tr>
                 </thead>
