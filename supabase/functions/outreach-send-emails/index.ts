@@ -24,7 +24,31 @@ function escapeHtml(s: string): string {
 }
 
 function bodyToHtml(body: string): string {
-  return body.split('\n').map(l => l.trim() === '' ? '<br/>' : `<p style="margin:0 0 12px;font-size:14px;color:#111;line-height:1.5;">${escapeHtml(l)}</p>`).join('');
+  return body.split('\n').map(l => {
+    if (l.trim() === '') return '<div style="height:14px;"></div>';
+    return '<p style="margin:0 0 14px;color:#4b5563;font-size:15px;line-height:1.6;">' + escapeHtml(l) + '</p>';
+  }).join('');
+}
+
+const PRODUCTION_URL = 'https://trylaunch.ai';
+
+function wrapEmail(inner: string, subject: string): string {
+  return '<!DOCTYPE html><html><head><meta charset="utf-8"/><title>' + escapeHtml(subject) + '</title>'
+    + '<style>'
+    + 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0;background:#f9fafb;}'
+    + '.container{max-width:600px;margin:0 auto;padding:40px 20px;}'
+    + '.card{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);}'
+    + '.header{padding:24px 30px;text-align:center;border-bottom:1px solid #e5e7eb;}'
+    + '.logo{height:28px;}'
+    + '.content{padding:30px;}'
+    + '.footer{padding:20px 30px;text-align:center;color:#9ca3af;font-size:12px;}'
+    + '.footer a{color:#9ca3af;}'
+    + '</style></head><body>'
+    + '<div class="container"><div class="card">'
+    + '<div class="header"><img src="' + PRODUCTION_URL + '/images/launch-logo.png" alt="Launch" class="logo"/></div>'
+    + '<div class="content">' + inner + '</div>'
+    + '<div class="footer"><p>Sent by <a href="' + PRODUCTION_URL + '">Launch</a> · alex@trylaunch.ai</p></div>'
+    + '</div></div></body></html>';
 }
 
 Deno.serve(async (req) => {
