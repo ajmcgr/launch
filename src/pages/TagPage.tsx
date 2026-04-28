@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { buildFaqJsonLd, tagFaqs, tagIntroFallback } from '@/lib/seoFaq';
 
 interface Product {
   id: string;
@@ -348,6 +349,8 @@ const TagPage = () => {
   const pageTitle = `${tagInfo?.name || 'Tag'} AI Apps - Launch`;
   const pageDescription = tagInfo?.meta_description || 
     `Discover the best ${tagInfo?.name} apps. Browse and vote on ${tagInfo?.name?.toLowerCase()} tools built with AI.`;
+  const introText = tagInfo?.intro_copy || (tagInfo ? tagIntroFallback(tagInfo.name, products.length) : '');
+  const faqs = tagInfo ? tagFaqs(tagInfo.name, products.length) : [];
 
   return (
     <>
@@ -366,14 +369,17 @@ const TagPage = () => {
             { "@type": "ListItem", "position": 3, "name": tagInfo?.name, "item": `https://trylaunch.ai/tag/${tagInfo?.slug}` }
           ]
         })}</script>
+        {faqs.length > 0 && (
+          <script type="application/ld+json">{JSON.stringify(buildFaqJsonLd(faqs))}</script>
+        )}
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">{tagInfo?.name}</h1>
-          {tagInfo?.intro_copy && (
+          {introText && (
             <p className="text-lg text-muted-foreground leading-relaxed">
-              {tagInfo.intro_copy}
+              {introText}
             </p>
           )}
         </div>
