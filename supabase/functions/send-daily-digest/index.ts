@@ -28,16 +28,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const beehiivApiKey = Deno.env.get('BEEHIIV_API_KEY');
-    const beehiivPubId = Deno.env.get('BEEHIIV_PUB_ID');
-    const segmentId = Deno.env.get('BEEHIIV_DAILY_DIGEST_SEGMENT_ID');
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    const recipient = Deno.env.get('DAILY_DIGEST_RECIPIENT');
 
-    if (!beehiivApiKey || !beehiivPubId) {
-      throw new Error('Beehiiv configuration is missing');
-    }
-    if (!segmentId) {
-      throw new Error('BEEHIIV_DAILY_DIGEST_SEGMENT_ID is not configured');
-    }
+    if (!resendApiKey) throw new Error('RESEND_API_KEY is not configured');
+    if (!recipient) throw new Error('DAILY_DIGEST_RECIPIENT is not configured');
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -65,7 +60,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Vote counts (separate query — views can't embed)
+    // Vote counts
     const productIds = products.map((p) => p.id);
     const { data: votes } = await supabase
       .from('votes')
@@ -77,7 +72,6 @@ Deno.serve(async (req) => {
       voteMap.set(v.product_id, (voteMap.get(v.product_id) || 0) + 1);
     });
 
-    // Top 5
     const top5 = products
       .map((p) => ({ ...p, votes: voteMap.get(p.id) || 0 }))
       .sort((a, b) => b.votes - a.votes)
@@ -90,7 +84,6 @@ Deno.serve(async (req) => {
       day: 'numeric',
     });
 
-    // Build HTML using string concatenation (no multiline templates)
     let itemsHtml = '';
     top5.forEach((p, i) => {
       const url = PRODUCTION_URL + '/launch/' + escapeHtml(p.slug);
@@ -111,50 +104,35 @@ Deno.serve(async (req) => {
     html += '<div style="font-size:14px;color:#777;margin-bottom:8px;">' + escapeHtml(dateLabel) + '</div></td></tr>';
     html += '<tr><td><table width="100%" cellpadding="0" cellspacing="0">' + itemsHtml + '</table></td></tr>';
     html += '<tr><td style="padding-top:24px;"><a href="' + PRODUCTION_URL + '" style="display:inline-block;background:#111;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">See all launches</a></td></tr>';
-    html += '<tr><td style="padding-top:32px;font-size:12px;color:#999;">You\'re receiving this because you opted into the Launch daily digest. Manage preferences in Beehiiv.</td></tr>';
     html += '</table></td></tr></table></body></html>';
 
     const subject = 'Top 5 launches yesterday on Launch 🚀';
-    const TEMPLATE_ID = '8ef467dd-a7af-47e8-ae7d-9d78bc592a1d'; // Launch V4
 
-    // Create + schedule a Beehiiv post from the Launch V4 template, targeting the daily_digest segment
-    const beehiivResp = await fetch(
-      'https://api.beehiiv.com/v2/publications/' + beehiivPubId + '/posts',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + beehiivApiKey,
-        },
-        body: JSON.stringify({
-          template_post_id: TEMPLATE_ID,
-          title: subject,
-          subtitle: 'Yesterday\'s most upvoted products on Launch',
-          body_content: html,
-          status: 'draft',
-          email_settings: {
-            email_subject_line: subject,
-            email_preview_text: 'The top products our community upvoted yesterday.',
-          },
-          audience: {
-            tiers: ['free', 'premium'],
-            segment_ids: [segmentId],
-          },
-        }),
+    const resendResp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + resendApiKey,
       },
-    );
+      body: JSON.stringify({
+        from: 'Launch <notifications@trylaunch.ai>',
+        to: [recipient],
+        subject: subject,
+        html: html,
+      }),
+    });
 
-    const beehiivData = await beehiivResp.json();
+    const resendData = await resendResp.json();
 
-    if (!beehiivResp.ok) {
-      console.error('Beehiiv API error:', beehiivResp.status, JSON.stringify(beehiivData));
-      throw new Error('Beehiiv API error: ' + beehiivResp.status + ' - ' + JSON.stringify(beehiivData));
+    if (!resendResp.ok) {
+      console.error('Resend API error:', resendResp.status, JSON.stringify(resendData));
+      throw new Error('Resend API error: ' + resendResp.status + ' - ' + JSON.stringify(resendData));
     }
 
-    console.log('Daily digest sent', { count: top5.length, post: beehiivData?.data?.id });
+    console.log('Daily digest sent', { count: top5.length, id: resendData?.id });
 
     return new Response(
-      JSON.stringify({ sent: top5.length, post: beehiivData?.data ?? null }),
+      JSON.stringify({ sent: top5.length, id: resendData?.id ?? null, recipient: recipient }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (error) {
