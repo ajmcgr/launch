@@ -87,23 +87,41 @@ Deno.serve(async (req) => {
       const url = PRODUCTION_URL + '/launch/' + escapeHtml(p.slug);
       const name = escapeHtml(p.name || '');
       const tagline = escapeHtml(firstSentence(p.tagline || ''));
-      itemsHtml += '<tr><td style="padding:16px 0;border-bottom:1px solid #eee;">';
-      itemsHtml += '<div style="font-size:13px;color:#999;margin-bottom:4px;">#' + (i + 1) + ' · ' + p.votes + ' upvotes</div>';
-      itemsHtml += '<a href="' + url + '" style="font-size:18px;font-weight:600;color:#111;text-decoration:none;">' + name + '</a>';
-      if (tagline) itemsHtml += '<div style="font-size:14px;color:#555;margin-top:4px;line-height:1.4;">' + tagline + '</div>';
-      itemsHtml += '<a href="' + url + '" style="display:inline-block;margin-top:8px;font-size:13px;color:#2563eb;text-decoration:none;">View launch →</a>';
+      const isLast = i === top5.length - 1;
+      const borderStyle = isLast ? '' : 'border-bottom:1px solid #e5e7eb;';
+      itemsHtml += '<tr><td style="padding:18px 0;' + borderStyle + '">';
+      itemsHtml += '<div style="font-size:13px;color:#9ca3af;margin-bottom:4px;">#' + (i + 1) + ' · ' + p.votes + ' upvotes</div>';
+      itemsHtml += '<a href="' + url + '" style="font-size:17px;font-weight:600;color:#111;text-decoration:none;">' + name + '</a>';
+      if (tagline) itemsHtml += '<div style="font-size:14px;color:#4b5563;margin-top:4px;line-height:1.5;">' + tagline + '</div>';
       itemsHtml += '</td></tr>';
     });
 
-    let html = '<!doctype html><html><body style="margin:0;padding:0;background:#f7f7f7;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;">';
-    html += '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f7;padding:24px 0;"><tr><td align="center">';
-    html += '<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:600px;width:100%;padding:32px;border-radius:8px;">';
-    html += '<tr><td><h1 style="font-size:22px;margin:0 0 4px;color:#111;">Top 5 launches yesterday</h1>';
-    html += '<div style="font-size:14px;color:#777;margin-bottom:8px;">' + escapeHtml(dateLabel) + '</div></td></tr>';
-    html += '<tr><td><table width="100%" cellpadding="0" cellspacing="0">' + itemsHtml + '</table></td></tr>';
-    html += '<tr><td style="padding-top:24px;"><a href="' + PRODUCTION_URL + '" style="display:inline-block;background:#111;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">See all launches</a></td></tr>';
-    html += '<tr><td style="padding-top:32px;font-size:12px;color:#999;">You\'re receiving this because you signed up for Launch. <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#999;text-decoration:underline;">Unsubscribe</a>.</td></tr>';
-    html += '</table></td></tr></table></body></html>';
+    const logoUrl = PRODUCTION_URL + '/images/email-logo.png';
+
+    let html = '<!DOCTYPE html><html><head><style>';
+    html += 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0;background:#f9fafb;}';
+    html += '.container{max-width:600px;margin:0 auto;padding:40px 20px;}';
+    html += '.card{background:#ffffff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);}';
+    html += '.header{padding:30px;text-align:center;border-bottom:1px solid #e5e7eb;}';
+    html += '.logo{height:32px;}';
+    html += '.content{padding:30px;}';
+    html += '.content h1{margin:0 0 4px 0;font-size:20px;color:#111;}';
+    html += '.content .date{margin:0 0 20px 0;font-size:14px;color:#6b7280;}';
+    html += '.button{display:inline-block;background:#206dcb;color:#ffffff !important;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:500;font-size:14px;}';
+    html += '.footer{padding:20px 30px;text-align:center;color:#9ca3af;font-size:12px;border-top:1px solid #e5e7eb;}';
+    html += '.footer a{color:#6b7280;}';
+    html += '</style></head><body>';
+    html += '<div class="container"><div class="card">';
+    html += '<div class="header"><img src="' + logoUrl + '" alt="Launch" class="logo" /></div>';
+    html += '<div class="content">';
+    html += '<h1>Top 5 launches yesterday</h1>';
+    html += '<p class="date">' + escapeHtml(dateLabel) + '</p>';
+    html += '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">' + itemsHtml + '</table>';
+    html += '<p style="margin:0;"><a href="' + PRODUCTION_URL + '" class="button" style="color:#ffffff !important;">See all launches</a></p>';
+    html += '</div>';
+    html += '<div class="footer"><p>You\'re receiving this because you\'re a member of Launch.<br/>';
+    html += '<a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Unsubscribe</a></p></div>';
+    html += '</div></div></body></html>';
 
     const subject = 'Top 5 launches yesterday on Launch 🚀';
 
