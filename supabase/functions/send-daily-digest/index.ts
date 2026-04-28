@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
           title: subject,
           subtitle: 'Yesterday\'s most upvoted products on Launch',
           body_content: html,
-          status: 'confirmed',
+          status: 'draft',
           email_settings: {
             email_subject_line: subject,
             email_preview_text: 'The top products our community upvoted yesterday.',
@@ -140,7 +140,6 @@ Deno.serve(async (req) => {
             tiers: ['free', 'premium'],
             segment_ids: [segmentId],
           },
-          send_at: new Date().toISOString(),
         }),
       },
     );
