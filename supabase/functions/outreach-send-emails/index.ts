@@ -117,10 +117,7 @@ Deno.serve(async (req) => {
         const vars = { first_name: r.first_name || 'there', startup_name: r.startup_name || 'your startup' };
         const renderedSubject = render(subject, vars);
         const renderedBody = render(body, vars);
-        const html = '<!DOCTYPE html><html><body style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#fff;margin:0;padding:20px;">'
-          + '<div style="max-width:560px;margin:0 auto;">'
-          + bodyToHtml(renderedBody)
-          + '</div></body></html>';
+        const html = wrapEmail(bodyToHtml(renderedBody), renderedSubject);
         try {
           const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
