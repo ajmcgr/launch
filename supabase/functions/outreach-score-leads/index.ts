@@ -148,18 +148,20 @@ Deno.serve(async (req) => {
     }
 
     const candidates: Candidate[] = [];
+    let skipNoEmail = 0;
+    let skipScored = 0;
     for (const [ownerId, p] of bestPerOwner) {
-      if (onlyMissing && scoredRecently.has(ownerId)) continue;
-      const u = userMap.get(ownerId);
+      if (onlyMissing && scoredRecently.has(ownerId)) { skipScored++; continue; }
+      const u = userMap.get(ownerId) as any;
       const email = emailMap.get(ownerId);
-      if (!email || !u) continue;
+      if (!email) { skipNoEmail++; continue; }
       candidates.push({
         user_id: ownerId,
         product_id: p.id,
         email,
-        name: u.name,
-        username: u.username,
-        plan: u.plan,
+        name: u?.name ?? null,
+        username: u?.username ?? email.split('@')[0],
+        plan: u?.plan ?? 'free',
         product_name: p.name,
         tagline: p.tagline,
         description: p.description,
@@ -170,6 +172,7 @@ Deno.serve(async (req) => {
         launch_count: launchCount.get(ownerId) || 1,
       });
     }
+    console.log('[outreach-score] candidate skips:', { skipNoEmail, skipScored, usersTableRows: usersData?.length });
 
     // Score in small parallel batches
     const toScore = candidates.slice(0, limit);
