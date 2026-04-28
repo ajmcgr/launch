@@ -50,7 +50,10 @@ export default function Unsubscribe() {
           {status === 'success' && (
             <>
               <p className="text-foreground">
-                You're unsubscribed. <span className="font-medium">{email}</span> won't receive further outreach from us.
+                You're unsubscribed from outreach emails. <span className="font-medium">{email}</span> won't receive further cold outreach from us.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                This only affects outreach. To manage other emails (product notifications, weekly newsletter, daily digest), update preferences in <a href="/settings" className="underline">your settings</a> or use the unsubscribe link in those specific emails.
               </p>
               <p className="text-sm text-muted-foreground">
                 Changed your mind? Email <a href="mailto:alex@trylaunch.ai" className="underline">alex@trylaunch.ai</a> and we'll re-enable you.
