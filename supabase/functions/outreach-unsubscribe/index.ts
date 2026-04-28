@@ -37,18 +37,16 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     const admin = createClient(supabaseUrl, serviceKey);
 
-    // Insert into suppressed_emails (idempotent via upsert on email)
+    // Insert into suppressed_emails — scoped to OUTREACH only.
+    // This blocks future cold outreach but does NOT touch:
+    //   - in-app notifications (email_notifications_enabled / notify_on_*)
+    //   - weekly newsletter (Beehiiv) — manage via Beehiiv unsub link
+    //   - daily digest (Resend audience) — manage via Resend unsub link
+    // The outreach-send-emails function checks suppressed_emails before sending.
     const { error: supErr } = await admin
       .from('suppressed_emails')
       .upsert({ email, reason: 'unsubscribed', source: 'outreach' }, { onConflict: 'email' });
     if (supErr) console.error('[unsub] suppress err', supErr);
-
-    // Also flip user preference if we can match
-    const { data: usersList } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const matched = (usersList?.users || []).find(u => (u.email || '').toLowerCase() === email);
-    if (matched) {
-      await admin.from('users').update({ email_notifications_enabled: false }).eq('id', matched.id);
-    }
 
     return new Response(JSON.stringify({ ok: true, email }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
