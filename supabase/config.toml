@@ -62,3 +62,12 @@ verify_jwt = false
 
 [functions.generate-blog-post]
 verify_jwt = false
+
+[functions.outreach-score-leads]
+verify_jwt = true
+
+[functions.outreach-list-leads]
+verify_jwt = true
+
+[functions.outreach-send-emails]
+verify_jwt = true

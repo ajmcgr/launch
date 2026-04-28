@@ -280,6 +280,7 @@ const Admin = () => {
                 <TabsTrigger value="metrics">Metrics</TabsTrigger>
                 <TabsTrigger value="manage">Ops</TabsTrigger>
                 <TabsTrigger value="marketing">Marketing</TabsTrigger>
+                <TabsTrigger value="outreach" onClick={() => navigate('/admin/outreach')}>Outreach</TabsTrigger>
               </TabsList>
             </div>
           </div>
