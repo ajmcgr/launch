@@ -196,7 +196,17 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ scored, candidates_total: candidates.length }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    console.log('[outreach-score] funnel:', {
+      products: products.length,
+      uniqueOwners: ownerIds.length,
+      bestPerOwner: bestPerOwner.size,
+      emailsFound: emailMap.size,
+      candidates: candidates.length,
+      toScore: toScore.length,
+      scored,
+    });
+
+    return new Response(JSON.stringify({ scored, candidates_total: candidates.length, debug: { products: products.length, uniqueOwners: ownerIds.length, emailsFound: emailMap.size } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
     console.error('outreach-score-leads error', e);
     return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
