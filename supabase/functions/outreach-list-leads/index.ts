@@ -58,17 +58,36 @@ Deno.serve(async (req) => {
       .gte('sent_at', todayStart.toISOString())
       .eq('status', 'sent');
 
-    // last sent timestamp per user_id (any sent log)
+    // ALL sent logs (source of truth for "emailed" table) — last 500
     const { data: sentLogs } = await admin
       .from('outreach_email_logs')
-      .select('user_id, sent_at')
-      .in('user_id', userIds)
+      .select('user_id, email, startup_name, subject, sent_at')
       .eq('status', 'sent')
-      .order('sent_at', { ascending: false });
+      .order('sent_at', { ascending: false })
+      .limit(500);
+
     const lastSentMap = new Map<string, string>();
     (sentLogs || []).forEach((l: any) => {
-      if (!lastSentMap.has(l.user_id)) lastSentMap.set(l.user_id, l.sent_at);
+      if (l.user_id && !lastSentMap.has(l.user_id)) lastSentMap.set(l.user_id, l.sent_at);
     });
+
+    // Enrich any sent-log user_ids that aren't in the scored set
+    const extraUserIds = Array.from(new Set((sentLogs || [])
+      .map((l: any) => l.user_id)
+      .filter((id: string | null): id is string => !!id && !userMap.has(id))));
+    if (extraUserIds.length) {
+      const { data: extraUsers } = await admin.from('users').select('id, username, name, plan').in('id', extraUserIds);
+      (extraUsers || []).forEach((u: any) => userMap.set(u.id, u));
+      // fetch their emails too
+      for (let page = 1; ; page++) {
+        const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+        if (error || !data?.users?.length) break;
+        data.users.forEach(u => { if (u.email && extraUserIds.includes(u.id) && !emailMap.has(u.id)) emailMap.set(u.id, u.email); });
+        if (data.users.length < 1000) break;
+      }
+    }
+
+    const scoresMap = new Map((scores || []).map((s: any) => [s.user_id, s]));
 
     const leads = scores.map(s => {
       const u = userMap.get(s.user_id) as any;
@@ -95,7 +114,30 @@ Deno.serve(async (req) => {
       };
     }).filter(l => l.email);
 
-    return new Response(JSON.stringify({ leads, sent_today: sentToday || 0 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    // Build emailed[] from sent logs (source of truth) — one row per send
+    const emailed = (sentLogs || []).map((l: any) => {
+      const s: any = l.user_id ? scoresMap.get(l.user_id) : null;
+      const u: any = l.user_id ? userMap.get(l.user_id) : null;
+      const p: any = s?.product_id ? productMap.get(s.product_id) : null;
+      return {
+        user_id: l.user_id,
+        sent_at: l.sent_at,
+        email: l.email || (l.user_id ? emailMap.get(l.user_id) : null) || null,
+        subject: l.subject,
+        founder_name: u?.name || u?.username || null,
+        username: u?.username || null,
+        plan: u?.plan || null,
+        startup_name: l.startup_name || p?.name || null,
+        slug: p?.slug || null,
+        launch_date: p?.launch_date || null,
+        score: s?.score ?? null,
+        funding_status: s?.funding_status || null,
+        funding_confidence: s?.funding_confidence ?? null,
+        reason: s?.reason || null,
+      };
+    });
+
+    return new Response(JSON.stringify({ leads, emailed, sent_today: sentToday || 0 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
