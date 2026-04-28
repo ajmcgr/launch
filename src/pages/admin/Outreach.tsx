@@ -31,6 +31,7 @@ interface Lead {
   funding_confidence: number | null;
   funding_evidence: string | null;
   scored_at: string;
+  last_emailed_at: string | null;
 }
 
 const DEFAULT_SUBJECT = 'Need help after launching?';
