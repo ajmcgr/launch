@@ -107,6 +107,24 @@ const Outreach = () => {
     }
   };
 
+  const handleAutoRun = async (dryRun: boolean) => {
+    setAutoRunning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('outreach-auto-send', { body: { dryRun } });
+      if (error) throw error;
+      if (dryRun) {
+        toast.success(`Dry run: would send ${data.would_send || 0} emails (${data.scored || 0} newly scored)`);
+      } else {
+        toast.success(`Auto: scored ${data.scored || 0}, sent ${data.sent || 0}, failed ${data.failed || 0}`);
+        await loadLeads();
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'Auto-run failed');
+    } finally {
+      setAutoRunning(false);
+    }
+  };
+
   const filtered = useMemo(() => {
     return leads.filter(l => {
       if (l.score < minScore) return false;
