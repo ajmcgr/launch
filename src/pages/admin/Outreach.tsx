@@ -226,7 +226,26 @@ const Outreach = () => {
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Sent Today</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{sentToday}</div></CardContent></Card>
       </div>
 
-      {/* Filters */}
+      {/* Automation */}
+      <Card className="bg-muted/30">
+        <CardHeader className="pb-3"><CardTitle className="text-base">Automation</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Daily cron at <strong>14:00 UTC</strong> scores newly-launched makers and emails the top 25 (score ≥ 7).
+            Skips: already-emailed, opted-out, suppressed addresses. Run <code>database-outreach-automation.sql</code> in Supabase to enable.
+          </p>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => handleAutoRun(true)} disabled={autoRunning}>
+              {autoRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              Dry run (preview)
+            </Button>
+            <Button size="sm" onClick={() => handleAutoRun(false)} disabled={autoRunning}>
+              {autoRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              Run automation now
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardContent className="pt-6 flex flex-wrap items-end gap-4">
           <div>
