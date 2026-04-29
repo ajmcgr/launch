@@ -85,61 +85,62 @@ const AppContent = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/start" element={<Start />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/submit" element={<Submit />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/launch/:slug" element={<LaunchDetail />} />
-          <Route path="/launch/:slug/analytics" element={<ProductAnalytics />} />
-          <Route path="/go/:slug" element={<GoRedirect />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/my-products" element={<MyProducts />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/unsubscribe" element={<Unsubscribe />} />
-          <Route path="/advertise" element={<Advertise />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/newsletter" element={<NewsletterRedirect />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/outreach" element={<Outreach />} />
-          <Route path="/discourse-sso" element={<DiscourseSso />} />
-          <Route path="/api/discourse-sso" element={<DiscourseSso />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/tags" element={<Tags />} />
-          <Route path="/tag/:slug" element={<TagPage />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/category/:slug" element={<CategoryPage />} />
-          <Route path="/collections/:slug" element={<CollectionPage />} />
-          <Route path="/pass" element={<Pass />} />
-          <Route path="/pass/graphic" element={<PassGraphic />} />
-          <Route path="/product-hunt-alternative" element={<ProductHuntAlternative />} />
-          <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
-          <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
-          <Route path="/media-kit" element={<MediaKit />} />
-          <Route path="/tech/:slug" element={<StackPage />} />
-          <Route path="/tech" element={<TechLeaderboard />} />
-          <Route path="/makers" element={<Leaderboard />} />
-          <Route path="/success-stories" element={<SuccessStories />} />
-          <Route path="/awards" element={<Awards />} />
-          <Route path="/compare" element={<CompareHub />} />
-          <Route path="/compare/:slug" element={<ComparePage />} />
-          <Route path="/launches/today" element={<LaunchArchive />} />
-          <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
-          <Route path="/launches/:param" element={<LaunchArchive />} />
-          <Route path="/:username/followers" element={<Followers />} />
-          <Route path="/:username/following" element={<Following />} />
-          <Route path="/:username" element={<UserProfile />} />
-          <Route path="/:username" element={<UserProfile />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div className="container mx-auto px-4 py-12 text-muted-foreground text-sm">Loading…</div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/start" element={<Start />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/submit" element={<Submit />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/launch/:slug" element={<LaunchDetail />} />
+            <Route path="/launch/:slug/analytics" element={<ProductAnalytics />} />
+            <Route path="/go/:slug" element={<GoRedirect />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/my-products" element={<MyProducts />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/advertise" element={<Advertise />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/newsletter" element={<NewsletterRedirect />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/outreach" element={<Outreach />} />
+            <Route path="/discourse-sso" element={<DiscourseSso />} />
+            <Route path="/api/discourse-sso" element={<DiscourseSso />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/tags" element={<Tags />} />
+            <Route path="/tag/:slug" element={<TagPage />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/category/:slug" element={<CategoryPage />} />
+            <Route path="/collections/:slug" element={<CollectionPage />} />
+            <Route path="/pass" element={<Pass />} />
+            <Route path="/pass/graphic" element={<PassGraphic />} />
+            <Route path="/product-hunt-alternative" element={<ProductHuntAlternative />} />
+            <Route path="/product-launch-platform" element={<ProductLaunchPlatform />} />
+            <Route path="/product-launch-strategy" element={<ProductLaunchStrategy />} />
+            <Route path="/media-kit" element={<MediaKit />} />
+            <Route path="/tech/:slug" element={<StackPage />} />
+            <Route path="/tech" element={<TechLeaderboard />} />
+            <Route path="/makers" element={<Leaderboard />} />
+            <Route path="/success-stories" element={<SuccessStories />} />
+            <Route path="/awards" element={<Awards />} />
+            <Route path="/compare" element={<CompareHub />} />
+            <Route path="/compare/:slug" element={<ComparePage />} />
+            <Route path="/launches/today" element={<LaunchArchive />} />
+            <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
+            <Route path="/launches/:param" element={<LaunchArchive />} />
+            <Route path="/:username/followers" element={<Followers />} />
+            <Route path="/:username/following" element={<Following />} />
+            <Route path="/:username" element={<UserProfile />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
       {showNewsletter && (
         <div className="container mx-auto px-4 py-12">
