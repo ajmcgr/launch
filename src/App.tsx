@@ -85,7 +85,11 @@ const AppContent = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        <Suspense fallback={<div className="container mx-auto px-4 py-12 text-muted-foreground text-sm">Loading…</div>}>
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-[60vh]" aria-label="Loading">
+            <div className="h-6 w-6 rounded-full border-2 border-muted border-t-primary animate-spin" />
+          </div>
+        }>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/start" element={<Start />} />
