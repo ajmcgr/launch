@@ -642,7 +642,17 @@ const MyProducts = () => {
         )}
 
         {loading ? (
-          <div className="text-center py-12">Loading...</div>
+          <div className="space-y-3 py-6" aria-label="Loading" role="status">
+            {[0,1,2,3].map(i => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-lg bg-muted/60 animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-1/3 rounded bg-muted/60 animate-pulse" />
+                  <div className="h-3 w-2/3 rounded bg-muted/40 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : products.length === 0 ? (
           <Card className="p-12 text-center">
             <div className="max-w-md mx-auto">
