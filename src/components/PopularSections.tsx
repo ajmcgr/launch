@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Product {
@@ -28,43 +28,67 @@ export const PopularSections = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [stackItems, setStackItems] = useState<StackItem[]>([]);
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
+  // Defer all data fetching until the section is near the viewport.
+  // PopularSections lives near the footer so this avoids three extra
+  // network round-trips on initial homepage load.
   useEffect(() => {
-    const fetchProducts = async () => {
-      const { data } = await supabase
-        .from('products')
-        .select('id, name, slug')
-        .eq('status', 'launched')
-        .not('name', 'is', null)
-        .not('slug', 'is', null)
-        .order('launch_date', { ascending: false })
-        .limit(30);
-      if (data) setProducts(data as Product[]);
-    };
-
-    const fetchCategories = async () => {
-      const { data } = await supabase
-        .from('product_categories')
-        .select('id, name')
-        .order('name');
-      if (data) setCategories(data.map(c => ({ ...c, slug: createSlug(c.name) })));
-    };
-
-    const fetchStackItems = async () => {
-      const { data } = await supabase
-        .from('stack_items')
-        .select('id, name, slug')
-        .order('name');
-      if (data) setStackItems(data);
-    };
-
-    fetchProducts();
-    fetchCategories();
-    fetchStackItems();
+    if (!ref.current || typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: '400px' }
+    );
+    obs.observe(ref.current);
+    return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!visible) return;
+
+    let cancelled = false;
+
+    const fetchAll = async () => {
+      const [productsRes, categoriesRes, stackRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('id, name, slug')
+          .eq('status', 'launched')
+          .not('name', 'is', null)
+          .not('slug', 'is', null)
+          .order('launch_date', { ascending: false })
+          .limit(30),
+        supabase.from('product_categories').select('id, name').order('name'),
+        supabase.from('stack_items').select('id, name, slug').order('name').limit(30),
+      ]);
+
+      if (cancelled) return;
+
+      if (productsRes.data) setProducts(productsRes.data as Product[]);
+      if (categoriesRes.data) {
+        setCategories(categoriesRes.data.map((c) => ({ ...c, slug: createSlug(c.name) })));
+      }
+      if (stackRes.data) setStackItems(stackRes.data);
+    };
+
+    fetchAll();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [visible]);
+
   return (
-    <div className="py-6 space-y-8">
+    <div ref={ref} className="py-6 space-y-8 min-h-[200px]">
       {products.length > 0 && (
         <div>
           <h3 className="font-semibold mb-4 text-foreground">Popular Launches</h3>
