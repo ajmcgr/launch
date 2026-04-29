@@ -67,7 +67,7 @@ export const PopularSections = () => {
     <div className="py-6 space-y-8">
       {products.length > 0 && (
         <div>
-          <h3 className="font-semibold mb-4 text-foreground">Popular Products</h3>
+          <h3 className="font-semibold mb-4 text-foreground">Popular Launches</h3>
           <div className="flex flex-wrap gap-2">
             {products.slice(0, 30).map((product) => (
               <Link
