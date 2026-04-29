@@ -191,8 +191,8 @@ const Pass = () => {
 
   if (passLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center" role="status" aria-label="Loading">
+        <div className="h-8 w-8 rounded-full border-2 border-muted border-t-primary animate-spin" />
       </div>
     );
   }
