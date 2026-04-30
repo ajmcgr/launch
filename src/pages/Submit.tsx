@@ -121,6 +121,7 @@ const Submit = () => {
         slug: '',
         couponCode: '',
         couponDescription: '',
+        twitterHandle: '',
         plan: 'free' as 'free' | 'skip' | 'relaunch',
         selectedDate: null as string | null,
       };
@@ -139,6 +140,7 @@ const Submit = () => {
       slug: '',
       couponCode: '',
       couponDescription: '',
+      twitterHandle: '',
       plan: 'free' as 'free' | 'skip' | 'relaunch',
       selectedDate: null as string | null,
     };
@@ -315,7 +317,24 @@ const Submit = () => {
       }
       
       setUser(session.user);
-      
+
+      // Default the per-product X handle to the maker's profile handle when empty
+      try {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('twitter')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        const profileHandle = (profile?.twitter || '').trim();
+        if (profileHandle) {
+          setFormData((prev: any) =>
+            prev?.twitterHandle ? prev : { ...prev, twitterHandle: profileHandle }
+          );
+        }
+      } catch (e) {
+        console.warn('Could not prefill X handle from profile:', e);
+      }
+
       // Load product for rescheduling if productId is present
       if (productIdParam) {
         await loadProductForReschedule(productIdParam, session.user.id);
@@ -394,6 +413,7 @@ const Submit = () => {
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
+          twitterHandle: (product as any).twitter_handle || '',
           plan: planValue, // Use the order plan
           selectedDate: isLaunchDateInPast ? null : product.launch_date, // Clear past dates
         });
@@ -434,6 +454,7 @@ const Submit = () => {
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
+          twitterHandle: (product as any).twitter_handle || '',
           plan: 'free',
           selectedDate: isDraftDateInPast ? null : product.launch_date, // Clear past dates
         });
@@ -496,6 +517,7 @@ const Submit = () => {
           slug: '',
           couponCode: '',
           couponDescription: '',
+          twitterHandle: '',
           plan: 'free',
           selectedDate: null,
         });
@@ -547,6 +569,7 @@ const Submit = () => {
         slug: product.slug || '',
         couponCode: product.coupon_code || '',
         couponDescription: product.coupon_description || '',
+        twitterHandle: (product as any).twitter_handle || '',
         plan: paidPlan,
         selectedDate: product.launch_date || null,
       });
@@ -868,7 +891,8 @@ const Submit = () => {
             languages: formData.languages,
             coupon_code: formData.couponCode || null,
             coupon_description: formData.couponDescription || null,
-          })
+            twitter_handle: formData.twitterHandle?.trim() || null,
+          } as any)
           .select()
           .single();
 
@@ -890,6 +914,7 @@ const Submit = () => {
           languages: formData.languages,
           coupon_code: formData.couponCode || null,
           coupon_description: formData.couponDescription || null,
+          twitter_handle: formData.twitterHandle?.trim() || null,
         };
         
         // If product is scheduled and being edited, keep it scheduled
@@ -1091,8 +1116,18 @@ const Submit = () => {
 
           if (error) throw error;
 
-          const successMessage = launchStatus === 'launched' 
-            ? 'Product launched successfully!' 
+          if (launchStatus === 'launched') {
+            try {
+              await supabase.functions.invoke('post-launch-tweet', {
+                body: { productId },
+              });
+            } catch (tweetErr) {
+              console.error('post-launch-tweet invoke failed:', tweetErr);
+            }
+          }
+
+          const successMessage = launchStatus === 'launched'
+            ? 'Product launched successfully!'
             : 'Launch rescheduled successfully';
           toast.success(successMessage);
           navigate('/my-products?success=true');
@@ -1157,7 +1192,17 @@ const Submit = () => {
           status: launchStatus,
           launch_date: launchDate.toISOString(),
         }).eq('id', savedProductId);
-        
+
+        if (launchStatus === 'launched') {
+          try {
+            await supabase.functions.invoke('post-launch-tweet', {
+              body: { productId: savedProductId },
+            });
+          } catch (tweetErr) {
+            console.error('post-launch-tweet invoke failed:', tweetErr);
+          }
+        }
+
         const successMsg = launchStatus === 'launched' ? 'Product launched!' : 'Product scheduled!';
         handleSubmitSuccess(savedProductId, formData.name, successMsg);
       }
@@ -1295,6 +1340,14 @@ const Submit = () => {
               }
             } catch (forumInvokeError) {
               console.error('Error invoking create-forum-thread from submit flow:', forumInvokeError);
+            }
+
+            try {
+              await supabase.functions.invoke('post-launch-tweet', {
+                body: { productId: savedProductId },
+              });
+            } catch (tweetErr) {
+              console.error('post-launch-tweet invoke failed:', tweetErr);
             }
           }
 
@@ -1508,6 +1561,18 @@ const Submit = () => {
                     onChange={(e) => handleInputChange('url', e.target.value)}
                     placeholder="https://example.com"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="twitterHandle">X (Twitter) handle to tag</Label>
+                  <Input
+                    id="twitterHandle"
+                    value={formData.twitterHandle || ''}
+                    onChange={(e) => handleInputChange('twitterHandle', e.target.value.replace(/^@+/, ''))}
+                    placeholder="yourhandle"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We'll auto-tag this account on X when your launch goes live. Defaults to your profile X handle — override here if a different account (team, co-founder, etc.) should get tagged.
+                  </p>
                 </div>
               </>
             )}
