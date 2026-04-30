@@ -874,7 +874,8 @@ const Submit = () => {
             languages: formData.languages,
             coupon_code: formData.couponCode || null,
             coupon_description: formData.couponDescription || null,
-          })
+            twitter_handle: formData.twitterHandle?.trim() || null,
+          } as any)
           .select()
           .single();
 
@@ -896,6 +897,7 @@ const Submit = () => {
           languages: formData.languages,
           coupon_code: formData.couponCode || null,
           coupon_description: formData.couponDescription || null,
+          twitter_handle: formData.twitterHandle?.trim() || null,
         };
         
         // If product is scheduled and being edited, keep it scheduled
