@@ -1116,8 +1116,18 @@ const Submit = () => {
 
           if (error) throw error;
 
-          const successMessage = launchStatus === 'launched' 
-            ? 'Product launched successfully!' 
+          if (launchStatus === 'launched') {
+            try {
+              await supabase.functions.invoke('post-launch-tweet', {
+                body: { productId },
+              });
+            } catch (tweetErr) {
+              console.error('post-launch-tweet invoke failed:', tweetErr);
+            }
+          }
+
+          const successMessage = launchStatus === 'launched'
+            ? 'Product launched successfully!'
             : 'Launch rescheduled successfully';
           toast.success(successMessage);
           navigate('/my-products?success=true');
@@ -1182,7 +1192,17 @@ const Submit = () => {
           status: launchStatus,
           launch_date: launchDate.toISOString(),
         }).eq('id', savedProductId);
-        
+
+        if (launchStatus === 'launched') {
+          try {
+            await supabase.functions.invoke('post-launch-tweet', {
+              body: { productId: savedProductId },
+            });
+          } catch (tweetErr) {
+            console.error('post-launch-tweet invoke failed:', tweetErr);
+          }
+        }
+
         const successMsg = launchStatus === 'launched' ? 'Product launched!' : 'Product scheduled!';
         handleSubmitSuccess(savedProductId, formData.name, successMsg);
       }
@@ -1320,6 +1340,14 @@ const Submit = () => {
               }
             } catch (forumInvokeError) {
               console.error('Error invoking create-forum-thread from submit flow:', forumInvokeError);
+            }
+
+            try {
+              await supabase.functions.invoke('post-launch-tweet', {
+                body: { productId: savedProductId },
+              });
+            } catch (tweetErr) {
+              console.error('post-launch-tweet invoke failed:', tweetErr);
             }
           }
 
