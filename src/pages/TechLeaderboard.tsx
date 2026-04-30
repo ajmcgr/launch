@@ -64,18 +64,19 @@ const TechLeaderboard = () => {
     queryFn: async () => {
       const startDate = getStartDate(sortMode);
 
-      // Get all stack items
+      // Get ALL stack items (raise default limit so the full taxonomy shows up)
       const { data: stackItems, error: stackError } = await supabase
         .from('stack_items')
-        .select('id, name, slug');
+        .select('id, name, slug')
+        .order('name')
+        .limit(5000);
       if (stackError) throw stackError;
 
-      // Get product_stack_map with product launch dates if filtering by time
-      let mappingQuery = supabase
+      // Get product_stack_map with explicit high limit so counts aren't truncated
+      const { data: mappings, error: mapError } = await supabase
         .from('product_stack_map')
-        .select('stack_item_id, product_id');
-
-      const { data: mappings, error: mapError } = await mappingQuery;
+        .select('stack_item_id, product_id')
+        .limit(50000);
       if (mapError) throw mapError;
 
       if (startDate) {
