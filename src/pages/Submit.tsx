@@ -121,6 +121,7 @@ const Submit = () => {
         slug: '',
         couponCode: '',
         couponDescription: '',
+        twitterHandle: '',
         plan: 'free' as 'free' | 'skip' | 'relaunch',
         selectedDate: null as string | null,
       };
@@ -139,6 +140,7 @@ const Submit = () => {
       slug: '',
       couponCode: '',
       couponDescription: '',
+      twitterHandle: '',
       plan: 'free' as 'free' | 'skip' | 'relaunch',
       selectedDate: null as string | null,
     };
@@ -394,6 +396,7 @@ const Submit = () => {
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
+          twitterHandle: (product as any).twitter_handle || '',
           plan: planValue, // Use the order plan
           selectedDate: isLaunchDateInPast ? null : product.launch_date, // Clear past dates
         });
@@ -434,6 +437,7 @@ const Submit = () => {
           slug: product.slug || '',
           couponCode: product.coupon_code || '',
           couponDescription: product.coupon_description || '',
+          twitterHandle: (product as any).twitter_handle || '',
           plan: 'free',
           selectedDate: isDraftDateInPast ? null : product.launch_date, // Clear past dates
         });
@@ -496,6 +500,7 @@ const Submit = () => {
           slug: '',
           couponCode: '',
           couponDescription: '',
+          twitterHandle: '',
           plan: 'free',
           selectedDate: null,
         });
@@ -547,6 +552,7 @@ const Submit = () => {
         slug: product.slug || '',
         couponCode: product.coupon_code || '',
         couponDescription: product.coupon_description || '',
+        twitterHandle: (product as any).twitter_handle || '',
         plan: paidPlan,
         selectedDate: product.launch_date || null,
       });
