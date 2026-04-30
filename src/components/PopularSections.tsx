@@ -147,6 +147,11 @@ export const PopularSections = () => {
               </Link>
             ))}
           </div>
+          <div className="mt-4">
+            <Link to="/tech" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              More →
+            </Link>
+          </div>
         </div>
       )}
     </div>
