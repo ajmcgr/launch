@@ -317,7 +317,24 @@ const Submit = () => {
       }
       
       setUser(session.user);
-      
+
+      // Default the per-product X handle to the maker's profile handle when empty
+      try {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('twitter')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        const profileHandle = (profile?.twitter || '').trim();
+        if (profileHandle) {
+          setFormData((prev: any) =>
+            prev?.twitterHandle ? prev : { ...prev, twitterHandle: profileHandle }
+          );
+        }
+      } catch (e) {
+        console.warn('Could not prefill X handle from profile:', e);
+      }
+
       // Load product for rescheduling if productId is present
       if (productIdParam) {
         await loadProductForReschedule(productIdParam, session.user.id);
