@@ -1534,6 +1534,18 @@ const Submit = () => {
                     placeholder="https://example.com"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="twitterHandle">X (Twitter) handle to tag</Label>
+                  <Input
+                    id="twitterHandle"
+                    value={formData.twitterHandle || ''}
+                    onChange={(e) => handleInputChange('twitterHandle', e.target.value.replace(/^@+/, ''))}
+                    placeholder="yourhandle"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    We'll auto-tag this account on X when your launch goes live. Defaults to your profile X handle — override here if a different account (team, co-founder, etc.) should get tagged.
+                  </p>
+                </div>
               </>
             )}
 
