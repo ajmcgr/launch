@@ -199,18 +199,31 @@ Return everything via the tool call.`;
     if (typeof article.content_md === "string") {
       let md = article.content_md.trim();
       // Run a few passes to peel off layered wrappers
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 5; i++) {
         const before = md;
-        // Opening fence: ```, ''', """ optionally followed by 'markdown'/'md'
+        // Opening fence: ```, ''', """ (3+) optionally followed by 'markdown'/'md'
         md = md.replace(/^(?:`{3,}|'{3,}|"{3,})\s*(?:markdown|md)?\s*\r?\n?/i, "");
-        // Trailing fence
+        // Trailing fence (3+)
         md = md.replace(/\r?\n?\s*(?:`{3,}|'{3,}|"{3,})\s*\.?\s*$/i, "");
-        // Stray trailing ''' or ``` even with punctuation glued on (e.g. ". '''")
+        // Stray trailing fence with punctuation glued on (e.g. ". '''")
         md = md.replace(/[\s.]*(?:`{3,}|'{3,}|"{3,})\s*$/i, "");
+        // Single/double stray matching quote wrappers around the WHOLE body
+        if (/^["'](.|\n)+["']$/.test(md)) {
+          const first = md[0];
+          const last = md[md.length - 1];
+          if (first === last) md = md.slice(1, -1).trim();
+        }
         md = md.trim();
         if (md === before) break;
       }
       article.content_md = md;
+    }
+
+    // Validation: refuse to publish empty/tiny articles
+    if (!article.content_md || article.content_md.trim().length < 500) {
+      throw new Error(
+        `Generated content too short (${article.content_md?.length ?? 0} chars). Refusing to publish.`,
+      );
     }
 
     // Ensure slug uniqueness
