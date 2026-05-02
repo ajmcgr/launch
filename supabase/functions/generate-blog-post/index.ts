@@ -132,34 +132,46 @@ Pick the topic now.`;
     console.log("Selected topic:", topic);
 
     // 3. Generate the full article
-    const articlePrompt = `Write a complete, publish-ready blog post for Launch (trylaunch.ai).
+    const articlePrompt = `Write a complete, publish-ready SEO blog post for Launch (trylaunch.ai), a Product Hunt alternative for AI and tech products.
 
 TITLE: ${topic.title}
 TARGET KEYWORD: ${topic.target_keyword}
 ANGLE: ${topic.angle}
 
-REQUIREMENTS:
-- 1500-2000 words
-- Markdown format with ## H2 and ### H3 headings
-- Engaging intro hook (no "In today's world...")
-- Include 6-10 practical sections with actionable advice
-- Naturally link to these Launch URLs where relevant (use markdown links):
-  * https://trylaunch.ai/products (browse all products)
-  * https://trylaunch.ai/launches/today (today's launches)
-  * https://trylaunch.ai/submit (submit a product)
-  * https://trylaunch.ai/product-hunt-alternative (PH alternative page)
-  * https://trylaunch.ai/makers (top makers leaderboard)
-  * Tag pages like https://trylaunch.ai/tag/[slug] using these real tags: ${tags.slice(0, 15).map((t) => t.slug).join(", ")}
-- Reference 2-3 of these real trending products as examples where natural:
-${trendingProducts.slice(0, 8).map((p) => `  * ${p.name} (https://trylaunch.ai/launch/${p.slug}): ${p.tagline}`).join("\n")}
-- End with a clear CTA section linking to https://trylaunch.ai/submit
-- Write in confident, direct voice for founders/indie hackers
-- NO emojis in headings
-- NO "Conclusion" header — call the final section something specific
-- Include the target keyword naturally in: title, first paragraph, one H2, and 3-5x throughout
-- CRITICAL: content_md must be RAW markdown only. Do NOT wrap the entire article in triple backticks (\`\`\`), triple single-quotes ('''), triple double-quotes ("""), or any other delimiter. Do NOT prefix with "\`\`\`markdown". Do NOT add stray quote marks at the start or end. Start directly with the first paragraph or heading and end with the final sentence. Only use code fences for actual code snippets inside the article.
+QUALITY BAR (match this style — practical SEO content, similar to rankinpublic.xyz/blog):
+- Plain-spoken, confident, direct. Short sentences. No fluff, no marketing jargon, no "In today's fast-paced world".
+- Open with a concrete problem the reader feels (e.g. "Launching a new startup feels hard when no one knows your product exists.").
+- Teach by example. Each section should answer one specific sub-question and give the reader something they can do today.
+- Use simple language a non-native English founder can read easily. Vary sentence length. No purple prose.
 
-Also produce: a 150-160 char meta description, a 120-160 char excerpt, and a URL-friendly slug.
+STRUCTURE:
+- 1400-1900 words total.
+- Markdown only. Use ## for H2 sections and ### for H3 sub-sections. 8-12 H2 sections.
+- First H2 should define the core concept ("What Is …"), then sections covering: why it matters, how to do it step by step, what to avoid, examples, and a final action-oriented section.
+- Use short bulleted lists (3-6 items) where they help scannability. Bold key terms sparingly.
+- Include the target keyword in: the H1 title, the first 100 words, at least one H2, and naturally 4-6 times across the body. Never keyword-stuff.
+- Add an FAQ section near the end with 3-4 H3 questions and 2-3 sentence answers (great for SEO snippets).
+- Final section should be a specific action heading (e.g. "Start Your Launch This Week"), NOT "Conclusion". End with a clear CTA paragraph linking to https://trylaunch.ai/submit.
+
+INTERNAL LINKS (use as natural inline markdown links, not a link dump):
+- https://trylaunch.ai/products (browse all products)
+- https://trylaunch.ai/launches/today (today's launches)
+- https://trylaunch.ai/submit (submit a product)
+- https://trylaunch.ai/product-hunt-alternative (PH alternative page)
+- https://trylaunch.ai/makers (top makers leaderboard)
+- https://trylaunch.ai/pricing (Pro and Pass plans)
+- Tag pages like https://trylaunch.ai/tag/[slug] using these real tags: ${tags.slice(0, 15).map((t) => t.slug).join(", ")}
+
+REAL EXAMPLES — reference 2-3 of these trending products by name with a link, where it fits naturally:
+${trendingProducts.slice(0, 8).map((p) => `  * ${p.name} (https://trylaunch.ai/launch/${p.slug}): ${p.tagline}`).join("\n")}
+
+STRICT RULES:
+- NO emojis anywhere.
+- NO "Conclusion" header.
+- NO promotional hype about Launch in every section — mention it where it earns its place.
+- content_md MUST be RAW markdown only. Do NOT wrap in triple backticks/quotes. Do NOT prefix with "\`\`\`markdown". Start directly with the first paragraph or heading. Use real newline characters with a blank line between blocks.
+
+Also produce: a 50-65 char meta_title, a 150-160 char meta_description, a 120-160 char excerpt, and a URL-friendly slug.
 
 Return everything via the tool call.`;
 
