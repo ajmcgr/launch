@@ -179,7 +179,7 @@ Return everything via the tool call.`;
                 meta_title: { type: "string", description: "SEO title tag, 50-65 chars" },
                 meta_description: { type: "string", description: "Meta description, 150-160 chars" },
                 excerpt: { type: "string", description: "Card preview, 120-160 chars" },
-                content_md: { type: "string", description: "Full markdown article" },
+                content_md: { type: "string", description: "Full markdown article. MUST use real newline characters between paragraphs, headings, and list items (a blank line between blocks). Do NOT output everything as one continuous line. Headings (## Heading) must be on their own line with a blank line before and after." },
               },
               required: ["slug", "title", "meta_title", "meta_description", "excerpt", "content_md"],
               additionalProperties: false,
