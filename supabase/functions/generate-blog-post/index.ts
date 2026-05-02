@@ -179,7 +179,7 @@ Return everything via the tool call.`;
                 meta_title: { type: "string", description: "SEO title tag, 50-65 chars" },
                 meta_description: { type: "string", description: "Meta description, 150-160 chars" },
                 excerpt: { type: "string", description: "Card preview, 120-160 chars" },
-                content_md: { type: "string", description: "Full markdown article" },
+                content_md: { type: "string", description: "Full markdown article. MUST use real newline characters between paragraphs, headings, and list items (a blank line between blocks). Do NOT output everything as one continuous line. Headings (## Heading) must be on their own line with a blank line before and after." },
               },
               required: ["slug", "title", "meta_title", "meta_description", "excerpt", "content_md"],
               additionalProperties: false,
@@ -216,7 +216,22 @@ Return everything via the tool call.`;
         md = md.trim();
         if (md === before) break;
       }
-      article.content_md = md;
+      // Convert literal escape sequences to real characters (model sometimes
+      // returns "\n" as the two-character string instead of a real newline).
+      if (!md.includes("\n") || /\\n/.test(md)) {
+        md = md.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\t/g, "  ");
+      }
+      // Ensure markdown block elements that ended up inline get their own line.
+      // If headings (##, ###) or list markers appear mid-paragraph, insert breaks.
+      md = md.replace(/([^\n])\s+(#{1,6}\s)/g, "$1\n\n$2");
+      md = md.replace(/(#{1,6}[^\n]+?)\s+([A-Z][^\n#]*?)(?=\s+#{1,6}\s|$)/g, "$1\n\n$2");
+      // Blank line after headings
+      md = md.replace(/^(#{1,6}[^\n]+)\n(?!\n)/gm, "$1\n\n");
+      // Break before numbered list items that got glued inline: " 1. " -> "\n1. "
+      md = md.replace(/([.!?])\s+(\d{1,2}\.\s+\*\*)/g, "$1\n\n$2");
+      // Collapse 3+ blank lines
+      md = md.replace(/\n{3,}/g, "\n\n");
+      article.content_md = md.trim();
     }
 
     // Validation: refuse to publish empty/tiny articles
