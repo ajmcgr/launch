@@ -1427,6 +1427,7 @@ const Submit = () => {
           if (updateError) throw updateError;
 
           handleSubmitSuccess(savedProductId, formData.name, 'Product scheduled using your existing plan!');
+          return;
         } catch (error) {
           console.error('Error using existing plan:', error);
           toast.error('Failed to schedule launch. Please try again.');
