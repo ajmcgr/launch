@@ -135,15 +135,14 @@ const Home = () => {
   }, []);
 
 
-  // Fetch products only once when user state is first determined
-  // Note: Don't include currentPeriod in deps - handlePeriodChange calls fetchProducts directly
+  // Kick off the products fetch immediately on mount (don't wait for auth).
+  // Anonymous user-vote lookups are no-ops, so this is safe and saves the
+  // auth round-trip from the critical path.
   useEffect(() => {
-    if (userLoaded) {
-      fetchProducts(currentPeriod, sort, 0, true);
-      fetchSponsoredProducts();
-    }
+    fetchProducts(currentPeriod, sort, 0, true);
+    fetchSponsoredProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userLoaded]);
+  }, []);
 
   const fetchSponsoredProducts = async () => {
     try {
