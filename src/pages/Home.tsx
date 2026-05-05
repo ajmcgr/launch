@@ -69,9 +69,20 @@ const MAX_HOMEPAGE_PRODUCTS = 15;
 const Home = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<Product[]>([]);
+  // Hydrate from sessionStorage cache for instant repeat-paint (default view only)
+  const cachedHome = (() => {
+    try {
+      const raw = typeof window !== 'undefined' ? sessionStorage.getItem('home:default:v1') : null;
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      // Expire after 5 minutes
+      if (!parsed || Date.now() - parsed.t > 5 * 60 * 1000) return null;
+      return parsed.products as Product[];
+    } catch { return null; }
+  })();
+  const [products, setProducts] = useState<Product[]>(cachedHome || []);
   const [sponsoredProducts, setSponsoredProducts] = useState<Map<number, Product>>(new Map());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cachedHome);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
