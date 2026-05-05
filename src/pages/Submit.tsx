@@ -1205,6 +1205,7 @@ const Submit = () => {
 
         const successMsg = launchStatus === 'launched' ? 'Product launched!' : 'Product scheduled!';
         handleSubmitSuccess(savedProductId, formData.name, successMsg);
+        return;
       }
       
       // Handle free plan separately
