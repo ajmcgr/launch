@@ -531,6 +531,20 @@ const Home = () => {
     } catch (error) {
       console.error('Error fetching products:', error);
       toast.error('Failed to load products');
+      if (reset) {
+        setProducts(formattedProducts);
+        // Cache only the default homepage state for instant repeat-visit paints
+        if (period === 'week' && currentSort === 'popular' && pageNum === 0) {
+          try {
+            sessionStorage.setItem('home:default:v1', JSON.stringify({ t: Date.now(), products: formattedProducts }));
+          } catch {}
+        }
+      } else {
+        setProducts(prev => [...prev, ...formattedProducts]);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast.error('Failed to load products');
     } finally {
       setLoading(false);
       setLoadingMore(false);
