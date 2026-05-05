@@ -1205,6 +1205,7 @@ const Submit = () => {
 
         const successMsg = launchStatus === 'launched' ? 'Product launched!' : 'Product scheduled!';
         handleSubmitSuccess(savedProductId, formData.name, successMsg);
+        return;
       }
       
       // Handle free plan separately
@@ -1355,6 +1356,7 @@ const Submit = () => {
             ? 'Product launched successfully!'
             : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${launchDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
           handleSubmitSuccess(savedProductId, formData.name, message);
+          return;
         } catch (error: any) {
           console.error('Free launch error details:', {
             message: error?.message,
@@ -1425,6 +1427,7 @@ const Submit = () => {
           if (updateError) throw updateError;
 
           handleSubmitSuccess(savedProductId, formData.name, 'Product scheduled using your existing plan!');
+          return;
         } catch (error) {
           console.error('Error using existing plan:', error);
           toast.error('Failed to schedule launch. Please try again.');
