@@ -69,9 +69,20 @@ const MAX_HOMEPAGE_PRODUCTS = 15;
 const Home = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<Product[]>([]);
+  // Hydrate from sessionStorage cache for instant repeat-paint (default view only)
+  const cachedHome = (() => {
+    try {
+      const raw = typeof window !== 'undefined' ? sessionStorage.getItem('home:default:v1') : null;
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      // Expire after 5 minutes
+      if (!parsed || Date.now() - parsed.t > 5 * 60 * 1000) return null;
+      return parsed.products as Product[];
+    } catch { return null; }
+  })();
+  const [products, setProducts] = useState<Product[]>(cachedHome || []);
   const [sponsoredProducts, setSponsoredProducts] = useState<Map<number, Product>>(new Map());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cachedHome);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
@@ -124,15 +135,26 @@ const Home = () => {
   }, []);
 
 
-  // Fetch products only once when user state is first determined
-  // Note: Don't include currentPeriod in deps - handlePeriodChange calls fetchProducts directly
+  // Kick off the products fetch immediately on mount (don't wait for auth).
+  // Anonymous user-vote lookups are no-ops, so this is safe and saves the
+  // auth round-trip from the critical path.
   useEffect(() => {
-    if (userLoaded) {
+    fetchProducts(currentPeriod, sort, 0, true);
+    fetchSponsoredProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Once we know the user is logged in, refetch so their upvote state appears.
+  // (Initial fetch ran in parallel with auth for faster first paint.)
+  const didRefetchForUser = useRef(false);
+  useEffect(() => {
+    if (userLoaded && user && !didRefetchForUser.current) {
+      didRefetchForUser.current = true;
       fetchProducts(currentPeriod, sort, 0, true);
       fetchSponsoredProducts();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userLoaded]);
+  }, [userLoaded, user]);
 
   const fetchSponsoredProducts = async () => {
     try {
@@ -514,6 +536,12 @@ const Home = () => {
 
       if (reset) {
         setProducts(formattedProducts);
+        // Cache only the default homepage state for instant repeat-visit paints
+        if (period === 'week' && currentSort === 'popular' && pageNum === 0) {
+          try {
+            sessionStorage.setItem('home:default:v1', JSON.stringify({ t: Date.now(), products: formattedProducts }));
+          } catch {}
+        }
       } else {
         setProducts(prev => [...prev, ...formattedProducts]);
       }
