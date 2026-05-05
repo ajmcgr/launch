@@ -1356,6 +1356,7 @@ const Submit = () => {
             ? 'Product launched successfully!'
             : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${launchDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
           handleSubmitSuccess(savedProductId, formData.name, message);
+          return;
         } catch (error: any) {
           console.error('Free launch error details:', {
             message: error?.message,
