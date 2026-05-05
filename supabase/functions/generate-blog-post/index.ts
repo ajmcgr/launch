@@ -277,7 +277,7 @@ Return everything via the tool call.`;
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image",
+          model: "google/gemini-3.1-flash-image-preview",
           messages: [{ role: "user", content: imagePrompt }],
           modalities: ["image", "text"],
         }),
@@ -316,8 +316,8 @@ Return everything via the tool call.`;
         throw new Error("Image upload completed without a public URL");
       }
     } catch (imgErr) {
-      console.error("Cover image generation error:", imgErr);
-      throw imgErr;
+      console.error("Cover image generation error (continuing without cover):", imgErr);
+      coverImageUrl = null;
     }
 
     // 4. Insert and auto-publish
