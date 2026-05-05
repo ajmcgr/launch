@@ -144,6 +144,18 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Once we know the user is logged in, refetch so their upvote state appears.
+  // (Initial fetch ran in parallel with auth for faster first paint.)
+  const didRefetchForUser = useRef(false);
+  useEffect(() => {
+    if (userLoaded && user && !didRefetchForUser.current) {
+      didRefetchForUser.current = true;
+      fetchProducts(currentPeriod, sort, 0, true);
+      fetchSponsoredProducts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userLoaded, user]);
+
   const fetchSponsoredProducts = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
