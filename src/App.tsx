@@ -21,6 +21,7 @@ const LaunchDetail = lazy(() => import("./pages/LaunchDetail"));
 const Settings = lazy(() => import("./pages/Settings"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const MyProducts = lazy(() => import("./pages/MyProducts"));
+const EditLaunch = lazy(() => import("./pages/EditLaunch"));
 const About = lazy(() => import("./pages/About"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -117,6 +118,7 @@ const AppContent = () => {
             <Route path="/go/:slug" element={<GoRedirect />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/my-products" element={<MyProducts />} />
+            <Route path="/launch/:productId/edit" element={<EditLaunch />} />
             <Route path="/about" element={<About />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/contact" element={<Contact />} />
