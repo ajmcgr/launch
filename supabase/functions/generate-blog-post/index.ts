@@ -255,16 +255,16 @@ Return everything via the tool call.`;
     try {
       const imagePrompt = `Editorial blog cover illustration for an article titled "${article.title}". Topic: ${topic.angle}. Style: modern, minimal, clean tech editorial illustration with bold geometric shapes and a confident color palette. No text, no words, no letters, no logos. Wide 16:9 composition suitable for a blog header.`;
 
-      const imgResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const imgResp = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
+          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-3.1-flash-image-preview",
-          messages: [{ role: "user", content: imagePrompt }],
-          modalities: ["image", "text"],
+          model: "gpt-image-1",
+          prompt: imagePrompt,
+          size: "1536x1024",
         }),
       });
 
@@ -273,19 +273,13 @@ Return everything via the tool call.`;
       }
 
       const imgData = await imgResp.json();
-      const dataUrl: string | undefined =
-        imgData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-      if (!dataUrl?.startsWith("data:image/")) {
+      const b64: string | undefined = imgData.data?.[0]?.b64_json;
+      if (!b64) {
         throw new Error("Image generation returned no image data");
       }
 
-      // Parse data URL: data:image/png;base64,XXXX
-      const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
-      if (!match) throw new Error("Image generation returned an invalid image data URL");
-
-      const mime = match[1];
-      const ext = mime.split("/")[1].replace("jpeg", "jpg");
-      const b64 = match[2];
+      const mime = "image/png";
+      const ext = "png";
       const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
       const path = `${finalSlug}-${Date.now()}.${ext}`;
       const { error: uploadErr } = await supabase.storage
