@@ -641,7 +641,10 @@ const Home = () => {
       } else {
         const { error: insertError } = await supabase
           .from('votes')
-          .insert({ product_id: productId, user_id: user.id, value: 1 });
+          .upsert(
+            { product_id: productId, user_id: user.id, value: 1 },
+            { onConflict: 'product_id,user_id' }
+          );
 
         if (insertError) throw insertError;
       }
