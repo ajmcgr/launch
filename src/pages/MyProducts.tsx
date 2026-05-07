@@ -518,15 +518,15 @@ const MyProducts = () => {
   };
 
   const canEdit = (product: any) => {
-    // Drafts are always editable
-    if (product.status === 'draft') return true;
-    
-    // Scheduled products are editable until launch
-    if (product.status === 'scheduled') {
-      return true;
-    }
-    
-    return false;
+    // Drafts, scheduled, and launched products are all editable.
+    // Launched edits are limited (no name / launch date) — handled in EditLaunch page.
+    return ['draft', 'scheduled', 'launched'].includes(product.status);
+  };
+
+  const editHref = (product: any) => {
+    if (product.status === 'launched') return `/launch/${product.id}/edit`;
+    if (product.status === 'scheduled' && product.orderPlan) return `/submit?productId=${product.id}`;
+    return `/submit?draft=${product.id}&step=1`;
   };
 
   const canDelete = (product: any) => {
@@ -961,7 +961,7 @@ const MyProducts = () => {
                         asChild
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <Link to={product.status === 'scheduled' && product.orderPlan ? `/submit?productId=${product.id}` : `/submit?draft=${product.id}&step=1`}>
+                        <Link to={editHref(product)}>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </Link>
