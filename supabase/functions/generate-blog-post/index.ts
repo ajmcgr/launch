@@ -13,39 +13,58 @@ function slugify(text: string): string {
     .slice(0, 80);
 }
 
-async function callAI(messages: any[], tools?: any[], toolChoice?: any): Promise<any> {
-  const apiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+function parseJsonContent(content: string): any {
+  const cleaned = content
+    .trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+  return JSON.parse(cleaned);
+}
 
-  const body: any = {
-    model: "google/gemini-2.5-pro",
-    messages,
-  };
-  if (tools) {
-    body.tools = tools;
-    body.tool_choice = toolChoice;
-  }
+async function callOpenAIJson(prompt: string, schemaName: string, schema: Record<string, unknown>): Promise<any> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) throw new Error("OPENAI_API_KEY missing");
 
-  const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: "You write practical SEO content for Launch. Return valid JSON only and follow the provided schema exactly.",
+        },
+        { role: "user", content: prompt },
+      ],
+      response_format: {
+        type: "json_schema",
+        json_schema: { name: schemaName, strict: true, schema },
+      },
+      temperature: 0.65,
+      max_tokens: 8000,
+    }),
   });
 
   if (!resp.ok) {
     const errText = await resp.text();
-    throw new Error(`AI gateway ${resp.status}: ${errText}`);
+    throw new Error(`OpenAI ${resp.status}: ${errText}`);
   }
-  return await resp.json();
+  const json = await resp.json();
+  const content = json.choices?.[0]?.message?.content;
+  if (!content) throw new Error("OpenAI returned an empty response");
+  return parseJsonContent(content);
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const requestBody = await req.json().catch(() => ({}));
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -97,38 +116,21 @@ Pick ONE blog post topic that:
 
 Pick the topic now.`;
 
-    const topicResp = await callAI(
-      [{ role: "user", content: topicSelectionPrompt }],
-      [
-        {
-          type: "function",
-          function: {
-            name: "select_topic",
-            description: "Select a blog post topic with SEO keyword and angle",
-            parameters: {
-              type: "object",
-              properties: {
-                title: { type: "string", description: "SEO-optimized blog post title (50-65 chars)" },
-                target_keyword: { type: "string", description: "Primary SEO keyword to rank for" },
-                angle: { type: "string", description: "The unique angle / hook for this article" },
-                tags: {
-                  type: "array",
-                  items: { type: "string" },
-                  description: "3-5 topic tags",
-                },
-              },
-              required: ["title", "target_keyword", "angle", "tags"],
-              additionalProperties: false,
-            },
-          },
+    const topic = await callOpenAIJson(topicSelectionPrompt, "select_topic", {
+      type: "object",
+      properties: {
+        title: { type: "string", description: "SEO-optimized blog post title (50-65 chars)" },
+        target_keyword: { type: "string", description: "Primary SEO keyword to rank for" },
+        angle: { type: "string", description: "The unique angle / hook for this article" },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "3-5 topic tags",
         },
-      ],
-      { type: "function", function: { name: "select_topic" } },
-    );
-
-    const topicCall = topicResp.choices?.[0]?.message?.tool_calls?.[0];
-    if (!topicCall) throw new Error("AI failed to select topic");
-    const topic = JSON.parse(topicCall.function.arguments);
+      },
+      required: ["title", "target_keyword", "angle", "tags"],
+      additionalProperties: false,
+    });
     console.log("Selected topic:", topic);
 
     // 3. Generate the full article
@@ -175,36 +177,19 @@ Also produce: a 50-65 char meta_title, a 150-160 char meta_description, a 120-16
 
 Return everything via the tool call.`;
 
-    const articleResp = await callAI(
-      [{ role: "user", content: articlePrompt }],
-      [
-        {
-          type: "function",
-          function: {
-            name: "publish_article",
-            description: "Publish the complete blog article",
-            parameters: {
-              type: "object",
-              properties: {
-                slug: { type: "string", description: "URL slug, lowercase-with-dashes, max 80 chars" },
-                title: { type: "string" },
-                meta_title: { type: "string", description: "SEO title tag, 50-65 chars" },
-                meta_description: { type: "string", description: "Meta description, 150-160 chars" },
-                excerpt: { type: "string", description: "Card preview, 120-160 chars" },
-                content_md: { type: "string", description: "Full markdown article. MUST use real newline characters between paragraphs, headings, and list items (a blank line between blocks). Do NOT output everything as one continuous line. Headings (## Heading) must be on their own line with a blank line before and after." },
-              },
-              required: ["slug", "title", "meta_title", "meta_description", "excerpt", "content_md"],
-              additionalProperties: false,
-            },
-          },
-        },
-      ],
-      { type: "function", function: { name: "publish_article" } },
-    );
-
-    const articleCall = articleResp.choices?.[0]?.message?.tool_calls?.[0];
-    if (!articleCall) throw new Error("AI failed to generate article");
-    const article = JSON.parse(articleCall.function.arguments);
+    const article = await callOpenAIJson(articlePrompt, "publish_article", {
+      type: "object",
+      properties: {
+        slug: { type: "string", description: "URL slug, lowercase-with-dashes, max 80 chars" },
+        title: { type: "string" },
+        meta_title: { type: "string", description: "SEO title tag, 50-65 chars" },
+        meta_description: { type: "string", description: "Meta description, 150-160 chars" },
+        excerpt: { type: "string", description: "Card preview, 120-160 chars" },
+        content_md: { type: "string", description: "Full markdown article with real newlines and blank lines between blocks." },
+      },
+      required: ["slug", "title", "meta_title", "meta_description", "excerpt", "content_md"],
+      additionalProperties: false,
+    });
 
     // Strip any accidental wrapping fences/quotes from the markdown body.
     // Models sometimes wrap output in ```, ```markdown, ''', """, or even '''markdown.
@@ -270,16 +255,16 @@ Return everything via the tool call.`;
     try {
       const imagePrompt = `Editorial blog cover illustration for an article titled "${article.title}". Topic: ${topic.angle}. Style: modern, minimal, clean tech editorial illustration with bold geometric shapes and a confident color palette. No text, no words, no letters, no logos. Wide 16:9 composition suitable for a blog header.`;
 
-      const imgResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const imgResp = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
+          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-3.1-flash-image-preview",
-          messages: [{ role: "user", content: imagePrompt }],
-          modalities: ["image", "text"],
+          model: "gpt-image-1",
+          prompt: imagePrompt,
+          size: "1536x1024",
         }),
       });
 
@@ -288,19 +273,13 @@ Return everything via the tool call.`;
       }
 
       const imgData = await imgResp.json();
-      const dataUrl: string | undefined =
-        imgData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-      if (!dataUrl?.startsWith("data:image/")) {
+      const b64: string | undefined = imgData.data?.[0]?.b64_json;
+      if (!b64) {
         throw new Error("Image generation returned no image data");
       }
 
-      // Parse data URL: data:image/png;base64,XXXX
-      const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
-      if (!match) throw new Error("Image generation returned an invalid image data URL");
-
-      const mime = match[1];
-      const ext = mime.split("/")[1].replace("jpeg", "jpg");
-      const b64 = match[2];
+      const mime = "image/png";
+      const ext = "png";
       const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
       const path = `${finalSlug}-${Date.now()}.${ext}`;
       const { error: uploadErr } = await supabase.storage
@@ -320,7 +299,10 @@ Return everything via the tool call.`;
       coverImageUrl = null;
     }
 
-    // 4. Insert and auto-publish
+    const status = requestBody?.status === "draft" ? "draft" : "published";
+    const publishedAt = status === "published" ? new Date().toISOString() : null;
+
+    // 4. Insert and auto-publish by default; callers can explicitly request draft.
     const { data: inserted, error: insertError } = await supabase
       .from("blog_posts")
       .insert({
@@ -334,21 +316,22 @@ Return everything via the tool call.`;
         tags: topic.tags,
         topic_seed: topic.target_keyword,
         ai_generated: true,
-        status: "published",
-        published_at: new Date().toISOString(),
+        status,
+        published_at: publishedAt,
       })
       .select()
       .single();
 
     if (insertError) throw insertError;
 
-    console.log("Published blog post:", inserted.slug);
+    console.log("Generated blog post:", inserted.slug, status);
 
     return new Response(
       JSON.stringify({
         success: true,
         slug: inserted.slug,
         title: inserted.title,
+        status: inserted.status,
         url: `https://trylaunch.ai/blog/${inserted.slug}`,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
