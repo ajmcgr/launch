@@ -64,6 +64,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const requestBody = await req.json().catch(() => ({}));
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -304,11 +305,10 @@ Return everything via the tool call.`;
       coverImageUrl = null;
     }
 
-    const requestedStatus = (await req.clone().json().catch(() => ({})))?.status;
-    const status = requestedStatus === "published" ? "published" : "draft";
+    const status = requestBody?.status === "draft" ? "draft" : "published";
     const publishedAt = status === "published" ? new Date().toISOString() : null;
 
-    // 4. Insert as a draft by default; callers can explicitly request publish.
+    // 4. Insert and auto-publish by default; callers can explicitly request draft.
     const { data: inserted, error: insertError } = await supabase
       .from("blog_posts")
       .insert({
