@@ -1,7 +1,48 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import Stripe from 'https://esm.sh/stripe@12.18.0?target=deno';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
-import { postAlexComment } from '../_shared/auto-comment.ts';
+// Inlined from _shared/auto-comment.ts (Supabase dashboard manual deploys don't bundle sibling folders)
+const AUTO_COMMENT_USER_ID = '5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc';
+const AUTO_COMMENT_USERNAME = 'alex';
+const ALEX_COMMENTS = [
+  "Congrats on the launch! What inspired you to build this?",
+  "Nice work — what's next on the roadmap?",
+  "Looks great! Curious, who's the ideal user for this?",
+  "Congrats! What was the hardest part of building it?",
+  "Love the direction. How long did this take to put together?",
+  "Awesome launch — what made you pick this problem to solve?",
+  "Cool product! What's the one feature you're most proud of?",
+  "Congrats on shipping! Any unexpected lessons along the way?",
+  "Nice one — what's the story behind the name?",
+  "Looks promising. What's the biggest challenge you're tackling next?",
+  "Congrats! Curious how you're thinking about distribution?",
+  "Great work. What would you do differently if you started over?",
+  "Love this. Who's it for and what makes it different?",
+  "Congrats on launching! What's been the best feedback so far?",
+  "Nice launch — what tech stack did you build it on?",
+  "Cool concept! How are you planning to grow from here?",
+  "Congrats! What problem were you personally trying to solve?",
+  "Looks solid. What's the v2 going to look like?",
+];
+async function getAlexUser(supabaseAdmin: any) {
+  const { data: alexById } = await supabaseAdmin.from('users').select('id, username').eq('id', AUTO_COMMENT_USER_ID).maybeSingle();
+  if (alexById?.id) return alexById;
+  const { data: alexByUsername } = await supabaseAdmin.from('users').select('id, username').eq('username', AUTO_COMMENT_USERNAME).maybeSingle();
+  return alexByUsername ?? null;
+}
+async function postAlexComment(supabaseAdmin: any, productId: string) {
+  try {
+    const alex = await getAlexUser(supabaseAdmin);
+    if (!alex?.id) { console.log('Auto-comment skipped: @alex not found'); return false; }
+    const { data: existing } = await supabaseAdmin.from('comments').select('id').eq('product_id', productId).eq('user_id', alex.id).limit(1).maybeSingle();
+    if (existing) return false;
+    const content = ALEX_COMMENTS[Math.floor(Math.random() * ALEX_COMMENTS.length)];
+    const { error: insertError } = await supabaseAdmin.from('comments').insert({ product_id: productId, user_id: alex.id, content, parent_comment_id: null, pinned: false });
+    if (insertError) { console.error('Auto-comment insert failed:', insertError); return false; }
+    console.log(`Auto-comment posted on ${productId}`);
+    return true;
+  } catch (err) { console.error('Auto-comment error:', err); return false; }
+}
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
