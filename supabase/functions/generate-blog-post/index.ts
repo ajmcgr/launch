@@ -13,33 +13,51 @@ function slugify(text: string): string {
     .slice(0, 80);
 }
 
-async function callAI(messages: any[], tools?: any[], toolChoice?: any): Promise<any> {
-  const apiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
+function parseJsonContent(content: string): any {
+  const cleaned = content
+    .trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+  return JSON.parse(cleaned);
+}
 
-  const body: any = {
-    model: "google/gemini-2.5-pro",
-    messages,
-  };
-  if (tools) {
-    body.tools = tools;
-    body.tool_choice = toolChoice;
-  }
+async function callOpenAIJson(prompt: string, schemaName: string, schema: Record<string, unknown>): Promise<any> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) throw new Error("OPENAI_API_KEY missing");
 
-  const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: "You write practical SEO content for Launch. Return valid JSON only and follow the provided schema exactly.",
+        },
+        { role: "user", content: prompt },
+      ],
+      response_format: {
+        type: "json_schema",
+        json_schema: { name: schemaName, strict: true, schema },
+      },
+      temperature: 0.65,
+      max_tokens: 8000,
+    }),
   });
 
   if (!resp.ok) {
     const errText = await resp.text();
-    throw new Error(`AI gateway ${resp.status}: ${errText}`);
+    throw new Error(`OpenAI ${resp.status}: ${errText}`);
   }
-  return await resp.json();
+  const json = await resp.json();
+  const content = json.choices?.[0]?.message?.content;
+  if (!content) throw new Error("OpenAI returned an empty response");
+  return parseJsonContent(content);
 }
 
 Deno.serve(async (req) => {
