@@ -115,38 +115,21 @@ Pick ONE blog post topic that:
 
 Pick the topic now.`;
 
-    const topicResp = await callAI(
-      [{ role: "user", content: topicSelectionPrompt }],
-      [
-        {
-          type: "function",
-          function: {
-            name: "select_topic",
-            description: "Select a blog post topic with SEO keyword and angle",
-            parameters: {
-              type: "object",
-              properties: {
-                title: { type: "string", description: "SEO-optimized blog post title (50-65 chars)" },
-                target_keyword: { type: "string", description: "Primary SEO keyword to rank for" },
-                angle: { type: "string", description: "The unique angle / hook for this article" },
-                tags: {
-                  type: "array",
-                  items: { type: "string" },
-                  description: "3-5 topic tags",
-                },
-              },
-              required: ["title", "target_keyword", "angle", "tags"],
-              additionalProperties: false,
-            },
-          },
+    const topic = await callOpenAIJson(topicSelectionPrompt, "select_topic", {
+      type: "object",
+      properties: {
+        title: { type: "string", description: "SEO-optimized blog post title (50-65 chars)" },
+        target_keyword: { type: "string", description: "Primary SEO keyword to rank for" },
+        angle: { type: "string", description: "The unique angle / hook for this article" },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "3-5 topic tags",
         },
-      ],
-      { type: "function", function: { name: "select_topic" } },
-    );
-
-    const topicCall = topicResp.choices?.[0]?.message?.tool_calls?.[0];
-    if (!topicCall) throw new Error("AI failed to select topic");
-    const topic = JSON.parse(topicCall.function.arguments);
+      },
+      required: ["title", "target_keyword", "angle", "tags"],
+      additionalProperties: false,
+    });
     console.log("Selected topic:", topic);
 
     // 3. Generate the full article
@@ -193,36 +176,19 @@ Also produce: a 50-65 char meta_title, a 150-160 char meta_description, a 120-16
 
 Return everything via the tool call.`;
 
-    const articleResp = await callAI(
-      [{ role: "user", content: articlePrompt }],
-      [
-        {
-          type: "function",
-          function: {
-            name: "publish_article",
-            description: "Publish the complete blog article",
-            parameters: {
-              type: "object",
-              properties: {
-                slug: { type: "string", description: "URL slug, lowercase-with-dashes, max 80 chars" },
-                title: { type: "string" },
-                meta_title: { type: "string", description: "SEO title tag, 50-65 chars" },
-                meta_description: { type: "string", description: "Meta description, 150-160 chars" },
-                excerpt: { type: "string", description: "Card preview, 120-160 chars" },
-                content_md: { type: "string", description: "Full markdown article. MUST use real newline characters between paragraphs, headings, and list items (a blank line between blocks). Do NOT output everything as one continuous line. Headings (## Heading) must be on their own line with a blank line before and after." },
-              },
-              required: ["slug", "title", "meta_title", "meta_description", "excerpt", "content_md"],
-              additionalProperties: false,
-            },
-          },
-        },
-      ],
-      { type: "function", function: { name: "publish_article" } },
-    );
-
-    const articleCall = articleResp.choices?.[0]?.message?.tool_calls?.[0];
-    if (!articleCall) throw new Error("AI failed to generate article");
-    const article = JSON.parse(articleCall.function.arguments);
+    const article = await callOpenAIJson(articlePrompt, "publish_article", {
+      type: "object",
+      properties: {
+        slug: { type: "string", description: "URL slug, lowercase-with-dashes, max 80 chars" },
+        title: { type: "string" },
+        meta_title: { type: "string", description: "SEO title tag, 50-65 chars" },
+        meta_description: { type: "string", description: "Meta description, 150-160 chars" },
+        excerpt: { type: "string", description: "Card preview, 120-160 chars" },
+        content_md: { type: "string", description: "Full markdown article with real newlines and blank lines between blocks." },
+      },
+      required: ["slug", "title", "meta_title", "meta_description", "excerpt", "content_md"],
+      additionalProperties: false,
+    });
 
     // Strip any accidental wrapping fences/quotes from the markdown body.
     // Models sometimes wrap output in ```, ```markdown, ''', """, or even '''markdown.
