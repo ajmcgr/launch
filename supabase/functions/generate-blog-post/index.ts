@@ -304,7 +304,11 @@ Return everything via the tool call.`;
       coverImageUrl = null;
     }
 
-    // 4. Insert and auto-publish
+    const requestedStatus = (await req.clone().json().catch(() => ({})))?.status;
+    const status = requestedStatus === "published" ? "published" : "draft";
+    const publishedAt = status === "published" ? new Date().toISOString() : null;
+
+    // 4. Insert as a draft by default; callers can explicitly request publish.
     const { data: inserted, error: insertError } = await supabase
       .from("blog_posts")
       .insert({
@@ -318,21 +322,22 @@ Return everything via the tool call.`;
         tags: topic.tags,
         topic_seed: topic.target_keyword,
         ai_generated: true,
-        status: "published",
-        published_at: new Date().toISOString(),
+        status,
+        published_at: publishedAt,
       })
       .select()
       .single();
 
     if (insertError) throw insertError;
 
-    console.log("Published blog post:", inserted.slug);
+    console.log("Generated blog post:", inserted.slug, status);
 
     return new Response(
       JSON.stringify({
         success: true,
         slug: inserted.slug,
         title: inserted.title,
+        status: inserted.status,
         url: `https://trylaunch.ai/blog/${inserted.slug}`,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
