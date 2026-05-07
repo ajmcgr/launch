@@ -44,14 +44,14 @@ const AdminBlogTab = () => {
     },
   });
 
-  const generateNow = async () => {
+  const generateNow = async (status: 'draft' | 'published' = 'published') => {
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-blog-post', {
-        body: { source: 'manual' },
+        body: { source: 'manual', status },
       });
       if (error) throw error;
-      toast.success(`Published: ${data?.title || 'New article'}`);
+      toast.success(`${data?.status === 'draft' ? 'Drafted' : 'Published'}: ${data?.title || 'New article'}`);
       queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
     } catch (e: any) {
       toast.error(e?.message || 'Failed to generate post');
@@ -116,19 +116,30 @@ const AdminBlogTab = () => {
             <div>
               <CardTitle>Blog Posts</CardTitle>
               <CardDescription>
-                AI auto-publishes a new article every 3 days at 14:00 UTC. You can also generate one
-                on demand.
+                OpenAI auto-publishes a new article daily at 14:00 UTC. You can also generate a draft
+                or publish one on demand.
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-shrink-0">
-              <Button onClick={generateNow} disabled={generating}>
+              <Button variant="outline" onClick={() => generateNow('draft')} disabled={generating}>
                 {generating ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating…
                   </>
                 ) : (
                   <>
-                    <Sparkles className="h-4 w-4 mr-2" /> Generate Now
+                    <Sparkles className="h-4 w-4 mr-2" /> Generate Draft
+                  </>
+                )}
+              </Button>
+              <Button onClick={() => generateNow('published')} disabled={generating}>
+                {generating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" /> Generate & Publish
                   </>
                 )}
               </Button>
