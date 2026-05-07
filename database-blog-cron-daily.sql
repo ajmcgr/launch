@@ -19,7 +19,7 @@ SELECT cron.schedule(
   '0 14 * * *',
   $$
   SELECT net.http_post(
-    url := 'https://qzwoyflbcozbfcjkqglv.supabase.co/functions/v1/generate-blog-post',
+    url := 'https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/generate-blog-post',
     headers := jsonb_build_object('Content-Type', 'application/json'),
     body := jsonb_build_object('source', 'cron')
   );
