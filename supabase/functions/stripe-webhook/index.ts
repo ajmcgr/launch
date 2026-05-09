@@ -983,14 +983,33 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
-  } catch (error) {
-    console.error('Webhook error:', error);
+  } catch (error: any) {
+    // Surface the real error message (Stripe SDK errors may not pass `instanceof Error` across module boundaries in Deno)
+    const message =
+      (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string')
+        ? error.message
+        : (typeof error === 'string' ? error : JSON.stringify(error));
+    const errType = error?.type || error?.name || 'UnknownError';
+    console.error('Webhook error:', errType, message, error);
+
+    // Signature verification failures must return 4xx so Stripe shows them in the dashboard
+    const isSignatureError =
+      errType === 'StripeSignatureVerificationError' ||
+      message?.includes('signature') ||
+      message?.includes('No signatures found');
+
+    if (isSignatureError) {
+      return new Response(
+        JSON.stringify({ error: `Signature verification failed: ${message}` }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // For any other downstream processing error, ack with 200 so Stripe doesn't retry forever.
+    // The error is logged above and we (Launch) will reconcile manually if needed.
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Webhook error' }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      }
+      JSON.stringify({ received: true, processing_error: message }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
   }
 });
