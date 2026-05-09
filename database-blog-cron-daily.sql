@@ -3,15 +3,10 @@
 -- Run this in the Supabase SQL Editor.
 -- ===============================================================
 
--- Remove old schedules if they exist
-SELECT cron.unschedule('generate-blog-post-weekly')
-WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'generate-blog-post-weekly');
-
-SELECT cron.unschedule('generate-blog-post-every-3-days')
-WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'generate-blog-post-every-3-days');
-
-SELECT cron.unschedule('generate-blog-post-daily')
-WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'generate-blog-post-daily');
+-- Remove old schedules if they exist without reading cron.job, which can be permission-restricted
+DO $$ BEGIN PERFORM cron.unschedule('generate-blog-post-weekly'); EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN PERFORM cron.unschedule('generate-blog-post-every-3-days'); EXCEPTION WHEN OTHERS THEN NULL; END $$;
+DO $$ BEGIN PERFORM cron.unschedule('generate-blog-post-daily'); EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 -- Schedule daily at 14:00 UTC
 SELECT cron.schedule(
@@ -21,10 +16,10 @@ SELECT cron.schedule(
   SELECT net.http_post(
     url := 'https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/generate-blog-post',
     headers := jsonb_build_object('Content-Type', 'application/json'),
-    body := jsonb_build_object('source', 'cron')
+    body := jsonb_build_object('source', 'cron'),
+    timeout_milliseconds := 5000
   );
   $$
 );
 
--- Verify
-SELECT jobname, schedule, active FROM cron.job WHERE jobname LIKE 'generate-blog-post%';
+-- Verify in Supabase Dashboard → Database → Cron Jobs if cron.job is permission-restricted.

@@ -60,11 +60,11 @@ async function callOpenAIJson(prompt: string, schemaName: string, schema: Record
   return parseJsonContent(content);
 }
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
+async function generateBlogPost(requestBody: any) {
   try {
-    const requestBody = await req.json().catch(() => ({}));
+    const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
+    const status = requestBody?.status === "draft" ? "draft" : "published";
+    const shouldGenerateCover = requestBody?.withCover === true || source !== "cron";
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -249,11 +249,12 @@ Return everything via the tool call.`;
       finalSlug = `${finalSlug}-${Date.now().toString(36)}`;
     }
 
-    // 4. Generate a cover image for the post. If the image cannot be created,
-    // stop publishing so future blog posts never go live without artwork.
+    // 4. Generate a cover image for manual runs only. Cron skips this slow step
+    // so the autopilot job can complete inside pg_net/Supabase timeouts.
     let coverImageUrl: string | null = null;
-    try {
-      const imagePrompt = `Editorial blog cover illustration for an article titled "${article.title}". Topic: ${topic.angle}. Style: modern, minimal, clean tech editorial illustration with bold geometric shapes and a confident color palette. No text, no words, no letters, no logos. Wide 16:9 composition suitable for a blog header.`;
+    if (shouldGenerateCover) {
+      try {
+        const imagePrompt = `Editorial blog cover illustration for an article titled "${article.title}". Topic: ${topic.angle}. Style: modern, minimal, clean tech editorial illustration with bold geometric shapes and a confident color palette. No text, no words, no letters, no logos. Wide 16:9 composition suitable for a blog header.`;
 
       const imgResp = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
@@ -294,12 +295,14 @@ Return everything via the tool call.`;
       if (!coverImageUrl) {
         throw new Error("Image upload completed without a public URL");
       }
-    } catch (imgErr) {
-      console.error("Cover image generation error (continuing without cover):", imgErr);
-      coverImageUrl = null;
+      } catch (imgErr) {
+        console.error("Cover image generation error (continuing without cover):", imgErr);
+        coverImageUrl = null;
+      }
+    } else {
+      console.log("Skipping cover image for cron blog generation");
     }
 
-    const status = requestBody?.status === "draft" ? "draft" : "published";
     const publishedAt = status === "published" ? new Date().toISOString() : null;
 
     // 4. Insert and auto-publish by default; callers can explicitly request draft.
@@ -326,18 +329,59 @@ Return everything via the tool call.`;
 
     console.log("Generated blog post:", inserted.slug, status);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        slug: inserted.slug,
-        title: inserted.title,
-        status: inserted.status,
-        url: `https://trylaunch.ai/blog/${inserted.slug}`,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return {
+      success: true,
+      slug: inserted.slug,
+      title: inserted.title,
+      status: inserted.status,
+      url: `https://trylaunch.ai/blog/${inserted.slug}`,
+    };
   } catch (err) {
     console.error("generate-blog-post error:", err);
+    throw err;
+  }
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  try {
+    const requestBody = await req.json().catch(() => ({}));
+    const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
+
+    if (source === "cron") {
+      const job = generateBlogPost({ ...requestBody, source: "cron" });
+      const observedJob = job
+        .then((result) => {
+          console.log("Queued cron blog generation finished:", result);
+          return result;
+        })
+        .catch((err) => {
+          console.error("Queued cron blog generation failed:", err);
+          throw err;
+        });
+      const edgeRuntime = (globalThis as any).EdgeRuntime;
+
+      if (typeof edgeRuntime?.waitUntil === "function") {
+        edgeRuntime.waitUntil(observedJob);
+        return new Response(
+          JSON.stringify({ success: true, queued: true, status: "accepted" }),
+          { status: 202, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      const result = await observedJob;
+      return new Response(JSON.stringify(result), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await generateBlogPost(requestBody);
+    return new Response(JSON.stringify(result), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("generate-blog-post request error:", err);
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
