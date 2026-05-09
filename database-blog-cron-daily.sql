@@ -22,5 +22,4 @@ SELECT cron.schedule(
   $$
 );
 
--- Verify
-SELECT jobname, schedule, active FROM cron.job WHERE jobname LIKE 'generate-blog-post%';
+-- Verify in Supabase Dashboard → Database → Cron Jobs if cron.job is permission-restricted.
