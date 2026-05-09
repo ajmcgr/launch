@@ -350,20 +350,27 @@ Deno.serve(async (req) => {
     const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
 
     if (source === "cron") {
-      const job = generateBlogPost({ ...requestBody, source: "cron" })
-        .then((result) => console.log("Queued cron blog generation finished:", result))
-        .catch((err) => console.error("Queued cron blog generation failed:", err));
+      const job = generateBlogPost({ ...requestBody, source: "cron" });
+      const observedJob = job
+        .then((result) => {
+          console.log("Queued cron blog generation finished:", result);
+          return result;
+        })
+        .catch((err) => {
+          console.error("Queued cron blog generation failed:", err);
+          throw err;
+        });
       const edgeRuntime = (globalThis as any).EdgeRuntime;
 
       if (typeof edgeRuntime?.waitUntil === "function") {
-        edgeRuntime.waitUntil(job);
+        edgeRuntime.waitUntil(observedJob);
         return new Response(
           JSON.stringify({ success: true, queued: true, status: "accepted" }),
           { status: 202, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
 
-      const result = await job;
+      const result = await observedJob;
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
