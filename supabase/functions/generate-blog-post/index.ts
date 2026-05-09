@@ -60,11 +60,8 @@ async function callOpenAIJson(prompt: string, schemaName: string, schema: Record
   return parseJsonContent(content);
 }
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
+async function generateBlogPost(requestBody: any) {
   try {
-    const requestBody = await req.json().catch(() => ({}));
     const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
     const status = requestBody?.status === "draft" ? "draft" : "published";
     const shouldGenerateCover = requestBody?.withCover === true || source !== "cron";
@@ -332,18 +329,52 @@ Return everything via the tool call.`;
 
     console.log("Generated blog post:", inserted.slug, status);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        slug: inserted.slug,
-        title: inserted.title,
-        status: inserted.status,
-        url: `https://trylaunch.ai/blog/${inserted.slug}`,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return {
+      success: true,
+      slug: inserted.slug,
+      title: inserted.title,
+      status: inserted.status,
+      url: `https://trylaunch.ai/blog/${inserted.slug}`,
+    };
   } catch (err) {
     console.error("generate-blog-post error:", err);
+    throw err;
+  }
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  try {
+    const requestBody = await req.json().catch(() => ({}));
+    const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
+
+    if (source === "cron") {
+      const job = generateBlogPost({ ...requestBody, source: "cron" })
+        .then((result) => console.log("Queued cron blog generation finished:", result))
+        .catch((err) => console.error("Queued cron blog generation failed:", err));
+      const edgeRuntime = (globalThis as any).EdgeRuntime;
+
+      if (typeof edgeRuntime?.waitUntil === "function") {
+        edgeRuntime.waitUntil(job);
+        return new Response(
+          JSON.stringify({ success: true, queued: true, status: "accepted" }),
+          { status: 202, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      const result = await job;
+      return new Response(JSON.stringify(result), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await generateBlogPost(requestBody);
+    return new Response(JSON.stringify(result), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("generate-blog-post request error:", err);
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
