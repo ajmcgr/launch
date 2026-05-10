@@ -239,6 +239,7 @@ const Admin = () => {
       case 'website': return 750;
       case 'newsletter': return 500;
       case 'combined': return 1000;
+      case 'boost': return 19;
       default: return 0;
     }
   };
