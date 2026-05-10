@@ -663,6 +663,7 @@ Deno.serve(async (req) => {
             sponsorship_type: 'boost',
             start_date: today.toISOString().split('T')[0],
             end_date: tomorrow.toISOString().split('T')[0],
+            amount_paid: (session.amount_total ?? 1900) / 100,
           });
         
         if (boostError) {
