@@ -90,6 +90,7 @@ const Admin = () => {
         if (sp.sponsorship_type === 'website') totalRevenue += 750;
         else if (sp.sponsorship_type === 'newsletter') totalRevenue += 500;
         else if (sp.sponsorship_type === 'combined') totalRevenue += 1000;
+        else if (sp.sponsorship_type === 'boost') totalRevenue += 19;
       });
 
       // Add launch revenues (join = $9, skip = $39)
