@@ -901,7 +901,7 @@ const Home = () => {
                   <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="flex-1 text-center md:text-left">
                       <h3 className="text-lg font-semibold mb-1">Launch your product to 41,000+ founders</h3>
-                      <p className="text-sm text-muted-foreground">Get discovered, collect votes, and earn a DR 51 dofollow backlink — it's free to start.</p>
+                      <p className="text-sm text-muted-foreground">Get discovered, collect votes, and earn a DR 52 dofollow backlink — it's free to start.</p>
                     </div>
                     <div className="shrink-0">
                       <Button asChild className="gap-2">
