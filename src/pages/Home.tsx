@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate } from 'react-router-dom';
 import { trackSponsorImpression } from '@/hooks/use-sponsor-tracking';
+import RotatingWord from '@/components/RotatingWord';
 
 import {
   Accordion,
@@ -900,7 +901,7 @@ const Home = () => {
                 <div className="w-full bg-muted/30 px-6 py-6 md:py-0 flex items-center md:aspect-[7/1] mb-6">
                   <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="flex-1 text-center md:text-left">
-                      <h3 className="text-lg font-semibold mb-1">Launch your product to 41,000+ founders</h3>
+                      <h3 className="text-lg font-semibold mb-1">Launch your product to 41,000+ <RotatingWord words={['founders', 'makers', 'builders', 'indiehackers']} /></h3>
                       <p className="text-sm text-muted-foreground">Get discovered, collect votes, and earn a DR 52 dofollow backlink — it's free to start.</p>
                     </div>
                     <div className="shrink-0">
