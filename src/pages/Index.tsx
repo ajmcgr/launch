@@ -96,6 +96,9 @@ const Index = () => {
     if (launches.length === 0) return;
     
     const sorted = [...launches].sort((a, b) => {
+      // Boosted products always pinned to the top
+      if (a.isBoosted && !b.isBoosted) return -1;
+      if (!a.isBoosted && b.isBoosted) return 1;
       if (sort === 'popular') {
         return b.votes - a.votes;
       } else {
@@ -113,7 +116,7 @@ const Index = () => {
       const now = new Date();
       const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
 
-      const { data: products, error } = await supabase
+      const { data: todayProducts, error } = await supabase
         .from('products')
         .select(`
           id,
@@ -134,9 +137,46 @@ const Index = () => {
       if (error) throw error;
 
       const today = new Date().toISOString().split('T')[0];
-      const todayProductIds = (products || []).map((p: any) => p.id);
 
-      const [voteCountsResult, userVotesResult, boostedResult] = await Promise.all([
+      // Fetch any currently active boosted product IDs
+      const { data: boostedRows } = await supabase
+        .from('sponsored_products')
+        .select('product_id')
+        .eq('sponsorship_type', 'boost')
+        .lte('start_date', today)
+        .gte('end_date', today);
+
+      const boostedIds = new Set((boostedRows || []).map((b: any) => b.product_id));
+
+      // Find boosted products NOT already in today's set, fetch them separately
+      const todayIds = new Set((todayProducts || []).map((p: any) => p.id));
+      const missingBoostedIds = [...boostedIds].filter((id) => !todayIds.has(id));
+
+      let extraBoosted: any[] = [];
+      if (missingBoostedIds.length) {
+        const { data: extras } = await supabase
+          .from('products')
+          .select(`
+            id,
+            name,
+            tagline,
+            slug,
+            launch_date,
+            platforms,
+            product_media(url, type),
+            product_makers(
+              users:user_id(username, avatar_url)
+            )
+          `)
+          .eq('status', 'launched')
+          .in('id', missingBoostedIds);
+        extraBoosted = extras || [];
+      }
+
+      const products = [...(todayProducts || []), ...extraBoosted];
+      const todayProductIds = products.map((p: any) => p.id);
+
+      const [voteCountsResult, userVotesResult] = await Promise.all([
         todayProductIds.length
           ? supabase
               .from('product_vote_counts')
@@ -151,12 +191,6 @@ const Index = () => {
               .eq('value', 1)
               .in('product_id', todayProductIds)
           : Promise.resolve({ data: null, error: null }),
-        supabase
-          .from('sponsored_products')
-          .select('product_id')
-          .eq('sponsorship_type', 'boost')
-          .lte('start_date', today)
-          .gte('end_date', today),
       ]);
 
       if (voteCountsResult.error) throw voteCountsResult.error;
@@ -164,12 +198,10 @@ const Index = () => {
 
       const voteMap = new Map<string, number>(((voteCountsResult.data as any[] | null) || []).map((v: any) => [v.product_id, (v.net_votes || 0) as number]));
       const userVoteMap = new Map<string, 1>(((userVotesResult.data as any[] | null) || []).map((v: any) => [v.product_id, 1 as const]));
-      const boostedIds = new Set(boostedResult.data?.map(b => b.product_id) || []);
-
       const launches: Launch[] = (products || [])
-        .map((p, index) => ({
+        .map((p) => ({
           id: p.id,
-          rank: index + 1,
+          rank: 0,
           name: p.name,
           tagline: p.tagline,
           icon: Rocket,
@@ -184,7 +216,13 @@ const Index = () => {
             .filter((u: any) => u && u.username)
             .map((u: any) => ({ username: u.username, avatar_url: u.avatar_url })),
           isBoosted: boostedIds.has(p.id),
-        }));
+        }))
+        .sort((a, b) => {
+          if (a.isBoosted && !b.isBoosted) return -1;
+          if (!a.isBoosted && b.isBoosted) return 1;
+          return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
+        })
+        .map((p, index) => ({ ...p, rank: index + 1 }));
 
       setLaunches(launches);
     } catch (error) {
