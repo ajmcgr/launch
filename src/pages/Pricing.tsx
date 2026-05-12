@@ -108,6 +108,12 @@ const Pricing = () => {
                 )}
 
                 <ul className="space-y-2">
+                  {plan.id === 'skip' && (
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="font-medium">Guaranteed high authority backlink</span>
+                    </li>
+                  )}
                   {FEATURE_CONFIG.map(({ key, label }) => {
                     const hasFeature = plan.features[key as keyof typeof plan.features];
                     return (
