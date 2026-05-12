@@ -63,6 +63,8 @@ const DiscourseSso = lazy(() => import("./pages/DiscourseSso"));
 const MediaKit = lazy(() => import("./pages/MediaKit"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Start = lazy(() => import("./pages/Start"));
+const SeoCollection = lazy(() => import("./pages/SeoCollection"));
+import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
 
@@ -158,6 +160,10 @@ const AppContent = () => {
             <Route path="/:username/followers" element={<Followers />} />
             <Route path="/:username/following" element={<Following />} />
             <Route path="/:username" element={<UserProfile />} />
+            {/* Programmatic SEO landing pages */}
+            {SEO_COLLECTION_SLUGS.map((slug) => (
+              <Route key={slug} path={`/${slug}`} element={<SeoCollection />} />
+            ))}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
