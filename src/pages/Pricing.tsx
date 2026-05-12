@@ -111,7 +111,7 @@ const Pricing = () => {
                   {plan.id === 'skip' && (
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span className="font-medium">Guaranteed high authority backlink</span>
+                      <span>Guaranteed high authority backlink</span>
                     </li>
                   )}
                   {FEATURE_CONFIG.map(({ key, label }) => {
