@@ -92,11 +92,9 @@ const Pricing = () => {
                 {plan.id === 'skip' ? (
                   <div className="space-y-1">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-lg text-muted-foreground line-through">$79</span>
                       <span className="text-3xl font-bold">${plan.price}</span>
                       <span className="text-sm text-muted-foreground">USD</span>
                     </div>
-                    <p className="text-xs font-medium text-primary">Save $40 — limited intro pricing</p>
                   </div>
                 ) : (
                   <div className="space-y-1">
