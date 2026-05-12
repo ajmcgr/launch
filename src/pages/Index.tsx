@@ -96,6 +96,9 @@ const Index = () => {
     if (launches.length === 0) return;
     
     const sorted = [...launches].sort((a, b) => {
+      // Boosted products always pinned to the top
+      if (a.isBoosted && !b.isBoosted) return -1;
+      if (!a.isBoosted && b.isBoosted) return 1;
       if (sort === 'popular') {
         return b.votes - a.votes;
       } else {
