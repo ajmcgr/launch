@@ -198,12 +198,10 @@ const Index = () => {
 
       const voteMap = new Map<string, number>(((voteCountsResult.data as any[] | null) || []).map((v: any) => [v.product_id, (v.net_votes || 0) as number]));
       const userVoteMap = new Map<string, 1>(((userVotesResult.data as any[] | null) || []).map((v: any) => [v.product_id, 1 as const]));
-      const boostedIds = new Set(boostedResult.data?.map(b => b.product_id) || []);
-
       const launches: Launch[] = (products || [])
-        .map((p, index) => ({
+        .map((p) => ({
           id: p.id,
-          rank: index + 1,
+          rank: 0,
           name: p.name,
           tagline: p.tagline,
           icon: Rocket,
@@ -218,7 +216,13 @@ const Index = () => {
             .filter((u: any) => u && u.username)
             .map((u: any) => ({ username: u.username, avatar_url: u.avatar_url })),
           isBoosted: boostedIds.has(p.id),
-        }));
+        }))
+        .sort((a, b) => {
+          if (a.isBoosted && !b.isBoosted) return -1;
+          if (!a.isBoosted && b.isBoosted) return 1;
+          return new Date(b.launch_date || 0).getTime() - new Date(a.launch_date || 0).getTime();
+        })
+        .map((p, index) => ({ ...p, rank: index + 1 }));
 
       setLaunches(launches);
     } catch (error) {
