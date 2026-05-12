@@ -186,6 +186,10 @@ const Pricing = () => {
               <ul className="space-y-2">
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Guaranteed high authority backlink</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
                   <span>Homepage listing</span>
                 </li>
                 <li className="flex items-center gap-2 text-sm">
