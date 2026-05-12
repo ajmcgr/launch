@@ -103,7 +103,7 @@ const Pricing = () => {
                     <div className="text-3xl font-bold">
                       ${plan.price}<span className="text-sm font-normal text-muted-foreground"> USD</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">Queued — launches in ~7–14 days</p>
+                    <p className="text-xs text-muted-foreground">Standard launch queue ~3 days</p>
                   </div>
                 )}
 
