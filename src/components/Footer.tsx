@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Youtube } from 'lucide-react';
 import { TrustPhrase } from '@/hooks/use-member-count';
+import { comparisons } from '@/lib/comparisons';
 
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -28,7 +29,7 @@ export const Footer = () => {
     <footer>
       <div className="bg-muted">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 py-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-1">
@@ -130,6 +131,19 @@ export const Footer = () => {
                   Terms of Service
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4 text-foreground">Compare</h3>
+            <ul className="space-y-1">
+              {comparisons.map((c) => (
+                <li key={c.slug}>
+                  <Link to={`/compare/${c.slug}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Launch vs {c.competitor}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
