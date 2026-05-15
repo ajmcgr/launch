@@ -135,6 +135,19 @@ export const Footer = () => {
           </div>
 
           <div>
+            <h3 className="font-semibold mb-4 text-foreground">Compare</h3>
+            <ul className="space-y-1">
+              {comparisons.map((c) => (
+                <li key={c.slug}>
+                  <Link to={`/compare/${c.slug}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Launch vs {c.competitor}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
             <h3 className="font-semibold mb-4 text-foreground">Connect</h3>
             <ul className="space-y-1">
               <li>
