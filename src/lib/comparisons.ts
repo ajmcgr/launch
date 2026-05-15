@@ -215,38 +215,6 @@ export const comparisons: Comparison[] = [
       },
     ],
   },
-  {
-    slug: 'launch-vs-uneed',
-    competitor: 'Uneed',
-    competitorUrl: 'https://uneed.best',
-    oneLiner: 'Maker-first launch with verified revenue vs. a curated tools directory.',
-    metaDescription:
-      'Launch vs Uneed in 2026: compare pricing, ranking system, dofollow backlinks and audience for indie product launches.',
-    summary:
-      'Uneed is a curated weekly directory with limited daily slots. Launch lets anyone submit on any day with no editorial bottleneck, and stacks programmatic SEO around tags, tech pages and permanent archive URLs to keep your product discoverable long after launch day.',
-    whoIsItFor: {
-      launch: 'Any indie maker who wants instant or queued launching with no curation lottery.',
-      competitor: 'Makers with polished products willing to wait for editorial selection.',
-    },
-    rows: [
-      { feature: 'Submission model', launch: 'Open, anyone can submit', competitor: 'Curated, limited slots' },
-      { feature: 'Dofollow backlink', launch: 'Yes', competitor: 'Yes', winner: 'tie' },
-      { feature: 'Time to publish', launch: 'Instant for Pro, ~7 days free', competitor: 'Weeks for free, paid skip' },
-      { feature: 'Permanent SEO pages', launch: 'Tag + category + tech + daily archive', competitor: 'Category pages' },
-      { feature: 'Verified MRR badge', launch: 'Yes', competitor: 'No', winner: 'launch' },
-      { feature: 'Community voting', launch: 'Yes', competitor: 'Limited' },
-    ],
-    pricing: { launch: launchPricing, competitor: 'Free (curated) or paid skip-the-queue' },
-    verdict:
-      'Pick Uneed for editorial credibility on a curated list. Pick Launch for open submission, faster publish, and a richer SEO surface area.',
-    faqs: [
-      {
-        question: 'Is Launch easier to get on than Uneed?',
-        answer:
-          'Yes. Launch is open submission — anyone can submit a product. Uneed is curated, so you may wait weeks or be passed over entirely.',
-      },
-    ],
-  },
 ];
 
 export function findComparison(slug: string): Comparison | undefined {
