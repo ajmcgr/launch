@@ -108,40 +108,78 @@ export const comparisons: Comparison[] = [
     ],
   },
   {
-    slug: 'launch-vs-betalist',
-    competitor: 'BetaList',
-    competitorUrl: 'https://betalist.com',
-    oneLiner: 'Live product launches and ongoing visibility vs. pre-launch beta signups.',
+    slug: 'launch-vs-theresanaiforthat',
+    competitor: 'There\'s An AI For That',
+    competitorUrl: 'https://theresanaiforthat.com',
+    oneLiner: 'A community-driven launchpad with leaderboards vs. a massive scraped AI tools directory.',
     metaDescription:
-      'Launch vs BetaList: compare pricing, audience, backlink quality and post-launch visibility for indie startups in 2026.',
+      'Launch vs There\'s An AI For That (TAAFT) in 2026: compare pricing, audience quality, dofollow backlinks and visibility for AI tools.',
     summary:
-      'BetaList is built for collecting early-access signups before a product is live. Launch is built for the actual launch and the long tail after. Most makers use BetaList once, then need a real launch platform — Launch fills that gap and keeps your product discoverable in archives, tags and tech pages indefinitely.',
+      'There\'s An AI For That is the largest AI tools directory by volume, but most listings are auto-aggregated and submissions sit in a long queue unless you pay for priority. Launch is a community-driven alternative with daily leaderboards, real upvotes from makers, dofollow backlinks, and verified MRR — built for AI founders who want engagement, not just a directory entry.',
     whoIsItFor: {
-      launch: 'Makers ready to ship a live product and want ongoing SEO visibility.',
-      competitor: 'Pre-launch founders collecting beta signups before MVP.',
+      launch: 'AI founders and indie makers who want community engagement, upvotes and SEO traction.',
+      competitor: 'AI tool builders who want a passive directory listing in the largest AI catalog.',
     },
     rows: [
-      { feature: 'Stage', launch: 'Live products', competitor: 'Pre-launch / beta' },
-      { feature: 'Dofollow backlink', launch: 'Yes', competitor: 'Nofollow', winner: 'launch' },
-      { feature: 'Submission cost', launch: 'Free or $39', competitor: 'Free (slow) or $129 (priority)' },
-      { feature: 'Time to publish', launch: 'Same-day for Pro', competitor: '4–6 weeks free / 24h paid' },
-      { feature: 'Permanent archive page', launch: 'Yes, indexed', competitor: 'Yes' },
-      { feature: 'Tech stack discovery', launch: 'Yes — /tech pages', competitor: 'No', winner: 'launch' },
-      { feature: 'Verified revenue', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Submission model', launch: 'Maker-submitted, community-voted', competitor: 'Open submission, often auto-scraped' },
+      { feature: 'Time to publish', launch: 'Instant for Pro, ~7 days free', competitor: 'Weeks free / paid priority' },
+      { feature: 'Dofollow backlink', launch: 'Yes, by default', competitor: 'Nofollow on most listings', winner: 'launch' },
+      { feature: 'Daily leaderboard', launch: 'Yes — competitive ranking', competitor: 'Trending feed (algorithmic)', winner: 'launch' },
+      { feature: 'Verified MRR badge', launch: 'Yes (Stripe Connect)', competitor: 'No', winner: 'launch' },
+      { feature: 'Community engagement', launch: 'Comments, reviews, upvotes', competitor: 'Limited', winner: 'launch' },
+      { feature: 'Directory size', launch: 'Curated, focused', competitor: '15K+ AI tools', winner: 'competitor' },
     ],
-    pricing: { launch: launchPricing, competitor: 'Free (slow queue) or $129 priority' },
+    pricing: { launch: launchPricing, competitor: 'Free (queued) or paid priority listing' },
     verdict:
-      'Use BetaList for pre-launch signups. Use Launch the day you go live — and keep using it for every relaunch and update.',
+      'Use TAAFT for passive long-tail discovery in the world\'s largest AI catalog. Use Launch for active community engagement, upvotes and a fair ranking shot on launch day.',
     faqs: [
       {
-        question: 'Should I use BetaList or Launch?',
+        question: 'Is Launch better than There\'s An AI For That for launching an AI tool?',
         answer:
-          'Use BetaList before your product is live to collect beta signups. Use Launch the day you publicly launch and want ongoing discoverability, upvotes and dofollow backlinks.',
+          'For launch day momentum, yes — Launch has daily leaderboards, real maker upvotes and dofollow backlinks. TAAFT is better for passive long-tail directory traffic. Most AI founders use both.',
       },
       {
-        question: 'Is Launch cheaper than BetaList?',
+        question: 'Does Launch only accept AI products?',
         answer:
-          'Yes. Launch Pro is $39 for an instant launch vs BetaList’s $129 priority listing. Free launches are also available on Launch (with a queue).',
+          'No, Launch accepts any indie product, but AI tools are a major category with their own tags and discovery pages.',
+      },
+    ],
+  },
+  {
+    slug: 'launch-vs-hacker-news',
+    competitor: 'Hacker News',
+    competitorUrl: 'https://news.ycombinator.com',
+    oneLiner: 'A predictable maker launchpad with permanent SEO pages vs. an unpredictable Show HN front page.',
+    metaDescription:
+      'Launch vs Hacker News (Show HN) in 2026: compare audience, ranking, backlinks and predictability for indie product launches.',
+    summary:
+      'Show HN can be incredible if you hit the front page — but most submissions sink within an hour with zero traction. Launch gives makers a predictable launch surface: a daily leaderboard everyone sees, dofollow backlinks, permanent archive pages, and a community that actually upvotes new products instead of penalizing them.',
+    whoIsItFor: {
+      launch: 'Makers who want predictable, repeatable launch distribution with permanent SEO value.',
+      competitor: 'Technical founders with a story or technically interesting product hoping for a front-page hit.',
+    },
+    rows: [
+      { feature: 'Audience', launch: 'Indie makers, AI founders, early adopters', competitor: 'Developers, hackers, tech-curious' },
+      { feature: 'Submission cost', launch: 'Free or $39 Pro', competitor: 'Free' },
+      { feature: 'Predictability', launch: 'Guaranteed visibility on leaderboard', competitor: 'Lottery — most posts get no traction', winner: 'launch' },
+      { feature: 'Dofollow backlink', launch: 'Yes', competitor: 'Nofollow', winner: 'launch' },
+      { feature: 'Permanent product page', launch: 'Yes — permanent /launch/ URL', competitor: 'Thread fades from front page', winner: 'launch' },
+      { feature: 'Voting', launch: 'Upvotes only', competitor: 'Up + downvotes (flagging)' },
+      { feature: 'Front-page upside', launch: 'Daily winner spotlight', competitor: 'Massive if you hit it', winner: 'competitor' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free' },
+    verdict:
+      'Post Show HN for the moonshot. Launch on Launch for the consistent, dofollow-linked, evergreen distribution — both can run on the same day.',
+    faqs: [
+      {
+        question: 'Should I post on Show HN or Launch?',
+        answer:
+          'Both, ideally on the same day. Show HN has massive upside if you hit the front page but most posts get no traction. Launch guarantees you a spot on the daily leaderboard with a permanent SEO page and dofollow backlink.',
+      },
+      {
+        question: 'Does Launch have downvotes like Hacker News?',
+        answer:
+          'No. Launch is upvote-only by design — there is no flagging or downvoting that buries new products.',
       },
     ],
   },
