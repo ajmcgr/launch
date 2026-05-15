@@ -26,6 +26,44 @@ const launchPricing = 'Free launch (queued ~7 days), Pro $39 (instant launch), P
 
 export const comparisons: Comparison[] = [
   {
+    slug: 'launch-vs-g2',
+    competitor: 'G2',
+    competitorUrl: 'https://www.g2.com',
+    oneLiner: 'A maker-first launchpad with dofollow backlinks vs. an enterprise software review marketplace.',
+    metaDescription:
+      'Launch vs G2 in 2026: compare pricing, audience, backlink quality and discoverability for indie SaaS and AI startups.',
+    summary:
+      'G2 is built for enterprise buyers comparing established SaaS vendors — getting listed is slow, reviews are gated, and meaningful visibility costs thousands per month. Launch is built for indie makers and AI founders who need fast distribution, dofollow backlinks, and a real audience of builders without enterprise pricing.',
+    whoIsItFor: {
+      launch: 'Indie makers, AI founders, and bootstrapped SaaS shipping new products.',
+      competitor: 'Established B2B SaaS vendors selling into mid-market and enterprise.',
+    },
+    rows: [
+      { feature: 'Submission cost', launch: 'Free or $39 Pro', competitor: 'Free listing; paid plans $$$$/yr', winner: 'launch' },
+      { feature: 'Time to publish', launch: 'Instant for Pro', competitor: 'Weeks of vendor verification', winner: 'launch' },
+      { feature: 'Dofollow backlink', launch: 'Yes, by default', competitor: 'Nofollow', winner: 'launch' },
+      { feature: 'Audience', launch: 'Makers, founders, early adopters', competitor: 'Enterprise software buyers' },
+      { feature: 'Review system', launch: 'Community upvotes + comments', competitor: 'Verified buyer reviews', winner: 'competitor' },
+      { feature: 'Verified MRR badge', launch: 'Yes (Stripe Connect)', competitor: 'No', winner: 'launch' },
+      { feature: 'Best for', launch: 'Discovery + launch traction', competitor: 'Enterprise sales credibility' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free basic listing; premium profiles thousands per year' },
+    verdict:
+      'Choose G2 if you sell B2B SaaS to enterprise buyers and need verified reviews. Choose Launch if you want fast, affordable distribution to makers and founders without enterprise sales motion.',
+    faqs: [
+      {
+        question: 'Is Launch a G2 alternative?',
+        answer:
+          'Not directly — G2 is a buyer-intent review marketplace for enterprise SaaS. Launch is a discovery and launchpad for indie products. Many makers use Launch for early traction and G2 later once they sell into enterprise.',
+      },
+      {
+        question: 'Is Launch cheaper than G2?',
+        answer:
+          'Significantly. Launch Pro is a one-time $39 per launch. G2 premium profiles can run thousands of dollars per year.',
+      },
+    ],
+  },
+  {
     slug: 'launch-vs-product-hunt',
     competitor: 'Product Hunt',
     competitorUrl: 'https://www.producthunt.com',
