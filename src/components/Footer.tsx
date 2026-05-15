@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Youtube } from 'lucide-react';
 import { TrustPhrase } from '@/hooks/use-member-count';
+import { comparisons } from '@/lib/comparisons';
 
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
