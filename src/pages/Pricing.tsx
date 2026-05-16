@@ -320,7 +320,7 @@ const Pricing = () => {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
               Reach a highly engaged audience of builders and AI early adopters
             </p>
-            <AdPerformanceStats compact />
+            
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
