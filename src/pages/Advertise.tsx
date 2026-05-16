@@ -96,6 +96,14 @@ const Advertise = () => {
   const [selectedType, setSelectedType] = useState<SponsorshipType | null>(null);
   const [selectedMonths, setSelectedMonths] = useState<Date[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [adType, setAdType] = useState<'product' | 'custom'>('product');
+  const [customAd, setCustomAd] = useState({
+    image_url: '',
+    title: '',
+    description: '',
+    target_url: '',
+  });
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     message: '',
   });
