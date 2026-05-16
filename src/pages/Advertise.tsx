@@ -461,8 +461,7 @@ const Advertise = () => {
                 onClick={() => navigate('/my-products')}
               >
                 <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-xl">
                     Featured Boost
                   </CardTitle>
                   <CardDescription>Pin your launch to #1 on the homepage</CardDescription>
