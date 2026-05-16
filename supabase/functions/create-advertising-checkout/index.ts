@@ -122,13 +122,19 @@ Deno.serve(async (req) => {
       cancel_url: `${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/advertise?canceled=true`,
       metadata: {
         type: 'advertising',
+        ad_type: adType,
         sponsorship_type: sponsorshipType,
         launch_url: launchUrl || '',
         product_id: productId || '',
         product_slug: productSlug,
         months: months,
         selected_months: selectedMonths?.join(', ') || '',
-        message: message || '',
+        message: (message || '').slice(0, 400),
+        // Custom-ad fields (each Stripe metadata value capped at 500 chars)
+        custom_image_url: customAd?.image_url ? String(customAd.image_url).slice(0, 500) : '',
+        custom_title: customAd?.title ? String(customAd.title).slice(0, 80) : '',
+        custom_description: customAd?.description ? String(customAd.description).slice(0, 180) : '',
+        custom_target_url: customAd?.target_url ? String(customAd.target_url).slice(0, 500) : '',
       },
     });
 
