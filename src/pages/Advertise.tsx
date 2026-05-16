@@ -239,18 +239,35 @@ const Advertise = () => {
     setStep(2);
   };
 
+  const isValidHttpsUrl = (url: string) => {
+    try {
+      const u = new URL(url);
+      return u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    
+
     if (selectedMonths.length === 0) {
       errors.months = 'Please select at least one month';
     }
 
-    // Product selection is required for all sponsorship types
-    if (!selectedProductId) {
-      errors.product = 'Please select a product';
+    if (adType === 'product') {
+      if (!selectedProductId) {
+        errors.product = 'Please select a product';
+      }
+    } else {
+      if (!customAd.image_url) errors.custom_image = 'Please upload a creative image';
+      if (!customAd.title.trim()) errors.custom_title = 'Title is required';
+      if (customAd.title.length > 80) errors.custom_title = 'Title must be 80 characters or fewer';
+      if (customAd.description.length > 180) errors.custom_description = 'Description must be 180 characters or fewer';
+      if (!customAd.target_url.trim()) errors.custom_target_url = 'Destination URL is required';
+      else if (!isValidHttpsUrl(customAd.target_url)) errors.custom_target_url = 'Must be a valid https:// URL';
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -261,9 +278,55 @@ const Advertise = () => {
     setStep(1);
   };
 
+  const handleCustomImageUpload = async (file: File) => {
+    if (!user) {
+      toast.error('Please sign in to upload images');
+      return;
+    }
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) {
+      toast.error('Image must be JPG, PNG, or WEBP');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be 5MB or smaller');
+      return;
+    }
+    // Min dimension check
+    const dims = await new Promise<{ w: number; h: number } | null>((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+      img.onerror = () => resolve(null);
+      img.src = URL.createObjectURL(file);
+    });
+    if (!dims || dims.w < 600 || dims.h < 315) {
+      toast.error('Image must be at least 600×315px');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from('ad-creatives')
+        .upload(path, file, { upsert: false, cacheControl: '3600', contentType: file.type });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from('ad-creatives').getPublicUrl(path);
+      setCustomAd((prev) => ({ ...prev, image_url: pub.publicUrl }));
+      setFormErrors((prev) => ({ ...prev, custom_image: '' }));
+      toast.success('Image uploaded');
+    } catch (err: any) {
+      console.error('Upload failed:', err);
+      toast.error(err?.message || 'Image upload failed');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedType) {
       toast.error('Please select a sponsorship option');
       return;
@@ -278,12 +341,17 @@ const Advertise = () => {
 
     try {
       const selectedProduct = getSelectedProduct();
-      const launchUrl = selectedProduct ? `https://trylaunch.ai/launch/${selectedProduct.slug}` : '';
-      
+      const launchUrl =
+        adType === 'product' && selectedProduct
+          ? `https://trylaunch.ai/launch/${selectedProduct.slug}`
+          : '';
+
       const { data, error } = await supabase.functions.invoke('create-advertising-checkout', {
         body: {
+          adType,
           launchUrl,
-          productId: selectedProductId,
+          productId: adType === 'product' ? selectedProductId : '',
+          customAd: adType === 'custom' ? customAd : null,
           sponsorshipType: selectedType,
           months: selectedMonths.length.toString(),
           selectedMonths: selectedMonths.map(m => format(m, 'MMMM yyyy')),
@@ -294,7 +362,13 @@ const Advertise = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Redirect to Stripe Checkout
+        // Track creation event
+        try {
+          await supabase.from('product_analytics').insert({
+            event_type: 'ad_created',
+            metadata: { ad_type: adType, sponsorship_type: selectedType },
+          } as any);
+        } catch {}
         window.location.href = data.url;
       } else {
         throw new Error(data?.error || 'Failed to create checkout session');
