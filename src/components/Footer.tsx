@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Instagram, Youtube } from 'lucide-react';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { comparisons } from '@/lib/comparisons';
+import { vibeCodingPlatforms } from '@/lib/vibeCodingPlatforms';
 
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -29,7 +30,7 @@ export const Footer = () => {
     <footer>
       <div className="bg-muted">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-12 py-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-1">
@@ -125,6 +126,22 @@ export const Footer = () => {
                   Store
                 </a>
               </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4 text-foreground">Vibe Coding Platforms</h3>
+            <ul className="space-y-1">
+              {vibeCodingPlatforms.map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    to={`/vibe-coding/${p.slug}`}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {p.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
