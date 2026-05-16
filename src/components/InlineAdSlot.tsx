@@ -4,16 +4,32 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 
-interface SponsoredProduct {
-  id: string;
-  slug: string;
+interface SponsoredItem {
+  key: string;
+  adType: 'product' | 'custom';
+  href: string;
+  external: boolean;
   name: string;
   tagline: string;
-  icon_url?: string;
+  iconUrl?: string;
 }
 
+const trackAdClick = (item: SponsoredItem) => {
+  try {
+    supabase.from('product_analytics').insert({
+      event_type: 'ad_click',
+      metadata: {
+        ad_type: item.adType,
+        ad_id: item.key,
+        target_url: item.href,
+        placement: 'inline',
+      },
+    } as any);
+  } catch {}
+};
+
 const InlineAdSlot = () => {
-  const [sponsored, setSponsored] = useState<SponsoredProduct | null>(null);
+  const [sponsored, setSponsored] = useState<SponsoredItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,8 +38,14 @@ const InlineAdSlot = () => {
       const { data } = await supabase
         .from('sponsored_products')
         .select(`
+          id,
+          ad_type,
           product_id,
-          products!inner(
+          custom_image_url,
+          custom_title,
+          custom_description,
+          custom_target_url,
+          products(
             id,
             slug,
             name,
@@ -38,15 +60,30 @@ const InlineAdSlot = () => {
         .limit(1);
 
       if (data && data.length > 0) {
-        const p = (data[0] as any).products;
-        const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url;
-        setSponsored({
-          id: p.id,
-          slug: p.slug,
-          name: p.name,
-          tagline: p.tagline,
-          icon_url: icon,
-        });
+        const s: any = data[0];
+        if (s.ad_type === 'custom' && s.custom_target_url) {
+          setSponsored({
+            key: s.id,
+            adType: 'custom',
+            href: s.custom_target_url,
+            external: true,
+            name: s.custom_title || 'Sponsored',
+            tagline: s.custom_description || '',
+            iconUrl: s.custom_image_url || undefined,
+          });
+        } else if (s.products) {
+          const p = s.products;
+          const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url;
+          setSponsored({
+            key: s.id,
+            adType: 'product',
+            href: `/launch/${p.slug}`,
+            external: false,
+            name: p.name,
+            tagline: p.tagline,
+            iconUrl: icon,
+          });
+        }
       }
       setLoading(false);
     };
@@ -55,20 +92,15 @@ const InlineAdSlot = () => {
   }, []);
 
   if (loading) return null;
-
-  // Show sponsored ad if available, otherwise show CTA
   if (!sponsored) {
     return <AdvertiseCTA className="rounded-lg" />;
   }
 
-  return (
-    <Link
-      to={`/launch/${sponsored.slug}`}
-      className="flex items-center gap-4 p-5 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors group"
-    >
-      {sponsored.icon_url ? (
+  const inner = (
+    <>
+      {sponsored.iconUrl ? (
         <img
-          src={sponsored.icon_url}
+          src={sponsored.iconUrl}
           alt={sponsored.name}
           className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
         />
@@ -86,10 +118,29 @@ const InlineAdSlot = () => {
             Sponsored
           </Badge>
         </div>
-        <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
-          {sponsored.tagline}
-        </p>
+        {sponsored.tagline && (
+          <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
+            {sponsored.tagline}
+          </p>
+        )}
       </div>
+    </>
+  );
+  const cls = 'flex items-center gap-4 p-5 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors group';
+
+  return sponsored.external ? (
+    <a
+      href={sponsored.href}
+      target="_blank"
+      rel="noopener noreferrer sponsored nofollow"
+      onClick={() => trackAdClick(sponsored)}
+      className={cls}
+    >
+      {inner}
+    </a>
+  ) : (
+    <Link to={sponsored.href} onClick={() => trackAdClick(sponsored)} className={cls}>
+      {inner}
     </Link>
   );
 };

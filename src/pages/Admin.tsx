@@ -511,24 +511,39 @@ const Admin = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {sponsoredProducts?.map((sp) => {
+                      {sponsoredProducts?.map((sp: any) => {
                         const isActive = isSponsorshipActive(sp.start_date, sp.end_date);
                         const isUpcoming = isSponsorshipUpcoming(sp.start_date);
-                        
+                        const isCustom = sp.ad_type === 'custom';
+
                         return (
                           <div key={sp.id} className="border rounded-lg p-4 space-y-3">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  {sp.products?.id && adminIconMap?.get(sp.products.id) && (
+                                  {isCustom && sp.custom_image_url ? (
+                                    <img src={sp.custom_image_url} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
+                                  ) : sp.products?.id && adminIconMap?.get(sp.products.id) ? (
                                     <img src={adminIconMap.get(sp.products.id)} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
-                                  )}
-                                  <h3 className="font-semibold text-lg">{sp.products?.name || 'Unknown Product'}</h3>
+                                  ) : null}
+                                  <h3 className="font-semibold text-lg">
+                                    {isCustom ? (sp.custom_title || 'Custom Ad') : (sp.products?.name || 'Unknown Product')}
+                                  </h3>
+                                  <Badge variant={isCustom ? 'default' : 'secondary'}>
+                                    {isCustom ? 'Custom Ad' : 'Product Ad'}
+                                  </Badge>
                                   {isActive && <Badge className="bg-green-600">Active</Badge>}
                                   {isUpcoming && <Badge variant="secondary">Upcoming</Badge>}
                                   {!isActive && !isUpcoming && <Badge variant="outline">Expired</Badge>}
                                 </div>
-                                <p className="text-sm text-muted-foreground">{sp.products?.tagline}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {isCustom ? (sp.custom_description || '') : sp.products?.tagline}
+                                </p>
+                                {isCustom && sp.custom_target_url && (
+                                  <p className="text-xs text-muted-foreground mt-1 break-all">
+                                    → <a href={sp.custom_target_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{sp.custom_target_url}</a>
+                                  </p>
+                                )}
                               </div>
                               <div className="text-right">
                                 <Badge variant="outline">{getSponsorshipTypeLabel(sp.sponsorship_type)}</Badge>
@@ -537,7 +552,11 @@ const Admin = () => {
                                 </p>
                               </div>
                             </div>
-                            
+
+                            {isCustom && sp.custom_image_url && (
+                              <img src={sp.custom_image_url} alt="" className="w-full max-h-40 object-cover rounded-md border" />
+                            )}
+
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
@@ -545,17 +564,28 @@ const Admin = () => {
                               </div>
                               <span>Position: #{sp.position}</span>
                             </div>
-                            
+
                             <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => navigate(`/launch/${sp.products?.slug}`)}
-                              >
-                                View Product
-                              </Button>
-                              <Button 
-                                size="sm" 
+                              {!isCustom && sp.products?.slug && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate(`/launch/${sp.products?.slug}`)}
+                                >
+                                  View Product
+                                </Button>
+                              )}
+                              {isCustom && sp.custom_target_url && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => window.open(sp.custom_target_url, '_blank', 'noopener,noreferrer')}
+                                >
+                                  Open Destination
+                                </Button>
+                              )}
+                              <Button
+                                size="sm"
                                 variant="destructive"
                                 onClick={() => deleteSponsorship(sp.id)}
                               >

@@ -83,6 +83,7 @@ const Home = () => {
   })();
   const [products, setProducts] = useState<Product[]>(cachedHome || []);
   const [sponsoredProducts, setSponsoredProducts] = useState<Map<number, Product>>(new Map());
+  const [customSponsored, setCustomSponsored] = useState<Map<number, { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }>>(new Map());
   const [loading, setLoading] = useState(!cachedHome);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -165,9 +166,15 @@ const Home = () => {
       const { data: sponsoredData } = await supabase
         .from('sponsored_products')
         .select(`
+          id,
           position,
           product_id,
-          products!inner(
+          ad_type,
+          custom_image_url,
+          custom_title,
+          custom_description,
+          custom_target_url,
+          products(
             id,
             slug,
             name,
@@ -185,23 +192,29 @@ const Home = () => {
         .in('sponsorship_type', ['website', 'combined', 'boost'])
         .order('position', { ascending: true });
 
-      if (sponsoredData && sponsoredData.length > 0) {
+      const sponsoredRows: any[] = (sponsoredData as any[]) || [];
+
+      if (sponsoredRows.length > 0) {
         const { data: categories } = await supabase
           .from('product_categories')
           .select('id, name');
         const categoryMap = new Map(categories?.map(c => [c.id, c.name]) || []);
 
-        const productIds = sponsoredData.map(s => (s.products as any).id);
-        
-        const { data: voteCounts } = await supabase
-          .from('product_vote_counts')
-          .select('product_id, net_votes')
-          .in('product_id', productIds);
-        
-        const voteMap = new Map(voteCounts?.map(v => [v.product_id, v.net_votes]) || []);
+        const productIds = sponsoredRows
+          .filter((s) => s.ad_type !== 'custom' && s.products)
+          .map((s) => s.products.id);
+
+        const { data: voteCounts } = productIds.length
+          ? await supabase
+              .from('product_vote_counts')
+              .select('product_id, net_votes')
+              .in('product_id', productIds)
+          : { data: [] as any[] };
+
+        const voteMap = new Map((voteCounts || [])?.map(v => [v.product_id, v.net_votes]) || []);
 
         let userVotes = new Map<string, 1>();
-        if (user) {
+        if (user && productIds.length) {
           const { data: votes } = await supabase
             .from('votes')
             .select('product_id, value')
@@ -211,20 +224,34 @@ const Home = () => {
           votes?.forEach(v => userVotes.set(v.product_id, 1));
         }
 
-        const { data: commentCounts } = await supabase
-          .from('comments')
-          .select('product_id')
-          .in('product_id', productIds);
-        
+        const { data: commentCounts } = productIds.length
+          ? await supabase
+              .from('comments')
+              .select('product_id')
+              .in('product_id', productIds)
+          : { data: [] as any[] };
+
         const commentMap = new Map<string, number>();
-        commentCounts?.forEach(c => {
+        (commentCounts || []).forEach((c: any) => {
           commentMap.set(c.product_id, (commentMap.get(c.product_id) || 0) + 1);
         });
 
         const sponsoredMap = new Map<number, Product>();
-        
-        sponsoredData.forEach(sponsored => {
-          const product = sponsored.products as any;
+        const customMap = new Map<number, { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }>();
+
+        sponsoredRows.forEach((sponsored: any) => {
+          if (sponsored.ad_type === 'custom' && sponsored.custom_target_url) {
+            customMap.set(sponsored.position, {
+              id: sponsored.id,
+              title: sponsored.custom_title || 'Sponsored',
+              description: sponsored.custom_description || null,
+              imageUrl: sponsored.custom_image_url || '',
+              targetUrl: sponsored.custom_target_url,
+            });
+            return;
+          }
+          const product = sponsored.products;
+          if (!product) return;
           sponsoredMap.set(sponsored.position, {
             id: product.id,
             slug: product.slug,
@@ -247,6 +274,7 @@ const Home = () => {
         });
 
         setSponsoredProducts(sponsoredMap);
+        setCustomSponsored(customMap);
       }
     } catch (error) {
       console.error('Error fetching sponsored products:', error);
@@ -719,10 +747,47 @@ const Home = () => {
     const renderProductsWithSponsored = (viewMode: 'list' | 'grid' | 'compact') => {
       const items: React.ReactNode[] = [];
       let productIndex = 0;
-      
+
+      const renderCustomSponsor = (
+        pos: number,
+        c: { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }
+      ) => (
+        <a
+          key={`sponsored-custom-${pos}`}
+          href={c.targetUrl}
+          target="_blank"
+          rel="noopener noreferrer sponsored nofollow"
+          onClick={() => {
+            try {
+              supabase.from('product_analytics').insert({
+                event_type: 'ad_click',
+                metadata: { ad_type: 'custom', ad_id: c.id, target_url: c.targetUrl, placement: `feed-pos-${pos}` },
+              } as any);
+            } catch {}
+          }}
+          className="flex items-center gap-4 p-4 rounded-lg border bg-muted/20 hover:bg-muted/40 transition-colors"
+        >
+          {c.imageUrl && (
+            <img src={c.imageUrl} alt={c.title} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-semibold truncate">{c.title}</p>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground border border-muted-foreground/30 rounded px-1">Ad</span>
+            </div>
+            {c.description && (
+              <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">{c.description}</p>
+            )}
+          </div>
+        </a>
+      );
+
       // Position 1 sponsored product goes at the top (skip for compact view)
       const pos1Sponsor = sponsoredProducts.get(1);
-      if (pos1Sponsor && viewMode !== 'compact') {
+      const pos1Custom = customSponsored.get(1);
+      if (pos1Custom && viewMode !== 'compact') {
+        items.push(renderCustomSponsor(1, pos1Custom));
+      } else if (pos1Sponsor && viewMode !== 'compact') {
         // Track impression for position 1
         trackSponsorImpression(pos1Sponsor.id, 1);
         items.push(
@@ -794,19 +859,23 @@ const Home = () => {
           const sponsorPositionCheck = productIndex + 1;
           const sponsorPosition = sponsorPositionCheck === 10 ? 2 : sponsorPositionCheck === 20 ? 3 : sponsorPositionCheck === 30 ? 4 : null;
           if (sponsorPosition) {
-            const sponsor = sponsoredProducts.get(sponsorPosition);
-            if (sponsor) {
-              // Track impression for this position
-              trackSponsorImpression(sponsor.id, sponsorPosition);
-              items.push(
-                <LaunchListItem
-                  key={`sponsored-${sponsorPosition}`}
-                  {...sponsor}
-                  sponsored
-                  sponsoredPosition={sponsorPosition}
-                  onVote={handleVote}
-                />
-              );
+            const custom = customSponsored.get(sponsorPosition);
+            if (custom) {
+              items.push(renderCustomSponsor(sponsorPosition, custom));
+            } else {
+              const sponsor = sponsoredProducts.get(sponsorPosition);
+              if (sponsor) {
+                trackSponsorImpression(sponsor.id, sponsorPosition);
+                items.push(
+                  <LaunchListItem
+                    key={`sponsored-${sponsorPosition}`}
+                    {...sponsor}
+                    sponsored
+                    sponsoredPosition={sponsorPosition}
+                    onVote={handleVote}
+                  />
+                );
+              }
             }
           }
         }

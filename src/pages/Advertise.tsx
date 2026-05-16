@@ -4,7 +4,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock, CalendarIcon } from 'lucide-react';
+import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock, CalendarIcon, Upload, Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { format, startOfMonth, addMonths, setMonth, setYear } from 'date-fns';
@@ -95,6 +96,14 @@ const Advertise = () => {
   const [selectedType, setSelectedType] = useState<SponsorshipType | null>(null);
   const [selectedMonths, setSelectedMonths] = useState<Date[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [adType, setAdType] = useState<'product' | 'custom'>('product');
+  const [customAd, setCustomAd] = useState({
+    image_url: '',
+    title: '',
+    description: '',
+    target_url: '',
+  });
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     message: '',
   });
@@ -230,18 +239,35 @@ const Advertise = () => {
     setStep(2);
   };
 
+  const isValidHttpsUrl = (url: string) => {
+    try {
+      const u = new URL(url);
+      return u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    
+
     if (selectedMonths.length === 0) {
       errors.months = 'Please select at least one month';
     }
 
-    // Product selection is required for all sponsorship types
-    if (!selectedProductId) {
-      errors.product = 'Please select a product';
+    if (adType === 'product') {
+      if (!selectedProductId) {
+        errors.product = 'Please select a product';
+      }
+    } else {
+      if (!customAd.image_url) errors.custom_image = 'Please upload a creative image';
+      if (!customAd.title.trim()) errors.custom_title = 'Title is required';
+      if (customAd.title.length > 80) errors.custom_title = 'Title must be 80 characters or fewer';
+      if (customAd.description.length > 180) errors.custom_description = 'Description must be 180 characters or fewer';
+      if (!customAd.target_url.trim()) errors.custom_target_url = 'Destination URL is required';
+      else if (!isValidHttpsUrl(customAd.target_url)) errors.custom_target_url = 'Must be a valid https:// URL';
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -252,9 +278,55 @@ const Advertise = () => {
     setStep(1);
   };
 
+  const handleCustomImageUpload = async (file: File) => {
+    if (!user) {
+      toast.error('Please sign in to upload images');
+      return;
+    }
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) {
+      toast.error('Image must be JPG, PNG, or WEBP');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be 5MB or smaller');
+      return;
+    }
+    // Min dimension check
+    const dims = await new Promise<{ w: number; h: number } | null>((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+      img.onerror = () => resolve(null);
+      img.src = URL.createObjectURL(file);
+    });
+    if (!dims || dims.w < 600 || dims.h < 315) {
+      toast.error('Image must be at least 600×315px');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from('ad-creatives')
+        .upload(path, file, { upsert: false, cacheControl: '3600', contentType: file.type });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from('ad-creatives').getPublicUrl(path);
+      setCustomAd((prev) => ({ ...prev, image_url: pub.publicUrl }));
+      setFormErrors((prev) => ({ ...prev, custom_image: '' }));
+      toast.success('Image uploaded');
+    } catch (err: any) {
+      console.error('Upload failed:', err);
+      toast.error(err?.message || 'Image upload failed');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedType) {
       toast.error('Please select a sponsorship option');
       return;
@@ -269,12 +341,17 @@ const Advertise = () => {
 
     try {
       const selectedProduct = getSelectedProduct();
-      const launchUrl = selectedProduct ? `https://trylaunch.ai/launch/${selectedProduct.slug}` : '';
-      
+      const launchUrl =
+        adType === 'product' && selectedProduct
+          ? `https://trylaunch.ai/launch/${selectedProduct.slug}`
+          : '';
+
       const { data, error } = await supabase.functions.invoke('create-advertising-checkout', {
         body: {
+          adType,
           launchUrl,
-          productId: selectedProductId,
+          productId: adType === 'product' ? selectedProductId : '',
+          customAd: adType === 'custom' ? customAd : null,
           sponsorshipType: selectedType,
           months: selectedMonths.length.toString(),
           selectedMonths: selectedMonths.map(m => format(m, 'MMMM yyyy')),
@@ -285,7 +362,13 @@ const Advertise = () => {
       if (error) throw error;
 
       if (data?.url) {
-        // Redirect to Stripe Checkout
+        // Track creation event
+        try {
+          await supabase.from('product_analytics').insert({
+            event_type: 'ad_created',
+            metadata: { ad_type: adType, sponsorship_type: selectedType },
+          } as any);
+        } catch {}
         window.location.href = data.url;
       } else {
         throw new Error(data?.error || 'Failed to create checkout session');
@@ -818,64 +901,238 @@ const Advertise = () => {
                   </div>
 
 
+
+                  {/* Ad type selector */}
                   <div className="space-y-2">
-                    <Label 
-                      className={formErrors.product ? 'text-destructive' : ''}
-                    >
-                      Select Product *
-                    </Label>
-                    {launchedProducts.length === 0 && !isLoadingProducts ? (
-                      <div className="p-4 border rounded-md bg-muted/50">
-                        <p className="text-sm text-muted-foreground">
-                          You don't have any launched products yet.{' '}
-                          <a href="/submit" className="text-primary hover:underline">
-                            Submit a product
-                          </a>{' '}
-                          first to advertise it.
-                        </p>
-                      </div>
-                    ) : (
-                      <Select 
-                        value={selectedProductId} 
-                        onValueChange={(value) => {
-                          setSelectedProductId(value);
-                          if (formErrors.product) setFormErrors(prev => ({ ...prev, product: '' }));
-                        }}
-                        disabled={isLoadingProducts}
+                    <Label>Ad Type *</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setAdType('product')}
+                        className={cn(
+                          'border rounded-lg p-3 text-left transition-colors',
+                          adType === 'product'
+                            ? 'border-primary ring-2 ring-primary bg-primary/5'
+                            : 'border-border hover:bg-muted/40'
+                        )}
                       >
-                        <SelectTrigger className={formErrors.product ? 'border-destructive' : ''}>
-                          <SelectValue placeholder={isLoadingProducts ? "Loading products..." : "Select a product to sponsor"} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background">
-                          {launchedProducts.map((product) => (
-                            <SelectItem key={product.id} value={product.id}>
-                              <div className="flex items-center gap-3">
-                                <img 
-                                  src={product.iconUrl || defaultProductIcon} 
-                                  alt={product.name || 'Product'} 
-                                  className="w-8 h-8 rounded-md object-cover flex-shrink-0"
-                                />
-                                <div className="flex flex-col">
-                                  <span>{product.name}</span>
-                                  {product.tagline && (
-                                    <span className="text-xs text-muted-foreground line-clamp-1">{product.tagline}</span>
-                                  )}
-                                </div>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                    {formErrors.product && (
-                      <p className="text-sm text-destructive">{formErrors.product}</p>
-                    )}
-                    {selectedProductId && (
-                      <p className="text-sm text-muted-foreground">
-                        This product will be featured as a sponsored listing
-                      </p>
-                    )}
+                        <div className="font-medium text-sm">Use existing product</div>
+                        <div className="text-xs text-muted-foreground">Promote one of your launched products</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAdType('custom')}
+                        className={cn(
+                          'border rounded-lg p-3 text-left transition-colors',
+                          adType === 'custom'
+                            ? 'border-primary ring-2 ring-primary bg-primary/5'
+                            : 'border-border hover:bg-muted/40'
+                        )}
+                      >
+                        <div className="font-medium text-sm">Create custom ad</div>
+                        <div className="text-xs text-muted-foreground">Bring your own creative + URL</div>
+                      </button>
+                    </div>
                   </div>
+
+                  {adType === 'product' ? (
+                    <div className="space-y-2">
+                      <Label className={formErrors.product ? 'text-destructive' : ''}>
+                        Select Product *
+                      </Label>
+                      {launchedProducts.length === 0 && !isLoadingProducts ? (
+                        <div className="p-4 border rounded-md bg-muted/50">
+                          <p className="text-sm text-muted-foreground">
+                            You don't have any launched products yet.{' '}
+                            <a href="/submit" className="text-primary hover:underline">
+                              Submit a product
+                            </a>{' '}
+                            first, or switch to <strong>Create custom ad</strong> above.
+                          </p>
+                        </div>
+                      ) : (
+                        <Select
+                          value={selectedProductId}
+                          onValueChange={(value) => {
+                            setSelectedProductId(value);
+                            if (formErrors.product) setFormErrors(prev => ({ ...prev, product: '' }));
+                          }}
+                          disabled={isLoadingProducts}
+                        >
+                          <SelectTrigger className={formErrors.product ? 'border-destructive' : ''}>
+                            <SelectValue placeholder={isLoadingProducts ? "Loading products..." : "Select a product to sponsor"} />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background">
+                            {launchedProducts.map((product) => (
+                              <SelectItem key={product.id} value={product.id}>
+                                <div className="flex items-center gap-3">
+                                  <img
+                                    src={product.iconUrl || defaultProductIcon}
+                                    alt={product.name || 'Product'}
+                                    className="w-8 h-8 rounded-md object-cover flex-shrink-0"
+                                  />
+                                  <div className="flex flex-col">
+                                    <span>{product.name}</span>
+                                    {product.tagline && (
+                                      <span className="text-xs text-muted-foreground line-clamp-1">{product.tagline}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                      {formErrors.product && (
+                        <p className="text-sm text-destructive">{formErrors.product}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
+                      <div className="space-y-2">
+                        <Label className={formErrors.custom_image ? 'text-destructive' : ''}>
+                          Custom Image * <span className="text-xs text-muted-foreground font-normal">(JPG/PNG/WEBP, min 600×315, max 5MB)</span>
+                        </Label>
+                        {customAd.image_url ? (
+                          <div className="relative">
+                            <img
+                              src={customAd.image_url}
+                              alt="Ad creative preview"
+                              className="w-full max-h-48 object-cover rounded-md border"
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              className="absolute top-2 right-2"
+                              onClick={() => setCustomAd(prev => ({ ...prev, image_url: '' }))}
+                            >
+                              <X className="h-3 w-3 mr-1" /> Replace
+                            </Button>
+                          </div>
+                        ) : (
+                          <label
+                            className={cn(
+                              'flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-md p-6 cursor-pointer hover:bg-muted/40 transition-colors',
+                              formErrors.custom_image && 'border-destructive'
+                            )}
+                          >
+                            {uploadingImage ? (
+                              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                            ) : (
+                              <Upload className="h-6 w-6 text-muted-foreground" />
+                            )}
+                            <span className="text-sm text-muted-foreground">
+                              {uploadingImage ? 'Uploading…' : 'Click to upload your creative'}
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              className="hidden"
+                              disabled={uploadingImage}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) handleCustomImageUpload(f);
+                                e.target.value = '';
+                              }}
+                            />
+                          </label>
+                        )}
+                        {formErrors.custom_image && (
+                          <p className="text-sm text-destructive">{formErrors.custom_image}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="custom_title" className={formErrors.custom_title ? 'text-destructive' : ''}>
+                            Custom Title *
+                          </Label>
+                          <span className="text-xs text-muted-foreground">{customAd.title.length}/80</span>
+                        </div>
+                        <Input
+                          id="custom_title"
+                          maxLength={80}
+                          value={customAd.title}
+                          onChange={(e) => {
+                            setCustomAd(prev => ({ ...prev, title: e.target.value }));
+                            if (formErrors.custom_title) setFormErrors(prev => ({ ...prev, custom_title: '' }));
+                          }}
+                          placeholder="Catchy headline for your ad"
+                          className={formErrors.custom_title ? 'border-destructive' : ''}
+                        />
+                        {formErrors.custom_title && (
+                          <p className="text-sm text-destructive">{formErrors.custom_title}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="custom_description" className={formErrors.custom_description ? 'text-destructive' : ''}>
+                            Custom Description
+                          </Label>
+                          <span className="text-xs text-muted-foreground">{customAd.description.length}/180</span>
+                        </div>
+                        <Textarea
+                          id="custom_description"
+                          maxLength={180}
+                          rows={2}
+                          value={customAd.description}
+                          onChange={(e) => {
+                            setCustomAd(prev => ({ ...prev, description: e.target.value }));
+                            if (formErrors.custom_description) setFormErrors(prev => ({ ...prev, custom_description: '' }));
+                          }}
+                          placeholder="Short tagline shown below the title"
+                          className={formErrors.custom_description ? 'border-destructive' : ''}
+                        />
+                        {formErrors.custom_description && (
+                          <p className="text-sm text-destructive">{formErrors.custom_description}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="custom_target_url" className={formErrors.custom_target_url ? 'text-destructive' : ''}>
+                          Destination URL * <span className="text-xs text-muted-foreground font-normal">(https only)</span>
+                        </Label>
+                        <Input
+                          id="custom_target_url"
+                          type="url"
+                          inputMode="url"
+                          value={customAd.target_url}
+                          onChange={(e) => {
+                            setCustomAd(prev => ({ ...prev, target_url: e.target.value.trim() }));
+                            if (formErrors.custom_target_url) setFormErrors(prev => ({ ...prev, custom_target_url: '' }));
+                          }}
+                          placeholder="https://yoursite.com"
+                          className={formErrors.custom_target_url ? 'border-destructive' : ''}
+                        />
+                        {formErrors.custom_target_url && (
+                          <p className="text-sm text-destructive">{formErrors.custom_target_url}</p>
+                        )}
+                      </div>
+
+                      {/* Live preview */}
+                      {(customAd.image_url || customAd.title) && (
+                        <div className="space-y-2">
+                          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Preview</Label>
+                          <div className="border rounded-lg p-4 bg-background">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Sponsored</p>
+                            {customAd.image_url && (
+                              <img
+                                src={customAd.image_url}
+                                alt=""
+                                className="w-full h-32 object-cover rounded-md mb-3"
+                              />
+                            )}
+                            <p className="font-semibold text-sm">{customAd.title || 'Your title'}</p>
+                            {customAd.description && (
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{customAd.description}</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
 
                   <div className="space-y-2">
@@ -889,15 +1146,21 @@ const Advertise = () => {
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    size="lg" 
-                    disabled={isSubmitting || selectedMonths.length === 0 || !selectedProductId} 
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={
+                      isSubmitting ||
+                      uploadingImage ||
+                      selectedMonths.length === 0 ||
+                      (adType === 'product' && !selectedProductId) ||
+                      (adType === 'custom' && (!customAd.image_url || !customAd.title.trim() || !customAd.target_url.trim()))
+                    }
                     className="w-full"
                   >
                     {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
                   </Button>
-                  
+
                   <StripeBadge />
                 </form>
               </CardContent>
