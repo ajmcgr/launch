@@ -15,7 +15,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { User, Settings, Package, LogOut, Menu } from 'lucide-react';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
@@ -31,30 +31,10 @@ export const Header = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const { formattedMemberCount } = useMemberCount();
-  
+
   // Check if we should show the Launch Pass promo (after Jan 26, 2026)
   const showLaunchPassPromo = new Date() >= new Date('2026-01-26T00:00:00');
-
-  // Use ref to track scroll state without causing re-renders during scroll
-  const scrolledRef = useRef(false);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const shouldBeScrolled = scrollY > 50;
-      
-      // Only update state if value actually changed
-      if (shouldBeScrolled !== scrolledRef.current) {
-        scrolledRef.current = shouldBeScrolled;
-        setIsScrolled(shouldBeScrolled);
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     // Get initial session
@@ -101,31 +81,27 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Promotional Banner - smoothly hide when scrolled */}
-      <div 
-        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
-          isScrolled ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
-        }`}
-        aria-hidden={isScrolled}
+    <>
+      {/* Promotional Banner — rendered ABOVE the sticky header (non-sticky).
+          It scrolls away naturally with the page, so the sticky nav below
+          never changes height. This prevents the layout-shift / wobble glitch
+          that occurred when toggling the banner based on scrollY. */}
+      <Link
+        to={showLaunchPassPromo ? "/pass" : "/pricing"}
+        className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
+        data-testid="promo-banner"
       >
-        <div className="overflow-hidden">
-          <Link 
-            to={showLaunchPassPromo ? "/pass" : "/pricing"} 
-            className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
-            tabIndex={isScrolled ? -1 : 0}
-          >
-            <div className="container mx-auto px-4 max-w-7xl">
-              <p className="text-center text-sm font-medium">
-                {showLaunchPassPromo 
-                  ? `Trusted by ${formattedMemberCount} makers → Get Launch Pass`
-                  : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
-                }
-              </p>
-            </div>
-          </Link>
+        <div className="container mx-auto px-4 max-w-7xl">
+          <p className="text-center text-sm font-medium">
+            {showLaunchPassPromo
+              ? `Trusted by ${formattedMemberCount} makers → Get Launch Pass`
+              : <>Save 20% on paid launches. Use code <span className="font-bold">LAUNCH20</span></>
+            }
+          </p>
         </div>
-      </div>
+      </Link>
+
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-14 items-center justify-between">
@@ -363,5 +339,6 @@ export const Header = () => {
         </div>
       </div>
     </header>
+    </>
   );
 };
