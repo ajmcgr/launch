@@ -48,6 +48,16 @@ export const Footer = () => {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
 
