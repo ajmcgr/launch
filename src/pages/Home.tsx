@@ -166,9 +166,15 @@ const Home = () => {
       const { data: sponsoredData } = await supabase
         .from('sponsored_products')
         .select(`
+          id,
           position,
           product_id,
-          products!inner(
+          ad_type,
+          custom_image_url,
+          custom_title,
+          custom_description,
+          custom_target_url,
+          products(
             id,
             slug,
             name,
