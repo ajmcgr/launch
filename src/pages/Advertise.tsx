@@ -565,9 +565,13 @@ const Advertise = () => {
                 </CardHeader>
                 <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
-                    $199
+                    $199<span className="text-base font-normal text-muted-foreground"> / month</span>
                   </div>
                   <ul className="space-y-3 flex-1">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Full month of website placement + one newsletter issue</span>
+                    </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-sm">Homepage feed + sidebar sponsorship</span>
