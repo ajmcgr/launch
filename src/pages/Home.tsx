@@ -62,6 +62,7 @@ interface Product {
   mrrVerifiedAt?: string | null;
   makers: Array<{ username: string; avatar_url?: string }>;
   launch_date?: string;
+  isBoosted?: boolean;
 }
 
 const ITEMS_PER_PAGE = 15;
@@ -169,6 +170,7 @@ const Home = () => {
           id,
           position,
           product_id,
+          sponsorship_type,
           ad_type,
           custom_image_url,
           custom_title,
@@ -179,7 +181,9 @@ const Home = () => {
             slug,
             name,
             tagline,
+            launch_date,
             domain_url,
+            platforms,
             verified_mrr,
             mrr_verified_at,
             product_media(url, type),
@@ -261,6 +265,7 @@ const Home = () => {
             iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
             domainUrl: product.domain_url || '',
             categories: product.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+            platforms: (product.platforms || []) as Platform[],
             netVotes: voteMap.get(product.id) || 0,
             userVote: userVotes.get(product.id) || null,
             commentCount: commentMap.get(product.id) || 0,
@@ -270,6 +275,8 @@ const Home = () => {
               username: m.users?.username || 'Anonymous',
               avatar_url: m.users?.avatar_url || ''
             })).filter((m: any) => m.username !== 'Anonymous') || [],
+            launch_date: product.launch_date,
+            isBoosted: sponsored.sponsorship_type === 'boost',
           });
         });
 
@@ -528,10 +535,12 @@ const Home = () => {
       const userVoteMap = new Map(userVotes?.map(v => [v.product_id, 1 as const]) || []);
 
       // Fetch all comments in a single query
-      const { data: allComments } = await supabase
-        .from('comments')
-        .select('product_id')
-        .in('product_id', productIds);
+      const { data: allComments } = productIds.length
+        ? await supabase
+            .from('comments')
+            .select('product_id')
+            .in('product_id', productIds)
+        : { data: [] as any[] };
 
       // Count comments per product
       const commentMap = new Map<string, number>();
@@ -782,7 +791,57 @@ const Home = () => {
         </a>
       );
 
-      // Position 1 sponsored product goes at the top (skip for compact view)
+      // Featured Boost uses position 0 and is pinned above the organic feed in every view.
+      const featuredBoost = sponsoredProducts.get(0);
+      if (featuredBoost) {
+        trackSponsorImpression(featuredBoost.id, 0);
+        if (viewMode === 'compact') {
+          items.push(
+            <CompactLaunchListItem
+              key={`featured-boost-${featuredBoost.id}`}
+              rank={1}
+              name={featuredBoost.name}
+              votes={featuredBoost.netVotes}
+              slug={featuredBoost.slug}
+              userVote={featuredBoost.userVote}
+              onVote={() => handleVote(featuredBoost.id)}
+              launchDate={featuredBoost.launch_date}
+              commentCount={featuredBoost.commentCount}
+              makers={featuredBoost.makers}
+              domainUrl={featuredBoost.domainUrl}
+              categories={featuredBoost.categories}
+              platforms={featuredBoost.platforms}
+              verifiedMrr={featuredBoost.verifiedMrr}
+              mrrVerifiedAt={featuredBoost.mrrVerifiedAt}
+              isBoosted
+            />
+          );
+        } else if (viewMode === 'list') {
+          items.push(
+            <LaunchListItem
+              key={`featured-boost-${featuredBoost.id}`}
+              {...featuredBoost}
+              rank={1}
+              sponsored
+              sponsoredPosition={0}
+              onVote={handleVote}
+            />
+          );
+        } else {
+          items.push(
+            <LaunchCard
+              key={`featured-boost-${featuredBoost.id}`}
+              {...featuredBoost}
+              rank={1}
+              sponsored
+              sponsoredPosition={0}
+              onVote={handleVote}
+            />
+          );
+        }
+      }
+
+      // Position 1 sponsored product goes at the top of the paid listing slots (skip for compact view)
       const pos1Sponsor = sponsoredProducts.get(1);
       const pos1Custom = customSponsored.get(1);
       if (pos1Custom && viewMode !== 'compact') {
@@ -802,9 +861,9 @@ const Home = () => {
       }
       
       // Interleave products with sponsored items at positions 10, 20, 30
-      filteredList.forEach((product, idx) => {
+      filteredList.filter((product) => product.id !== featuredBoost?.id).forEach((product, idx) => {
         productIndex++;
-        const displayRank = productIndex;
+        const displayRank = productIndex + (featuredBoost ? 1 : 0);
         
         if (viewMode === 'compact') {
           items.push(

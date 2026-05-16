@@ -1300,58 +1300,6 @@ const Advertise = () => {
           </div>
         )}
 
-
-        {/* Testimonials */}
-        <div className="mt-20 max-w-3xl mx-auto space-y-8">
-          <h2 className="text-2xl font-bold text-center mb-8">What Makers Are Saying</h2>
-
-          <blockquote className="text-center">
-            <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
-              "AdGenerator got great visibility from launching here. The engaged audience helped us get our first paying customers fast."
-            </p>
-            <footer className="flex items-center justify-center gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={jakeAvatar} alt="Jake" />
-                <AvatarFallback>JH</AvatarFallback>
-              </Avatar>
-              <div className="text-sm text-left">
-                <div className="font-medium">Jake</div>
-                <div className="text-muted-foreground">
-                  AdGenerator · <a
-                    href="https://x.com/jakeh2792"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >@jakeh2792</a>
-                </div>
-              </div>
-            </footer>
-          </blockquote>
-
-          <blockquote className="text-center">
-            <p className="text-sm md:text-base leading-relaxed text-foreground/90 mb-4">
-              "Launched Supalytics on Launch and got instant traffic. The community here actually engages with products — not just scrolls past. Best decision for getting early users."
-            </p>
-            <footer className="flex items-center justify-center gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={yogeshAvatar} alt="Yogesh" />
-                <AvatarFallback>YA</AvatarFallback>
-              </Avatar>
-              <div className="text-sm text-left">
-                <div className="font-medium">Yogesh</div>
-                <div className="text-muted-foreground">
-                  Supalytics · <a
-                    href="https://x.com/yogesharc"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >@yogesharc</a>
-                </div>
-              </div>
-            </footer>
-          </blockquote>
-        </div>
-
         <div className="mt-8 text-center">
           <p className="text-muted-foreground">
             Questions?{' '}
