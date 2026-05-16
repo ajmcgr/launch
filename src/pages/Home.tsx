@@ -747,10 +747,47 @@ const Home = () => {
     const renderProductsWithSponsored = (viewMode: 'list' | 'grid' | 'compact') => {
       const items: React.ReactNode[] = [];
       let productIndex = 0;
-      
+
+      const renderCustomSponsor = (
+        pos: number,
+        c: { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }
+      ) => (
+        <a
+          key={`sponsored-custom-${pos}`}
+          href={c.targetUrl}
+          target="_blank"
+          rel="noopener noreferrer sponsored nofollow"
+          onClick={() => {
+            try {
+              supabase.from('product_analytics').insert({
+                event_type: 'ad_click',
+                metadata: { ad_type: 'custom', ad_id: c.id, target_url: c.targetUrl, placement: `feed-pos-${pos}` },
+              } as any);
+            } catch {}
+          }}
+          className="flex items-center gap-4 p-4 rounded-lg border bg-muted/20 hover:bg-muted/40 transition-colors"
+        >
+          {c.imageUrl && (
+            <img src={c.imageUrl} alt={c.title} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-semibold truncate">{c.title}</p>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground border border-muted-foreground/30 rounded px-1">Ad</span>
+            </div>
+            {c.description && (
+              <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">{c.description}</p>
+            )}
+          </div>
+        </a>
+      );
+
       // Position 1 sponsored product goes at the top (skip for compact view)
       const pos1Sponsor = sponsoredProducts.get(1);
-      if (pos1Sponsor && viewMode !== 'compact') {
+      const pos1Custom = customSponsored.get(1);
+      if (pos1Custom && viewMode !== 'compact') {
+        items.push(renderCustomSponsor(1, pos1Custom));
+      } else if (pos1Sponsor && viewMode !== 'compact') {
         // Track impression for position 1
         trackSponsorImpression(pos1Sponsor.id, 1);
         items.push(
