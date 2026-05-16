@@ -62,6 +62,7 @@ interface Product {
   mrrVerifiedAt?: string | null;
   makers: Array<{ username: string; avatar_url?: string }>;
   launch_date?: string;
+  isBoosted?: boolean;
 }
 
 const ITEMS_PER_PAGE = 15;
@@ -270,6 +271,7 @@ const Home = () => {
               username: m.users?.username || 'Anonymous',
               avatar_url: m.users?.avatar_url || ''
             })).filter((m: any) => m.username !== 'Anonymous') || [],
+            isBoosted: sponsored.sponsorship_type === 'boost',
           });
         });
 
@@ -528,10 +530,12 @@ const Home = () => {
       const userVoteMap = new Map(userVotes?.map(v => [v.product_id, 1 as const]) || []);
 
       // Fetch all comments in a single query
-      const { data: allComments } = await supabase
-        .from('comments')
-        .select('product_id')
-        .in('product_id', productIds);
+      const { data: allComments } = productIds.length
+        ? await supabase
+            .from('comments')
+            .select('product_id')
+            .in('product_id', productIds)
+        : { data: [] as any[] };
 
       // Count comments per product
       const commentMap = new Map<string, number>();
