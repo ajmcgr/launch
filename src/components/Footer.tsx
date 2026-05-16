@@ -29,7 +29,7 @@ export const Footer = () => {
     <footer>
       <div className="bg-muted">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-1">
@@ -46,6 +46,16 @@ export const Footer = () => {
               <li>
                 <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Terms of Service
                 </Link>
               </li>
             </ul>
@@ -128,22 +138,6 @@ export const Footer = () => {
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
-            <ul className="space-y-1">
-              <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
             </ul>
           </div>
 
