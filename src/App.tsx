@@ -64,6 +64,8 @@ const MediaKit = lazy(() => import("./pages/MediaKit"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Start = lazy(() => import("./pages/Start"));
 const VibeCodingPlatform = lazy(() => import("./pages/VibeCodingPlatform"));
+const Tools = lazy(() => import("./pages/Tools"));
+const ToolDetail = lazy(() => import("./pages/ToolDetail"));
 const SeoCollection = lazy(() => import("./pages/SeoCollection"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
@@ -156,6 +158,8 @@ const AppContent = () => {
             <Route path="/compare" element={<CompareHub />} />
             <Route path="/compare/:slug" element={<ComparePage />} />
             <Route path="/vibe-coding/:slug" element={<VibeCodingPlatform />} />
+            <Route path="/tools" element={<Tools />} />
+            <Route path="/tools/:slug" element={<ToolDetail />} />
             <Route path="/launches/today" element={<LaunchArchive />} />
             <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
             <Route path="/launches/:param" element={<LaunchArchive />} />
