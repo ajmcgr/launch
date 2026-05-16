@@ -180,7 +180,9 @@ const Home = () => {
             slug,
             name,
             tagline,
+            launch_date,
             domain_url,
+            platforms,
             verified_mrr,
             mrr_verified_at,
             product_media(url, type),
@@ -262,6 +264,7 @@ const Home = () => {
             iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
             domainUrl: product.domain_url || '',
             categories: product.product_category_map?.map((c: any) => categoryMap.get(c.category_id)).filter(Boolean) || [],
+            platforms: (product.platforms || []) as Platform[],
             netVotes: voteMap.get(product.id) || 0,
             userVote: userVotes.get(product.id) || null,
             commentCount: commentMap.get(product.id) || 0,
@@ -271,6 +274,7 @@ const Home = () => {
               username: m.users?.username || 'Anonymous',
               avatar_url: m.users?.avatar_url || ''
             })).filter((m: any) => m.username !== 'Anonymous') || [],
+            launch_date: product.launch_date,
             isBoosted: sponsored.sponsorship_type === 'boost',
           });
         });
