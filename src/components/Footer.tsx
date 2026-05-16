@@ -3,6 +3,7 @@ import { Instagram, Youtube } from 'lucide-react';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { comparisons } from '@/lib/comparisons';
 import { vibeCodingPlatforms } from '@/lib/vibeCodingPlatforms';
+import { freeTools } from '@/lib/freeTools';
 
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -30,7 +31,7 @@ export const Footer = () => {
     <footer>
       <div className="bg-muted">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-12 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-12 py-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-1">
@@ -126,6 +127,27 @@ export const Footer = () => {
                   Store
                 </a>
               </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4 text-foreground">Free Tools</h3>
+            <ul className="space-y-1">
+              <li>
+                <Link to="/tools" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  All tools →
+                </Link>
+              </li>
+              {freeTools.slice(0, 12).map((t) => (
+                <li key={t.slug}>
+                  <Link
+                    to={`/tools/${t.slug}`}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {t.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
