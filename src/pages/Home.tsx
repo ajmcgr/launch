@@ -83,6 +83,7 @@ const Home = () => {
   })();
   const [products, setProducts] = useState<Product[]>(cachedHome || []);
   const [sponsoredProducts, setSponsoredProducts] = useState<Map<number, Product>>(new Map());
+  const [customSponsored, setCustomSponsored] = useState<Map<number, { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }>>(new Map());
   const [loading, setLoading] = useState(!cachedHome);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
