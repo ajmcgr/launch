@@ -334,31 +334,45 @@ Deno.serve(async (req) => {
         });
 
         // For website/combined sponsorships, we need to create sponsored_products entries
-        if ((metadata.sponsorship_type === 'website' || metadata.sponsorship_type === 'combined') && metadata.product_slug) {
-          // Find the product by slug
-          const { data: product, error: productError } = await supabaseClient
-            .from('products')
-            .select('id, name')
-            .eq('slug', metadata.product_slug)
-            .single();
+        const adType = (metadata.ad_type as string) || 'product';
+        const isWebsiteOrCombined = metadata.sponsorship_type === 'website' || metadata.sponsorship_type === 'combined';
 
-          if (productError || !product) {
-            console.error('Product not found for slug:', metadata.product_slug);
-            // Don't fail the webhook - we'll handle this manually
-          } else {
-            // Parse selected months and create sponsored_products entries
+        if (isWebsiteOrCombined && (adType === 'custom' || metadata.product_slug)) {
+          // Resolve product (only required for product ads)
+          let productId: string | null = null;
+          let productLabel = 'Custom Ad';
+          if (adType === 'product') {
+            const { data: product, error: productError } = await supabaseClient
+              .from('products')
+              .select('id, name')
+              .eq('slug', metadata.product_slug)
+              .single();
+            if (productError || !product) {
+              console.error('Product not found for slug:', metadata.product_slug);
+              // Skip insert for product ads with missing product
+            } else {
+              productId = product.id;
+              productLabel = product.name;
+            }
+          }
+
+          // Only proceed if we have a valid target (product or custom creative)
+          const hasCustomCreative =
+            adType === 'custom' &&
+            metadata.custom_image_url &&
+            metadata.custom_title &&
+            metadata.custom_target_url;
+
+          if (productId || hasCustomCreative) {
             const selectedMonthsStr = metadata.selected_months || '';
             const monthStrings = selectedMonthsStr.split(', ').filter(Boolean);
-            
+
             for (const monthStr of monthStrings) {
-              // Parse "January 2025" format - use Date.parse with "1 " prefix for reliable parsing
-              // e.g., "1 January 2025" is reliably parsed across all browsers
               const monthDate = new Date(`1 ${monthStr}`);
               if (!isNaN(monthDate.getTime())) {
                 const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
                 const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
-                
-                // Get existing sponsors for this period to find next available position
+
                 const { data: existingSponsors } = await supabaseClient
                   .from('sponsored_products')
                   .select('id, position, end_date')
@@ -366,32 +380,38 @@ Deno.serve(async (req) => {
                   .gte('end_date', startDate.toISOString().split('T')[0])
                   .order('position', { ascending: true });
 
-                // Find next available position (2-4, skip position 1 reserved for permanent sponsors)
-                const occupiedPositions = new Set(existingSponsors?.map(s => s.position) || []);
-                let nextPosition = 2; // Start at 2 since position 1 is for permanent sponsors
+                const occupiedPositions = new Set(existingSponsors?.map((s: any) => s.position) || []);
+                let nextPosition = 2;
                 while (occupiedPositions.has(nextPosition) && nextPosition <= 4) {
                   nextPosition++;
                 }
 
                 if (nextPosition > 4) {
                   console.log(`No available positions for ${monthStr} - all slots (2-4) are filled`);
-                  // Still record the sponsorship but log the issue
                 } else {
-                  // Insert new sponsor at the next available position
+                  const insertPayload: any = {
+                    position: nextPosition,
+                    sponsorship_type: metadata.sponsorship_type,
+                    start_date: startDate.toISOString().split('T')[0],
+                    end_date: endDate.toISOString().split('T')[0],
+                    ad_type: adType,
+                    product_id: productId,
+                  };
+                  if (adType === 'custom') {
+                    insertPayload.custom_image_url = metadata.custom_image_url;
+                    insertPayload.custom_title = metadata.custom_title;
+                    insertPayload.custom_description = metadata.custom_description || null;
+                    insertPayload.custom_target_url = metadata.custom_target_url;
+                  }
+
                   const { error: insertError } = await supabaseClient
                     .from('sponsored_products')
-                    .insert({
-                      product_id: product.id,
-                      position: nextPosition,
-                      sponsorship_type: metadata.sponsorship_type,
-                      start_date: startDate.toISOString().split('T')[0],
-                      end_date: endDate.toISOString().split('T')[0],
-                    });
+                    .insert(insertPayload);
 
                   if (insertError) {
                     console.error('Error creating sponsored product:', insertError);
                   } else {
-                    console.log(`Created sponsored product for ${product.name} at position ${nextPosition} for ${monthStr}`);
+                    console.log(`Created ${adType} sponsored entry for ${productLabel} at position ${nextPosition} for ${monthStr}`);
                   }
                 }
               }
