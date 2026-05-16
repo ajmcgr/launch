@@ -29,7 +29,7 @@ export const Footer = () => {
     <footer>
       <div className="bg-muted">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-1">
