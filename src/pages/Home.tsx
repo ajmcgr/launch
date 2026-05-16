@@ -170,6 +170,7 @@ const Home = () => {
           id,
           position,
           product_id,
+          sponsorship_type,
           ad_type,
           custom_image_url,
           custom_title,
