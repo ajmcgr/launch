@@ -22,29 +22,51 @@ Deno.serve(async (req) => {
       httpClient: Stripe.createFetchHttpClient(),
     });
 
-    const { 
-      launchUrl, 
+    const {
+      adType = 'product',
+      launchUrl,
       productId,
       sponsorshipType,
       months,
       selectedMonths,
-      message 
+      message,
+      customAd,
     } = await req.json();
 
-    console.log('Creating checkout for:', { sponsorshipType, months, launchUrl, productId });
+    console.log('Creating checkout for:', { adType, sponsorshipType, months, launchUrl, productId, hasCustom: !!customAd });
 
     if (!sponsorshipType) {
       throw new Error('Sponsorship type is required');
     }
 
-    // Launch URL is required for all sponsorship types
-    if (!launchUrl) {
-      throw new Error('Launch URL is required');
+    if (adType !== 'product' && adType !== 'custom') {
+      throw new Error('Invalid ad type');
     }
-    
-    // Validate Launch URL format
-    if (!launchUrl.includes('trylaunch.ai/launch/')) {
-      throw new Error('Please provide a valid Launch URL');
+
+    if (adType === 'product') {
+      if (!launchUrl) {
+        throw new Error('Launch URL is required');
+      }
+      if (!launchUrl.includes('trylaunch.ai/launch/')) {
+        throw new Error('Please provide a valid Launch URL');
+      }
+    } else {
+      // Custom ad validation
+      if (!customAd?.image_url || !customAd?.title || !customAd?.target_url) {
+        throw new Error('Custom ad requires image, title, and destination URL');
+      }
+      try {
+        const u = new URL(customAd.target_url);
+        if (u.protocol !== 'https:') throw new Error('Destination URL must use https://');
+      } catch {
+        throw new Error('Destination URL is invalid');
+      }
+      if (typeof customAd.title !== 'string' || customAd.title.length > 80) {
+        throw new Error('Custom title must be 80 characters or fewer');
+      }
+      if (customAd.description && (typeof customAd.description !== 'string' || customAd.description.length > 180)) {
+        throw new Error('Custom description must be 180 characters or fewer');
+      }
     }
 
     // Calculate pricing
