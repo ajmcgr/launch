@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock, CalendarIcon, Upload, Loader2 } from 'lucide-react';
+import { Check, ArrowLeft, X, Eye, Mail, CheckCircle, HelpCircle, Lock, CalendarIcon, Upload, Loader2, Zap } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -455,7 +455,55 @@ const Advertise = () => {
         {step === 1 && (
           <>
             {/* Sponsorship Options */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-6">
+              <Card 
+                className="hover:shadow-lg transition-shadow cursor-pointer flex flex-col"
+                onClick={() => navigate('/my-products')}
+              >
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-primary" />
+                    Featured Boost
+                  </CardTitle>
+                  <CardDescription>Pin your launch to #1 on the homepage</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6 flex flex-col flex-1">
+                  <div className="text-4xl font-bold">
+                    $19<span className="text-base font-normal text-muted-foreground"> / 24 hours</span>
+                  </div>
+                  <ul className="space-y-3 flex-1">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Pinned to position #1 on the homepage</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Active for a full 24-hour window</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Works on any of your launched products</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Instant activation after checkout</span>
+                    </li>
+                  </ul>
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate('/my-products');
+                    }}
+                  >
+                    Boost a Product
+                  </Button>
+                </CardContent>
+              </Card>
+
+
               <Card 
                 className={`hover:shadow-lg transition-shadow cursor-pointer flex flex-col ${
                   selectedType === 'website' ? 'border-primary shadow-md ring-2 ring-primary' : ''
