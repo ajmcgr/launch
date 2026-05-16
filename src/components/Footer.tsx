@@ -133,11 +133,6 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Free Tools</h3>
             <ul className="space-y-1">
-              <li>
-                <Link to="/tools" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                  All tools →
-                </Link>
-              </li>
               {freeTools.slice(0, 12).map((t) => (
                 <li key={t.slug}>
                   <Link
@@ -148,6 +143,11 @@ export const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link to="/tools" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  All tools →
+                </Link>
+              </li>
             </ul>
           </div>
 
