@@ -67,6 +67,9 @@ const VibeCodingPlatform = lazy(() => import("./pages/VibeCodingPlatform"));
 const Tools = lazy(() => import("./pages/Tools"));
 const ToolDetail = lazy(() => import("./pages/ToolDetail"));
 const SeoCollection = lazy(() => import("./pages/SeoCollection"));
+const BestPage = lazy(() => import("./pages/seo/BestPage"));
+const VsPage = lazy(() => import("./pages/seo/VsPage"));
+const AlternativesPage = lazy(() => import("./pages/seo/AlternativesPage"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
@@ -170,6 +173,10 @@ const AppContent = () => {
             {SEO_COLLECTION_SLUGS.map((slug) => (
               <Route key={slug} path={`/${slug}`} element={<SeoCollection />} />
             ))}
+            {/* High-intent SEO templates */}
+            <Route path="/best/:slug" element={<BestPage />} />
+            <Route path="/vs/:slug" element={<VsPage />} />
+            <Route path="/alternatives/:slug" element={<AlternativesPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

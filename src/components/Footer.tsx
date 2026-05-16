@@ -108,6 +108,11 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/best/launch-platforms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Launch platforms
+                </Link>
+              </li>
+              <li>
                 <a 
                   href="http://launchisland.org/"
                   target="_blank"
