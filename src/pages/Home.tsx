@@ -863,7 +863,7 @@ const Home = () => {
       // Interleave products with sponsored items at positions 10, 20, 30
       filteredList.filter((product) => product.id !== featuredBoost?.id).forEach((product, idx) => {
         productIndex++;
-        const displayRank = productIndex + (featuredBoost ? 1 : 0);
+        const displayRank = productIndex;
         
         if (viewMode === 'compact') {
           items.push(
