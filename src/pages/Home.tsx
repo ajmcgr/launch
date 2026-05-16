@@ -859,19 +859,23 @@ const Home = () => {
           const sponsorPositionCheck = productIndex + 1;
           const sponsorPosition = sponsorPositionCheck === 10 ? 2 : sponsorPositionCheck === 20 ? 3 : sponsorPositionCheck === 30 ? 4 : null;
           if (sponsorPosition) {
-            const sponsor = sponsoredProducts.get(sponsorPosition);
-            if (sponsor) {
-              // Track impression for this position
-              trackSponsorImpression(sponsor.id, sponsorPosition);
-              items.push(
-                <LaunchListItem
-                  key={`sponsored-${sponsorPosition}`}
-                  {...sponsor}
-                  sponsored
-                  sponsoredPosition={sponsorPosition}
-                  onVote={handleVote}
-                />
-              );
+            const custom = customSponsored.get(sponsorPosition);
+            if (custom) {
+              items.push(renderCustomSponsor(sponsorPosition, custom));
+            } else {
+              const sponsor = sponsoredProducts.get(sponsorPosition);
+              if (sponsor) {
+                trackSponsorImpression(sponsor.id, sponsorPosition);
+                items.push(
+                  <LaunchListItem
+                    key={`sponsored-${sponsorPosition}`}
+                    {...sponsor}
+                    sponsored
+                    sponsoredPosition={sponsorPosition}
+                    onVote={handleVote}
+                  />
+                );
+              }
             }
           }
         }
