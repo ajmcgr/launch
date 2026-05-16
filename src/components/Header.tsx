@@ -31,30 +31,10 @@ export const Header = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const { formattedMemberCount } = useMemberCount();
-  
+
   // Check if we should show the Launch Pass promo (after Jan 26, 2026)
   const showLaunchPassPromo = new Date() >= new Date('2026-01-26T00:00:00');
-
-  // Use ref to track scroll state without causing re-renders during scroll
-  const scrolledRef = useRef(false);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const shouldBeScrolled = scrollY > 50;
-      
-      // Only update state if value actually changed
-      if (shouldBeScrolled !== scrolledRef.current) {
-        scrolledRef.current = shouldBeScrolled;
-        setIsScrolled(shouldBeScrolled);
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     // Get initial session
