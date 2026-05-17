@@ -162,7 +162,8 @@ const Home = () => {
   const fetchSponsoredProducts = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      
+      const nowIso = new Date().toISOString();
+
       // Fetch active sponsored products from the sponsored_products table
       const { data: sponsoredData } = await supabase
         .from('sponsored_products')
@@ -176,6 +177,7 @@ const Home = () => {
           custom_title,
           custom_description,
           custom_target_url,
+          boost_ends_at,
           products(
             id,
             slug,
@@ -196,7 +198,12 @@ const Home = () => {
         .in('sponsorship_type', ['website', 'combined', 'boost'])
         .order('position', { ascending: true });
 
-      const sponsoredRows: any[] = (sponsoredData as any[]) || [];
+      // Boost rows have a precise 24h expiry — enforce it client-side so
+      // boosts never overrun their window even if end_date covers the day.
+      const sponsoredRows: any[] = ((sponsoredData as any[]) || []).filter((s) => {
+        if (s.sponsorship_type !== 'boost') return true;
+        return s.boost_ends_at && new Date(s.boost_ends_at).toISOString() > nowIso;
+      });
 
       if (sponsoredRows.length > 0) {
         const { data: categories } = await supabase
