@@ -136,15 +136,14 @@ const Index = () => {
 
       if (error) throw error;
 
-      const today = new Date().toISOString().split('T')[0];
+      const nowIso = new Date().toISOString();
 
-      // Fetch any currently active boosted product IDs
+      // Fetch any currently active boosted product IDs (precise 24h window)
       const { data: boostedRows } = await supabase
         .from('sponsored_products')
         .select('product_id')
         .eq('sponsorship_type', 'boost')
-        .lte('start_date', today)
-        .gte('end_date', today);
+        .gt('boost_ends_at', nowIso);
 
       const boostedIds = new Set((boostedRows || []).map((b: any) => b.product_id));
 
