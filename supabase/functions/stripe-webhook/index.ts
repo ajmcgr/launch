@@ -670,19 +670,21 @@ Deno.serve(async (req) => {
       // Handle boost plan - creates a 24h sponsored placement
       if (plan === 'boost') {
         console.log('Processing boost purchase for product:', metadata.product_id);
-        
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        
+
+        const now = new Date();
+        const endsAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
         const { error: boostError } = await supabaseClient
           .from('sponsored_products')
           .insert({
             product_id: metadata.product_id,
             position: 0,
             sponsorship_type: 'boost',
-            start_date: today.toISOString().split('T')[0],
-            end_date: tomorrow.toISOString().split('T')[0],
+            // Date columns kept for compatibility with other filters;
+            // boost_ends_at is the authoritative 24h expiry.
+            start_date: now.toISOString().split('T')[0],
+            end_date: endsAt.toISOString().split('T')[0],
+            boost_ends_at: endsAt.toISOString(),
           });
         
         if (boostError) {
