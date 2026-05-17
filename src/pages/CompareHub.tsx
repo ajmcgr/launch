@@ -41,6 +41,24 @@ const CompareHub = () => {
         </header>
 
         <ul className="space-y-3">
+          <li>
+            <Link
+              to="/best/launch-platforms"
+              className="block rounded-xl bg-muted/30 p-5 hover:bg-muted/50 transition-colors group"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-semibold mb-1">
+                    Best product launch platforms (2026)
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Ranked list of every major launch platform — pricing, audience, SEO value.
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0" />
+              </div>
+            </Link>
+          </li>
           {comparisons.map((c) => (
             <li key={c.slug}>
               <Link
