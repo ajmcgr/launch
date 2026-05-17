@@ -108,8 +108,8 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/best/launch-platforms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Launch platforms
+                <Link to="/compare" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Compare
                 </Link>
               </li>
               <li>
