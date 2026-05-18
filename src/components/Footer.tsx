@@ -152,22 +152,6 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4 text-foreground">Vibe Coding</h3>
-            <ul className="space-y-1">
-              {vibeCodingPlatforms.map((p) => (
-                <li key={p.slug}>
-                  <Link
-                    to={`/vibe-coding/${p.slug}`}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {p.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
             <h3 className="font-semibold mb-4 text-foreground">Compare</h3>
             <ul className="space-y-1">
               {comparisons.map((c) => (
@@ -182,6 +166,22 @@ export const Footer = () => {
                   All platforms →
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-4 text-foreground">Vibe Coding</h3>
+            <ul className="space-y-1">
+              {vibeCodingPlatforms.map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    to={`/vibe-coding/${p.slug}`}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {p.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
