@@ -108,11 +108,6 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/compare" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Compare
-                </Link>
-              </li>
-              <li>
                 <a 
                   href="http://launchisland.org/"
                   target="_blank"
@@ -169,6 +164,11 @@ export const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link to="/compare" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  All platforms →
+                </Link>
+              </li>
             </ul>
           </div>
 
