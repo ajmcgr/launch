@@ -285,6 +285,171 @@ export const comparisons: Comparison[] = [
       },
     ],
   },
+  {
+    slug: 'launch-vs-alternative-me',
+    competitor: 'Alternative.me',
+    competitorUrl: 'https://alternative.me/',
+    oneLiner: 'A maker-first launchpad with daily upvotes vs. a crowdsourced software-alternatives directory.',
+    metaDescription:
+      'Launch vs Alternative.me in 2026: compare audience, dofollow backlinks, pricing and visibility for indie SaaS and AI tools.',
+    summary:
+      'Alternative.me is a long-tail SEO directory of "alternatives to X" lists, populated mostly by community suggestions. Listings are slow to surface and rarely drive an actual launch moment. Launch is a daily launch board with leaderboards, real maker upvotes, dofollow backlinks and a permanent product page that compounds in search.',
+    whoIsItFor: {
+      launch: 'Indie makers and AI founders who want a real launch event plus ongoing SEO.',
+      competitor: 'Makers who want to appear on long-tail "alternative to..." lists.',
+    },
+    rows: [
+      { feature: 'Format', launch: 'Daily launch board with leaderboard', competitor: 'Crowdsourced alternatives directory' },
+      { feature: 'Dofollow backlink', launch: 'Yes, by default', competitor: 'Mostly nofollow', winner: 'launch' },
+      { feature: 'Time to visibility', launch: 'Same day for Pro', competitor: 'Weeks to months of voting' },
+      { feature: 'Community', launch: 'Active forum + comments', competitor: 'Sparse comments', winner: 'launch' },
+      { feature: 'Verified MRR badge', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Long-tail SEO', launch: 'Tags, tech, archives', competitor: 'Alternative-to lists', winner: 'competitor' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free listing; paid promo slots' },
+    verdict:
+      'List on Alternative.me for passive long-tail traffic. Launch on Launch when you want an actual launch event with backlinks and a community.',
+    faqs: [
+      {
+        question: 'Is Launch an Alternative.me competitor?',
+        answer:
+          'They serve different jobs. Alternative.me is a long-tail alternatives directory; Launch is a launch board. Most makers use both.',
+      },
+    ],
+  },
+  {
+    slug: 'launch-vs-indiehackers',
+    competitor: 'Indie Hackers',
+    competitorUrl: 'https://www.indiehackers.com',
+    oneLiner: 'A dedicated product launchpad with dofollow SEO vs. a community for indie founders.',
+    metaDescription:
+      'Launch vs Indie Hackers in 2026: compare launch visibility, backlinks, audience and pricing for indie SaaS founders.',
+    summary:
+      'Indie Hackers is the canonical community for bootstrapped founders — great for stories, revenue transparency and conversation, but its product directory is secondary and posts fade fast. Launch is a dedicated launch board with daily leaderboards, dofollow backlinks, verified MRR, and permanent product pages.',
+    whoIsItFor: {
+      launch: 'Indie makers who want a focused launch event and lasting SEO value.',
+      competitor: 'Founders looking for community, revenue stories and peer discussion.',
+    },
+    rows: [
+      { feature: 'Primary purpose', launch: 'Launch board', competitor: 'Founder community + forum' },
+      { feature: 'Dofollow backlink', launch: 'Yes, by default', competitor: 'Nofollow on product links', winner: 'launch' },
+      { feature: 'Daily leaderboard', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Verified revenue', launch: 'Stripe-verified MRR badge', competitor: 'Self-reported only', winner: 'launch' },
+      { feature: 'Community discussions', launch: 'Discourse forum', competitor: 'Strong forum + groups', winner: 'competitor' },
+      { feature: 'Permanent product page', launch: 'Yes', competitor: 'Yes but low-traffic' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free' },
+    verdict:
+      'Use Indie Hackers for community and storytelling. Use Launch when you want a launch event with upvotes, backlinks and verified revenue.',
+    faqs: [
+      {
+        question: 'Should I post on Indie Hackers or Launch?',
+        answer:
+          'Both, and on the same day. Launch gives you the upvote event and backlink; an IH milestone post drives the story and discussion.',
+      },
+    ],
+  },
+  {
+    slug: 'launch-vs-betalist-waitlist',
+    competitor: 'BetaList (waitlist)',
+    competitorUrl: 'https://betalist.com/',
+    oneLiner: 'A live-launch board with daily leaderboards vs. a pre-launch waitlist directory.',
+    metaDescription:
+      'Launch vs BetaList: compare pre-launch waitlists with live launch events for indie founders in 2026.',
+    summary:
+      'BetaList is the classic pre-launch waitlist board — submit before you ship and collect early signups. Launch is for the launch event itself and the long tail afterwards, with dofollow backlinks, permanent SEO pages and an active forum. The two are complementary.',
+    whoIsItFor: {
+      launch: 'Makers ready to launch publicly and capture ongoing visibility.',
+      competitor: 'Pre-launch founders building a beta waitlist.',
+    },
+    rows: [
+      { feature: 'Stage', launch: 'Live launches', competitor: 'Pre-launch waitlists' },
+      { feature: 'Dofollow backlink', launch: 'Yes', competitor: 'Yes', winner: 'tie' },
+      { feature: 'Time to publish', launch: 'Same-day for Pro', competitor: '4–6 weeks free / 24h paid' },
+      { feature: 'Skip-the-queue price', launch: '$39 Pro / $99 Pass', competitor: '$129+', winner: 'launch' },
+      { feature: 'Daily leaderboard', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Verified MRR', launch: 'Yes', competitor: 'No', winner: 'launch' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free (slow queue) or $129+ priority' },
+    verdict:
+      'Run BetaList in the weeks before launch to build a waitlist, then run Launch on launch day and beyond.',
+    faqs: [
+      {
+        question: 'Is Launch a BetaList alternative?',
+        answer:
+          'For the live-launch job, yes. For pre-launch waitlists, BetaList is still the canonical option. Most makers use both 2–4 weeks apart.',
+      },
+    ],
+  },
+  {
+    slug: 'launch-vs-toolfolio',
+    competitor: 'Toolfolio',
+    competitorUrl: 'https://toolfio.com/',
+    oneLiner: 'A community launch board vs. a curated tools directory.',
+    metaDescription:
+      'Launch vs Toolfolio in 2026: compare audience, dofollow backlinks, pricing and discovery for indie tools and AI products.',
+    summary:
+      'Toolfolio is a curated tools directory — clean design, editorial selection, but limited daily volume and no real launch event. Launch is open-submission with a daily leaderboard, dofollow backlinks, verified MRR, and a programmatic SEO surface across tags and tech pages.',
+    whoIsItFor: {
+      launch: 'Any indie maker who wants instant or queued launching with no curation lottery.',
+      competitor: 'Makers happy to wait for editorial inclusion in a curated list.',
+    },
+    rows: [
+      { feature: 'Submission model', launch: 'Open submission', competitor: 'Curated, limited slots' },
+      { feature: 'Dofollow backlink', launch: 'Yes, by default', competitor: 'Varies' },
+      { feature: 'Daily leaderboard', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Community engagement', launch: 'Upvotes, comments, forum', competitor: 'Limited', winner: 'launch' },
+      { feature: 'Verified MRR', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Editorial curation', launch: 'No', competitor: 'Yes', winner: 'competitor' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free (curated) or paid skip-the-queue' },
+    verdict:
+      'Pick Toolfolio for editorial credibility on a curated list. Pick Launch for open submission, faster publish, and an active community of makers.',
+    faqs: [
+      {
+        question: 'Is Launch easier to get on than Toolfolio?',
+        answer:
+          'Yes — Launch is open submission. Toolfolio is curated, so inclusion is not guaranteed.',
+      },
+    ],
+  },
+  {
+    slug: 'launch-vs-fazier',
+    competitor: 'Fazier',
+    competitorUrl: 'https://fazier.com/',
+    oneLiner: 'A maker-first launch board with verified revenue vs. another indie launch directory.',
+    metaDescription:
+      'Launch vs Fazier in 2026: compare pricing, ranking, dofollow backlinks and audience for indie product launches.',
+    summary:
+      'Fazier is an indie launch board similar in spirit to Launch — submit, get upvotes, get a backlink. Launch goes further with verified Stripe MRR badges, a Maker Score that compounds across launches, an active Discourse forum, 20+ free founder tools and programmatic SEO around tags and tech pages.',
+    whoIsItFor: {
+      launch: 'Indie makers who want a launch event plus a long-tail SEO surface and active community.',
+      competitor: 'Makers who want a simple secondary listing alongside other launch boards.',
+    },
+    rows: [
+      { feature: 'Daily leaderboard', launch: 'Yes', competitor: 'Yes', winner: 'tie' },
+      { feature: 'Dofollow backlink', launch: 'Yes, by default', competitor: 'Yes', winner: 'tie' },
+      { feature: 'Verified MRR badge', launch: 'Yes (Stripe Connect)', competitor: 'No', winner: 'launch' },
+      { feature: 'Maker Score / karma', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Community forum', launch: 'Active Discourse', competitor: 'No', winner: 'launch' },
+      { feature: 'Free founder tools', launch: '20+ tools', competitor: 'No', winner: 'launch' },
+      { feature: 'Tech stack pages', launch: 'Yes', competitor: 'No', winner: 'launch' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free with paid upgrades' },
+    verdict:
+      'Both work as launch boards. Choose Launch if you want verified revenue, Maker Score, a forum, free tools and a wider SEO surface. Listings are not exclusive — submit to both.',
+    faqs: [
+      {
+        question: 'Is Launch the same as Fazier?',
+        answer:
+          'They overlap as indie launch boards, but Launch adds verified MRR, a Maker Score, a Discourse forum, free founder tools and programmatic SEO pages.',
+      },
+      {
+        question: 'Can I list on both?',
+        answer: 'Yes, listings are not exclusive.',
+      },
+    ],
+  },
 ];
 
 export function findComparison(slug: string): Comparison | undefined {
