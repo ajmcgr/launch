@@ -14,7 +14,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { User, Settings, Package, LogOut, Menu } from 'lucide-react';
+import { User, Settings, Package, LogOut, Menu, Bookmark } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
@@ -159,6 +159,12 @@ export const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link to="/my-collections" className="flex items-center gap-2">
+                        <Bookmark className="h-4 w-4" />
+                        Collections
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to="/my-products" className="flex items-center gap-2">
                         <Package className="h-4 w-4" />
                         My Products
@@ -273,6 +279,14 @@ export const Header = () => {
                         >
                           <User className="h-5 w-5" />
                           Profile
+                        </Link>
+                        <Link 
+                          to="/my-collections"
+                          className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors mb-4"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Bookmark className="h-5 w-5" />
+                          Collections
                         </Link>
                         <Link 
                           to="/my-products"
