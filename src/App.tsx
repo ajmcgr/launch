@@ -70,6 +70,9 @@ const SeoCollection = lazy(() => import("./pages/SeoCollection"));
 const BestPage = lazy(() => import("./pages/seo/BestPage"));
 const VsPage = lazy(() => import("./pages/seo/VsPage"));
 const AlternativesPage = lazy(() => import("./pages/seo/AlternativesPage"));
+const Collections = lazy(() => import("./pages/Collections"));
+const CollectionDetailPage = lazy(() => import("./pages/CollectionDetail"));
+const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
@@ -177,6 +180,9 @@ const AppContent = () => {
             <Route path="/best/:slug" element={<BestPage />} />
             <Route path="/vs/:slug" element={<VsPage />} />
             <Route path="/alternatives/:slug" element={<AlternativesPage />} />
+            <Route path="/my-collections" element={<Collections />} />
+            <Route path="/my-collections/:id" element={<CollectionDetailPage />} />
+            <Route path="/c/:slug" element={<PublicCollection />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
