@@ -90,7 +90,7 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     const { data: cats } = await sb.from('product_categories').select('id, name');
     const catMap = new Map((cats ?? []).map((c: any) => [c.id, c.name]));
 
-    const productMap = new Map((products ?? []).map((p: any) => [p.id, p]));
+    const productMap = new Map<string, any>((products ?? []).map((p: any) => [p.id, p]));
     const enriched = (rows ?? []).map((r: any) => {
       const p = productMap.get(r.product_id);
       if (!p) return null;
@@ -214,7 +214,7 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     return (
       <div className="container mx-auto px-4 max-w-7xl py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => <ProductSkeleton key={i} />)}
+          {Array.from({ length: 6 }).map((_, i) => <ProductSkeleton key={i} view="grid" />)}
         </div>
       </div>
     );
