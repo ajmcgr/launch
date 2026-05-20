@@ -8,6 +8,7 @@ import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 interface LaunchCardProps {
   id: string;
@@ -223,6 +224,7 @@ export const LaunchCard = ({
             
             <VerifiedRevenueBadge verifiedMrr={verifiedMrr} mrrVerifiedAt={mrrVerifiedAt} />
           </div>
+          <SaveToCollectionButton productId={id} productName={name} />
         </div>
       </div>
     </Card>
