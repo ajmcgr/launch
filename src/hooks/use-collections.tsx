@@ -23,7 +23,7 @@ export function useCollections() {
   const fetchAll = useCallback(async (uid: string) => {
     setLoading(true);
     const { data: cols, error } = await sb
-      .from('collections')
+      .from('user_collections')
       .select('*')
       .eq('user_id', uid)
       .order('updated_at', { ascending: false });
@@ -37,7 +37,7 @@ export function useCollections() {
     let counts: Record<string, number> = {};
     if (ids.length) {
       const { data: items } = await sb
-        .from('collection_items')
+        .from('user_collection_items')
         .select('collection_id')
         .in('collection_id', ids);
       (items ?? []).forEach((i: any) => {
@@ -70,7 +70,7 @@ export function useCollections() {
   ): Promise<Collection | null> => {
     if (!userId) return null;
     const { data, error } = await sb
-      .from('collections')
+      .from('user_collections')
       .insert({
         user_id: userId,
         name: name.trim(),
@@ -86,13 +86,13 @@ export function useCollections() {
 
   const updateCollection = useCallback(async (id: string, patch: Partial<Collection>) => {
     setCollections((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)));
-    const { error } = await sb.from('collections').update(patch).eq('id', id);
+    const { error } = await sb.from('user_collections').update(patch).eq('id', id);
     if (error && userId) fetchAll(userId);
   }, [userId, fetchAll]);
 
   const deleteCollection = useCallback(async (id: string) => {
     setCollections((prev) => prev.filter((c) => c.id !== id));
-    const { error } = await sb.from('collections').delete().eq('id', id);
+    const { error } = await sb.from('user_collections').delete().eq('id', id);
     if (error && userId) fetchAll(userId);
   }, [userId, fetchAll]);
 
@@ -105,11 +105,11 @@ export function useCollections() {
     });
     if (!newCol) return null;
     const { data: items } = await sb
-      .from('collection_items')
+      .from('user_collection_items')
       .select('product_id, note')
       .eq('collection_id', id);
     if (items?.length) {
-      await sb.from('collection_items').insert(
+      await sb.from('user_collection_items').insert(
         items.map((i: any) => ({ collection_id: newCol.id, product_id: i.product_id, note: i.note }))
       );
     }
@@ -129,13 +129,13 @@ export async function saveLaunchToCollections(
 ) {
   if (!collectionIds.length) return;
   const rows = collectionIds.map((cid) => ({ collection_id: cid, product_id: productId, note: note || null }));
-  const { error } = await sb.from('collection_items').upsert(rows, { onConflict: 'collection_id,product_id' });
+  const { error } = await sb.from('user_collection_items').upsert(rows, { onConflict: 'collection_id,product_id' });
   if (error) throw error;
 }
 
 export async function removeLaunchFromCollection(collectionId: string, productId: string) {
   const { error } = await sb
-    .from('collection_items')
+    .from('user_collection_items')
     .delete()
     .eq('collection_id', collectionId)
     .eq('product_id', productId);
@@ -144,8 +144,8 @@ export async function removeLaunchFromCollection(collectionId: string, productId
 
 export async function getSavedCollectionIds(productId: string, userId: string): Promise<string[]> {
   const { data } = await sb
-    .from('collection_items')
-    .select('collection_id, collections!inner(user_id)')
+    .from('user_collection_items')
+    .select('collection_id, user_collections!inner(user_id)')
     .eq('product_id', productId)
     .eq('collections.user_id', userId);
   return (data ?? []).map((r: any) => r.collection_id);
