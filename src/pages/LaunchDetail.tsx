@@ -837,6 +837,11 @@ const LaunchDetail = () => {
                 </Button>
               </div>
 
+              {/* Save to Collection */}
+              <SaveToCollectionButton productId={product.id} productName={product.name} variant="full" className="w-full" />
+
+
+
               {/* Follow Product */}
               <div>
                 <Button
