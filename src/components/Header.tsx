@@ -281,14 +281,6 @@ export const Header = () => {
                           Profile
                         </Link>
                         <Link 
-                          to={`/@${profile?.username}`}
-                          className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors mb-4"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <User className="h-5 w-5" />
-                          Profile
-                        </Link>
-                        <Link 
                           to="/my-collections"
                           className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors mb-4"
                           onClick={() => setMobileMenuOpen(false)}
