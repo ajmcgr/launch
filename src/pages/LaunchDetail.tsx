@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { ArrowUp, ExternalLink, Calendar, Star, MessageSquare, BarChart3, DollarSign, Link2, Copy, Check, Trophy, Medal, Award } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { CommentForm } from '@/components/CommentForm';
 import { CommentList } from '@/components/CommentList';
