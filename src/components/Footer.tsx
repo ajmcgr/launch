@@ -182,6 +182,11 @@ export const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link to="/vibe-coding" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  All apps →
+                </Link>
+              </li>
             </ul>
           </div>
 
