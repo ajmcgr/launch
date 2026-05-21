@@ -183,6 +183,25 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
       'Designed and shipped a product with v0? Launch helps you put it in front of an audience that genuinely cares about good UI.',
   },
   {
+    slug: 'rork',
+    name: 'Rork',
+    tagline: 'AI-native mobile app builder — prompt to native iOS and Android.',
+    description:
+      'Rork is an AI app builder focused on native mobile. Describe your idea and Rork generates a working React Native app you can preview on your phone and ship to the App Store and Google Play.',
+    website: 'https://rork.com/',
+    bestFor: 'Founders and makers who want to ship a real native mobile app from a prompt.',
+    strengths: [
+      'AI-generated React Native apps',
+      'Live preview on a real device',
+      'Built for App Store and Google Play deployment',
+      'Fast iteration via chat',
+    ],
+    workflow:
+      'Describe your mobile app, preview it instantly on your device, iterate via chat, and publish to the app stores.',
+    launchPitch:
+      'Shipped a mobile app with Rork? Launch helps you reach 50,000+ founders and indie makers hunting for the next great app.',
+  },
+  {
     slug: 'shipper',
     name: 'Shipper',
     tagline: 'AI-native platform for shipping apps fast.',
