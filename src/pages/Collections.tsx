@@ -65,7 +65,12 @@ export default function Collections() {
   };
 
   if (!authChecked || (userId && loading)) {
-    return <div className="container mx-auto px-4 max-w-7xl py-12">Loading…</div>;
+    return (
+      <div className="container mx-auto px-4 max-w-7xl py-20 flex flex-col items-center justify-center text-muted-foreground">
+        <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-foreground animate-spin" />
+        <p className="text-sm mt-3">Loading collections…</p>
+      </div>
+    );
   }
 
   return (
@@ -123,7 +128,7 @@ export default function Collections() {
           {collections.map((c) => (
             <div key={c.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow group">
               <div className="flex items-start justify-between gap-2 mb-2">
-                <Link to={`/my-collections/${c.id}`} className="flex-1 min-w-0">
+                <Link to={`/my-collections/${c.slug}`} className="flex-1 min-w-0">
                   <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{c.name}</h3>
                   {c.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{c.description}</p>}
                 </Link>

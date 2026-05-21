@@ -54,7 +54,11 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const filter = publicMode ? { slug: params.slug! } : { id: params.id! };
+    // Owner view uses pretty slug in :slug param; public view also uses :slug.
+    // Fall back to :id if a legacy UUID is passed.
+    const key = params.slug || params.id || '';
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key);
+    const filter = isUuid ? { id: key } : { slug: key };
     const { data: col } = await sb
       .from('user_collections')
       .select('*')
@@ -212,10 +216,9 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 max-w-7xl py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => <ProductSkeleton key={i} view="grid" />)}
-        </div>
+      <div className="container mx-auto px-4 max-w-7xl py-20 flex flex-col items-center justify-center text-muted-foreground">
+        <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-foreground animate-spin" />
+        <p className="text-sm mt-3">Loading collection…</p>
       </div>
     );
   }

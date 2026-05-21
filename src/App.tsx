@@ -181,7 +181,7 @@ const AppContent = () => {
             <Route path="/vs/:slug" element={<VsPage />} />
             <Route path="/alternatives/:slug" element={<AlternativesPage />} />
             <Route path="/my-collections" element={<Collections />} />
-            <Route path="/my-collections/:id" element={<CollectionDetailPage />} />
+            <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/c/:slug" element={<PublicCollection />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
