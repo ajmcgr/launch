@@ -199,17 +199,7 @@ export const Footer = () => {
                   X
                 </a>
               </li>
-              <li>
-                <a 
-                  href="https://www.reddit.com/r/TryLaunch/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                >
-                  <RedditIcon className="h-4 w-4" />
-                  Reddit
-                </a>
-              </li>
+
               <li>
                 <a 
                   href="https://instagram.com/trylaunch" 

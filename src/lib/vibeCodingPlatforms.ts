@@ -50,6 +50,25 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
       'Shipped a product with Claude Code? Launch helps you get discovered by an audience that actively hunts for new AI-built tools.',
   },
   {
+    slug: 'google-ai-studio',
+    name: 'Google AI Studio',
+    tagline: 'Google\'s playground for building with Gemini models.',
+    description:
+      'Google AI Studio is the fastest way to start building with Gemini. Prototype prompts, tune models, generate code, and ship apps powered by Google\'s frontier multimodal models — all from the browser.',
+    website: 'https://aistudio.google.com/',
+    bestFor: 'Builders and developers prototyping apps powered by Gemini.',
+    strengths: [
+      'Direct access to the latest Gemini models',
+      'Multimodal prompting (text, image, audio, video)',
+      'Instant code export for API integration',
+      'Free tier for experimentation',
+    ],
+    workflow:
+      'Open AI Studio, prototype your prompt or app, then export code to ship a Gemini-powered product.',
+    launchPitch:
+      'Built something with Google AI Studio? Launch puts your Gemini-powered app in front of 50,000+ founders and AI builders.',
+  },
+  {
     slug: 'lovable',
     name: 'Lovable',
     tagline: 'The AI app builder for full-stack web apps — prompt to production.',
@@ -162,6 +181,25 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
       'Prompt or upload a screenshot, iterate on the generated component, then copy the code into your Next.js project.',
     launchPitch:
       'Designed and shipped a product with v0? Launch helps you put it in front of an audience that genuinely cares about good UI.',
+  },
+  {
+    slug: 'rork',
+    name: 'Rork',
+    tagline: 'AI-native mobile app builder — prompt to native iOS and Android.',
+    description:
+      'Rork is an AI app builder focused on native mobile. Describe your idea and Rork generates a working React Native app you can preview on your phone and ship to the App Store and Google Play.',
+    website: 'https://rork.com/',
+    bestFor: 'Founders and makers who want to ship a real native mobile app from a prompt.',
+    strengths: [
+      'AI-generated React Native apps',
+      'Live preview on a real device',
+      'Built for App Store and Google Play deployment',
+      'Fast iteration via chat',
+    ],
+    workflow:
+      'Describe your mobile app, preview it instantly on your device, iterate via chat, and publish to the app stores.',
+    launchPitch:
+      'Shipped a mobile app with Rork? Launch helps you reach 50,000+ founders and indie makers hunting for the next great app.',
   },
   {
     slug: 'shipper',
