@@ -64,6 +64,7 @@ const MediaKit = lazy(() => import("./pages/MediaKit"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Start = lazy(() => import("./pages/Start"));
 const VibeCodingPlatform = lazy(() => import("./pages/VibeCodingPlatform"));
+const VibeCodingHub = lazy(() => import("./pages/VibeCodingHub"));
 const Tools = lazy(() => import("./pages/Tools"));
 const ToolDetail = lazy(() => import("./pages/ToolDetail"));
 const SeoCollection = lazy(() => import("./pages/SeoCollection"));
@@ -163,6 +164,7 @@ const AppContent = () => {
             <Route path="/awards" element={<Awards />} />
             <Route path="/compare" element={<CompareHub />} />
             <Route path="/compare/:slug" element={<ComparePage />} />
+            <Route path="/vibe-coding" element={<VibeCodingHub />} />
             <Route path="/vibe-coding/:slug" element={<VibeCodingPlatform />} />
             <Route path="/tools" element={<Tools />} />
             <Route path="/tools/:slug" element={<ToolDetail />} />
