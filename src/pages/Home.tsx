@@ -806,6 +806,7 @@ const Home = () => {
           items.push(
             <CompactLaunchListItem
               key={`featured-boost-${featuredBoost.id}`}
+              productId={featuredBoost.id}
               rank={1}
               name={featuredBoost.name}
               votes={featuredBoost.netVotes}
@@ -876,6 +877,7 @@ const Home = () => {
           items.push(
             <CompactLaunchListItem
               key={product.id}
+              productId={product.id}
               rank={displayRank}
               name={product.name}
               votes={product.netVotes}

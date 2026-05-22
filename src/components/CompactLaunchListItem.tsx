@@ -5,7 +5,9 @@ import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { isActiveLaunch } from '@/lib/launchWindow';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 interface CompactLaunchListItemProps {
+  productId?: string;
   rank: number;
   name: string;
   votes: number;
@@ -24,6 +26,7 @@ interface CompactLaunchListItemProps {
 }
 
 export const CompactLaunchListItem = ({
+  productId,
   rank,
   name,
   votes,
@@ -92,6 +95,11 @@ export const CompactLaunchListItem = ({
             >
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
+          )}
+          {productId && (
+            <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+              <SaveToCollectionButton productId={productId} productName={name} className="h-5 w-5" />
+            </span>
           )}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
