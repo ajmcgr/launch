@@ -172,7 +172,7 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Vibe Coding</h3>
             <ul className="space-y-1">
-              {vibeCodingPlatforms.map((p) => (
+              {vibeCodingPlatforms.slice(0, 9).map((p) => (
                 <li key={p.slug}>
                   <Link
                     to={`/vibe-coding/${p.slug}`}
