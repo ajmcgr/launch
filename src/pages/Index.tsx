@@ -378,6 +378,7 @@ const Index = () => {
               .slice(0, displayCount).map((launch) => (
               <CompactLaunchListItem
                 key={launch.id}
+                productId={launch.id}
                 rank={launch.rank}
                 name={launch.name}
                 votes={launch.votes}
@@ -398,6 +399,7 @@ const Index = () => {
               .slice(0, displayCount).map((launch) => (
               <HomeLaunchListItem
                 key={launch.id}
+                productId={launch.id}
                 rank={launch.rank}
                 name={launch.name}
                 tagline={launch.tagline}
@@ -421,6 +423,7 @@ const Index = () => {
                 .slice(0, displayCount).map((launch) => (
                 <HomeLaunchCard
                   key={launch.id}
+                  productId={launch.id}
                   rank={launch.rank}
                   name={launch.name}
                   tagline={launch.tagline}

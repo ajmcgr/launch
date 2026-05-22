@@ -640,6 +640,7 @@ const Products = () => {
           {products.slice(0, displayCount).map((product, index) => (
               <CompactLaunchListItem
                 key={product.id}
+                productId={product.id}
                 rank={index + 1}
                 name={product.name}
                 votes={product.netVotes}
