@@ -202,6 +202,25 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
       'Shipped a mobile app with Rork? Launch helps you reach 50,000+ founders and indie makers hunting for the next great app.',
   },
   {
+    slug: 'vibecode',
+    name: 'Vibecode',
+    tagline: 'AI website builder for iOS — prompt to published site.',
+    description:
+      'Vibecode is an AI-powered website builder for iOS. Describe what you want, and it generates a complete, publishable website you can edit and host — all from your phone.',
+    website: 'https://apps.apple.com/us/app/vibecode-website-builder/id6742912146',
+    bestFor: 'Creators and small businesses who want to build and publish websites directly from their iPhone.',
+    strengths: [
+      'Native iOS app for building on the go',
+      'AI-generated websites from simple prompts',
+      'Built-in editing and publishing',
+      'No desktop or coding required',
+    ],
+    workflow:
+      'Open Vibecode, describe your site, let AI generate it, refine the design, and publish.',
+    launchPitch:
+      'Built a site with Vibecode? Launch helps you get it in front of founders, makers, and indie hackers hunting for great new products.',
+  },
+  {
     slug: 'shipper',
     name: 'Shipper',
     tagline: 'AI-native platform for shipping apps fast.',
