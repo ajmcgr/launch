@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 
 interface HomeLaunchCardProps {
+  productId?: string;
   rank: number;
   name: string;
   tagline: string;
@@ -22,6 +24,7 @@ interface HomeLaunchCardProps {
 }
 
 export const HomeLaunchCard = ({
+  productId,
   rank,
   name,
   tagline,
@@ -96,6 +99,11 @@ export const HomeLaunchCard = ({
             >
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
+          )}
+          {productId && (
+            <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+              <SaveToCollectionButton productId={productId} productName={name} className="h-5 w-5" />
+            </span>
           )}
         </div>
         <p className="text-sm text-muted-foreground text-center line-clamp-2">

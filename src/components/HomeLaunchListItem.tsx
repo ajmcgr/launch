@@ -4,6 +4,7 @@ import { ExternalLink, MessageSquare } from 'lucide-react';
 
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 
 // Truncate text to one sentence
@@ -14,6 +15,7 @@ const truncateToOneSentence = (text: string): string => {
 };
 
 interface HomeLaunchListItemProps {
+  productId?: string;
   rank: number;
   name: string;
   tagline: string;
@@ -31,6 +33,7 @@ interface HomeLaunchListItemProps {
 }
 
 export const HomeLaunchListItem = ({
+  productId,
   rank,
   name,
   tagline,
@@ -84,6 +87,11 @@ export const HomeLaunchListItem = ({
               >
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
+            )}
+            {productId && (
+              <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+                <SaveToCollectionButton productId={productId} productName={name} className="h-5 w-5" />
+              </span>
             )}
             {platforms && platforms.length > 0 && (
               <>
