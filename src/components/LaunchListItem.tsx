@@ -9,6 +9,7 @@ import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
@@ -154,7 +155,11 @@ export const LaunchListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
+            <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+              <SaveToCollectionButton productId={id} productName={name} className="h-5 w-5" />
+            </span>
           </div>
+
           
           <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1">
             {truncateToOneSentence(tagline)}

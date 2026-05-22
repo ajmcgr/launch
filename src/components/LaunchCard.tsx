@@ -155,6 +155,9 @@ export const LaunchCard = ({
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           )}
+          <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+            <SaveToCollectionButton productId={id} productName={name} className="h-5 w-5" />
+          </span>
         </div>
         
         <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
