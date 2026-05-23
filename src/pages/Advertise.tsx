@@ -488,6 +488,12 @@ const Advertise = () => {
                       <span className="text-sm">Instant activation after checkout</span>
                     </li>
                   </ul>
+                  <div className="pt-2 pb-1 border-t border-border/50">
+                    <p className="text-xs text-muted-foreground">
+                      <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                      100,000+ potential monthly impressions
+                    </p>
+                  </div>
                   <Button 
                     className="w-full" 
                     size="lg"
@@ -543,6 +549,12 @@ const Advertise = () => {
                     <span className="text-sm">Clearly labelled. No impact on rankings.</span>
                   </li>
                 </ul>
+                <div className="pt-2 pb-1 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                    ~30,000–150,000 monthly impressions
+                  </p>
+                </div>
                 <Button 
                   className="w-full" 
                   size="lg" 
@@ -584,6 +596,12 @@ const Advertise = () => {
                     <span className="text-sm">25% email open rate</span>
                   </li>
                 </ul>
+                <div className="pt-2 pb-1 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                    Several thousand targeted readers
+                  </p>
+                </div>
                 <Button 
                   className="w-full" 
                   size="lg" 
@@ -639,19 +657,25 @@ const Advertise = () => {
                       <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-sm">Limited availability</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Save $49 vs. buying separately</span>
-                    </li>
-                  </ul>
-                  <Button 
-                    className="w-full" 
-                    size="lg"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleGetStarted('combined');
-                    }}
-                  >
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Save $49 vs. buying separately</span>
+                  </li>
+                </ul>
+                <div className="pt-2 pb-1 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                    ~30,000–150,000 impressions + newsletter readers
+                  </p>
+                </div>
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleGetStarted('combined');
+                  }}
+                >
                     Get Started
                   </Button>
                 </CardContent>
@@ -696,27 +720,9 @@ const Advertise = () => {
               </Card>
             </div>
 
-            {/* Estimated Reach & Impressions */}
-            <div className="max-w-2xl mx-auto mb-12 text-center">
-              <h3 className="text-xl font-semibold mb-6">Estimated Reach & Impressions</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-1">Homepage sponsor slot</p>
-                  <p className="text-sm text-muted-foreground">~30,000–150,000 monthly impressions</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-1">Trending/high visibility slot</p>
-                  <p className="text-sm text-muted-foreground">100,000+ potential monthly impressions</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-1">Newsletter sponsorship</p>
-                  <p className="text-sm text-muted-foreground">Several thousand targeted readers</p>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground mt-6">
-                Estimated impressions based on recent platform traffic and growth trends. Actual performance may vary.
-              </p>
-            </div>
+            <p className="text-xs text-muted-foreground text-center max-w-2xl mx-auto mb-12">
+              Estimated impressions based on recent platform traffic and growth trends. Actual performance may vary.
+            </p>
 
             {/* Testimonials */}
             <div className="max-w-3xl mx-auto mb-8">
