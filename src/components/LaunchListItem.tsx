@@ -156,7 +156,7 @@ export const LaunchListItem = ({
               </a>
             )}
             <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
-              <SaveToCollectionButton productId={id} productName={name} className="h-5 w-5" />
+              <SaveToCollectionButton variant="bare" productId={id} productName={name} />
             </span>
           </div>
 

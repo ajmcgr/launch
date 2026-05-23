@@ -102,7 +102,7 @@ export const HomeLaunchCard = ({
           )}
           {productId && (
             <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
-              <SaveToCollectionButton productId={productId} productName={name} className="h-5 w-5" />
+              <SaveToCollectionButton variant="bare" productId={productId} productName={name} />
             </span>
           )}
         </div>
