@@ -29,7 +29,7 @@ export const SaveToCollectionButton = ({ productId, productName, variant = 'icon
           aria-label="Save to collection"
           className={cn('inline-flex items-center text-muted-foreground hover:text-primary transition-colors', className)}
         >
-          <Bookmark className="h-3.5 w-3.5" />
+          <Bookmark className="h-3 w-3" strokeWidth={2} />
         </button>
       ) : variant === 'icon' ? (
         <Button
