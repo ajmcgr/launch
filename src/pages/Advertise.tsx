@@ -488,6 +488,12 @@ const Advertise = () => {
                       <span className="text-sm">Instant activation after checkout</span>
                     </li>
                   </ul>
+                  <div className="pt-2 pb-1 border-t border-border/50">
+                    <p className="text-xs text-muted-foreground">
+                      <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                      100,000+ potential monthly impressions
+                    </p>
+                  </div>
                   <Button 
                     className="w-full" 
                     size="lg"
