@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 interface Props {
   productId: string;
   productName?: string;
-  variant?: 'icon' | 'full';
+  variant?: 'icon' | 'full' | 'bare';
   className?: string;
 }
 
@@ -22,7 +22,16 @@ export const SaveToCollectionButton = ({ productId, productName, variant = 'icon
 
   return (
     <>
-      {variant === 'icon' ? (
+      {variant === 'bare' ? (
+        <button
+          type="button"
+          onClick={handleClick}
+          aria-label="Save to collection"
+          className={cn('inline-flex items-center text-muted-foreground hover:text-primary transition-colors', className)}
+        >
+          <Bookmark className="h-3.5 w-3.5" />
+        </button>
+      ) : variant === 'icon' ? (
         <Button
           size="icon"
           variant="ghost"
