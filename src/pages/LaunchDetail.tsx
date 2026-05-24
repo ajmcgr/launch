@@ -865,8 +865,18 @@ const LaunchDetail = () => {
                 </Button>
               </div>
 
-              {/* Save to Collection */}
-              <SaveToCollectionButton productId={product.id} productName={product.name} variant="full" className="w-full" />
+              {/* Save to Collection — secondary CTA, prominent under Visit Website / Upvote */}
+              <div>
+                <SaveToCollectionButton
+                  productId={product.id}
+                  productName={product.name}
+                  variant="full"
+                  className="w-full h-11 border-2 border-primary/30 text-primary [@media(hover:hover)]:hover:bg-primary/5 [@media(hover:hover)]:hover:border-primary/50 transition-all active:scale-[0.98]"
+                />
+                <p className="text-xs text-center text-muted-foreground mt-2">
+                  Save to revisit later
+                </p>
+              </div>
 
 
 
