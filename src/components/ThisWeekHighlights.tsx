@@ -86,6 +86,9 @@ const ProductListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
+            <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+              <SaveToCollectionButton variant="bare" productId={product.id} productName={product.name} />
+            </span>
           </div>
 
           <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1">{product.tagline}</p>
