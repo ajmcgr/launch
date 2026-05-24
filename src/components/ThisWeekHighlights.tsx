@@ -629,6 +629,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
                       return (
                         <CompactLaunchListItem
                           key={p.id}
+                          productId={p.id}
                           rank={index + 1}
                           name={p.name}
                           votes={p.net_votes || 0}
