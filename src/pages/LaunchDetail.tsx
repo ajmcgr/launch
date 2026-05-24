@@ -1038,6 +1038,41 @@ const LaunchDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile sticky bottom CTA bar */}
+      {product?.domain_url && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur-sm px-3 py-2.5 flex items-center gap-2 shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
+          <Button
+            asChild
+            className="flex-1 h-12 text-base font-semibold bg-primary text-primary-foreground active:scale-[0.98] transition-transform"
+          >
+            <a
+              href={product.domain_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                supabase.from('product_analytics').insert({
+                  product_id: product.id,
+                  event_type: 'website_click',
+                  visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+                  metadata: { source: 'mobile_sticky' },
+                }).then(({ error }) => {
+                  if (error) console.error('Failed to track click:', error);
+                });
+              }}
+            >
+              Visit Website
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+          <SaveToCollectionButton
+            productId={product.id}
+            productName={product.name}
+            variant="icon"
+            className="h-12 w-12 border-2 border-primary/30 text-primary"
+          />
+        </div>
+      )}
     </div>
   );
 };
