@@ -913,36 +913,11 @@ const LaunchDetail = () => {
                 </Button>
               </div>
 
-              {/* Visit Website & Share */}
-              <div className="flex gap-2">
-                {product.domain_url && (
-                  <Button 
-                    variant="outline"
-                    className="flex-1 border-2 border-muted-foreground/20" 
-                    asChild
-                  >
-                    <a 
-                      href={product.domain_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        // Track website click asynchronously (don't block navigation)
-                        supabase.from('product_analytics').insert({
-                          product_id: product.id,
-                          event_type: 'website_click',
-                          visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
-                        }).then(({ error }) => {
-                          if (error) console.error('Failed to track click:', error);
-                        });
-                      }}
-                    >
-                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-                )}
+              {/* Share */}
+              <div>
                 <Button
                   variant="outline"
-                  className={`border-2 border-muted-foreground/20 ${product.domain_url ? "w-20" : "w-full"}`}
+                  className="w-full border-2 border-muted-foreground/20"
                   onClick={() => {
                     const ogUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${product.slug}`;
                     navigator.clipboard.writeText(ogUrl);
@@ -952,6 +927,7 @@ const LaunchDetail = () => {
                   Share
                 </Button>
               </div>
+
 
 
               {/* Launch Date */}
