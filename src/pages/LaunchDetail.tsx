@@ -492,7 +492,7 @@ const LaunchDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background py-12">
+    <div className="min-h-screen bg-background py-12 pb-24 lg:pb-12">
       <Helmet>
         <title>{product.name} - Launch AI</title>
         <meta name="description" content={product.tagline || product.description?.substring(0, 160)} />
