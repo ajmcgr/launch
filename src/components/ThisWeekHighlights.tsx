@@ -14,6 +14,7 @@ import bioBanner from '@/assets/sponsors/bio-banner.png';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 interface SurfacedProduct {
   id: string;
