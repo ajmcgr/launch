@@ -492,7 +492,7 @@ const LaunchDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background py-12">
+    <div className="min-h-screen bg-background py-12 pb-24 lg:pb-12">
       <Helmet>
         <title>{product.name} - Launch AI</title>
         <meta name="description" content={product.tagline || product.description?.substring(0, 160)} />
@@ -697,6 +697,33 @@ const LaunchDetail = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
             <div className="p-5 bg-muted/30 rounded-xl space-y-5">
+              {/* Primary CTA — Visit Website */}
+              {product.domain_url && (
+                <Button
+                  asChild
+                  className="group w-full h-14 text-base font-semibold bg-primary text-primary-foreground transition-all [@media(hover:hover)]:hover:bg-primary/90 [@media(hover:hover)]:hover:shadow-md active:scale-[0.98]"
+                >
+                  <a
+                    href={product.domain_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      supabase.from('product_analytics').insert({
+                        product_id: product.id,
+                        event_type: 'website_click',
+                        visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+                        metadata: { source: 'sidebar_primary' },
+                      }).then(({ error }) => {
+                        if (error) console.error('Failed to track click:', error);
+                      });
+                    }}
+                  >
+                    Visit Website
+                    <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+                </Button>
+              )}
+
               {/* Launch Window Status */}
               {product.launch_date && product.status === 'launched' && (
                 <div>
@@ -838,8 +865,18 @@ const LaunchDetail = () => {
                 </Button>
               </div>
 
-              {/* Save to Collection */}
-              <SaveToCollectionButton productId={product.id} productName={product.name} variant="full" className="w-full" />
+              {/* Save to Collection — secondary CTA, prominent under Visit Website / Upvote */}
+              <div>
+                <SaveToCollectionButton
+                  productId={product.id}
+                  productName={product.name}
+                  variant="full"
+                  className="w-full h-11 border-2 border-primary/30 text-primary [@media(hover:hover)]:hover:bg-primary/5 [@media(hover:hover)]:hover:border-primary/50 transition-all active:scale-[0.98]"
+                />
+                <p className="text-xs text-center text-muted-foreground mt-2">
+                  Save to revisit later
+                </p>
+              </div>
 
 
 
@@ -876,36 +913,11 @@ const LaunchDetail = () => {
                 </Button>
               </div>
 
-              {/* Visit Website & Share */}
-              <div className="flex gap-2">
-                {product.domain_url && (
-                  <Button 
-                    variant="outline"
-                    className="flex-1 border-2 border-muted-foreground/20" 
-                    asChild
-                  >
-                    <a 
-                      href={product.domain_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        // Track website click asynchronously (don't block navigation)
-                        supabase.from('product_analytics').insert({
-                          product_id: product.id,
-                          event_type: 'website_click',
-                          visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
-                        }).then(({ error }) => {
-                          if (error) console.error('Failed to track click:', error);
-                        });
-                      }}
-                    >
-                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                    </a>
-                  </Button>
-                )}
+              {/* Share */}
+              <div>
                 <Button
                   variant="outline"
-                  className={`border-2 border-muted-foreground/20 ${product.domain_url ? "w-20" : "w-full"}`}
+                  className="w-full border-2 border-muted-foreground/20"
                   onClick={() => {
                     const ogUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${product.slug}`;
                     navigator.clipboard.writeText(ogUrl);
@@ -915,6 +927,7 @@ const LaunchDetail = () => {
                   Share
                 </Button>
               </div>
+
 
 
               {/* Launch Date */}
@@ -1025,6 +1038,41 @@ const LaunchDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile sticky bottom CTA bar */}
+      {product?.domain_url && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur-sm px-3 py-2.5 flex items-center gap-2 shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
+          <Button
+            asChild
+            className="flex-1 h-12 text-base font-semibold bg-primary text-primary-foreground active:scale-[0.98] transition-transform"
+          >
+            <a
+              href={product.domain_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                supabase.from('product_analytics').insert({
+                  product_id: product.id,
+                  event_type: 'website_click',
+                  visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+                  metadata: { source: 'mobile_sticky' },
+                }).then(({ error }) => {
+                  if (error) console.error('Failed to track click:', error);
+                });
+              }}
+            >
+              Visit Website
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+          <SaveToCollectionButton
+            productId={product.id}
+            productName={product.name}
+            variant="icon"
+            className="h-12 w-12 border-2 border-primary/30 text-primary"
+          />
+        </div>
+      )}
     </div>
   );
 };

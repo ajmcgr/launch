@@ -14,6 +14,7 @@ import bioBanner from '@/assets/sponsors/bio-banner.png';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 interface SurfacedProduct {
   id: string;
@@ -85,6 +86,9 @@ const ProductListItem = ({
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
+            <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+              <SaveToCollectionButton variant="bare" productId={product.id} productName={product.name} />
+            </span>
           </div>
 
           <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1">{product.tagline}</p>
@@ -625,6 +629,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
                       return (
                         <CompactLaunchListItem
                           key={p.id}
+                          productId={p.id}
                           rank={index + 1}
                           name={p.name}
                           votes={p.net_votes || 0}

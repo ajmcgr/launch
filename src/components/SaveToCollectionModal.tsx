@@ -69,6 +69,15 @@ export const SaveToCollectionModal = ({ open, onOpenChange, productId, productNa
     setSaving(true);
     try {
       await saveLaunchToCollections(productId, Array.from(selected), note);
+      // Track save event for founder/sponsor analytics
+      supabase.from('product_analytics').insert({
+        product_id: productId,
+        event_type: 'collection_save',
+        visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+        metadata: { collection_count: selected.size },
+      }).then(({ error }) => {
+        if (error) console.error('Failed to track save:', error);
+      });
       toast.success(`Saved ${productName ?? 'launch'} to ${selected.size} collection${selected.size === 1 ? '' : 's'}`);
       onSaved?.();
       onOpenChange(false);
