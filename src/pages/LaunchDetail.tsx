@@ -697,6 +697,33 @@ const LaunchDetail = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
             <div className="p-5 bg-muted/30 rounded-xl space-y-5">
+              {/* Primary CTA — Visit Website */}
+              {product.domain_url && (
+                <Button
+                  asChild
+                  className="group w-full h-14 text-base font-semibold bg-primary text-primary-foreground transition-all [@media(hover:hover)]:hover:bg-primary/90 [@media(hover:hover)]:hover:shadow-md active:scale-[0.98]"
+                >
+                  <a
+                    href={product.domain_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      supabase.from('product_analytics').insert({
+                        product_id: product.id,
+                        event_type: 'website_click',
+                        visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+                        metadata: { source: 'sidebar_primary' },
+                      }).then(({ error }) => {
+                        if (error) console.error('Failed to track click:', error);
+                      });
+                    }}
+                  >
+                    Visit Website
+                    <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+                </Button>
+              )}
+
               {/* Launch Window Status */}
               {product.launch_date && product.status === 'launched' && (
                 <div>
