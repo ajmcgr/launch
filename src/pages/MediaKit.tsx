@@ -83,21 +83,61 @@ const MediaKit = () => {
             {/* Left Column - Key Metrics */}
             <div className="space-y-4">
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">77K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.visitorsMTD ? formatStat(stats.visitorsMTD) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Visitors (30d)</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">70K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Impressions</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.pageviewsMTD ? formatStat(stats.pageviewsMTD) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Pageviews (30d)</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">2.5K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Newsletter Subs</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.sessionsMTD ? formatStat(stats.sessionsMTD) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Sessions (30d)</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">25%</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Email Open Rate</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.launched ? formatStat(stats.launched) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Products Launched (30d)</p>
               </div>
+              <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.makers ? formatStat(stats.makers) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">New Makers (30d)</p>
+              </div>
+              {stats?.clicksSent && stats.clicksSent > 0 ? (
+                <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+                  <p className="text-4xl font-bold text-primary">{formatStat(stats.clicksSent)}</p>
+                  <p className="text-sm text-muted-foreground font-medium mt-1">Clicks Sent to Makers (30d)</p>
+                </div>
+              ) : null}
               {/* Traffic Sources */}
               <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
                 <h3 className="text-xl font-bold mb-4 text-foreground">
