@@ -43,7 +43,9 @@ const MediaKit = () => {
     staleTime: 1000 * 60 * 5,
   });
 
+  return (
     <>
+
       <Helmet>
         <title>Media Kit - Launch</title>
         <meta name="robots" content="noindex, nofollow" />
