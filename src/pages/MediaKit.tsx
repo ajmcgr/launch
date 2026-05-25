@@ -33,8 +33,16 @@ function formatStat(n: number): string {
 }
 
 const MediaKit = () => {
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ['platform-stats-full'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('get-platform-stats');
+      if (error) throw error;
+      return data as PlatformStats;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
-  return (
     <>
       <Helmet>
         <title>Media Kit - Launch</title>
