@@ -697,7 +697,7 @@ const LaunchDetail = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
             <div className="p-5 bg-muted/30 rounded-xl space-y-5">
-              {/* Primary CTA — Visit Website */}
+              {/* 1) PRIMARY CTA — Visit Website */}
               {product.domain_url && (
                 <Button
                   asChild
@@ -724,14 +724,48 @@ const LaunchDetail = () => {
                 </Button>
               )}
 
-              {/* Launch Window Status */}
+              {/* 2) SECONDARY ACTIONS — Upvote, Save, Share */}
+              <div className="space-y-2">
+                <Button
+                  onClick={() => handleVote(1)}
+                  className="group w-full flex items-center justify-center gap-3 h-12 transition-colors bg-primary text-primary-foreground [@media(hover:hover)]:hover:bg-primary/90"
+                >
+                  <ArrowUp className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
+                  <span className="font-bold text-lg text-primary-foreground">
+                    {product.netVotes}
+                  </span>
+                  <span className="text-sm text-primary-foreground/80">
+                    {userVote === 1 ? 'Upvoted!' : 'Upvote'}
+                  </span>
+                </Button>
+
+                <SaveToCollectionButton
+                  productId={product.id}
+                  productName={product.name}
+                  variant="full"
+                  className="w-full h-11 border-2 border-primary/30 text-primary [@media(hover:hover)]:hover:bg-primary/5 [@media(hover:hover)]:hover:border-primary/50 transition-all active:scale-[0.98]"
+                />
+
+                <Button
+                  variant="outline"
+                  className="w-full h-11 border-2 border-muted-foreground/20"
+                  onClick={() => {
+                    const ogUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${product.slug}`;
+                    navigator.clipboard.writeText(ogUrl);
+                    toast.success('Link copied to clipboard!');
+                  }}
+                >
+                  Share
+                </Button>
+              </div>
+
+              {/* 3) SOCIAL PROOF / STATUS */}
               {product.launch_date && product.status === 'launched' && (
                 <div>
                   <LaunchWindowStatus
                     launchDate={product.launch_date}
                     rank={currentRank}
                   />
-                  {/* Inline upgrade nudge during active window for low-ranked free launches */}
                   {isActiveLaunch(product.launch_date) && currentRank && currentRank > 5 && user && product.owner_id === user.id && !product._hasPaidPlan && (
                     <ProUpgradeCard
                       productId={product.id}
@@ -744,34 +778,38 @@ const LaunchDetail = () => {
                 </div>
               )}
 
-              {/* Award Badge — only show after launch window closes */}
               {bestRanking && !isActiveLaunch(product?.launch_date) && (
-                <div>
-                  <h3 className="font-medium text-sm text-muted-foreground mb-2">Award</h3>
-                  <Link to="/awards" className="block">
-                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <img
-                        src={
-                          bestRanking.rank === 1
-                            ? '/assets/badge-golden.svg'
-                            : bestRanking.rank === 2
-                            ? '/assets/badge-silver.png'
-                            : '/assets/badge-bronze.png'
-                        }
-                        alt={bestRanking.period}
-                        className="h-14 w-auto"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm">{bestRanking.period}</p>
-                      </div>
+                <Link to="/awards" className="block">
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    <img
+                      src={
+                        bestRanking.rank === 1
+                          ? '/assets/badge-golden.svg'
+                          : bestRanking.rank === 2
+                          ? '/assets/badge-silver.png'
+                          : '/assets/badge-bronze.png'
+                      }
+                      alt={bestRanking.period}
+                      className="h-14 w-auto"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm">{bestRanking.period}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(bestRanking.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </p>
                     </div>
-                  </Link>
-                </div>
+                  </div>
+                </Link>
               )}
 
-              {/* Makers */}
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-2">Rate this product</h3>
+                <StarRating productId={product.id} size="md" />
+              </div>
+
+              {/* 4) MAKER INFO */}
               {product.makers && product.makers.length > 0 && (
-                <div>
+                <div className="pt-1">
                   <h3 className="font-medium text-sm text-muted-foreground mb-2">Makers</h3>
                   <div className="space-y-2">
                     {product.makers.map((maker: any) => (
@@ -795,16 +833,26 @@ const LaunchDetail = () => {
                       </Link>
                     ))}
                   </div>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-3 border-2 border-muted-foreground/20"
+                    onClick={handleFollow}
+                  >
+                    {isFollowing ? 'Following' : 'Follow Product'}
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground mt-2">
+                    {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
+                  </p>
                 </div>
               )}
 
-              {/* Categories */}
-              <div>
+              {/* 5) CATEGORIES, TAGS, LANGUAGES */}
+              <div className="pt-1">
                 <h3 className="font-medium text-sm text-muted-foreground mb-2">Categories</h3>
                 <div className="flex flex-wrap gap-1.5">
                   {categories.map((category) => (
-                    <Link 
-                      key={category} 
+                    <Link
+                      key={category}
                       to={`/category/${category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}
                     >
                       <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs">
@@ -815,16 +863,12 @@ const LaunchDetail = () => {
                 </div>
               </div>
 
-              {/* Tags */}
               {tags.length > 0 && (
                 <div>
                   <h3 className="font-medium text-sm text-muted-foreground mb-2">Tags</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {tags.map((tag) => (
-                      <Link 
-                        key={tag.id} 
-                        to={`/tag/${tag.slug}`}
-                      >
+                      <Link key={tag.id} to={`/tag/${tag.slug}`}>
                         <Badge variant="outline" className="cursor-pointer hover:bg-background text-xs">
                           {tag.name}
                         </Badge>
@@ -834,7 +878,6 @@ const LaunchDetail = () => {
                 </div>
               )}
 
-              {/* Languages */}
               {product.languages && product.languages.length > 0 && (
                 <div>
                   <h3 className="font-medium text-sm text-muted-foreground mb-2">Languages</h3>
@@ -842,69 +885,17 @@ const LaunchDetail = () => {
                 </div>
               )}
 
-              {/* Star Rating */}
-              <div>
-                <h3 className="font-medium text-sm text-muted-foreground mb-2">Rate this product</h3>
-                <StarRating productId={product.id} size="md" />
-              </div>
-
-              {/* Voting */}
-              <div>
-                <h3 className="font-medium text-sm text-muted-foreground mb-2">Support this product</h3>
-                <Button
-                  onClick={() => handleVote(1)}
-                  className="group w-full flex items-center justify-center gap-3 h-14 transition-colors bg-primary text-primary-foreground [@media(hover:hover)]:hover:bg-primary/90"
-                >
-                  <ArrowUp className="h-6 w-6 text-primary-foreground" strokeWidth={2.5} />
-                  <span className="font-bold text-xl text-primary-foreground">
-                    {product.netVotes}
-                  </span>
-                  <span className="text-sm text-primary-foreground/80">
-                    {userVote === 1 ? 'Upvoted!' : 'Upvote'}
-                  </span>
-                </Button>
-              </div>
-
-              {/* Save to Collection — secondary CTA, prominent under Visit Website / Upvote */}
-              <div>
-                <SaveToCollectionButton
-                  productId={product.id}
-                  productName={product.name}
-                  variant="full"
-                  className="w-full h-11 border-2 border-primary/30 text-primary [@media(hover:hover)]:hover:bg-primary/5 [@media(hover:hover)]:hover:border-primary/50 transition-all active:scale-[0.98]"
-                />
-                <p className="text-xs text-center text-muted-foreground mt-2">
-                  Save to revisit later
-                </p>
-              </div>
-
-
-
-              {/* Follow Product */}
-              <div>
-                <Button
-                  variant="outline"
-                  className="w-full border-2 border-muted-foreground/20"
-                  onClick={handleFollow}
-                >
-                  {isFollowing ? 'Following' : 'Follow Product'}
-                </Button>
-                <p className="text-xs text-center text-muted-foreground mt-2">
-                  {followerCount} {followerCount === 1 ? 'follower' : 'followers'}
-                </p>
-              </div>
-
               {/* Discuss this launch */}
-              <div className="space-y-2">
+              <div className="space-y-2 pt-1">
                 <h3 className="font-medium text-sm text-muted-foreground">💬 Discuss this launch</h3>
                 <Button
                   variant="outline"
                   className="w-full gap-2 border-2 border-muted-foreground/20"
                   asChild
                 >
-                  <a 
-                    href={product.forum_thread_url || 'https://forums.trylaunch.ai/'} 
-                    target="_blank" 
+                  <a
+                    href={product.forum_thread_url || 'https://forums.trylaunch.ai/'}
+                    target="_blank"
                     rel="noopener noreferrer"
                   >
                     <MessageSquare className="h-4 w-4" />
@@ -913,24 +904,7 @@ const LaunchDetail = () => {
                 </Button>
               </div>
 
-              {/* Share */}
-              <div>
-                <Button
-                  variant="outline"
-                  className="w-full border-2 border-muted-foreground/20"
-                  onClick={() => {
-                    const ogUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${product.slug}`;
-                    navigator.clipboard.writeText(ogUrl);
-                    toast.success('Link copied to clipboard!');
-                  }}
-                >
-                  Share
-                </Button>
-              </div>
-
-
-
-              {/* Launch Date */}
+              {/* Launch date */}
               {product.launch_date && (
                 <div className="pt-4 border-t border-border/30">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -943,35 +917,9 @@ const LaunchDetail = () => {
                 </div>
               )}
 
-              {/* Best Ranking — only show after launch window closes */}
-              {bestRanking && !isActiveLaunch(product?.launch_date) && (
-                <div className="pt-4 border-t border-border/30">
-                  <div className="flex items-center gap-2 text-sm">
-                    <div>
-                      <div className="font-medium text-foreground text-xs flex items-center gap-1.5">
-                        #{bestRanking.rank} {bestRanking.period}
-                        {bestRanking.rank <= 3 && (
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
-                            bestRanking.rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
-                            bestRanking.rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
-                            'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                          }`}>
-                            {bestRanking.rank === 1 ? 'Gold' : bestRanking.rank === 2 ? 'Silver' : 'Bronze'}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {new Date(bestRanking.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Owner tools — Analytics, Trackable Link, Verify Revenue */}
+              {/* Owner tools */}
               {user && product.owner_id === user.id && (
                 <div className="pt-2 space-y-3">
-                  {/* Trackable Link */}
                   <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-2">
                     <div className="flex items-center gap-1.5 text-sm font-medium">
                       <Link2 className="h-4 w-4 text-primary" />
@@ -981,9 +929,9 @@ const LaunchDetail = () => {
                       <div className="flex-1 bg-background border rounded-md px-2 py-1.5 text-xs font-mono truncate">
                         trylaunch.ai/go/{product.slug}
                       </div>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
+                      <Button
+                        size="sm"
+                        variant="outline"
                         className="shrink-0 h-8 px-2"
                         onClick={() => {
                           navigator.clipboard.writeText(`https://trylaunch.ai/go/${product.slug}`);
