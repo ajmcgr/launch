@@ -5,6 +5,32 @@ import PopularProductIcons from '@/components/PopularProductIcons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface PlatformStats {
+  launched: number;
+  makers: number;
+  clicksSent: number;
+  visitorsMTD: number | null;
+  pageviewsMTD: number | null;
+  sessionsMTD: number | null;
+  liveVisitors: number | null;
+}
+
+function formatStat(n: number): string {
+  if (n < 1000) {
+    if (n < 100) return `${n}`;
+    return `${Math.floor(n / 100) * 100}+`;
+  }
+  if (n < 1_000_000) {
+    const k = n / 1000;
+    return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}K+`;
+  }
+  const m = n / 1_000_000;
+  return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M+`;
+}
 
 const MediaKit = () => {
 
