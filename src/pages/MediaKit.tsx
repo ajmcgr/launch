@@ -5,11 +5,47 @@ import PopularProductIcons from '@/components/PopularProductIcons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface PlatformStats {
+  launched: number;
+  makers: number;
+  clicksSent: number;
+  visitorsMTD: number | null;
+  pageviewsMTD: number | null;
+  sessionsMTD: number | null;
+  liveVisitors: number | null;
+}
+
+function formatStat(n: number): string {
+  if (n < 1000) {
+    if (n < 100) return `${n}`;
+    return `${Math.floor(n / 100) * 100}+`;
+  }
+  if (n < 1_000_000) {
+    const k = n / 1000;
+    return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}K+`;
+  }
+  const m = n / 1_000_000;
+  return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M+`;
+}
 
 const MediaKit = () => {
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ['platform-stats-full'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('get-platform-stats');
+      if (error) throw error;
+      return data as PlatformStats;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   return (
     <>
+
       <Helmet>
         <title>Media Kit - Launch</title>
         <meta name="robots" content="noindex, nofollow" />
@@ -47,21 +83,61 @@ const MediaKit = () => {
             {/* Left Column - Key Metrics */}
             <div className="space-y-4">
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">77K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Users</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.visitorsMTD ? formatStat(stats.visitorsMTD) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Visitors (30d)</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">70K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Monthly Impressions</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.pageviewsMTD ? formatStat(stats.pageviewsMTD) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Pageviews (30d)</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">2.5K+</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Newsletter Subs</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.sessionsMTD ? formatStat(stats.sessionsMTD) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Sessions (30d)</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                <p className="text-4xl font-bold text-primary">25%</p>
-                <p className="text-sm text-muted-foreground font-medium mt-1">Email Open Rate</p>
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.launched ? formatStat(stats.launched) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">Products Launched (30d)</p>
               </div>
+              <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+                {statsLoading ? (
+                  <Skeleton className="h-10 w-24 mx-auto" />
+                ) : (
+                  <p className="text-4xl font-bold text-primary">
+                    {stats?.makers ? formatStat(stats.makers) : '—'}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground font-medium mt-1">New Makers (30d)</p>
+              </div>
+              {stats?.clicksSent && stats.clicksSent > 0 ? (
+                <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
+                  <p className="text-4xl font-bold text-primary">{formatStat(stats.clicksSent)}</p>
+                  <p className="text-sm text-muted-foreground font-medium mt-1">Clicks Sent to Makers (30d)</p>
+                </div>
+              ) : null}
               {/* Traffic Sources */}
               <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
                 <h3 className="text-xl font-bold mb-4 text-foreground">
