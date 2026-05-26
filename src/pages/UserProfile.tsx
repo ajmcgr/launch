@@ -242,7 +242,7 @@ const UserProfile = () => {
 
       if (collectionsData && collectionsData.length > 0) {
         const colIds = collectionsData.map((c: any) => c.id);
-        const { data: itemsData } = await supabase
+        const { data: itemsData } = await sb
           .from('user_collection_items')
           .select('collection_id, product_id, added_at')
           .in('collection_id', colIds)
