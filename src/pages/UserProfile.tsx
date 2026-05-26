@@ -31,6 +31,8 @@ const UserProfile = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [bestAward, setBestAward] = useState<'gold' | 'silver' | 'bronze' | null>(null);
+  const [publicCollections, setPublicCollections] = useState<any[]>([]);
+  const [savedCount, setSavedCount] = useState(0);
 
   useEffect(() => {
     const init = async () => {
