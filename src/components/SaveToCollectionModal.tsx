@@ -78,6 +78,7 @@ export const SaveToCollectionModal = ({ open, onOpenChange, productId, productNa
       }).then(({ error }) => {
         if (error) console.error('Failed to track save:', error);
       });
+      try { localStorage.setItem('launch_engagement_signals', String((parseInt(localStorage.getItem('launch_engagement_signals') || '0', 10)) + 1)); } catch {}
       toast.success(`Saved ${productName ?? 'launch'} to ${selected.size} collection${selected.size === 1 ? '' : 's'}`);
       onSaved?.();
       onOpenChange(false);
