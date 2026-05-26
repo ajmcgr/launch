@@ -481,8 +481,26 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-background py-8">
+      <SeoHead
+        title={`@${profile.username} — Products & collections on Launch`}
+        description={
+          profile.bio
+            ? profile.bio.slice(0, 155)
+            : `Explore products launched, collections curated, and activity by @${profile.username} on Launch.`
+        }
+        path={`/@${profile.username}`}
+        breadcrumbs={[
+          { name: 'Makers', path: '/makers' },
+          { name: `@${profile.username}`, path: `/@${profile.username}` },
+        ]}
+        itemList={products.slice(0, 20).map((p: any) => ({
+          name: p.name,
+          url: `https://trylaunch.ai/launch/${p.slug}`,
+        }))}
+      />
       <div className="container mx-auto px-4 max-w-5xl">
         <Card className="p-8 mb-8">
+
           <div className="flex flex-col md:flex-row gap-6 items-start">
             <Avatar className="h-24 w-24">
               <AvatarImage src={profile.avatar_url} alt={profile.username} />
