@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
+import { SeoHead } from '@/components/seo/SeoHead';
+
 
 const UserProfile = () => {
   const { username: rawUsername } = useParams();
@@ -29,6 +31,8 @@ const UserProfile = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [bestAward, setBestAward] = useState<'gold' | 'silver' | 'bronze' | null>(null);
+  const [publicCollections, setPublicCollections] = useState<any[]>([]);
+  const [savedCount, setSavedCount] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -227,7 +231,62 @@ const UserProfile = () => {
         setFollowers(followersData.map(f => f.users).filter(u => u && u.username));
       }
 
+      // Fetch public collections created by this user (+ items for preview & counts)
+      const sb: any = supabase;
+      const { data: collectionsData } = await sb
+        .from('user_collections')
+        .select('id, name, slug, description, updated_at')
+        .eq('user_id', profileData.id)
+        .eq('is_public', true)
+        .order('updated_at', { ascending: false });
+
+      if (collectionsData && collectionsData.length > 0) {
+        const colIds = collectionsData.map((c: any) => c.id);
+        const { data: itemsData } = await sb
+          .from('user_collection_items')
+          .select('collection_id, product_id, added_at')
+          .in('collection_id', colIds)
+          .order('added_at', { ascending: false });
+
+        const itemsByCollection: Record<string, any[]> = {};
+        const allProductIds: string[] = [];
+        itemsData?.forEach((it: any) => {
+          (itemsByCollection[it.collection_id] ||= []).push(it);
+          allProductIds.push(it.product_id);
+        });
+
+        // Fetch icons for preview thumbnails
+        const uniqueIds = Array.from(new Set(allProductIds));
+        const iconMap: Record<string, string> = {};
+        if (uniqueIds.length > 0) {
+          const { data: iconRows } = await supabase
+            .from('products')
+            .select('id, product_media(url, type)')
+            .in('id', uniqueIds);
+          iconRows?.forEach((p: any) => {
+            const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url
+              || p.product_media?.find((m: any) => m.type === 'thumbnail')?.url;
+            if (icon) iconMap[p.id] = icon;
+          });
+        }
+
+        const enriched = collectionsData.map((c: any) => {
+          const items = itemsByCollection[c.id] || [];
+          return {
+            ...c,
+            count: items.length,
+            topIcons: items.slice(0, 4).map((it: any) => iconMap[it.product_id]).filter(Boolean),
+          };
+        });
+        setPublicCollections(enriched);
+        setSavedCount(allProductIds.length);
+      } else {
+        setPublicCollections([]);
+        setSavedCount(0);
+      }
+
       // Fetch followed products
+
       const { data: followedProductsData } = await supabase
         .from('product_follows')
         .select(`
@@ -374,6 +433,35 @@ const UserProfile = () => {
     }
   };
 
+  const handleShareProfile = async () => {
+    const url = `${window.location.origin}/@${profile.username}`;
+    const title = `@${profile.username} on Launch`;
+    const text = profile.bio || `Check out @${profile.username}'s products and collections on Launch.`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success('Profile link copied');
+      }
+    } catch {
+      /* user cancelled */
+    }
+  };
+
+  const handleShareCollection = async (slug: string, name: string) => {
+    const url = `${window.location.origin}/c/${slug}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: name, text: `Check out the "${name}" collection on Launch.`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success('Collection link copied');
+      }
+    } catch {}
+  };
+
+
   if (loading) {
     return <ProfileSkeleton />;
   }
@@ -393,8 +481,26 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-background py-8">
+      <SeoHead
+        title={`@${profile.username} — Products & collections on Launch`}
+        description={
+          profile.bio
+            ? profile.bio.slice(0, 155)
+            : `Explore products launched, collections curated, and activity by @${profile.username} on Launch.`
+        }
+        path={`/@${profile.username}`}
+        breadcrumbs={[
+          { name: 'Makers', path: '/makers' },
+          { name: `@${profile.username}`, path: `/@${profile.username}` },
+        ]}
+        itemList={products.slice(0, 20).map((p: any) => ({
+          name: p.name,
+          url: `https://trylaunch.ai/launch/${p.slug}`,
+        }))}
+      />
       <div className="container mx-auto px-4 max-w-5xl">
         <Card className="p-8 mb-8">
+
           <div className="flex flex-col md:flex-row gap-6 items-start">
             <Avatar className="h-24 w-24">
               <AvatarImage src={profile.avatar_url} alt={profile.username} />
@@ -427,38 +533,37 @@ const UserProfile = () => {
                 )}
               </div>
 
-                {currentUser && currentUser.id !== profile.id && (
-                  <Button
-                    onClick={handleFollow}
-                    variant={isFollowing ? 'outline' : 'default'}
-                  >
-                    {isFollowing ? (
-                      <>
-                        <UserMinus className="h-4 w-4 mr-2" />
-                        Unfollow
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Follow
-                      </>
-                    )}
+                <div className="flex items-center gap-2">
+                  {currentUser && currentUser.id !== profile.id && (
+                    <Button
+                      onClick={handleFollow}
+                      variant={isFollowing ? 'outline' : 'default'}
+                    >
+                      {isFollowing ? (
+                        <>
+                          <UserMinus className="h-4 w-4 mr-2" />
+                          Unfollow
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Follow
+                        </>
+                      )}
+                    </Button>
+                  )}
+                  <Button onClick={handleShareProfile} variant="outline" size="icon" aria-label="Share profile">
+                    <Share2 className="h-4 w-4" />
                   </Button>
-                )}
+                </div>
               </div>
 
-              <div className="flex gap-6 mb-4">
-                <Link
-                  to={`/@${profile.username}/followers`}
-                  className="hover:underline"
-                >
+              <div className="flex gap-6 mb-4 flex-wrap">
+                <Link to={`/@${profile.username}/followers`} className="hover:underline">
                   <span className="font-bold">{followerCount}</span>
                   <span className="text-muted-foreground ml-1">Followers</span>
                 </Link>
-                <Link
-                  to={`/@${profile.username}/following`}
-                  className="hover:underline"
-                >
+                <Link to={`/@${profile.username}/following`} className="hover:underline">
                   <span className="font-bold">{followingCount}</span>
                   <span className="text-muted-foreground ml-1">Following</span>
                 </Link>
@@ -466,7 +571,16 @@ const UserProfile = () => {
                   <span className="font-bold">{products.length}</span>
                   <span className="text-muted-foreground ml-1">Products</span>
                 </div>
+                <div>
+                  <span className="font-bold">{publicCollections.length}</span>
+                  <span className="text-muted-foreground ml-1">Collections</span>
+                </div>
+                <div>
+                  <span className="font-bold">{savedCount}</span>
+                  <span className="text-muted-foreground ml-1">Saves</span>
+                </div>
               </div>
+
 
               <div className="flex gap-3 flex-wrap">
                 {profile.website && (
@@ -571,6 +685,114 @@ const UserProfile = () => {
             </div>
           )}
         </div>
+
+        {publicCollections.length > 0 && (
+          <div className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Public Collections</h2>
+              <span className="text-sm text-muted-foreground">{publicCollections.length} total</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {publicCollections.map((c: any) => (
+                <Card key={c.id} className="p-4 hover:border-primary/50 transition-colors group">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <Link to={`/c/${c.slug}`} className="flex-1 min-w-0">
+                      <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{c.name}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {c.count} {c.count === 1 ? 'product' : 'products'} · curated by @{profile.username}
+                      </p>
+                    </Link>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 shrink-0"
+                      onClick={(e) => { e.preventDefault(); handleShareCollection(c.slug, c.name); }}
+                      aria-label="Share collection"
+                    >
+                      <Share2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                  {c.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{c.description}</p>
+                  )}
+                  <Link to={`/c/${c.slug}`} className="flex items-center gap-1.5">
+                    {c.topIcons.length === 0 ? (
+                      <div className="text-xs text-muted-foreground italic">Empty collection</div>
+                    ) : (
+                      c.topIcons.map((src: string, i: number) => (
+                        <img
+                          key={i}
+                          src={src}
+                          alt=""
+                          loading="lazy"
+                          className="h-8 w-8 rounded-md object-cover border border-border"
+                        />
+                      ))
+                    )}
+                    {c.count > c.topIcons.length && (
+                      <span className="text-xs text-muted-foreground ml-1">+{c.count - c.topIcons.length}</span>
+                    )}
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {(bestAward || products.length > 0 || makerScore > 0 || savedCount > 0) && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">Achievements</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {bestAward && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Trophy className={`h-6 w-6 ${bestAward === 'gold' ? 'text-yellow-500' : bestAward === 'silver' ? 'text-gray-400' : 'text-amber-600'}`} />
+                  <div>
+                    <p className="text-sm font-semibold capitalize">{bestAward} Winner</p>
+                    <p className="text-xs text-muted-foreground">Top-ranked launch</p>
+                  </div>
+                </Card>
+              )}
+              {products.length > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Rocket className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">{products.length} Launched</p>
+                    <p className="text-xs text-muted-foreground">Product{products.length === 1 ? '' : 's'} shipped</p>
+                  </div>
+                </Card>
+              )}
+              {publicCollections.length > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <FolderHeart className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">Curator</p>
+                    <p className="text-xs text-muted-foreground">{publicCollections.length} public collection{publicCollections.length === 1 ? '' : 's'}</p>
+                  </div>
+                </Card>
+              )}
+              {savedCount > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Bookmark className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">{savedCount} Saves</p>
+                    <p className="text-xs text-muted-foreground">Products curated</p>
+                  </div>
+                </Card>
+              )}
+              {makerScore > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">{makerScore} Karma</p>
+                    <p className="text-xs text-muted-foreground">Maker score</p>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+
+
 
         {upvotedProducts.length > 0 && (
           <div className="mt-12">
