@@ -533,38 +533,37 @@ const UserProfile = () => {
                 )}
               </div>
 
-                {currentUser && currentUser.id !== profile.id && (
-                  <Button
-                    onClick={handleFollow}
-                    variant={isFollowing ? 'outline' : 'default'}
-                  >
-                    {isFollowing ? (
-                      <>
-                        <UserMinus className="h-4 w-4 mr-2" />
-                        Unfollow
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Follow
-                      </>
-                    )}
+                <div className="flex items-center gap-2">
+                  {currentUser && currentUser.id !== profile.id && (
+                    <Button
+                      onClick={handleFollow}
+                      variant={isFollowing ? 'outline' : 'default'}
+                    >
+                      {isFollowing ? (
+                        <>
+                          <UserMinus className="h-4 w-4 mr-2" />
+                          Unfollow
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Follow
+                        </>
+                      )}
+                    </Button>
+                  )}
+                  <Button onClick={handleShareProfile} variant="outline" size="icon" aria-label="Share profile">
+                    <Share2 className="h-4 w-4" />
                   </Button>
-                )}
+                </div>
               </div>
 
-              <div className="flex gap-6 mb-4">
-                <Link
-                  to={`/@${profile.username}/followers`}
-                  className="hover:underline"
-                >
+              <div className="flex gap-6 mb-4 flex-wrap">
+                <Link to={`/@${profile.username}/followers`} className="hover:underline">
                   <span className="font-bold">{followerCount}</span>
                   <span className="text-muted-foreground ml-1">Followers</span>
                 </Link>
-                <Link
-                  to={`/@${profile.username}/following`}
-                  className="hover:underline"
-                >
+                <Link to={`/@${profile.username}/following`} className="hover:underline">
                   <span className="font-bold">{followingCount}</span>
                   <span className="text-muted-foreground ml-1">Following</span>
                 </Link>
@@ -572,7 +571,16 @@ const UserProfile = () => {
                   <span className="font-bold">{products.length}</span>
                   <span className="text-muted-foreground ml-1">Products</span>
                 </div>
+                <div>
+                  <span className="font-bold">{publicCollections.length}</span>
+                  <span className="text-muted-foreground ml-1">Collections</span>
+                </div>
+                <div>
+                  <span className="font-bold">{savedCount}</span>
+                  <span className="text-muted-foreground ml-1">Saves</span>
+                </div>
               </div>
+
 
               <div className="flex gap-3 flex-wrap">
                 {profile.website && (
