@@ -231,7 +231,61 @@ const UserProfile = () => {
         setFollowers(followersData.map(f => f.users).filter(u => u && u.username));
       }
 
+      // Fetch public collections created by this user (+ items for preview & counts)
+      const { data: collectionsData } = await supabase
+        .from('user_collections')
+        .select('id, name, slug, description, updated_at')
+        .eq('user_id', profileData.id)
+        .eq('is_public', true)
+        .order('updated_at', { ascending: false });
+
+      if (collectionsData && collectionsData.length > 0) {
+        const colIds = collectionsData.map((c: any) => c.id);
+        const { data: itemsData } = await supabase
+          .from('user_collection_items')
+          .select('collection_id, product_id, added_at')
+          .in('collection_id', colIds)
+          .order('added_at', { ascending: false });
+
+        const itemsByCollection: Record<string, any[]> = {};
+        const allProductIds: string[] = [];
+        itemsData?.forEach((it: any) => {
+          (itemsByCollection[it.collection_id] ||= []).push(it);
+          allProductIds.push(it.product_id);
+        });
+
+        // Fetch icons for preview thumbnails
+        const uniqueIds = Array.from(new Set(allProductIds));
+        const iconMap: Record<string, string> = {};
+        if (uniqueIds.length > 0) {
+          const { data: iconRows } = await supabase
+            .from('products')
+            .select('id, product_media(url, type)')
+            .in('id', uniqueIds);
+          iconRows?.forEach((p: any) => {
+            const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url
+              || p.product_media?.find((m: any) => m.type === 'thumbnail')?.url;
+            if (icon) iconMap[p.id] = icon;
+          });
+        }
+
+        const enriched = collectionsData.map((c: any) => {
+          const items = itemsByCollection[c.id] || [];
+          return {
+            ...c,
+            count: items.length,
+            topIcons: items.slice(0, 4).map((it: any) => iconMap[it.product_id]).filter(Boolean),
+          };
+        });
+        setPublicCollections(enriched);
+        setSavedCount(allProductIds.length);
+      } else {
+        setPublicCollections([]);
+        setSavedCount(0);
+      }
+
       // Fetch followed products
+
       const { data: followedProductsData } = await supabase
         .from('product_follows')
         .select(`
