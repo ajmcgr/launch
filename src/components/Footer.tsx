@@ -127,6 +127,16 @@ export const Footer = () => {
                   Store
                 </a>
               </li>
+              <li>
+                <a 
+                  href="https://launch.affonso.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Affiliates
+                </a>
+              </li>
             </ul>
           </div>
 
