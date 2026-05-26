@@ -433,6 +433,35 @@ const UserProfile = () => {
     }
   };
 
+  const handleShareProfile = async () => {
+    const url = `${window.location.origin}/@${profile.username}`;
+    const title = `@${profile.username} on Launch`;
+    const text = profile.bio || `Check out @${profile.username}'s products and collections on Launch.`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success('Profile link copied');
+      }
+    } catch {
+      /* user cancelled */
+    }
+  };
+
+  const handleShareCollection = async (slug: string, name: string) => {
+    const url = `${window.location.origin}/c/${slug}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: name, text: `Check out the "${name}" collection on Launch.`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success('Collection link copied');
+      }
+    } catch {}
+  };
+
+
   if (loading) {
     return <ProfileSkeleton />;
   }
