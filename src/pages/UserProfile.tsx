@@ -686,6 +686,114 @@ const UserProfile = () => {
           )}
         </div>
 
+        {publicCollections.length > 0 && (
+          <div className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Public Collections</h2>
+              <span className="text-sm text-muted-foreground">{publicCollections.length} total</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {publicCollections.map((c: any) => (
+                <Card key={c.id} className="p-4 hover:border-primary/50 transition-colors group">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <Link to={`/c/${c.slug}`} className="flex-1 min-w-0">
+                      <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{c.name}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {c.count} {c.count === 1 ? 'product' : 'products'} · curated by @{profile.username}
+                      </p>
+                    </Link>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 shrink-0"
+                      onClick={(e) => { e.preventDefault(); handleShareCollection(c.slug, c.name); }}
+                      aria-label="Share collection"
+                    >
+                      <Share2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                  {c.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{c.description}</p>
+                  )}
+                  <Link to={`/c/${c.slug}`} className="flex items-center gap-1.5">
+                    {c.topIcons.length === 0 ? (
+                      <div className="text-xs text-muted-foreground italic">Empty collection</div>
+                    ) : (
+                      c.topIcons.map((src: string, i: number) => (
+                        <img
+                          key={i}
+                          src={src}
+                          alt=""
+                          loading="lazy"
+                          className="h-8 w-8 rounded-md object-cover border border-border"
+                        />
+                      ))
+                    )}
+                    {c.count > c.topIcons.length && (
+                      <span className="text-xs text-muted-foreground ml-1">+{c.count - c.topIcons.length}</span>
+                    )}
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {(bestAward || products.length > 0 || makerScore > 0 || savedCount > 0) && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-6">Achievements</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {bestAward && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Trophy className={`h-6 w-6 ${bestAward === 'gold' ? 'text-yellow-500' : bestAward === 'silver' ? 'text-gray-400' : 'text-amber-600'}`} />
+                  <div>
+                    <p className="text-sm font-semibold capitalize">{bestAward} Winner</p>
+                    <p className="text-xs text-muted-foreground">Top-ranked launch</p>
+                  </div>
+                </Card>
+              )}
+              {products.length > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Rocket className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">{products.length} Launched</p>
+                    <p className="text-xs text-muted-foreground">Product{products.length === 1 ? '' : 's'} shipped</p>
+                  </div>
+                </Card>
+              )}
+              {publicCollections.length > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <FolderHeart className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">Curator</p>
+                    <p className="text-xs text-muted-foreground">{publicCollections.length} public collection{publicCollections.length === 1 ? '' : 's'}</p>
+                  </div>
+                </Card>
+              )}
+              {savedCount > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Bookmark className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">{savedCount} Saves</p>
+                    <p className="text-xs text-muted-foreground">Products curated</p>
+                  </div>
+                </Card>
+              )}
+              {makerScore > 0 && (
+                <Card className="p-4 flex items-center gap-3">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-semibold">{makerScore} Karma</p>
+                    <p className="text-xs text-muted-foreground">Maker score</p>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+
+
+
         {upvotedProducts.length > 0 && (
           <div className="mt-12">
             <h2 className="text-2xl font-bold mb-6">Recently Upvoted</h2>
