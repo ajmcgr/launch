@@ -232,7 +232,8 @@ const UserProfile = () => {
       }
 
       // Fetch public collections created by this user (+ items for preview & counts)
-      const { data: collectionsData } = await supabase
+      const sb: any = supabase;
+      const { data: collectionsData } = await sb
         .from('user_collections')
         .select('id, name, slug, description, updated_at')
         .eq('user_id', profileData.id)
