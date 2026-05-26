@@ -197,6 +197,7 @@ const AppContent = () => {
         </div>
       )}
       <Footer />
+      <BookmarkPrompt />
     </div>
   );
 };
