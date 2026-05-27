@@ -992,6 +992,16 @@ const MyProducts = () => {
                             </span>
                           </div>
                         </div>
+                        {!product.launch_date && !passStatus.data?.hasActivePass && (
+                          <div className="w-full mb-3">
+                            <InstantLaunchPromo
+                              productId={product.id}
+                              productName={product.name}
+                              variant="card"
+                              dismissible={false}
+                            />
+                          </div>
+                        )}
                       </>
                     )}
                     {canEdit(product) && (
