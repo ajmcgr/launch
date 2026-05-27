@@ -25,8 +25,8 @@ const CategorySponsorBanner = ({ categoryId, categoryName }: Props) => {
     const fetchSponsor = async () => {
       setLoading(true);
       const today = new Date().toISOString().split('T')[0];
-      const { data } = await supabase
-        .from('category_sponsors' as any)
+      const { data } = await (supabase as any)
+        .from('category_sponsors')
         .select('id, sponsor_name, banner_image_url, destination_url')
         .eq('category_id', categoryId)
         .eq('enabled', true)
@@ -36,7 +36,7 @@ const CategorySponsorBanner = ({ categoryId, categoryName }: Props) => {
         .limit(1);
 
       if (cancelled) return;
-      const s = (data && data.length > 0 ? data[0] : null) as Sponsor | null;
+      const s = (data && data.length > 0 ? (data[0] as Sponsor) : null);
       setSponsor(s);
       setLoading(false);
     };
