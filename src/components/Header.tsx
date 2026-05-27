@@ -191,6 +191,7 @@ export const Header = () => {
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-3">
+                <GoogleTranslate />
                 <ThemeToggle />
                 <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                   Login
