@@ -99,11 +99,12 @@ const ProductAnalytics = () => {
           .select('created_at, value')
           .eq('product_id', prod.id)
           .order('created_at', { ascending: true }),
-        supabase
-          .from('user_collection_items')
-          .select('id', { count: 'exact', head: true })
-          .eq('product_id', prod.id),
       ]);
+
+      const collectionRes = await (supabase as any)
+        .from('user_collection_items')
+        .select('id', { count: 'exact', head: true })
+        .eq('product_id', prod.id);
 
       setAnalytics(analyticsRes.data || []);
       setReferralClicks(referralRes.data || []);
@@ -111,6 +112,7 @@ const ProductAnalytics = () => {
       setNetVotes((votesRes.data || []).reduce((sum: number, v: any) => sum + (v.value || 0), 0));
       setCommentCount(commentsRes.count || 0);
       setFollowerCount(followersRes.count || 0);
+      setCollectionAdds(collectionRes.count || 0);
       setLoading(false);
     };
 
