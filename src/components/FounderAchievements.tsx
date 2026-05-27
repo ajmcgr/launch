@@ -46,15 +46,17 @@ export default function FounderAchievements({
 
   useEffect(() => {
     if (!founderId && !productId) return;
-    let q = supabase
-      .from('product_achievements' as any)
-      .select('id, product_id, founder_id, achievement_type, metric_value, achieved_at, email_status')
-      .order('achieved_at', { ascending: false })
-      .limit(limit);
-    if (founderId) q = q.eq('founder_id', founderId);
-    if (productId) q = q.eq('product_id', productId);
-    q.then(async ({ data }) => {
-      const rows = ((data as any) || []) as Achievement[];
+    const run = async () => {
+      const sb = supabase as any;
+      let q = sb
+        .from('product_achievements')
+        .select('id, product_id, founder_id, achievement_type, metric_value, achieved_at, email_status')
+        .order('achieved_at', { ascending: false })
+        .limit(limit);
+      if (founderId) q = q.eq('founder_id', founderId);
+      if (productId) q = q.eq('product_id', productId);
+      const { data } = await q;
+      const rows = (data || []) as Achievement[];
       setAchievements(rows);
       const ids = Array.from(new Set(rows.map((r) => r.product_id)));
       if (ids.length) {
@@ -76,7 +78,8 @@ export default function FounderAchievements({
         setProducts(map);
       }
       setLoading(false);
-    });
+    };
+    run();
   }, [founderId, productId, limit]);
 
   if (loading) return null;

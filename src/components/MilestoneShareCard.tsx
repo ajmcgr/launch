@@ -42,20 +42,20 @@ export default function MilestoneShareCard({
 
   const trackShare = async () => {
     try {
-      await supabase.rpc('increment' as any, {}).then(() => {}).catch(() => {});
-      await supabase
-        .from('product_achievements' as any)
-        .update({ share_count: (await getCount()) + 1 })
+      const sb = supabase as any;
+      const { data } = await sb
+        .from('product_achievements')
+        .select('share_count')
+        .eq('id', achievementId)
+        .maybeSingle();
+      const current = data?.share_count ?? 0;
+      await sb
+        .from('product_achievements')
+        .update({ share_count: current + 1 })
         .eq('id', achievementId);
-    } catch {/* non-blocking */}
-  };
-  const getCount = async () => {
-    const { data } = await supabase
-      .from('product_achievements' as any)
-      .select('share_count')
-      .eq('id', achievementId)
-      .maybeSingle();
-    return (data as any)?.share_count ?? 0;
+    } catch {
+      /* non-blocking */
+    }
   };
 
   const onX = () => {

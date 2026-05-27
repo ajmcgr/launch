@@ -14,8 +14,9 @@ export default function AchievementShare() {
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const { data: a } = await supabase
-        .from('product_achievements' as any)
+      const sb = supabase as any;
+      const { data: a } = await sb
+        .from('product_achievements')
         .select('id, product_id, founder_id, achievement_type, metric_value, achieved_at')
         .eq('id', id)
         .maybeSingle();
