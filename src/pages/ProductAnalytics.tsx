@@ -561,6 +561,47 @@ const ProductAnalytics = () => {
           productName={product.name}
         />
 
+        {/* Grow Your Reach — visibility opportunities (shown after viewing analytics) */}
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Rocket className="h-5 w-5 text-primary" />
+              Grow Your Reach
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Pick a single move to multiply this launch's visibility.</p>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Link to={`/launch/${product.slug}?boost=1`} className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3">
+              <Flame className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <p className="font-medium text-sm">Boost this launch</p>
+                <p className="text-xs text-muted-foreground">Pin to #1 for 24h — instant visibility burst.</p>
+              </div>
+            </Link>
+            <Link to="/advertise" className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3">
+              <Star className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <p className="font-medium text-sm">Feature on homepage</p>
+                <p className="text-xs text-muted-foreground">Sponsored homepage slot, seen by every visitor.</p>
+              </div>
+            </Link>
+            <Link to="/advertise" className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3">
+              <Target className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <p className="font-medium text-sm">Sponsor a category</p>
+                <p className="text-xs text-muted-foreground">Own the top slot in your category page.</p>
+              </div>
+            </Link>
+            <Link to="/advertise" className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3">
+              <Mail className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <p className="font-medium text-sm">Newsletter placement</p>
+                <p className="text-xs text-muted-foreground">Featured in the Monday newsletter to all Makers.</p>
+              </div>
+            </Link>
+          </CardContent>
+        </Card>
+
         {/* Section 7: Share Prompt */}
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-6 text-center space-y-4">
