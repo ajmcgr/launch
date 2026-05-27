@@ -70,7 +70,7 @@ const ProductAnalytics = () => {
       setProduct(prod);
 
       // Fetch all analytics, votes, comments, followers, referral clicks in parallel
-      const [analyticsRes, votesRes, commentsRes, followersRes, referralRes, votesTimeRes, collectionRes] = await Promise.all([
+      const [analyticsRes, votesRes, commentsRes, followersRes, referralRes, votesTimeRes] = await Promise.all([
         supabase
           .from('product_analytics')
           .select('event_type, created_at, visitor_id')
