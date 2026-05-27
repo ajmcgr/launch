@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft, Link2 } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import OutcomeReporting from '@/components/OutcomeReporting';
+import FounderAchievements from '@/components/FounderAchievements';
 
 const ProductAnalytics = () => {
   const { slug } = useParams();
