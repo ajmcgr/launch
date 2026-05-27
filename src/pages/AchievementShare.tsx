@@ -23,9 +23,9 @@ export default function AchievementShare() {
       if (!a) { setLoading(false); return; }
       const ach = a as any;
       const [{ data: product }, { data: media }, { data: founder }] = await Promise.all([
-        supabase.from('products').select('id, name, slug, tagline').eq('id', ach.product_id).maybeSingle(),
-        supabase.from('product_media').select('url').eq('product_id', ach.product_id).eq('media_type', 'icon').limit(1).maybeSingle(),
-        supabase.from('users').select('id, name, username, avatar_url').eq('id', ach.founder_id).maybeSingle(),
+        sb.from('products').select('id, name, slug, tagline').eq('id', ach.product_id).maybeSingle(),
+        sb.from('product_media').select('url').eq('product_id', ach.product_id).eq('media_type', 'icon').limit(1).maybeSingle(),
+        sb.from('users').select('id, name, username, avatar_url').eq('id', ach.founder_id).maybeSingle(),
       ]);
       setData({
         achievement: ach,

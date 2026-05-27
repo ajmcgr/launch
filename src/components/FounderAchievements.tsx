@@ -60,11 +60,11 @@ export default function FounderAchievements({
       setAchievements(rows);
       const ids = Array.from(new Set(rows.map((r) => r.product_id)));
       if (ids.length) {
-        const { data: prods } = await supabase
+        const { data: prods } = await sb
           .from('products')
           .select('id, name, slug')
           .in('id', ids);
-        const { data: media } = await supabase
+        const { data: media } = await sb
           .from('product_media')
           .select('product_id, url, media_type')
           .in('product_id', ids)
