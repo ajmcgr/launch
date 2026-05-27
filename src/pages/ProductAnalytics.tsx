@@ -442,6 +442,110 @@ const ProductAnalytics = () => {
           </CardContent>
         </Card>
 
+        {/* Traffic Insights */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Flame className="h-5 w-5 text-primary" />
+                Top Traffic Days
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {topTrafficDays.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Traffic data will appear as visitors arrive.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {topTrafficDays.map((d, i) => (
+                    <li key={d.date} className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold text-muted-foreground w-5">#{i + 1}</span>
+                        {new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                      </span>
+                      <span className="font-medium">{d.total.toLocaleString()} visits</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-primary" />
+                Rankings & Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Trending status</span>
+                <Badge variant={isTrending ? 'default' : 'secondary'}>
+                  {isTrending ? 'Trending' : 'Climbing'}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Days on Launch</span>
+                <span className="font-medium">{daysSinceLaunch}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Awards earned</span>
+                <span className="font-medium">
+                  {[(product as any).won_daily && 'Daily', (product as any).won_weekly && 'Weekly', (product as any).won_monthly && 'Monthly']
+                    .filter(Boolean).join(', ') || '—'}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Performance Benchmarks */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              How You're Performing
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Positive context vs. the rest of Launch.</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {benchmarks.map((b) => (
+                <div key={b.label} className={`p-4 rounded-lg border ${b.positive ? 'bg-primary/5 border-primary/20' : 'bg-muted/40'}`}>
+                  <p className="text-xs text-muted-foreground">{b.label}</p>
+                  <p className="text-base font-semibold mt-1">{b.value}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Founder Success Moments */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Star className="h-5 w-5 text-primary" />
+              Success Moments
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {successMoments.map((m) => (
+                <div
+                  key={m.label}
+                  className={`p-3 rounded-lg border flex items-center gap-3 ${m.reached ? 'bg-primary/5 border-primary/30' : 'bg-muted/30 opacity-60'}`}
+                >
+                  <m.icon className={`h-5 w-5 ${m.reached ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{m.label}</p>
+                    <p className="text-[11px] text-muted-foreground">{m.reached ? 'Achieved' : 'Not yet'}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Section: Founder Achievements */}
         <FounderAchievements
           productId={product.id}
