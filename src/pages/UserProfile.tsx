@@ -793,6 +793,9 @@ const UserProfile = () => {
           </div>
         )}
 
+        {profile?.id && (
+          <FounderAchievements founderId={profile.id} title="Milestones" />
+        )}
 
 
         {upvotedProducts.length > 0 && (
