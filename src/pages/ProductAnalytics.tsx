@@ -290,7 +290,7 @@ const ProductAnalytics = () => {
           {statCards.map((stat) => (
             <Card key={stat.label}>
               <CardContent className="p-4 flex flex-col items-center text-center gap-1">
-                <stat.icon className={`h-5 w-5 ${stat.color} mb-1`} />
+                <stat.icon className="h-5 w-5 text-primary mb-1" />
                 <span className="text-2xl font-bold">{stat.value}</span>
                 <span className="text-xs text-muted-foreground">{stat.label}</span>
               </CardContent>
