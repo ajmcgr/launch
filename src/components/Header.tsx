@@ -139,6 +139,7 @@ export const Header = () => {
             {/* Desktop User Menu */}
             {user ? (
               <div className="hidden md:flex items-center gap-2">
+                <GoogleTranslate />
                 <ThemeToggle />
                 <NotificationBell />
                 <DropdownMenu>
