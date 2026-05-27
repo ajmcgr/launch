@@ -666,6 +666,20 @@ const MyProducts = () => {
           </div>
         )}
 
+        {/* Instant Launch banner — when user has at least one queued product and no Pass */}
+        {!passStatus.isLoading && !passStatus.data?.hasActivePass && (() => {
+          const queued = products.find((p) => p.status === 'scheduled' && !p.launch_date);
+          if (!queued) return null;
+          return (
+            <InstantLaunchPromo
+              productId={queued.id}
+              variant="banner"
+              queuePosition={freeQueueInfo?.position}
+              estimatedDays={freeQueueInfo?.days}
+            />
+          );
+        })()}
+
         {loading ? (
           <div className="space-y-3 py-6" aria-label="Loading" role="status">
             {[0,1,2,3].map(i => (
