@@ -40,6 +40,7 @@ const FAQ = lazy(() => import("./pages/FAQ"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Advertise = lazy(() => import("./pages/Advertise"));
+const Advertising = lazy(() => import("./pages/Advertising"));
 const TagPage = lazy(() => import("./pages/TagPage"));
 const Tags = lazy(() => import("./pages/Tags"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
@@ -139,6 +140,7 @@ const AppContent = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/advertise" element={<Advertise />} />
+            <Route path="/advertising" element={<Advertising />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/newsletter" element={<NewsletterRedirect />} />
