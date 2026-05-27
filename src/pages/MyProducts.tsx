@@ -1075,9 +1075,9 @@ const MyProducts = () => {
           open={showShareModal}
           onClose={() => {
             setShowShareModal(false);
-            // For free plans, show Pro upgrade modal; otherwise show boost
+            // After sharing flow, show Instant Launch upsell for free plan, boost otherwise
             if (recentProduct.plan === 'free') {
-              setTimeout(() => setShowProUpgradeModal(true), 300);
+              setTimeout(() => setShowInstantLaunchModal(true), 300);
             } else {
               setTimeout(() => setShowBoostModal(true), 300);
             }
@@ -1088,13 +1088,15 @@ const MyProducts = () => {
         />
       )}
 
-      {/* Pro Upgrade Modal — shown to free plan users after submission */}
+      {/* Instant Launch Upsell — shown to free plan users after sharing */}
       {recentProduct && (
-        <PostSubmissionUpgradeModal
-          open={showProUpgradeModal}
-          onClose={() => setShowProUpgradeModal(false)}
+        <InstantLaunchUpsellModal
+          open={showInstantLaunchModal}
+          onClose={() => setShowInstantLaunchModal(false)}
           productId={recentProduct.id}
           productName={recentProduct.name}
+          queuePosition={freeQueueInfo?.position}
+          estimatedDays={freeQueueInfo?.days}
         />
       )}
 
