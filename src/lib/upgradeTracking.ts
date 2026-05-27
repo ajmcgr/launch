@@ -5,7 +5,10 @@ export type UpgradeTriggerType =
   | 'low_rank'
   | 'live_window'
   | 'low_traction'
-  | 'product_detail_sidebar';
+  | 'product_detail_sidebar'
+  | 'instant_launch_modal'
+  | 'instant_launch_banner'
+  | 'instant_launch_card';
 
 export type UpgradeTriggerEvent =
   | 'trigger_shown'

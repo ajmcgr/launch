@@ -24,7 +24,8 @@ import ProductBadgeEmbed from '@/components/ProductBadgeEmbed';
 import ShareLaunchModal from '@/components/ShareLaunchModal';
 import BoostUpsellModal from '@/components/BoostUpsellModal';
 import ProUpgradeCard from '@/components/ProUpgradeCard';
-import PostSubmissionUpgradeModal from '@/components/PostSubmissionUpgradeModal';
+import InstantLaunchUpsellModal from '@/components/InstantLaunchUpsellModal';
+import InstantLaunchPromo from '@/components/InstantLaunchPromo';
 import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
 import { getBestTrigger } from '@/lib/upgradeTracking';
@@ -40,7 +41,8 @@ const MyProducts = () => {
   const [timePeriod, setTimePeriod] = useState<'day' | 'month' | 'year' | 'all'>('all');
   const [showShareModal, setShowShareModal] = useState(false);
   const [showBoostModal, setShowBoostModal] = useState(false);
-  const [showProUpgradeModal, setShowProUpgradeModal] = useState(false);
+  const [showInstantLaunchModal, setShowInstantLaunchModal] = useState(false);
+  const [freeQueueInfo, setFreeQueueInfo] = useState<{ position: number; days: number } | null>(null);
   const [recentProduct, setRecentProduct] = useState<{ id: string; name: string; slug: string; tagline?: string; plan?: string } | null>(null);
   const [stripeActionLoading, setStripeActionLoading] = useState<string | null>(null);
   const [analytics, setAnalytics] = useState<Record<string, { page_views: number; website_clicks: number }>>({});
@@ -125,6 +127,29 @@ const MyProducts = () => {
       showShareModalForLatest();
     }
   }, [searchParams, user, successProcessed]);
+
+  // Fetch the free-queue depth so banner / modal can show position + wait
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { count } = await supabase
+          .from('products')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'scheduled')
+          .is('launch_date', null);
+        if (cancelled) return;
+        const queuedAhead = count || 0;
+        const position = queuedAhead + 1;
+        const days = Math.max(7, Math.ceil(queuedAhead / 50) + 7);
+        setFreeQueueInfo({ position, days });
+      } catch (err) {
+        console.error('Queue depth fetch failed', err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
 
   const fetchProducts = async (userId: string) => {
     setLoading(true);
@@ -641,6 +666,20 @@ const MyProducts = () => {
           </div>
         )}
 
+        {/* Instant Launch banner — when user has at least one queued product and no Pass */}
+        {!passStatus.isLoading && !passStatus.data?.hasActivePass && (() => {
+          const queued = products.find((p) => p.status === 'scheduled' && !p.launch_date);
+          if (!queued) return null;
+          return (
+            <InstantLaunchPromo
+              productId={queued.id}
+              variant="banner"
+              queuePosition={freeQueueInfo?.position}
+              estimatedDays={freeQueueInfo?.days}
+            />
+          );
+        })()}
+
         {loading ? (
           <div className="space-y-3 py-6" aria-label="Loading" role="status">
             {[0,1,2,3].map(i => (
@@ -953,6 +992,16 @@ const MyProducts = () => {
                             </span>
                           </div>
                         </div>
+                        {!product.launch_date && !passStatus.data?.hasActivePass && (
+                          <div className="w-full mb-3">
+                            <InstantLaunchPromo
+                              productId={product.id}
+                              productName={product.name}
+                              variant="card"
+                              dismissible={false}
+                            />
+                          </div>
+                        )}
                       </>
                     )}
                     {canEdit(product) && (
@@ -1073,9 +1122,9 @@ const MyProducts = () => {
           open={showShareModal}
           onClose={() => {
             setShowShareModal(false);
-            // For free plans, show Pro upgrade modal; otherwise show boost
+            // After sharing flow, show Instant Launch upsell for free plan, boost otherwise
             if (recentProduct.plan === 'free') {
-              setTimeout(() => setShowProUpgradeModal(true), 300);
+              setTimeout(() => setShowInstantLaunchModal(true), 300);
             } else {
               setTimeout(() => setShowBoostModal(true), 300);
             }
@@ -1086,13 +1135,15 @@ const MyProducts = () => {
         />
       )}
 
-      {/* Pro Upgrade Modal — shown to free plan users after submission */}
+      {/* Instant Launch Upsell — shown to free plan users after sharing */}
       {recentProduct && (
-        <PostSubmissionUpgradeModal
-          open={showProUpgradeModal}
-          onClose={() => setShowProUpgradeModal(false)}
+        <InstantLaunchUpsellModal
+          open={showInstantLaunchModal}
+          onClose={() => setShowInstantLaunchModal(false)}
           productId={recentProduct.id}
           productName={recentProduct.name}
+          queuePosition={freeQueueInfo?.position}
+          estimatedDays={freeQueueInfo?.days}
         />
       )}
 
