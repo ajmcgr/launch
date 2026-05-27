@@ -404,6 +404,10 @@ const CategoryPage = () => {
           )}
         </div>
 
+        {categoryInfo && (
+          <CategorySponsorBanner categoryId={categoryInfo.id} categoryName={categoryInfo.name} />
+        )}
+
         <div className="flex items-center justify-between mb-6">
           <SortToggle sort={sort} onSortChange={handleSortChange} />
           {!isMobile && (
