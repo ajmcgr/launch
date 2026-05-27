@@ -128,6 +128,29 @@ const MyProducts = () => {
     }
   }, [searchParams, user, successProcessed]);
 
+  // Fetch the free-queue depth so banner / modal can show position + wait
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { count } = await supabase
+          .from('products')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'scheduled')
+          .is('launch_date', null);
+        if (cancelled) return;
+        const queuedAhead = count || 0;
+        const position = queuedAhead + 1;
+        const days = Math.max(7, Math.ceil(queuedAhead / 50) + 7);
+        setFreeQueueInfo({ position, days });
+      } catch (err) {
+        console.error('Queue depth fetch failed', err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+
   const fetchProducts = async (userId: string) => {
     setLoading(true);
     try {
