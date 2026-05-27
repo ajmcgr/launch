@@ -414,6 +414,38 @@ export const comparisons: Comparison[] = [
     ],
   },
   {
+    slug: 'launch-vs-toolfolio',
+    competitor: 'Toolfolio',
+    competitorUrl: 'http://toolfolio.io/',
+    oneLiner: 'A community launch board vs. a personal portfolio-style tools directory.',
+    metaDescription:
+      'Launch vs Toolfolio in 2026: compare audience, dofollow backlinks, pricing and discovery for indie tools and AI products.',
+    summary:
+      'Toolfolio is a portfolio-style directory where makers showcase the tools they use and build. Launch is an open-submission launch board with a daily leaderboard, dofollow backlinks, verified MRR, and a programmatic SEO surface across tags and tech pages.',
+    whoIsItFor: {
+      launch: 'Indie makers who want a launch event with upvotes, backlinks, and discovery.',
+      competitor: 'Makers who want a personal portfolio-style page of tools they use or built.',
+    },
+    rows: [
+      { feature: 'Format', launch: 'Daily launch board', competitor: 'Portfolio-style directory' },
+      { feature: 'Dofollow backlink', launch: 'Yes, by default', competitor: 'Varies' },
+      { feature: 'Daily leaderboard', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Community engagement', launch: 'Upvotes, comments, forum', competitor: 'Limited', winner: 'launch' },
+      { feature: 'Verified MRR', launch: 'Yes', competitor: 'No', winner: 'launch' },
+      { feature: 'Maker portfolio pages', launch: 'Profiles + collections', competitor: 'Yes, primary focus' },
+    ],
+    pricing: { launch: launchPricing, competitor: 'Free with optional paid upgrades' },
+    verdict:
+      'Pick Toolfolio if you want a personal tools portfolio. Pick Launch for an active launch event with backlinks, upvotes, and community discovery.',
+    faqs: [
+      {
+        question: 'Is Toolfolio the same as Toolfio?',
+        answer:
+          'No — they are different products. Toolfolio (toolfolio.io) is a portfolio-style tools directory; Toolfio (toolfio.com) is a curated tools directory.',
+      },
+    ],
+  },
+  {
     slug: 'launch-vs-fazier',
     competitor: 'Fazier',
     competitorUrl: 'https://fazier.com/',
