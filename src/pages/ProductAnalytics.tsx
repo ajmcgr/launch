@@ -24,6 +24,7 @@ const ProductAnalytics = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [referralClicks, setReferralClicks] = useState<any[]>([]);
   const [voteHistory, setVoteHistory] = useState<any[]>([]);
+  const [collectionAdds, setCollectionAdds] = useState(0);
 
   useEffect(() => {
     const load = async () => {
