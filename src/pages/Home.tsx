@@ -31,14 +31,12 @@ import { format, getWeek } from 'date-fns';
 
 import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
 import { SponsorBanner } from '@/components/SponsorBanner';
+import HomepageSponsorBanners from '@/components/HomepageSponsorBanners';
 import { PlatformStats } from '@/components/PlatformStats';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
 import { ForumActivityWidget } from '@/components/ForumActivityWidget';
 import { SiteStatsWidget } from '@/components/SiteStatsWidget';
 import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
-import mediaBanner from '@/assets/sponsors/media-banner.png';
-import bioBanner from '@/assets/sponsors/bio-banner.png';
-import roachBanner from '@/assets/sponsors/roach-banner.png';
 import { CommunityCallout } from '@/components/CommunityCallout';
 import { NewsletterCompact } from '@/components/NewsletterCompact';
 import { PopularSections } from '@/components/PopularSections';
@@ -1091,45 +1089,14 @@ const Home = () => {
               {/* Sponsor Banner - Below leaderboard */}
               <SponsorBanner className="mt-6" />
 
-              {/* Media Banner */}
-              <div className="py-6 flex flex-col items-center w-full">
-                <a 
-                  href="https://trymedia.ai/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block w-full"
-                >
-                  <img 
-                    src={mediaBanner} 
-                    alt="Media - Any Journalist or Creator Email. Instantly." 
-                    className="w-full h-auto transition-all duration-200 hover:opacity-95"
-                  />
-                </a>
-                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
-                  Featured Partner · Become a partner
-                </Link>
-              </div>
+              {/* Homepage Sponsor Banner #1 (DB-managed) */}
+              <HomepageSponsorBanners offset={0} limit={1} />
 
               <ThisWeekHighlights view={effectiveView} />
 
-              {/* Roach Banner */}
-              <div className="py-6 flex flex-col items-center w-full">
-                <a 
-                  href="https://roachclo.com/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block w-full"
-                >
-                  <img 
-                    src={roachBanner} 
-                    alt="Roach - Survive. Thrive. Shop Roach." 
-                    className="w-full h-auto transition-all duration-200 hover:opacity-95"
-                  />
-                </a>
-                <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
-                  Featured Partner · Become a partner
-                </Link>
-              </div>
+              {/* Homepage Sponsor Banner #2 (DB-managed) */}
+              <HomepageSponsorBanners offset={1} limit={1} />
+
 
               <CategoryCloud />
 

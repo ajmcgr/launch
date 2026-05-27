@@ -12,6 +12,7 @@ import AdminSeoTab from '@/components/AdminSeoTab';
 import AdminMarketingTab from '@/components/admin/AdminMarketingTab';
 import AdminBlogTab from '@/components/admin/AdminBlogTab';
 import AdminCategorySponsorsTab from '@/components/admin/AdminCategorySponsorsTab';
+import AdminHomepageSponsorsTab from '@/components/admin/AdminHomepageSponsorsTab';
 
 import { format } from 'date-fns';
 
@@ -606,6 +607,7 @@ const Admin = () => {
                   </CardContent>
                 </Card>
 
+                <AdminHomepageSponsorsTab />
                 <AdminCategorySponsorsTab />
               </TabsContent>
 
