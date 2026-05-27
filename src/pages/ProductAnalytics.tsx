@@ -70,7 +70,7 @@ const ProductAnalytics = () => {
       setProduct(prod);
 
       // Fetch all analytics, votes, comments, followers, referral clicks in parallel
-      const [analyticsRes, votesRes, commentsRes, followersRes, referralRes, votesTimeRes] = await Promise.all([
+      const [analyticsRes, votesRes, commentsRes, followersRes, referralRes, votesTimeRes, collectionRes] = await Promise.all([
         supabase
           .from('product_analytics')
           .select('event_type, created_at, visitor_id')
@@ -99,6 +99,10 @@ const ProductAnalytics = () => {
           .select('created_at, value')
           .eq('product_id', prod.id)
           .order('created_at', { ascending: true }),
+        supabase
+          .from('user_collection_items')
+          .select('id', { count: 'exact', head: true })
+          .eq('product_id', prod.id),
       ]);
 
       setAnalytics(analyticsRes.data || []);
