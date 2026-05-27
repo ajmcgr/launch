@@ -25,7 +25,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 22%;
     
-    --primary: 196 100% 43%;
+    --primary: 213 73% 46%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 0 0% 33%;
@@ -42,18 +42,18 @@ All colors MUST be HSL.
     
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 196 100% 50%;
+    --ring: 213 60% 50%;
     
     --radius: 0.75rem;
     
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 22%;
-    --sidebar-primary: 196 100% 50%;
+    --sidebar-primary: 213 60% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 96%;
     --sidebar-accent-foreground: 0 0% 22%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 196 100% 50%;
+    --sidebar-ring: 213 60% 50%;
     
     /* Custom Launch colors */
     --nav-text: 0 0% 22%;
@@ -71,7 +71,7 @@ All colors MUST be HSL.
     --popover: 0 0% 14%;
     --popover-foreground: 0 0% 95%;
     
-    --primary: 196 100% 43%;
+    --primary: 213 73% 46%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 0 0% 20%;
@@ -88,16 +88,16 @@ All colors MUST be HSL.
     
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 196 100% 50%;
+    --ring: 213 60% 50%;
     
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 196 100% 50%;
+    --sidebar-primary: 213 60% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 20%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 196 100% 50%;
+    --sidebar-ring: 213 60% 50%;
     
     /* Custom Launch colors */
     --nav-text: 0 0% 95%;
