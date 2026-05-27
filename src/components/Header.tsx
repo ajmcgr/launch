@@ -307,6 +307,14 @@ export const Header = () => {
                           My Products
                         </Link>
                         <Link 
+                          to="/advertising"
+                          className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors mb-4"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Megaphone className="h-5 w-5" />
+                          Advertising
+                        </Link>
+                        <Link 
                           to="/settings"
                           className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors mb-4"
                           onClick={() => setMobileMenuOpen(false)}
