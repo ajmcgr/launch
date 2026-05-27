@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft, Link2 } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import OutcomeReporting from '@/components/OutcomeReporting';
+import FounderAchievements from '@/components/FounderAchievements';
 
 const ProductAnalytics = () => {
   const { slug } = useParams();
@@ -404,6 +405,14 @@ const ProductAnalytics = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Section: Founder Achievements */}
+        <FounderAchievements
+          productId={product.id}
+          showOwnerControls
+          title="Achievements"
+          emptyText="No milestones yet — they'll appear here as your product hits trending, traffic, and save milestones."
+        />
 
         {/* Section 6: Outcome Tracking & Reporting */}
         <OutcomeReporting

@@ -21,6 +21,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const LaunchDetail = lazy(() => import("./pages/LaunchDetail"));
 const Settings = lazy(() => import("./pages/Settings"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
+const AchievementShare = lazy(() => import("./pages/AchievementShare"));
 const MyProducts = lazy(() => import("./pages/MyProducts"));
 const EditLaunch = lazy(() => import("./pages/EditLaunch"));
 const About = lazy(() => import("./pages/About"));
@@ -129,6 +130,7 @@ const AppContent = () => {
             <Route path="/launch/:slug" element={<LaunchDetail />} />
             <Route path="/launch/:slug/analytics" element={<ProductAnalytics />} />
             <Route path="/go/:slug" element={<GoRedirect />} />
+            <Route path="/achievement/:id" element={<AchievementShare />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/my-products" element={<MyProducts />} />
             <Route path="/launch/:productId/edit" element={<EditLaunch />} />

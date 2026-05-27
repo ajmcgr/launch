@@ -12,6 +12,7 @@ import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
 import { SeoHead } from '@/components/seo/SeoHead';
+import FounderAchievements from '@/components/FounderAchievements';
 
 
 const UserProfile = () => {
@@ -792,6 +793,9 @@ const UserProfile = () => {
           </div>
         )}
 
+        {profile?.id && (
+          <FounderAchievements founderId={profile.id} title="Milestones" />
+        )}
 
 
         {upvotedProducts.length > 0 && (

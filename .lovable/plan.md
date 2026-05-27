@@ -1,76 +1,110 @@
-# Collections Feature
+# Founder Milestone System
 
-Let users save launches into named collections, organize them, and share publicly.
+Build an end-to-end milestone system that detects achievements, generates share cards, sends branded Resend emails, and surfaces them in founder analytics + public profiles.
 
-## Database (migration)
+## 1. Database (migration)
 
-Two new tables with RLS:
+New table `product_achievements`:
+- `id` uuid pk
+- `product_id` uuid → products
+- `founder_id` uuid → auth.users (product owner at time of award)
+- `achievement_type` text (enum-like: `trending_1`, `trending_top_10`, `featured`, `most_saved`, `clicks_100`, `clicks_500`, `clicks_1000`, `clicks_5000`, `impressions_10000`, `fastest_rising`, `popular_week`, `collections_100`, `homepage_trending`)
+- `metric_value` numeric
+- `metric_label` text (e.g. "1,247 clicks")
+- `achieved_at` timestamptz default now()
+- `email_status` text default 'pending' (`pending` | `sent` | `failed` | `skipped`)
+- `email_sent_at` timestamptz
+- `share_count` int default 0
+- `metadata` jsonb
+- UNIQUE(`product_id`, `achievement_type`) — one-time per product per type
 
-**`collections`**
-- `id` uuid PK
-- `user_id` uuid → users(id) cascade
-- `name` text NOT NULL
-- `description` text
-- `is_public` boolean default false
-- `slug` text unique (for public URLs)
-- `created_at`, `updated_at` timestamptz
+RLS:
+- Public SELECT (achievements are public reputation)
+- Founders can UPDATE own (for share_count increment via RPC)
+- Service role full access (edge fn writes)
 
-**`collection_items`**
-- `id` uuid PK
-- `collection_id` uuid → collections(id) cascade
-- `product_id` uuid → products(id) cascade
-- `note` text
-- `added_at` timestamptz default now()
-- UNIQUE(collection_id, product_id)
+GRANTs: anon SELECT, authenticated SELECT+UPDATE(own), service_role ALL.
 
-Triggers: bump `collections.updated_at` on item insert/delete.
+Index: `(founder_id, achieved_at desc)`, `(product_id, achieved_at desc)`.
 
-**RLS**
-- collections SELECT: `is_public = true OR user_id = auth.uid()`
-- collections INSERT/UPDATE/DELETE: `user_id = auth.uid()`
-- collection_items SELECT: parent collection visible
-- collection_items INSERT/UPDATE/DELETE: parent owner only
+## 2. Detection edge function: `detect-milestones`
 
-## Routes
+Deployed manually per project convention. Scheduled via existing pg_cron (hourly).
 
-- `/collections` — current user's library (auth required)
-- `/collections/:id` — owner detail view (grid/list, sort, filter, bulk actions)
-- `/c/:slug` — public read-only collection page (SEO meta + JSON-LD)
+Logic per active product:
+- Query `product_vote_counts`, `product_analytics` (clicks/impressions), `user_collection_items` counts, leaderboard rank.
+- For each milestone type not yet in `product_achievements` for that product, evaluate threshold:
+  - `clicks_*` → cumulative outbound clicks from `/go/:slug` analytics
+  - `impressions_10000` → product page views
+  - `collections_100` → count of user_collection_items where product_id = X
+  - `trending_1` / `trending_top_10` / `homepage_trending` → today's rank ≤ 1 / ≤ 10
+  - `most_saved` → top 1 by saves in last 7 days
+  - `featured` → has `featured = true` flag
+  - `fastest_rising` → biggest vote delta in 24h (top 1)
+  - `popular_week` → top 5 by votes this week
+- INSERT achievement (ON CONFLICT DO NOTHING)
+- For each newly inserted row → invoke `send-milestone-email`
 
-## Components
+## 3. Email: reuse existing Resend system (send-transactional-email pattern already used in project, per memory `auth/resend-integration`)
 
-- `src/pages/Collections.tsx` — library list with create/rename/delete/duplicate/share
-- `src/pages/CollectionDetail.tsx` — owner editor (grid/list toggle, sort, filter, bulk remove/move, CSV export)
-- `src/pages/PublicCollection.tsx` — public view at `/c/:slug`
-- `src/components/SaveToCollectionButton.tsx` — bookmark icon button on launch cards
-- `src/components/SaveToCollectionModal.tsx` — checkbox list of collections, inline create, optional note
-- `src/hooks/use-collections.tsx` — fetch/mutate with optimistic updates
+New template `milestone-achievement.tsx` (React Email) under `_shared/transactional-email-templates/`:
+- Product logo, achievement title, key metric, stats snapshot
+- Buttons: "View Analytics" (/dashboard/analytics?product=…), "View Product", "Share Achievement"
+- Subject function based on achievement_type (emoji + dynamic)
+- Celebratory tone, brand colors
 
-## Integrations
+Triggered from `detect-milestones` via `supabase.functions.invoke('send-transactional-email', {...})` with `idempotencyKey: milestone-${achievement.id}`. Update `email_status` after.
 
-- **Header avatar dropdown** (`src/components/Header.tsx`): add "Collections" item directly below "Profile", routes to `/collections`. Fires `collections_nav_clicked` analytics.
-- **LaunchCard** (`src/components/LaunchCard.tsx`): add `SaveToCollectionButton` in the action row next to vote button.
-- **LaunchDetail** (`src/pages/LaunchDetail.tsx`): add Save button near upvote.
-- **App.tsx**: register 3 new routes.
+## 4. Share Card component (frontend)
 
-## Analytics
+`src/components/MilestoneShareCard.tsx`:
+- Visual card (rendered with html2canvas for PNG download)
+- Product logo, name, achievement title, metric, "Launch" branding, optional founder avatar
+- Actions: Share on X, LinkedIn, Copy Link, Download PNG
+- Pre-written share text per achievement type
+- Share URL: `/achievement/:id` (new route showing OG card)
 
-Insert into existing `product_analytics` table (consistent with project memory) for events: `collection_created`, `launch_saved_to_collection`, `launch_removed_from_collection`, `collection_shared`, `collection_viewed`, `collections_nav_clicked`.
+Optional: `og-share` edge fn already exists per memory — extend to handle `?achievement=ID` to render OG meta.
 
-## UX details
+## 5. Founder Analytics integration
 
-- Optimistic save/remove with toast (sonner).
-- Empty state on library: "No collections yet — start saving launches."
-- Empty state on detail: CTA → `/products`.
-- Public badge with lock/globe icon.
-- Share button copies `${origin}/c/${slug}` and fires `collection_shared`.
-- Pagination: 24 per page on detail, infinite scroll via existing `use-infinite-scroll`.
-- Mobile-responsive grids, ARIA labels on icon buttons, keyboard-friendly modal (shadcn Dialog).
-- Loading skeletons reuse `ProductSkeleton`.
+In existing analytics dashboard (find via grep, likely `src/pages/Dashboard*` or `FounderAnalytics`):
+- New "Achievements" section listing earned milestones for founder's products
+- Columns: icon, title, product, metric, date, email status badge, Share button (opens MilestoneShareCard modal)
 
-## Out of scope (flagging)
+## 6. Public Profile integration
 
-- No automated test harness exists in repo — will skip "basic tests" deliverable unless you want me to add Vitest setup.
-- "Move to another collection" bulk action included; "duplicate collection" implemented as server-side copy of items.
+In `src/pages/UserProfile.tsx`:
+- New "Achievements" section (replace/augment existing achievements grid) pulling from `product_achievements` joined to products
+- Badge-style display grouped by type (Trending, Clicks, Featured, Saves)
+- Click → opens share card
 
-Proceed?
+## 7. Files to create / edit
+
+Create:
+- Migration: add `product_achievements` table + RLS + grants + indexes
+- `supabase/functions/detect-milestones/index.ts`
+- `supabase/functions/_shared/transactional-email-templates/milestone-achievement.tsx`
+- Update `_shared/transactional-email-templates/registry.ts`
+- `src/components/MilestoneShareCard.tsx`
+- `src/components/MilestoneShareModal.tsx`
+- `src/components/FounderAchievements.tsx` (used in dashboard + profile)
+- `src/pages/AchievementShare.tsx` (route `/achievement/:id`)
+- `src/lib/milestones.ts` (titles, share text, thresholds, icons)
+
+Edit:
+- `src/App.tsx` — add `/achievement/:id` route
+- Founder analytics page — add Achievements section
+- `src/pages/UserProfile.tsx` — wire real achievements from DB
+
+## 8. Deployment notes
+
+- `detect-milestones` deployed manually via Supabase dashboard (per memory rule)
+- Email template uses string-concat HTML if needed (per memory rule on edge fn templating) — but transactional template registry uses React Email (.tsx) which is the standard pattern — follow that since existing templates do.
+- Cron job (manual SQL): `select cron.schedule('detect-milestones-hourly','0 * * * *', $$ select net.http_post(...) $$);` — user can run after deploy.
+
+## Out of scope (future)
+
+- share_count tracking via redirect
+- Per-user notification feed
+- Animated/video share cards
