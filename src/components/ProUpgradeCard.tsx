@@ -73,6 +73,33 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
     bgColor: 'bg-primary/5',
     iconColor: 'text-primary',
   },
+  instant_launch_modal: {
+    icon: Rocket,
+    getTitle: () => 'Launch Instantly',
+    getMessage: () => 'Skip the queue and start getting visibility today with Launch Pass.',
+    cta: '🚀 Launch Instantly',
+    borderColor: 'border-primary/20',
+    bgColor: 'bg-primary/5',
+    iconColor: 'text-primary',
+  },
+  instant_launch_banner: {
+    icon: Rocket,
+    getTitle: () => 'Want visibility sooner?',
+    getMessage: () => 'Skip the queue and launch instantly with Launch Pass.',
+    cta: 'Launch Instantly',
+    borderColor: 'border-primary/20',
+    bgColor: 'bg-primary/5',
+    iconColor: 'text-primary',
+  },
+  instant_launch_card: {
+    icon: Rocket,
+    getTitle: () => 'Launch sooner and start getting traffic today',
+    getMessage: () => 'Included with Launch Pass — unlimited launches, priority placement.',
+    cta: 'Launch Instantly',
+    borderColor: 'border-primary/20',
+    bgColor: 'bg-primary/5',
+    iconColor: 'text-primary',
+  },
 };
 
 const ProUpgradeCard = (props: ProUpgradeCardProps) => {
