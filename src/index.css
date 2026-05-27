@@ -117,3 +117,23 @@ All colors MUST be HSL.
     @apply font-reckless;
   }
 }
+
+/* Hide Google Translate UI chrome (banner, tooltip, body offset) */
+.goog-te-banner-frame,
+.skiptranslate iframe,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
