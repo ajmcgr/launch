@@ -382,14 +382,14 @@ export const comparisons: Comparison[] = [
     ],
   },
   {
-    slug: 'launch-vs-toolfolio',
-    competitor: 'Toolfolio',
+    slug: 'launch-vs-toolfio',
+    competitor: 'Toolfio',
     competitorUrl: 'https://toolfio.com/',
     oneLiner: 'A community launch board vs. a curated tools directory.',
     metaDescription:
-      'Launch vs Toolfolio in 2026: compare audience, dofollow backlinks, pricing and discovery for indie tools and AI products.',
+      'Launch vs Toolfio in 2026: compare audience, dofollow backlinks, pricing and discovery for indie tools and AI products.',
     summary:
-      'Toolfolio is a curated tools directory — clean design, editorial selection, but limited daily volume and no real launch event. Launch is open-submission with a daily leaderboard, dofollow backlinks, verified MRR, and a programmatic SEO surface across tags and tech pages.',
+      'Toolfio is a curated tools directory — clean design, editorial selection, but limited daily volume and no real launch event. Launch is open-submission with a daily leaderboard, dofollow backlinks, verified MRR, and a programmatic SEO surface across tags and tech pages.',
     whoIsItFor: {
       launch: 'Any indie maker who wants instant or queued launching with no curation lottery.',
       competitor: 'Makers happy to wait for editorial inclusion in a curated list.',
@@ -404,12 +404,12 @@ export const comparisons: Comparison[] = [
     ],
     pricing: { launch: launchPricing, competitor: 'Free (curated) or paid skip-the-queue' },
     verdict:
-      'Pick Toolfolio for editorial credibility on a curated list. Pick Launch for open submission, faster publish, and an active community of makers.',
+      'Pick Toolfio for editorial credibility on a curated list. Pick Launch for open submission, faster publish, and an active community of makers.',
     faqs: [
       {
-        question: 'Is Launch easier to get on than Toolfolio?',
+        question: 'Is Launch easier to get on than Toolfio?',
         answer:
-          'Yes — Launch is open submission. Toolfolio is curated, so inclusion is not guaranteed.',
+          'Yes — Launch is open submission. Toolfio is curated, so inclusion is not guaranteed.',
       },
     ],
   },
