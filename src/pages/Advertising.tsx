@@ -126,12 +126,12 @@ const Advertising = () => {
     queryKey: ['advertising', 'homepage', identifiers],
     enabled: !!user && identifiers.length > 0,
     queryFn: async (): Promise<HomepageSponsor[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('homepage_sponsors')
         .select('*')
         .order('start_date', { ascending: false });
       if (error) throw error;
-      return (data ?? []).filter((s: any) =>
+      return ((data ?? []) as HomepageSponsor[]).filter((s) =>
         identifiers.includes((s.sponsor_name ?? '').toLowerCase())
       );
     },
@@ -141,14 +141,14 @@ const Advertising = () => {
     queryKey: ['advertising', 'category', identifiers],
     enabled: !!user && identifiers.length > 0,
     queryFn: async (): Promise<CategorySponsor[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('category_sponsors')
         .select('*, category:product_categories(name, slug)')
         .order('start_date', { ascending: false });
       if (error) throw error;
-      return (data ?? []).filter((s: any) =>
+      return ((data ?? []) as CategorySponsor[]).filter((s) =>
         identifiers.includes((s.sponsor_name ?? '').toLowerCase())
-      ) as any;
+      );
     },
   });
 
