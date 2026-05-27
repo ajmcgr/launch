@@ -221,13 +221,42 @@ const ProductAnalytics = () => {
 
   if (!isAuthorized || !product) return null;
 
+  const ctrNum = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
+  const isTrending = !!(product as any).won_daily || !!(product as any).won_weekly || !!(product as any).won_monthly;
+  const launchedDate = product.launch_date ? new Date(product.launch_date) : null;
+  const daysSinceLaunch = launchedDate ? Math.max(1, Math.floor((Date.now() - launchedDate.getTime()) / 86400000)) : 1;
+
+  // Top traffic days (top 3 by combined views + clicks)
+  const topTrafficDays = [...dailyViews]
+    .map(d => ({ ...d, total: d.views + d.clicks }))
+    .filter(d => d.total > 0)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 3);
+
+  // Benchmarks (positive framing)
+  const benchmarks: { label: string; value: string; positive: boolean }[] = [
+    { label: 'CTR vs. platform avg', value: ctrNum >= 3 ? `${ctr}% — above average` : `${ctr}% — keep going`, positive: ctrNum >= 3 },
+    { label: 'Trending status', value: isTrending ? 'Currently trending' : 'Climbing the leaderboard', positive: isTrending },
+    { label: 'Engagement velocity', value: netVotes / daysSinceLaunch >= 2 ? 'Top 10% of launches' : 'Building momentum', positive: netVotes / daysSinceLaunch >= 2 },
+  ];
+
+  // Founder success moments (real, achieved milestones)
+  const successMoments = [
+    { reached: totalClicks >= 100, label: 'First 100 Clicks', icon: MousePointerClick },
+    { reached: totalViews >= 1000, label: 'First 1,000 Impressions', icon: Eye },
+    { reached: collectionAdds >= 1, label: 'First Save', icon: Bookmark },
+    { reached: isTrending, label: 'Entered Trending', icon: Flame },
+    { reached: netVotes >= 50, label: 'Top 10 Product', icon: Trophy },
+    { reached: collectionAdds >= 10, label: 'Most Saved Product', icon: Star },
+  ];
+
   const statCards = [
-    { label: 'Total Views', value: totalViews.toLocaleString(), icon: Eye, color: 'text-primary' },
-    { label: 'Unique Visitors', value: uniqueVisitors.toLocaleString(), icon: Users, color: 'text-primary' },
-    { label: 'Votes', value: netVotes.toLocaleString(), icon: ArrowUp, color: 'text-primary' },
-    { label: 'Comments', value: commentCount.toLocaleString(), icon: MessageSquare, color: 'text-primary' },
-    { label: 'Click-throughs', value: totalClicks.toLocaleString(), icon: MousePointerClick, color: 'text-primary' },
-    { label: 'Referral Clicks', value: totalReferrals.toLocaleString(), icon: Link2, color: 'text-primary' },
+    { label: 'Impressions', value: totalViews.toLocaleString(), icon: Eye },
+    { label: 'Outbound Clicks', value: (totalClicks + totalReferrals).toLocaleString(), icon: MousePointerClick },
+    { label: 'CTR', value: `${ctr}%`, icon: Target },
+    { label: 'Saves', value: followerCount.toLocaleString(), icon: Bookmark },
+    { label: 'Collection Adds', value: collectionAdds.toLocaleString(), icon: FolderPlus },
+    { label: 'Upvotes', value: netVotes.toLocaleString(), icon: ArrowUp },
   ];
 
   return (
