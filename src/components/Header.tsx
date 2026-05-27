@@ -190,7 +190,7 @@ export const Header = () => {
                 </Button>
               </div>
             ) : (
-              <div className="hidden md:flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-3">
                 <GoogleTranslate />
                 <ThemeToggle />
                 <Link to="/auth" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
@@ -202,8 +202,9 @@ export const Header = () => {
               </div>
             )}
 
-            {/* Mobile Theme Toggle */}
-            <div className="md:hidden">
+            {/* Mobile Theme Toggle + Translate */}
+            <div className="md:hidden flex items-center gap-2">
+              <GoogleTranslate />
               <ThemeToggle />
             </div>
 
