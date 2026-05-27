@@ -11,6 +11,7 @@ import { Calendar, Tags, Mail, Loader2, Megaphone } from 'lucide-react';
 import AdminSeoTab from '@/components/AdminSeoTab';
 import AdminMarketingTab from '@/components/admin/AdminMarketingTab';
 import AdminBlogTab from '@/components/admin/AdminBlogTab';
+import AdminCategorySponsorsTab from '@/components/admin/AdminCategorySponsorsTab';
 
 import { format } from 'date-fns';
 
@@ -604,7 +605,10 @@ const Admin = () => {
                     </div>
                   </CardContent>
                 </Card>
+
+                <AdminCategorySponsorsTab />
               </TabsContent>
+
 
               <TabsContent value="blog" className="space-y-4">
                 <AdminBlogTab />

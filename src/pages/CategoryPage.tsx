@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
 import { buildFaqJsonLd, categoryFaqs, categoryIntroFallback } from '@/lib/seoFaq';
+import CategorySponsorBanner from '@/components/CategorySponsorBanner';
 
 interface Product {
   id: string;
@@ -357,6 +358,9 @@ const CategoryPage = () => {
   if (!categoryInfo && loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {categoryInfo && (
+          <CategorySponsorBanner categoryId={categoryInfo.id} categoryName={categoryInfo.name} />
+        )}
         <ProductSkeleton view="list" count={5} />
       </div>
     );
