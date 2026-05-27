@@ -406,6 +406,14 @@ const ProductAnalytics = () => {
           </CardContent>
         </Card>
 
+        {/* Section: Founder Achievements */}
+        <FounderAchievements
+          productId={product.id}
+          showOwnerControls
+          title="Achievements"
+          emptyText="No milestones yet — they'll appear here as your product hits trending, traffic, and save milestones."
+        />
+
         {/* Section 6: Outcome Tracking & Reporting */}
         <OutcomeReporting
           productId={product.id}
