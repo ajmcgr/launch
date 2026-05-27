@@ -40,6 +40,7 @@ const FAQ = lazy(() => import("./pages/FAQ"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 const Advertise = lazy(() => import("./pages/Advertise"));
+const Advertising = lazy(() => import("./pages/Advertising"));
 const TagPage = lazy(() => import("./pages/TagPage"));
 const Tags = lazy(() => import("./pages/Tags"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
