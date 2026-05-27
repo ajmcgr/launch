@@ -140,6 +140,7 @@ const AppContent = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/advertise" element={<Advertise />} />
+            <Route path="/advertising" element={<Advertising />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/newsletter" element={<NewsletterRedirect />} />
