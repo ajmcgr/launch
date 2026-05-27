@@ -607,6 +607,7 @@ const Admin = () => {
                   </CardContent>
                 </Card>
 
+                <AdminHomepageSponsorsTab />
                 <AdminCategorySponsorsTab />
               </TabsContent>
 
