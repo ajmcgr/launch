@@ -803,6 +803,10 @@ const Submit = () => {
   const handleNext = () => {
     // Validate based on current step
     if (step === 1) {
+      if (!(formData as any).submissionType) {
+        toast.error('Please select Founder or Community Launch to continue');
+        return;
+      }
       const validation = productSchema.pick({ name: true, tagline: true, url: true }).safeParse({
         name: formData.name,
         tagline: formData.tagline,
@@ -813,6 +817,26 @@ const Submit = () => {
         const errors = validation.error.errors.map(e => `${e.path[0]}: ${e.message}`).join(', ');
         toast.error(errors);
         return;
+      }
+
+      // Duplicate detection by domain (community launches only — founders may re-launch their own)
+      if ((formData as any).submissionType === 'community') {
+        try {
+          const { normalizeDomain } = await import('@/lib/domain');
+          const dom = normalizeDomain(formData.url);
+          if (dom) {
+            const { data: existing } = await supabase
+              .from('products')
+              .select('id, name, slug')
+              .ilike('domain_url', `%${dom}%`)
+              .neq('id', productId || '00000000-0000-0000-0000-000000000000')
+              .limit(1);
+            if (existing && existing.length > 0) {
+              toast.error(`${existing[0].name} is already on Launch — visit /launch/${existing[0].slug}`);
+              return;
+            }
+          }
+        } catch {}
       }
     }
     
