@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
@@ -21,7 +21,7 @@ const FounderAchievements = lazy(() => import('@/components/FounderAchievements'
 const sb: any = supabase;
 const PAGE_SIZE = 12;
 
-type TabKey = 'launches' | 'collections' | 'community' | 'achievements';
+type TabKey = 'launches' | 'collections' | 'community' | 'comments' | 'achievements';
 
 interface ProfileStats {
   founderLaunches: number;
@@ -96,13 +96,39 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   return (
     <div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         {items.map((p) => (
-          <LaunchCard key={p.id} {...p} onVote={() => {}} showFollowButton={false} />
+          <ProfileLaunchRow key={p.id} product={p} />
         ))}
       </div>
       <Pager page={page} pages={pages} total={total} onChange={setPage} />
     </div>
+  );
+}
+
+function ProfileLaunchRow({ product, submissionType }: { product: any; submissionType?: 'community' }) {
+  return (
+    <Link
+      to={`/launch/${product.slug}`}
+      className="flex items-center gap-3 py-2 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
+    >
+      <img
+        src={product.iconUrl || product.thumbnail || '/placeholder.svg'}
+        alt={product.name}
+        loading="lazy"
+        width={40}
+        height={40}
+        className="h-10 w-10 rounded-md object-cover bg-muted shrink-0"
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold truncate group-hover:text-primary transition-colors">{product.name}</p>
+          {submissionType === 'community' && <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Community</span>}
+        </div>
+        <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
+      </div>
+      <span className="text-xs text-muted-foreground tabular-nums shrink-0">{Math.max(0, product.netVotes)} ▲</span>
+    </Link>
   );
 }
 
@@ -226,11 +252,64 @@ function CommunityPanel({ profile }: { profile: any }) {
         <StatBlock label="Claimed by founder" value={items.filter((p) => !!p.claimed_at).length} />
         <StatBlock label="Awaiting claim" value={items.filter((p) => !p.claimed_at).length} />
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         {items.map((p) => (
-          <LaunchCard key={p.id} {...p} onVote={() => {}} submissionType="community" />
+          <ProfileLaunchRow key={p.id} product={p} submissionType="community" />
         ))}
       </div>
+    </div>
+  );
+}
+
+function CommentsPanel({ profile }: { profile: any }) {
+  const [page, setPage] = useState(0);
+  const [items, setItems] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await sb
+        .from('comments')
+        .select('id, content, created_at, product_id, products(name, slug)', { count: 'exact' })
+        .eq('user_id', profile.id)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      if (cancelled) return;
+      setItems(data || []);
+      setTotal(count || 0);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [profile.id, page]);
+
+  if (loading) return <GridSkeleton rows={1} />;
+  if (!items.length) return <EmptyState icon={MessageSquare} title="No comments yet" />;
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  return (
+    <div>
+      <div className="flex flex-col">
+        {items.map((c: any) => (
+          <Link
+            key={c.id}
+            to={c.products?.slug ? `/launch/${c.products.slug}` : '#'}
+            className="flex flex-col gap-1 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
+          >
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{c.products?.name || 'Product'}</span>
+              <span>·</span>
+              <span>{new Date(c.created_at).toLocaleDateString()}</span>
+            </div>
+            <p className="text-sm text-foreground/90 line-clamp-3 whitespace-pre-line">{c.content}</p>
+          </Link>
+        ))}
+      </div>
+      <Pager page={page} pages={pages} total={total} onChange={setPage} />
     </div>
   );
 }
@@ -620,6 +699,7 @@ const UserProfile = () => {
             <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
             <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
             <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Comments</TabsTrigger>
             <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
           </TabsList>
 
@@ -634,6 +714,12 @@ const UserProfile = () => {
           <TabsContent value="community" className="mt-6 pb-12">
             {visited.has('community') && <CommunityPanel profile={profile} />}
           </TabsContent>
+
+          <TabsContent value="comments" className="mt-6 pb-12">
+            {visited.has('comments') && <CommentsPanel profile={profile} />}
+          </TabsContent>
+
+
 
           <TabsContent value="achievements" className="mt-6 pb-12">
             {visited.has('achievements') && <AchievementsPanel profile={profile} stats={s} makerScore={makerScore} />}
