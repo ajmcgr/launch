@@ -152,7 +152,16 @@ const ComparePage = () => {
               <p className="text-sm text-muted-foreground">{data.pricing.launch}</p>
             </div>
             <div className="rounded-xl bg-muted/30 p-5">
-              <h3 className="font-semibold mb-2">{data.competitor}</h3>
+              <h3 className="font-semibold mb-2">
+                <a
+                  href={data.competitorUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="hover:underline decoration-primary underline-offset-4"
+                >
+                  {data.competitor}
+                </a>
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {data.pricing.competitor}
               </p>
