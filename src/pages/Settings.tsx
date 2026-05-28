@@ -31,6 +31,7 @@ const Settings = () => {
     telegram: '',
     website: '',
     avatar_url: '',
+    banner_image_url: '',
     stripe_customer_id: '',
     email_notifications_enabled: true,
     notify_on_follow: true,
@@ -39,6 +40,7 @@ const Settings = () => {
     notify_on_launch: true,
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
   
   // Pass status
   const { data: passStatus, refetch: refetchPassStatus } = usePass(user?.id);
@@ -98,6 +100,7 @@ const Settings = () => {
         telegram: profile.telegram,
         website: profile.website,
         avatar_url: profile.avatar_url,
+        banner_image_url: profile.banner_image_url,
         email_notifications_enabled: profile.email_notifications_enabled,
         notify_on_follow: profile.notify_on_follow,
         notify_on_comment: profile.notify_on_comment,
