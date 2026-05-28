@@ -113,7 +113,16 @@ const ComparePage = () => {
                 <tr className="text-left">
                   <th className="p-3 font-semibold">Feature</th>
                   <th className="p-3 font-semibold">Launch</th>
-                  <th className="p-3 font-semibold">{data.competitor}</th>
+                  <th className="p-3 font-semibold">
+                    <a
+                      href={data.competitorUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="hover:underline decoration-primary underline-offset-4"
+                    >
+                      {data.competitor}
+                    </a>
+                  </th>
                 </tr>
               </thead>
               <tbody>
