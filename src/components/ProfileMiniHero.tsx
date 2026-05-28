@@ -114,7 +114,7 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
         </div>
 
         {/* Tabs nav — links back to main profile */}
-        <div className="flex flex-wrap gap-1 border-b border-border mb-6">
+        <div className="flex flex-wrap justify-center gap-1 border-b border-border mb-6">
           {tabs.map((t) => (
             <Link
               key={t.key}
