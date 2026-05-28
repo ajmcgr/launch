@@ -25,7 +25,7 @@ export default function Collections() {
   const [createOpen, setCreateOpen] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const [editing, setEditing] = useState<Collection | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
 
@@ -42,7 +42,7 @@ export default function Collections() {
     if (col) {
       toast.success(`Collection "${col.name}" created`);
       setCreateOpen(false);
-      setName(''); setDescription(''); setIsPublic(false);
+      setName(''); setDescription(''); setIsPublic(true);
     } else {
       toast.error('Failed to create');
     }
