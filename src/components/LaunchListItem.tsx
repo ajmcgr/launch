@@ -10,6 +10,7 @@ import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
+import { SubmissionTypeBadge } from '@/components/SubmissionTypeBadge';
 
 // Truncate text to one sentence
 const truncateToOneSentence = (text: string): string => {
@@ -41,6 +42,7 @@ interface LaunchListItemProps {
   icon?: any;
   sponsored?: boolean;
   sponsoredPosition?: number;
+  submissionType?: 'founder' | 'community' | null;
   onVote: (productId: string) => void;
 }
 
@@ -65,6 +67,7 @@ export const LaunchListItem = ({
   icon: IconComponent,
   sponsored,
   sponsoredPosition,
+  submissionType,
   onVote,
 }: LaunchListItemProps) => {
   const isMobile = useIsMobile();
@@ -144,6 +147,7 @@ export const LaunchListItem = ({
             <h3 className="font-semibold text-base hover:text-primary transition-colors">
               {name}
             </h3>
+            <SubmissionTypeBadge type={submissionType} />
             {domainUrl && (
               <a
                 href={domainUrl}

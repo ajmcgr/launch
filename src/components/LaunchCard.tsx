@@ -9,6 +9,7 @@ import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
+import { SubmissionTypeBadge } from '@/components/SubmissionTypeBadge';
 
 interface LaunchCardProps {
   id: string;
@@ -33,6 +34,7 @@ interface LaunchCardProps {
   icon?: any;
   sponsored?: boolean;
   sponsoredPosition?: number;
+  submissionType?: 'founder' | 'community' | null;
   onVote: (productId: string) => void;
   showFollowButton?: boolean;
   isFollowing?: boolean;
@@ -59,6 +61,7 @@ export const LaunchCard = ({
   icon: IconComponent,
   sponsored,
   sponsoredPosition,
+  submissionType,
   onVote,
   showFollowButton = false,
   isFollowing = false,
@@ -144,6 +147,7 @@ export const LaunchCard = ({
           <h3 className="font-semibold text-base hover:text-primary transition-colors">
             {name}
           </h3>
+          <SubmissionTypeBadge type={submissionType} />
           {domainUrl && (
             <a
               href={domainUrl}

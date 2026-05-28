@@ -1,110 +1,118 @@
-# Founder Milestone System
+# Community Launches & Founder Claiming
 
-Build an end-to-end milestone system that detects achievements, generates share cards, sends branded Resend emails, and surfaces them in founder analytics + public profiles.
+A unified system that lets community members submit products they didn't build, and lets founders claim those listings to convert them into Founder Launches.
 
-## 1. Database (migration)
+## 1. Database changes
 
-New table `product_achievements`:
-- `id` uuid pk
-- `product_id` uuid → products
-- `founder_id` uuid → auth.users (product owner at time of award)
-- `achievement_type` text (enum-like: `trending_1`, `trending_top_10`, `featured`, `most_saved`, `clicks_100`, `clicks_500`, `clicks_1000`, `clicks_5000`, `impressions_10000`, `fastest_rising`, `popular_week`, `collections_100`, `homepage_trending`)
-- `metric_value` numeric
-- `metric_label` text (e.g. "1,247 clicks")
-- `achieved_at` timestamptz default now()
-- `email_status` text default 'pending' (`pending` | `sent` | `failed` | `skipped`)
-- `email_sent_at` timestamptz
-- `share_count` int default 0
-- `metadata` jsonb
-- UNIQUE(`product_id`, `achievement_type`) — one-time per product per type
+New migration adding:
 
-RLS:
-- Public SELECT (achievements are public reputation)
-- Founders can UPDATE own (for share_count increment via RPC)
-- Service role full access (edge fn writes)
+- `products.submission_type` — enum-like text, `'founder' | 'community'`, default `'founder'` (backfill existing rows to `'founder'`)
+- `products.submitted_by_user_id` — uuid, references `auth.users(id)`, nullable (backfill from `owner_id` for existing rows)
+- `products.claimed_at` — timestamptz, nullable
+- `products.original_submitter_id` — uuid, preserved attribution after claim
+- New table `product_claims`:
+  - `id`, `product_id`, `claimant_user_id`, `verification_method` (`email_domain` | `verified_founder` | `admin`), `verification_email`, `status` (`pending` | `approved` | `rejected`), `created_at`, `reviewed_at`, `reviewed_by`
+  - RLS: claimant can insert/select own; admin can manage all
+- New table `product_reports` for community-launch spam reporting:
+  - `id`, `product_id`, `reporter_user_id`, `reason`, `details`, `status`, `created_at`
+- Indexes on `submission_type`, `submitted_by_user_id`
 
-GRANTs: anon SELECT, authenticated SELECT+UPDATE(own), service_role ALL.
+GRANTs + RLS policies for all new tables (per project conventions).
 
-Index: `(founder_id, achieved_at desc)`, `(product_id, achieved_at desc)`.
+## 2. Submission flow
 
-## 2. Detection edge function: `detect-milestones`
+`src/pages/Submit.tsx` — add a required first step before the existing form:
 
-Deployed manually per project convention. Scheduled via existing pg_cron (hourly).
+- Two large selectable cards: **🚀 Founder Launch** vs **🌎 Community Launch**
+- Stored in form state as `submissionType`
+- Submit insert includes `submission_type` and `submitted_by_user_id = auth.uid()`
+- Community Launches: `owner_id` left null (or set to submitter for now; un-claimed)
+- Light copy change on form fields when community is selected ("This product's name/URL", not "your product")
 
-Logic per active product:
-- Query `product_vote_counts`, `product_analytics` (clicks/impressions), `user_collection_items` counts, leaderboard rank.
-- For each milestone type not yet in `product_achievements` for that product, evaluate threshold:
-  - `clicks_*` → cumulative outbound clicks from `/go/:slug` analytics
-  - `impressions_10000` → product page views
-  - `collections_100` → count of user_collection_items where product_id = X
-  - `trending_1` / `trending_top_10` / `homepage_trending` → today's rank ≤ 1 / ≤ 10
-  - `most_saved` → top 1 by saves in last 7 days
-  - `featured` → has `featured = true` flag
-  - `fastest_rising` → biggest vote delta in 24h (top 1)
-  - `popular_week` → top 5 by votes this week
-- INSERT achievement (ON CONFLICT DO NOTHING)
-- For each newly inserted row → invoke `send-milestone-email`
+## 3. Feed & cards
 
-## 3. Email: reuse existing Resend system (send-transactional-email pattern already used in project, per memory `auth/resend-integration`)
+Keep single feed (no fragmentation). Add subtle badge:
 
-New template `milestone-achievement.tsx` (React Email) under `_shared/transactional-email-templates/`:
-- Product logo, achievement title, key metric, stats snapshot
-- Buttons: "View Analytics" (/dashboard/analytics?product=…), "View Product", "Share Achievement"
-- Subject function based on achievement_type (emoji + dynamic)
-- Celebratory tone, brand colors
+- New component `SubmissionTypeBadge.tsx` — tiny pill (🚀 Founder / 🌎 Community)
+- Render in `LaunchCard`, `LaunchListItem`, `HomeLaunchCard`, `HomeLaunchListItem`, `CompactLaunchListItem` near the title
+- Pass `submission_type` through existing product fetch shapes (update relevant `select` queries)
 
-Triggered from `detect-milestones` via `supabase.functions.invoke('send-transactional-email', {...})` with `idempotencyKey: milestone-${achievement.id}`. Update `email_status` after.
+## 4. Product detail page
 
-## 4. Share Card component (frontend)
+`src/pages/LaunchDetail.tsx`:
 
-`src/components/MilestoneShareCard.tsx`:
-- Visual card (rendered with html2canvas for PNG download)
-- Product logo, name, achievement title, metric, "Launch" branding, optional founder avatar
-- Actions: Share on X, LinkedIn, Copy Link, Download PNG
-- Pre-written share text per achievement type
-- Share URL: `/achievement/:id` (new route showing OG card)
+- Below product title: attribution block
+  - Founder: "🚀 Founder Launch — Submitted by @maker"
+  - Community: "🌎 Community Launch — Submitted by @submitter"
+  - After claim: "Originally submitted by @x · Claimed by @founder on {date}"
+- If `submission_type === 'community'` and unclaimed: **Claim This Product** CTA button → opens `ClaimProductModal`
 
-Optional: `og-share` edge fn already exists per memory — extend to handle `?achievement=ID` to render OG meta.
+## 5. Claim modal & verification
 
-## 5. Founder Analytics integration
+New `src/components/ClaimProductModal.tsx`:
 
-In existing analytics dashboard (find via grep, likely `src/pages/Dashboard*` or `FounderAnalytics`):
-- New "Achievements" section listing earned milestones for founder's products
-- Columns: icon, title, product, metric, date, email status badge, Share button (opens MilestoneShareCard modal)
+- Three paths:
+  1. **Verify via company email** — input email, must match product's domain root (e.g. `acme.com`). Sends a 6-digit code via new edge function `send-claim-verification`. User enters code to auto-approve claim → instantly converts to Founder Launch.
+  2. **Already a verified founder** — if user owns another launched product with matching domain or has `verified_founder` flag, one-click claim auto-approves.
+  3. **Request admin review** — opens form with explanation, inserts `product_claims` row with `status='pending'`.
 
-## 6. Public Profile integration
+New edge functions:
 
-In `src/pages/UserProfile.tsx`:
-- New "Achievements" section (replace/augment existing achievements grid) pulling from `product_achievements` joined to products
-- Badge-style display grouped by type (Trending, Clicks, Featured, Saves)
-- Click → opens share card
+- `send-claim-verification` — generates code, stores hashed in `product_claims`, sends via Resend
+- `verify-claim-code` — checks code, on success: updates `products` (`submission_type='founder'`, `owner_id=claimant`, `claimed_at=now()`, preserves `original_submitter_id`), inserts maker row, marks claim approved
+- Both deployed manually per project convention
 
-## 7. Files to create / edit
+## 6. Founder notification email
 
-Create:
-- Migration: add `product_achievements` table + RLS + grants + indexes
-- `supabase/functions/detect-milestones/index.ts`
-- `supabase/functions/_shared/transactional-email-templates/milestone-achievement.tsx`
-- Update `_shared/transactional-email-templates/registry.ts`
-- `src/components/MilestoneShareCard.tsx`
-- `src/components/MilestoneShareModal.tsx`
-- `src/components/FounderAchievements.tsx` (used in dashboard + profile)
-- `src/pages/AchievementShare.tsx` (route `/achievement/:id`)
-- `src/lib/milestones.ts` (titles, share text, thresholds, icons)
+New edge function `notify-founder-of-community-launch`:
 
-Edit:
-- `src/App.tsx` — add `/achievement/:id` route
-- Founder analytics page — add Achievements section
-- `src/pages/UserProfile.tsx` — wire real achievements from DB
+- Triggered after community submission insert (call from `Submit.tsx`)
+- Attempts to find founder email: try `contact@`, `hello@`, `founders@`, `team@` at product domain
+- Sends Resend email with subject "Your product was discovered on Launch" + Claim CTA linking to product page with `?claim=true` to auto-open modal
+- Logs attempt to a `founder_outreach_log` table to avoid duplicates
 
-## 8. Deployment notes
+## 7. Profiles
 
-- `detect-milestones` deployed manually via Supabase dashboard (per memory rule)
-- Email template uses string-concat HTML if needed (per memory rule on edge fn templating) — but transactional template registry uses React Email (.tsx) which is the standard pattern — follow that since existing templates do.
-- Cron job (manual SQL): `select cron.schedule('detect-milestones-hourly','0 * * * *', $$ select net.http_post(...) $$);` — user can run after deploy.
+`src/pages/UserProfile.tsx`:
 
-## Out of scope (future)
+- Add stats row: Founder Launches | Community Launches | Collections | Saves | Achievements
+- Two separate sections (tabs or stacked): "Founder Launches" and "Community Launches"
+- Query products by `owner_id` (founder) vs `submitted_by_user_id` where `submission_type='community'`
+- For community submissions, aggregate total views/clicks/saves across their submissions → "Community Contributor" stats card
 
-- share_count tracking via redirect
-- Per-user notification feed
-- Animated/video share cards
+## 8. Achievements
+
+Extend `FounderAchievements` logic / `product_achievements` system:
+
+- `first_community_launch`, `top_community_contributor`, `most_saved_community_launch`, `community_launch_of_week`, `product_claimed_by_founder`
+- Granted via existing achievement detection patterns (DB triggers or `detect-winners`-style cron)
+
+## 9. Anti-spam
+
+- Duplicate detection: before insert, check existing product with same normalized domain → block with "This product already exists, here it is: …"
+- Submission limit: max 3 community launches per user per 24h (client-side check + DB count guard)
+- Report button on product detail (community launches only) → inserts `product_reports`
+- Admin moderation panel: new tab in `src/pages/Admin.tsx` listing pending reports + pending claims, with approve/reject actions
+
+## 10. Ranking
+
+No changes — existing ranking applies to both types uniformly.
+
+---
+
+## Technical notes
+
+- All new product fields propagated through fetch helpers; default `submission_type='founder'` keeps existing UI working without breakage
+- Domain matching helper in `src/lib/domain.ts`: extracts registrable domain (handle subdomains)
+- Use existing Resend pattern in edge functions (no new infra)
+- All SQL operates in one migration file `database-community-launches.sql` with GRANTs + RLS
+
+## Out of scope (for this pass)
+
+- Stripe/paid tier integration for claims (claims free)
+- Bulk founder claim flows for portfolio companies
+- Public contributor leaderboard page (stats only on profile)
+
+---
+
+This is a large multi-area change. Confirm and I'll implement.
