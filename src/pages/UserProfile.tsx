@@ -323,15 +323,15 @@ const UserProfile = () => {
   const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
   const { score: makerScore } = useMakerScoreByUsername(username);
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = (searchParams.get('tab') as TabKey) || 'overview';
+  const urlTab = searchParams.get('tab') as TabKey | null;
 
   const [profile, setProfile] = useState<any>(null);
   const [stats, setStats] = useState<ProfileStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
-  const [visited, setVisited] = useState<Set<TabKey>>(new Set([initialTab]));
+  const [activeTab, setActiveTab] = useState<TabKey>(urlTab || 'launches');
+  const [visited, setVisited] = useState<Set<TabKey>>(new Set([urlTab || 'launches']));
 
   // Fetch session + profile + lightweight stats only
   useEffect(() => {
