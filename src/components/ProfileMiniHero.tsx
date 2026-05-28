@@ -26,7 +26,7 @@ function InlineStat({ value, label, href, active }: { value: number | string; la
   );
 }
 
-export function ProfileMiniHero({ profile, followerCount, followingCount, productsCount, collectionsCount = 0, communityCount = 0, active }: Props) {
+export function ProfileMiniHero({ profile, followerCount, followingCount, productsCount, collectionsCount = 0, communityCount = 0, savesCount = 0, active }: Props) {
   const heroGradient = profile.username === 'alex'
     ? 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #a855f7 100%)'
     : gradientFor(profile.id || profile.username);
