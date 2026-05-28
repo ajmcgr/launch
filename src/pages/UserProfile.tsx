@@ -517,7 +517,9 @@ const UserProfile = () => {
               aria-hidden="true"
             />
           )}
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+          {!profile.banner_image_url && (
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+          )}
           {isOwnProfile && (
             <label
               htmlFor="profile-banner-upload"
