@@ -9,6 +9,7 @@ import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
+import { SubmissionTypeBadge } from '@/components/SubmissionTypeBadge';
 
 interface LaunchCardProps {
   id: string;
@@ -33,6 +34,7 @@ interface LaunchCardProps {
   icon?: any;
   sponsored?: boolean;
   sponsoredPosition?: number;
+  submissionType?: 'founder' | 'community' | null;
   onVote: (productId: string) => void;
   showFollowButton?: boolean;
   isFollowing?: boolean;
