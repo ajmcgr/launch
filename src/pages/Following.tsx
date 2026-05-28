@@ -24,6 +24,7 @@ const Following = () => {
   const [productsCount, setProductsCount] = useState(0);
   const [collectionsCount, setCollectionsCount] = useState(0);
   const [communityCount, setCommunityCount] = useState(0);
+  const [savesCount, setSavesCount] = useState(0);
 
   useEffect(() => {
     if (!username) return;
@@ -40,18 +41,22 @@ const Following = () => {
           sb.from('follows').select('*', { count: 'exact', head: true }).eq('followed_id', profileData.id),
           sb.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
           sb.from('products').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id).eq('status', 'launched'),
-          sb.from('collections').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id),
-          sb.from('products').select('*', { count: 'exact', head: true }).eq('submitter_id', profileData.id).neq('owner_id', profileData.id).eq('status', 'launched'),
+          sb.from('user_collections').select('id', { count: 'exact', head: true }).eq('user_id', profileData.id).eq('is_public', true),
+          sb.from('products').select('id', { count: 'exact', head: true })
+            .or(`submitted_by_user_id.eq.${profileData.id},original_submitter_id.eq.${profileData.id}`)
+            .eq('submission_type', 'community').eq('status', 'launched'),
+          sb.from('votes').select('product_id', { count: 'exact', head: true }).eq('user_id', profileData.id).eq('value', 1),
           sb.from('follows').select('followed_id, users!follows_followed_id_fkey(id, username, avatar_url, bio, name)').eq('follower_id', profileData.id),
         ]);
-        const [r1, r2, r3, r4, r5, r6] = results;
+        const [r1, r2, r3, r4, r5, r6, r7] = results;
 
         setFollowerCount(r1.count || 0);
         setFollowingCount(r2.count || 0);
         setProductsCount(r3.count || 0);
         setCollectionsCount(r4.count || 0);
         setCommunityCount(r5.count || 0);
-        if (r6.data) setFollowing(r6.data.map((f: any) => f.users as UserItem).filter(Boolean));
+        setSavesCount(r6.count || 0);
+        if (r7.data) setFollowing(r7.data.map((f: any) => f.users as UserItem).filter(Boolean));
 
 
       } catch (e) {
@@ -83,6 +88,7 @@ const Following = () => {
         productsCount={productsCount}
         collectionsCount={collectionsCount}
         communityCount={communityCount}
+        savesCount={savesCount}
         active="following"
       />
 
