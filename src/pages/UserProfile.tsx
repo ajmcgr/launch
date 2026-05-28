@@ -761,6 +761,7 @@ const UserProfile = () => {
             <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
             <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Comments</TabsTrigger>
+            <TabsTrigger value="upvotes" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Upvotes{s.saves ? ` · ${s.saves}` : ''}</TabsTrigger>
             <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
           </TabsList>
 
@@ -779,6 +780,11 @@ const UserProfile = () => {
           <TabsContent value="comments" className="mt-6 pb-12">
             {visited.has('comments') && <CommentsPanel profile={profile} />}
           </TabsContent>
+
+          <TabsContent value="upvotes" className="mt-6 pb-12">
+            {visited.has('upvotes') && <UpvotesPanel profile={profile} />}
+          </TabsContent>
+
 
 
 
