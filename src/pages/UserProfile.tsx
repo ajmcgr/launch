@@ -491,7 +491,7 @@ const UserProfile = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background pointer-events-none" />
       </div>
 
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-5xl">
         {/* Profile header — overlaps hero */}
         <div className="-mt-14 md:-mt-16 mb-8">
           <div className="flex flex-col md:flex-row md:items-end gap-5 md:gap-7 pt-2">
