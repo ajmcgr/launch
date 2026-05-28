@@ -1,556 +1,503 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
 import { SeoHead } from '@/components/seo/SeoHead';
-import FounderAchievements from '@/components/FounderAchievements';
 
+const FounderAchievements = lazy(() => import('@/components/FounderAchievements'));
+
+const sb: any = supabase;
+const PAGE_SIZE = 12;
+
+type TabKey = 'overview' | 'launches' | 'collections' | 'community' | 'achievements';
+
+interface ProfileStats {
+  founderLaunches: number;
+  communityLaunches: number;
+  collections: number;
+  saves: number;
+  followers: number;
+  following: number;
+  bestAward: 'gold' | 'silver' | 'bronze' | null;
+}
+
+// ---------- helpers ----------
+const formatProduct = (p: any, voteCounts: Record<string, number>, fallbackMaker?: any) => ({
+  id: p.id,
+  slug: p.slug,
+  name: p.name,
+  tagline: p.tagline,
+  thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
+  iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+  categories: p.product_category_map?.map((c: any) => c.product_categories?.name).filter(Boolean) || [],
+  netVotes: voteCounts[p.id] || 0,
+  makers: fallbackMaker ? [fallbackMaker] : (p.product_makers?.map((m: any) => m.users).filter((u: any) => u?.username) || []),
+});
+
+async function fetchVoteCounts(productIds: string[]): Promise<Record<string, number>> {
+  if (!productIds.length) return {};
+  const { data } = await supabase.from('votes').select('product_id, value').in('product_id', productIds);
+  const counts: Record<string, number> = {};
+  data?.forEach((v: any) => { counts[v.product_id] = (counts[v.product_id] || 0) + v.value; });
+  return counts;
+}
+
+// ---------- tab panels ----------
+
+function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: any }) {
+  const [page, setPage] = useState(0);
+  const [items, setItems] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [bestAwardSetter, setBestAwardSetter] = useState<any>(null); void bestAwardSetter;
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await supabase
+        .from('products')
+        .select(`id, slug, name, tagline, won_daily, won_weekly, won_monthly,
+          product_media!inner(url, type),
+          product_category_map(product_categories(name))`, { count: 'exact' })
+        .eq('owner_id', profile.id)
+        .eq('status', 'launched')
+        .eq('product_media.type', 'thumbnail')
+        .order('launch_date', { ascending: false })
+        .range(from, to);
+      if (cancelled) return;
+      const ids = (data || []).map((p: any) => p.id);
+      const voteCounts = await fetchVoteCounts(ids);
+      if (cancelled) return;
+      setItems((data || []).map((p: any) => formatProduct(p, voteCounts, { username: profile.username, avatar_url: profile.avatar_url })));
+      setTotal(count || 0);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [profile.id, page]);
+
+  if (loading) return <GridSkeleton />;
+  if (!items.length) return <EmptyState icon={Rocket} title="No launches yet" />;
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  return (
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {items.map((p) => (
+          <LaunchCard key={p.id} {...p} onVote={() => {}} showFollowButton={false} />
+        ))}
+      </div>
+      <Pager page={page} pages={pages} total={total} onChange={setPage} />
+    </div>
+  );
+}
+
+function CollectionsPanel({ profile }: { profile: any }) {
+  const [page, setPage] = useState(0);
+  const [items, setItems] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await sb
+        .from('user_collections')
+        .select('id, name, slug, description, updated_at, cover_image_url, view_count', { count: 'exact' })
+        .eq('user_id', profile.id)
+        .eq('is_public', true)
+        .order('updated_at', { ascending: false })
+        .range(from, to);
+      if (cancelled) return;
+      const ids = (data || []).map((c: any) => c.id);
+      // Item counts per collection
+      const countMap: Record<string, number> = {};
+      if (ids.length) {
+        const { data: itemsRows } = await sb
+          .from('user_collection_items')
+          .select('collection_id')
+          .in('collection_id', ids);
+        itemsRows?.forEach((r: any) => { countMap[r.collection_id] = (countMap[r.collection_id] || 0) + 1; });
+      }
+      if (cancelled) return;
+      setItems((data || []).map((c: any) => ({ ...c, count: countMap[c.id] || 0 })));
+      setTotal(count || 0);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [profile.id, page]);
+
+  if (loading) return <GridSkeleton />;
+  if (!items.length) return <EmptyState icon={FolderHeart} title="No public collections yet" />;
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  return (
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {items.map((c: any) => (
+          <Card key={c.id} className="overflow-hidden hover:border-primary/50 transition-colors group">
+            {c.cover_image_url && (
+              <Link to={`/c/${c.slug}`} className="block aspect-[16/9] bg-muted overflow-hidden">
+                <img src={c.cover_image_url} alt={c.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+              </Link>
+            )}
+            <div className="p-4">
+              <Link to={`/c/${c.slug}`}>
+                <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{c.name}</h3>
+              </Link>
+              {c.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{c.description}</p>}
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-3">
+                <span>{c.count} products</span>
+                <span>·</span>
+                <span>{c.view_count ?? 0} views</span>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+      <Pager page={page} pages={pages} total={total} onChange={setPage} />
+    </div>
+  );
+}
+
+function CommunityPanel({ profile }: { profile: any }) {
+  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<any[]>([]);
+  const [savesGenerated, setSavesGenerated] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from('products')
+        .select(`id, slug, name, tagline, claimed_at,
+          product_media(url, type),
+          product_category_map(product_categories(name))`)
+        .or(`submitted_by_user_id.eq.${profile.id},original_submitter_id.eq.${profile.id}`)
+        .eq('submission_type', 'community')
+        .eq('status', 'launched')
+        .order('launch_date', { ascending: false })
+        .limit(50);
+      if (cancelled) return;
+      const ids = (data || []).map((p: any) => p.id);
+      const voteCounts = await fetchVoteCounts(ids);
+      let saves = 0;
+      if (ids.length) {
+        const { count } = await sb
+          .from('user_collection_items')
+          .select('product_id', { count: 'exact', head: true })
+          .in('product_id', ids);
+        saves = count || 0;
+      }
+      if (cancelled) return;
+      setItems((data || []).map((p: any) => formatProduct(p, voteCounts)));
+      setSavesGenerated(saves);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [profile.id]);
+
+  if (loading) return <GridSkeleton />;
+  if (!items.length) return <EmptyState icon={Sparkles} title="No community contributions yet" subtitle="Products submitted on behalf of others will appear here." />;
+
+  return (
+    <div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <StatBlock label="Contributions" value={items.length} />
+        <StatBlock label="Saves generated" value={savesGenerated} />
+        <StatBlock label="Claimed by founder" value={items.filter((p) => !!p.claimed_at).length} />
+        <StatBlock label="Awaiting claim" value={items.filter((p) => !p.claimed_at).length} />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {items.map((p) => (
+          <LaunchCard key={p.id} {...p} onVote={() => {}} submissionType="community" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AchievementsPanel({ profile, stats, makerScore }: { profile: any; stats: ProfileStats; makerScore: number }) {
+  const { bestAward, founderLaunches, collections, saves } = stats;
+  const cards: Array<{ icon: any; title: string; sub: string; tone?: string }> = [];
+  if (bestAward) cards.push({ icon: Trophy, title: `${bestAward[0].toUpperCase()}${bestAward.slice(1)} Winner`, sub: 'Top-ranked launch', tone: bestAward });
+  if (founderLaunches) cards.push({ icon: Rocket, title: `${founderLaunches} Launched`, sub: founderLaunches === 1 ? 'Product shipped' : 'Products shipped' });
+  if (collections) cards.push({ icon: FolderHeart, title: 'Curator', sub: `${collections} public collection${collections === 1 ? '' : 's'}` });
+  if (saves) cards.push({ icon: Bookmark, title: `${saves} Saves`, sub: 'Products curated' });
+  if (makerScore > 0) cards.push({ icon: Sparkles, title: `${makerScore} Karma`, sub: 'Maker score' });
+
+  return (
+    <div className="space-y-8">
+      {cards.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {cards.map((c, i) => (
+            <Card key={i} className="p-4 flex items-center gap-3">
+              <c.icon className={`h-6 w-6 ${c.tone === 'gold' ? 'text-yellow-500' : c.tone === 'silver' ? 'text-gray-400' : c.tone === 'bronze' ? 'text-amber-600' : 'text-primary'}`} />
+              <div>
+                <p className="text-sm font-semibold">{c.title}</p>
+                <p className="text-xs text-muted-foreground">{c.sub}</p>
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <EmptyState icon={Trophy} title="No achievements yet" subtitle="Ship a launch or curate a collection to start earning badges." />
+      )}
+      <Suspense fallback={<GridSkeleton rows={1} />}>
+        <FounderAchievements founderId={profile.id} title="Milestones" />
+      </Suspense>
+    </div>
+  );
+}
+
+// ---------- small UI primitives ----------
+
+function StatBlock({ label, value }: { label: string; value: number | string }) {
+  return (
+    <Card className="p-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-xl font-bold">{value}</p>
+    </Card>
+  );
+}
+
+function GridSkeleton({ rows = 2 }: { rows?: number }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: rows * 3 }).map((_, i) => (
+        <Skeleton key={i} className="h-40 w-full rounded-lg" />
+      ))}
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, title, subtitle }: { icon: any; title: string; subtitle?: string }) {
+  return (
+    <div className="text-center py-16 border border-dashed rounded-lg">
+      <Icon className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+      <p className="font-semibold">{title}</p>
+      {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+    </div>
+  );
+}
+
+function Pager({ page, pages, total, onChange }: { page: number; pages: number; total: number; onChange: (p: number) => void }) {
+  if (pages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between mt-6">
+      <span className="text-xs text-muted-foreground">Page {page + 1} of {pages} · {total} total</span>
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" disabled={page === 0} onClick={() => onChange(page - 1)}>
+          <ChevronLeft className="h-4 w-4" /> Prev
+        </Button>
+        <Button variant="outline" size="sm" disabled={page >= pages - 1} onClick={() => onChange(page + 1)}>
+          Next <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- main ----------
 
 const UserProfile = () => {
   const { username: rawUsername } = useParams();
   const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
   const { score: makerScore } = useMakerScoreByUsername(username);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = (searchParams.get('tab') as TabKey) || 'overview';
+
   const [profile, setProfile] = useState<any>(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [upvotedProducts, setUpvotedProducts] = useState<any[]>([]);
-  const [followedUsers, setFollowedUsers] = useState<any[]>([]);
-  const [followers, setFollowers] = useState<any[]>([]);
-  const [followedProducts, setFollowedProducts] = useState<any[]>([]);
-  const [followedProductIds, setFollowedProductIds] = useState<Set<string>>(new Set());
+  const [stats, setStats] = useState<ProfileStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [followerCount, setFollowerCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
-  const [bestAward, setBestAward] = useState<'gold' | 'silver' | 'bronze' | null>(null);
-  const [publicCollections, setPublicCollections] = useState<any[]>([]);
-  const [savedCount, setSavedCount] = useState(0);
+  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
+  const [visited, setVisited] = useState<Set<TabKey>>(new Set([initialTab]));
 
+  // Fetch session + profile + lightweight stats only
   useEffect(() => {
-    const init = async () => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
-      setCurrentUser(session?.user ?? null);
-      
-      if (username) {
-        fetchProfile(session?.user ?? null);
-      }
-    };
-    init();
-  }, [username]);
+      if (cancelled) return;
+      const sessionUser = session?.user ?? null;
+      setCurrentUser(sessionUser);
 
-  const fetchProfile = async (user?: any) => {
-    const activeUser = user ?? currentUser;
-    setLoading(true);
-    try {
-      // Fetch user profile
-      const { data: profileData, error: profileError } = await supabase
+      const { data: profileData, error } = await supabase
         .from('users')
         .select('*')
         .eq('username', username)
         .single();
 
-      console.log('Profile query result:', { profileData, profileError });
-
-      if (profileError) {
-        console.error('Profile error:', profileError);
-        throw profileError;
-      }
-      
-      if (!profileData) {
-        setLoading(false);
-        return;
-      }
-      
+      if (cancelled) return;
+      if (error || !profileData) { setLoading(false); return; }
       setProfile(profileData);
-      console.log('Profile set successfully:', profileData);
 
-      // Fetch user's products
-      const { data: productsData } = await supabase
+      // Parallel lightweight counts (head queries — no rows fetched)
+      const [
+        { count: founderLaunches },
+        { count: communityLaunches },
+        { count: collections },
+        { count: followers },
+        { count: following },
+        savesAndAwardsRes,
+        followCheckRes,
+      ] = await Promise.all([
+        supabase.from('products').select('id', { count: 'exact', head: true })
+          .eq('owner_id', profileData.id).eq('status', 'launched'),
+        supabase.from('products').select('id', { count: 'exact', head: true })
+          .or(`submitted_by_user_id.eq.${profileData.id},original_submitter_id.eq.${profileData.id}`)
+          .eq('submission_type', 'community').eq('status', 'launched'),
+        sb.from('user_collections').select('id', { count: 'exact', head: true })
+          .eq('user_id', profileData.id).eq('is_public', true),
+        supabase.from('follows').select('follower_id', { count: 'exact', head: true })
+          .eq('followed_id', profileData.id),
+        supabase.from('follows').select('followed_id', { count: 'exact', head: true })
+          .eq('follower_id', profileData.id),
+        supabase.from('votes').select('product_id', { count: 'exact', head: true })
+          .eq('user_id', profileData.id).eq('value', 1),
+        sessionUser
+          ? supabase.from('follows').select('follower_id').eq('follower_id', sessionUser.id).eq('followed_id', profileData.id).maybeSingle()
+          : Promise.resolve({ data: null }) as any,
+      ]);
+
+      // Best award — cheap query, only winning flags
+      const { data: winRows } = await supabase
         .from('products')
-        .select(`
-          *,
-          product_media!inner(url, type),
-          product_category_map(
-            product_categories(name)
-          )
-        `)
+        .select('won_daily, won_weekly, won_monthly')
         .eq('owner_id', profileData.id)
         .eq('status', 'launched')
-        .eq('product_media.type', 'thumbnail')
-        .order('launch_date', { ascending: false });
+        .or('won_daily.eq.true,won_weekly.eq.true,won_monthly.eq.true')
+        .limit(50);
+      let bestAward: 'gold' | 'silver' | 'bronze' | null = null;
+      if (winRows?.some((p: any) => p.won_monthly)) bestAward = 'gold';
+      else if (winRows?.some((p: any) => p.won_weekly)) bestAward = 'silver';
+      else if (winRows?.some((p: any) => p.won_daily)) bestAward = 'bronze';
 
-      if (productsData) {
-        // Compute best award from product winner flags
-        let hasDailyWin = false;
-        let hasWeeklyWin = false;
-        let hasMonthlyWin = false;
-        productsData.forEach((p: any) => {
-          if (p.won_monthly) hasMonthlyWin = true;
-          if (p.won_weekly) hasWeeklyWin = true;
-          if (p.won_daily) hasDailyWin = true;
-        });
-        // #1 Monthly = Gold, #2 Monthly = Silver, #3 Monthly = Bronze
-        if (hasMonthlyWin) setBestAward('gold');
-        else if (hasWeeklyWin) setBestAward('silver');
-        else if (hasDailyWin) setBestAward('bronze');
-        else setBestAward(null);
-
-        // Get vote counts
-        const productIds = productsData.map(p => p.id);
-        const { data: votesData } = await supabase
-          .from('votes')
-          .select('product_id, value');
-
-        const voteCounts: Record<string, number> = {};
-        votesData?.forEach(vote => {
-          voteCounts[vote.product_id] = (voteCounts[vote.product_id] || 0) + vote.value;
-        });
-
-        const formattedProducts = productsData.map(product => ({
-          id: product.id,
-          slug: product.slug,
-          name: product.name,
-          tagline: product.tagline,
-          thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
-          iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
-          categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
-          netVotes: voteCounts[product.id] || 0,
-          makers: [{ username: profileData.username, avatar_url: profileData.avatar_url }],
-        }));
-
-        setProducts(formattedProducts);
-      }
-
-      // Check if current user follows this profile
-      if (activeUser) {
-        const { data: followData } = await supabase
-          .from('follows')
-          .select('*')
-          .eq('follower_id', activeUser.id)
-          .eq('followed_id', profileData.id)
-          .maybeSingle();
-
-        setIsFollowing(!!followData);
-      }
-
-      // Get follower/following counts
-      const { count: followers } = await supabase
-        .from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('followed_id', profileData.id);
-
-      const { count: following } = await supabase
-        .from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('follower_id', profileData.id);
-
-      setFollowerCount(followers || 0);
-      setFollowingCount(following || 0);
-
-      // Fetch recently upvoted products
-      const { data: userVotes } = await supabase
-        .from('votes')
-        .select('product_id, created_at')
-        .eq('user_id', profileData.id)
-        .eq('value', 1)
-        .order('created_at', { ascending: false })
-        .limit(6);
-
-      if (userVotes && userVotes.length > 0) {
-        const votedProductIds = userVotes.map(v => v.product_id);
-        
-        const { data: votedProductsData } = await supabase
-          .from('products')
-          .select(`
-            *,
-            product_media!inner(url, type),
-            product_category_map(
-              product_categories(name)
-            ),
-            product_makers(
-              users(username, avatar_url)
-            )
-          `)
-          .in('id', votedProductIds)
-          .eq('status', 'launched')
-          .eq('product_media.type', 'thumbnail');
-
-        if (votedProductsData) {
-          // Get vote counts for upvoted products
-          const { data: votesData } = await supabase
-            .from('votes')
-            .select('product_id, value')
-            .in('product_id', votedProductIds);
-
-          const voteCounts: Record<string, number> = {};
-          votesData?.forEach(vote => {
-            voteCounts[vote.product_id] = (voteCounts[vote.product_id] || 0) + vote.value;
-          });
-
-          const formattedUpvotedProducts = votedProductsData.map(product => ({
-            id: product.id,
-            slug: product.slug,
-            name: product.name,
-            tagline: product.tagline,
-            thumbnail: product.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
-            iconUrl: product.product_media?.find((m: any) => m.type === 'icon')?.url || '',
-            categories: product.product_category_map?.map((c: any) => c.product_categories.name) || [],
-            netVotes: voteCounts[product.id] || 0,
-            makers: product.product_makers?.map((m: any) => m.users).filter((u: any) => u && u.username) || [],
-          }));
-
-          setUpvotedProducts(formattedUpvotedProducts);
-        }
-      }
-
-      // Fetch followed users
-      const { data: followedUsersData } = await supabase
-        .from('follows')
-        .select('followed_id, users!follows_followed_id_fkey(username, avatar_url, bio)')
-        .eq('follower_id', profileData.id);
-
-      if (followedUsersData) {
-        setFollowedUsers(followedUsersData.map(f => f.users).filter(u => u && u.username));
-      }
-
-      // Fetch followers (people who follow this user)
-      const { data: followersData } = await supabase
-        .from('follows')
-        .select('follower_id, users!follows_follower_id_fkey(username, avatar_url, bio)')
-        .eq('followed_id', profileData.id);
-
-      if (followersData) {
-        setFollowers(followersData.map(f => f.users).filter(u => u && u.username));
-      }
-
-      // Fetch public collections created by this user (+ items for preview & counts)
-      const sb: any = supabase;
-      const { data: collectionsData } = await sb
-        .from('user_collections')
-        .select('id, name, slug, description, updated_at')
-        .eq('user_id', profileData.id)
-        .eq('is_public', true)
-        .order('updated_at', { ascending: false });
-
-      if (collectionsData && collectionsData.length > 0) {
-        const colIds = collectionsData.map((c: any) => c.id);
-        const { data: itemsData } = await sb
-          .from('user_collection_items')
-          .select('collection_id, product_id, added_at')
-          .in('collection_id', colIds)
-          .order('added_at', { ascending: false });
-
-        const itemsByCollection: Record<string, any[]> = {};
-        const allProductIds: string[] = [];
-        itemsData?.forEach((it: any) => {
-          (itemsByCollection[it.collection_id] ||= []).push(it);
-          allProductIds.push(it.product_id);
-        });
-
-        // Fetch icons for preview thumbnails
-        const uniqueIds = Array.from(new Set(allProductIds));
-        const iconMap: Record<string, string> = {};
-        if (uniqueIds.length > 0) {
-          const { data: iconRows } = await supabase
-            .from('products')
-            .select('id, product_media(url, type)')
-            .in('id', uniqueIds);
-          iconRows?.forEach((p: any) => {
-            const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url
-              || p.product_media?.find((m: any) => m.type === 'thumbnail')?.url;
-            if (icon) iconMap[p.id] = icon;
-          });
-        }
-
-        const enriched = collectionsData.map((c: any) => {
-          const items = itemsByCollection[c.id] || [];
-          return {
-            ...c,
-            count: items.length,
-            topIcons: items.slice(0, 4).map((it: any) => iconMap[it.product_id]).filter(Boolean),
-          };
-        });
-        setPublicCollections(enriched);
-        setSavedCount(allProductIds.length);
-      } else {
-        setPublicCollections([]);
-        setSavedCount(0);
-      }
-
-      // Fetch followed products
-
-      const { data: followedProductsData } = await supabase
-        .from('product_follows')
-        .select(`
-          product_id,
-          products(
-            id,
-            slug,
-            name,
-            tagline,
-            product_media(url, type),
-            product_category_map(product_categories(name))
-          )
-        `)
-        .eq('follower_id', profileData.id);
-
-      if (followedProductsData) {
-        const productIds = followedProductsData.map(f => f.products.id);
-        setFollowedProductIds(new Set(productIds));
-        
-        // Get vote counts
-        const { data: votesData } = await supabase
-          .from('votes')
-          .select('product_id, value')
-          .in('product_id', productIds);
-
-        const voteCounts: Record<string, number> = {};
-        votesData?.forEach(vote => {
-          voteCounts[vote.product_id] = (voteCounts[vote.product_id] || 0) + vote.value;
-        });
-
-        const formattedFollowedProducts = followedProductsData.map(f => ({
-          id: f.products.id,
-          slug: f.products.slug,
-          name: f.products.name,
-          tagline: f.products.tagline,
-          thumbnail: f.products.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
-          iconUrl: f.products.product_media?.find((m: any) => m.type === 'icon')?.url || '',
-          categories: f.products.product_category_map?.map((c: any) => c.product_categories.name) || [],
-          netVotes: voteCounts[f.products.id] || 0,
-          makers: [],
-        }));
-
-        setFollowedProducts(formattedFollowedProducts);
-      }
-
-      // If current user is viewing, also get their follow status for all products on this page
-      if (activeUser && activeUser.id === profileData.id) {
-        const allProductIds = [...products.map(p => p.id), ...upvotedProducts.map(p => p.id)];
-        if (allProductIds.length > 0) {
-          const { data: userFollowsData } = await supabase
-            .from('product_follows')
-            .select('product_id')
-            .eq('follower_id', activeUser.id)
-            .in('product_id', allProductIds);
-          
-          if (userFollowsData) {
-            setFollowedProductIds(new Set(userFollowsData.map(f => f.product_id)));
-          }
-        }
-      }
-
-    } catch (error: any) {
-      console.error('Error fetching profile:', error);
-      toast.error('Failed to load profile');
-    } finally {
+      if (cancelled) return;
+      setStats({
+        founderLaunches: founderLaunches || 0,
+        communityLaunches: communityLaunches || 0,
+        collections: collections || 0,
+        saves: savesAndAwardsRes.count || 0,
+        followers: followers || 0,
+        following: following || 0,
+        bestAward,
+      });
+      setIsFollowing(!!followCheckRes?.data);
       setLoading(false);
-    }
-  };
+    })();
+    return () => { cancelled = true; };
+  }, [username]);
 
-  const handleProductFollow = async (productId: string) => {
-    if (!currentUser) {
-      toast.error('Please login to follow products');
-      return;
-    }
-
-    try {
-      const isCurrentlyFollowing = followedProductIds.has(productId);
-      
-      if (isCurrentlyFollowing) {
-        await supabase
-          .from('product_follows')
-          .delete()
-          .eq('follower_id', currentUser.id)
-          .eq('product_id', productId);
-
-        setFollowedProductIds(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(productId);
-          return newSet;
-        });
-        toast.success('Unfollowed product');
-      } else {
-        await supabase
-          .from('product_follows')
-          .insert({
-            follower_id: currentUser.id,
-            product_id: productId,
-          });
-
-        setFollowedProductIds(prev => new Set(prev).add(productId));
-        toast.success('Following product');
-      }
-    } catch (error: any) {
-      console.error('Error following/unfollowing product:', error);
-      toast.error('Failed to update follow status');
-    }
-  };
+  const handleTabChange = useCallback((tab: string) => {
+    const t = tab as TabKey;
+    setActiveTab(t);
+    setVisited((prev) => new Set(prev).add(t));
+    setSearchParams((sp) => { sp.set('tab', t); return sp; }, { replace: true });
+  }, [setSearchParams]);
 
   const handleFollow = async () => {
-    if (!currentUser) {
-      toast.error('Please login to follow users');
-      return;
-    }
-
+    if (!currentUser) { toast.error('Please login to follow'); return; }
     try {
       if (isFollowing) {
-        await supabase
-          .from('follows')
-          .delete()
-          .eq('follower_id', currentUser.id)
-          .eq('followed_id', profile.id);
-
+        await supabase.from('follows').delete().eq('follower_id', currentUser.id).eq('followed_id', profile.id);
         setIsFollowing(false);
-        setFollowerCount(prev => prev - 1);
-        toast.success('Unfollowed successfully');
+        setStats((s) => s ? { ...s, followers: Math.max(0, s.followers - 1) } : s);
       } else {
-        await supabase
-          .from('follows')
-          .insert({
-            follower_id: currentUser.id,
-            followed_id: profile.id,
-          });
-
+        await supabase.from('follows').insert({ follower_id: currentUser.id, followed_id: profile.id });
         setIsFollowing(true);
-        setFollowerCount(prev => prev + 1);
-        toast.success('Following successfully');
-        
-        // Send notification to the followed user
+        setStats((s) => s ? { ...s, followers: s.followers + 1 } : s);
         notifyUserFollow(profile.id, currentUser.id);
       }
-    } catch (error: any) {
-      console.error('Error following/unfollowing:', error);
+    } catch {
       toast.error('Failed to update follow status');
     }
   };
 
   const handleShareProfile = async () => {
     const url = `${window.location.origin}/@${profile.username}`;
-    const title = `@${profile.username} on Launch`;
-    const text = profile.bio || `Check out @${profile.username}'s products and collections on Launch.`;
     try {
-      if (navigator.share) {
-        await navigator.share({ title, text, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        toast.success('Profile link copied');
-      }
-    } catch {
-      /* user cancelled */
-    }
+      if (navigator.share) await navigator.share({ title: `@${profile.username} on Launch`, url });
+      else { await navigator.clipboard.writeText(url); toast.success('Profile link copied'); }
+    } catch { /* user cancelled */ }
   };
 
-  const handleShareCollection = async (slug: string, name: string) => {
-    const url = `${window.location.origin}/c/${slug}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: name, text: `Check out the "${name}" collection on Launch.`, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        toast.success('Collection link copied');
-      }
-    } catch {}
-  };
-
-
-  if (loading) {
-    return <ProfileSkeleton />;
-  }
-
+  if (loading) return <ProfileSkeleton />;
   if (!profile) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">User not found</h1>
-          <Link to="/" className="text-primary hover:underline">
-            Return home
-          </Link>
+          <Link to="/" className="text-primary hover:underline">Return home</Link>
         </div>
       </div>
     );
   }
 
+  const s = stats!;
+
   return (
     <div className="min-h-screen bg-background py-8">
       <SeoHead
         title={`@${profile.username} — Products & collections on Launch`}
-        description={
-          profile.bio
-            ? profile.bio.slice(0, 155)
-            : `Explore products launched, collections curated, and activity by @${profile.username} on Launch.`
-        }
+        description={profile.bio ? profile.bio.slice(0, 155) : `Explore products launched, collections curated, and activity by @${profile.username} on Launch.`}
         path={`/@${profile.username}`}
         breadcrumbs={[
           { name: 'Makers', path: '/makers' },
           { name: `@${profile.username}`, path: `/@${profile.username}` },
         ]}
-        itemList={products.slice(0, 20).map((p: any) => ({
-          name: p.name,
-          url: `https://trylaunch.ai/launch/${p.slug}`,
-        }))}
       />
-      <div className="container mx-auto px-4 max-w-5xl">
-        <Card className="p-8 mb-8">
-
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Overview header */}
+        <Card className="p-6 md:p-8 mb-6">
           <div className="flex flex-col md:flex-row gap-6 items-start">
             <Avatar className="h-24 w-24">
               <AvatarImage src={profile.avatar_url} alt={profile.username} />
-              <AvatarFallback className="text-2xl">
-                {profile.username[0].toUpperCase()}
-              </AvatarFallback>
+              <AvatarFallback className="text-2xl">{profile.username[0].toUpperCase()}</AvatarFallback>
             </Avatar>
-
-            <div className="flex-1">
-              <div className="flex items-start justify-between mb-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-3xl font-bold">@{profile.username}</h1>
-                  <KarmaScore karma={makerScore} size="md" />
-                  {bestAward && (
-                    <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
-                      bestAward === 'gold' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
-                      bestAward === 'silver' ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
-                      'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                    }`}>
-                      {bestAward === 'gold' ? '🥇 Gold' : bestAward === 'silver' ? '🥈 Silver' : '🥉 Bronze'}
-                    </span>
-                  )}
+            <div className="flex-1 w-full">
+              <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h1 className="text-3xl font-bold">@{profile.username}</h1>
+                    <KarmaScore karma={makerScore} size="md" />
+                    {s.bestAward && (
+                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
+                        s.bestAward === 'gold' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+                        s.bestAward === 'silver' ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
+                        'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                      }`}>
+                        {s.bestAward === 'gold' ? '🥇 Gold' : s.bestAward === 'silver' ? '🥈 Silver' : '🥉 Bronze'}
+                      </span>
+                    )}
+                  </div>
+                  {profile.name && <p className="text-lg text-muted-foreground">{profile.name}</p>}
+                  {profile.bio && <p className="text-muted-foreground mt-2 max-w-2xl">{profile.bio}</p>}
                 </div>
-                {profile.name && (
-                  <p className="text-xl text-muted-foreground mb-2">{profile.name}</p>
-                )}
-                {profile.bio && (
-                  <p className="text-muted-foreground">{profile.bio}</p>
-                )}
-              </div>
-
                 <div className="flex items-center gap-2">
                   {currentUser && currentUser.id !== profile.id && (
-                    <Button
-                      onClick={handleFollow}
-                      variant={isFollowing ? 'outline' : 'default'}
-                    >
-                      {isFollowing ? (
-                        <>
-                          <UserMinus className="h-4 w-4 mr-2" />
-                          Unfollow
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Follow
-                        </>
-                      )}
+                    <Button onClick={handleFollow} variant={isFollowing ? 'outline' : 'default'}>
+                      {isFollowing ? (<><UserMinus className="h-4 w-4 mr-2" />Unfollow</>) : (<><UserPlus className="h-4 w-4 mr-2" />Follow</>)}
                     </Button>
                   )}
                   <Button onClick={handleShareProfile} variant="outline" size="icon" aria-label="Share profile">
@@ -559,336 +506,91 @@ const UserProfile = () => {
                 </div>
               </div>
 
-              <div className="flex gap-6 mb-4 flex-wrap">
-                <Link to={`/@${profile.username}/followers`} className="hover:underline">
-                  <span className="font-bold">{followerCount}</span>
-                  <span className="text-muted-foreground ml-1">Followers</span>
-                </Link>
-                <Link to={`/@${profile.username}/following`} className="hover:underline">
-                  <span className="font-bold">{followingCount}</span>
-                  <span className="text-muted-foreground ml-1">Following</span>
-                </Link>
-                <div>
-                  <span className="font-bold">{products.length}</span>
-                  <span className="text-muted-foreground ml-1">Products</span>
-                </div>
-                <div>
-                  <span className="font-bold">{publicCollections.length}</span>
-                  <span className="text-muted-foreground ml-1">Collections</span>
-                </div>
-                <div>
-                  <span className="font-bold">{savedCount}</span>
-                  <span className="text-muted-foreground ml-1">Saves</span>
-                </div>
+              {/* Stat strip */}
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-4">
+                <StatBlock label="Founder" value={s.founderLaunches} />
+                <StatBlock label="Community" value={s.communityLaunches} />
+                <StatBlock label="Collections" value={s.collections} />
+                <StatBlock label="Saves" value={s.saves} />
+                <StatBlock label="Followers" value={s.followers} />
               </div>
 
-
-              <div className="flex gap-3 flex-wrap">
-                {profile.website && (
-                  <a
-                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                    title="Website"
-                  >
-                    <Globe className="h-5 w-5" />
-                  </a>
-                )}
-                {profile.twitter && (
-                  <a
-                    href={`https://x.com/${profile.twitter.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                    title="X (Twitter)"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                  </a>
-                )}
-                {profile.instagram && (
-                  <a
-                    href={`https://instagram.com/${profile.instagram.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                    title="Instagram"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                  </a>
-                )}
-                {profile.linkedin && (
-                  <a
-                    href={`https://linkedin.com/in/${profile.linkedin}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                    title="LinkedIn"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                  </a>
-                )}
-                {profile.youtube && (
-                  <a
-                    href={`https://youtube.com/@${profile.youtube.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                    title="YouTube"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                    </svg>
-                  </a>
-                )}
-                {profile.telegram && (
-                  <a
-                    href={`https://t.me/${profile.telegram.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                    title="Telegram"
-                  >
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                    </svg>
-                  </a>
-                )}
-              </div>
+              <SocialLinks profile={profile} />
             </div>
           </div>
         </Card>
 
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Launched Products</h2>
-          {products.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              No products launched yet
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <LaunchCard
-                  key={product.id}
-                  {...product}
-                  onVote={() => {}}
-                  showFollowButton={currentUser && currentUser.id !== profile.id}
-                  isFollowing={followedProductIds.has(product.id)}
-                  onFollow={handleProductFollow}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
+          <TabsList className="w-full md:w-auto flex flex-wrap h-auto">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="launches">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="collections">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
+            <TabsTrigger value="community">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="achievements">Achievements</TabsTrigger>
+          </TabsList>
 
-        {publicCollections.length > 0 && (
-          <div className="mt-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Public Collections</h2>
-              <span className="text-sm text-muted-foreground">{publicCollections.length} total</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {publicCollections.map((c: any) => (
-                <Card key={c.id} className="p-4 hover:border-primary/50 transition-colors group">
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <Link to={`/c/${c.slug}`} className="flex-1 min-w-0">
-                      <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{c.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {c.count} {c.count === 1 ? 'product' : 'products'} · curated by @{profile.username}
-                      </p>
-                    </Link>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 shrink-0"
-                      onClick={(e) => { e.preventDefault(); handleShareCollection(c.slug, c.name); }}
-                      aria-label="Share collection"
-                    >
-                      <Share2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                  {c.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{c.description}</p>
-                  )}
-                  <Link to={`/c/${c.slug}`} className="flex items-center gap-1.5">
-                    {c.topIcons.length === 0 ? (
-                      <div className="text-xs text-muted-foreground italic">Empty collection</div>
-                    ) : (
-                      c.topIcons.map((src: string, i: number) => (
-                        <img
-                          key={i}
-                          src={src}
-                          alt=""
-                          loading="lazy"
-                          className="h-8 w-8 rounded-md object-cover border border-border"
-                        />
-                      ))
-                    )}
-                    {c.count > c.topIcons.length && (
-                      <span className="text-xs text-muted-foreground ml-1">+{c.count - c.topIcons.length}</span>
-                    )}
-                  </Link>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
+          <TabsContent value="overview" className="mt-6">
+            <OverviewQuickLinks stats={s} onJump={handleTabChange} />
+          </TabsContent>
 
-        {(bestAward || products.length > 0 || makerScore > 0 || savedCount > 0) && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold mb-6">Achievements</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {bestAward && (
-                <Card className="p-4 flex items-center gap-3">
-                  <Trophy className={`h-6 w-6 ${bestAward === 'gold' ? 'text-yellow-500' : bestAward === 'silver' ? 'text-gray-400' : 'text-amber-600'}`} />
-                  <div>
-                    <p className="text-sm font-semibold capitalize">{bestAward} Winner</p>
-                    <p className="text-xs text-muted-foreground">Top-ranked launch</p>
-                  </div>
-                </Card>
-              )}
-              {products.length > 0 && (
-                <Card className="p-4 flex items-center gap-3">
-                  <Rocket className="h-6 w-6 text-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">{products.length} Launched</p>
-                    <p className="text-xs text-muted-foreground">Product{products.length === 1 ? '' : 's'} shipped</p>
-                  </div>
-                </Card>
-              )}
-              {publicCollections.length > 0 && (
-                <Card className="p-4 flex items-center gap-3">
-                  <FolderHeart className="h-6 w-6 text-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">Curator</p>
-                    <p className="text-xs text-muted-foreground">{publicCollections.length} public collection{publicCollections.length === 1 ? '' : 's'}</p>
-                  </div>
-                </Card>
-              )}
-              {savedCount > 0 && (
-                <Card className="p-4 flex items-center gap-3">
-                  <Bookmark className="h-6 w-6 text-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">{savedCount} Saves</p>
-                    <p className="text-xs text-muted-foreground">Products curated</p>
-                  </div>
-                </Card>
-              )}
-              {makerScore > 0 && (
-                <Card className="p-4 flex items-center gap-3">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">{makerScore} Karma</p>
-                    <p className="text-xs text-muted-foreground">Maker score</p>
-                  </div>
-                </Card>
-              )}
-            </div>
-          </div>
-        )}
+          <TabsContent value="launches" className="mt-6">
+            {visited.has('launches') && <LaunchesPanel profile={profile} currentUser={currentUser} />}
+          </TabsContent>
 
-        {profile?.id && (
-          <FounderAchievements founderId={profile.id} title="Milestones" />
-        )}
+          <TabsContent value="collections" className="mt-6">
+            {visited.has('collections') && <CollectionsPanel profile={profile} />}
+          </TabsContent>
 
+          <TabsContent value="community" className="mt-6">
+            {visited.has('community') && <CommunityPanel profile={profile} />}
+          </TabsContent>
 
-        {upvotedProducts.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold mb-6">Recently Upvoted</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upvotedProducts.map((product) => (
-                <LaunchCard
-                  key={product.id}
-                  {...product}
-                  onVote={() => {}}
-                  showFollowButton={currentUser && currentUser.id !== profile.id}
-                  isFollowing={followedProductIds.has(product.id)}
-                  onFollow={handleProductFollow}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {followedProducts.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold mb-6">Following Products</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {followedProducts.map((product) => (
-                <LaunchCard
-                  key={product.id}
-                  {...product}
-                  onVote={() => {}}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {followers.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold mb-6">Followers</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {followers.map((user) => (
-                <Link
-                  key={user.username}
-                  to={`/@${user.username}`}
-                  className="flex flex-col items-center p-4 rounded-lg border hover:border-primary transition-colors"
-                >
-                  <Avatar className="h-16 w-16 mb-2">
-                    <AvatarImage src={user.avatar_url} alt={user.username} />
-                    <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="text-center">
-                    <p className="font-semibold">@{user.username}</p>
-                    {user.bio && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                        {user.bio}
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {followedUsers.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold mb-6">Following People</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {followedUsers.map((user) => (
-                <Link
-                  key={user.username}
-                  to={`/@${user.username}`}
-                  className="flex flex-col items-center p-4 rounded-lg border hover:border-primary transition-colors"
-                >
-                  <Avatar className="h-16 w-16 mb-2">
-                    <AvatarImage src={user.avatar_url} alt={user.username} />
-                    <AvatarFallback>{user.username[0].toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="text-center">
-                    <p className="font-semibold">@{user.username}</p>
-                    {user.bio && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                        {user.bio}
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+          <TabsContent value="achievements" className="mt-6">
+            {visited.has('achievements') && <AchievementsPanel profile={profile} stats={s} makerScore={makerScore} />}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
 };
+
+function OverviewQuickLinks({ stats, onJump }: { stats: ProfileStats; onJump: (t: TabKey) => void }) {
+  const quick: Array<{ tab: TabKey; icon: any; label: string; value: number }> = [
+    { tab: 'launches', icon: Rocket, label: 'Founder Launches', value: stats.founderLaunches },
+    { tab: 'community', icon: Sparkles, label: 'Community Launches', value: stats.communityLaunches },
+    { tab: 'collections', icon: FolderHeart, label: 'Collections', value: stats.collections },
+    { tab: 'achievements', icon: Trophy, label: 'Achievements', value: (stats.bestAward ? 1 : 0) + stats.founderLaunches },
+  ];
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      {quick.map((q) => (
+        <button key={q.tab} onClick={() => onJump(q.tab)} className="text-left">
+          <Card className="p-4 hover:border-primary/50 transition-colors h-full">
+            <q.icon className="h-5 w-5 text-primary mb-2" />
+            <p className="text-2xl font-bold">{q.value}</p>
+            <p className="text-sm text-muted-foreground">{q.label}</p>
+          </Card>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function SocialLinks({ profile }: { profile: any }) {
+  const links: Array<{ key: string; href: string; title: string; svg: JSX.Element }> = [];
+  if (profile.website) links.push({ key: 'web', href: profile.website.startsWith('http') ? profile.website : `https://${profile.website}`, title: 'Website', svg: <Globe className="h-5 w-5" /> });
+  if (profile.twitter) links.push({ key: 'x', href: `https://x.com/${profile.twitter.replace('@', '')}`, title: 'X (Twitter)', svg: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> });
+  if (profile.linkedin) links.push({ key: 'in', href: `https://linkedin.com/in/${profile.linkedin}`, title: 'LinkedIn', svg: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> });
+  if (!links.length) return null;
+  return (
+    <div className="flex gap-3 flex-wrap mt-4">
+      {links.map((l) => (
+        <a key={l.key} href={l.href} target="_blank" rel="noopener noreferrer" title={l.title} className="text-muted-foreground hover:text-primary transition-colors">
+          {l.svg}
+        </a>
+      ))}
+    </div>
+  );
+}
 
 export default UserProfile;
