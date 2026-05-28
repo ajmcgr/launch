@@ -118,15 +118,15 @@ export const Header = () => {
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
+              <Link to="/collections" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Collections
+              </Link>
               <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Newsletter
               </a>
               <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Forums
               </a>
-              <Link to="/collections" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Collections
-              </Link>
               <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Pricing
               </Link>
@@ -240,6 +240,13 @@ export const Header = () => {
                   >
                     Products
                   </Link>
+                  <Link
+                    to="/collections"
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Collections
+                  </Link>
                   <a 
                     href="https://newsletter.trylaunch.ai/" 
                     target="_blank" 
@@ -258,13 +265,6 @@ export const Header = () => {
                   >
                     Forums
                   </a>
-                  <Link
-                    to="/collections"
-                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Collections
-                  </Link>
                   <Link 
                     to="/pricing" 
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
