@@ -503,13 +503,11 @@ const UserProfile = () => {
             <div className="flex-1 min-w-0 md:pb-2">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="min-w-0">
-                  {profile.name && (
-                    <h1 className="font-reckless text-4xl md:text-5xl font-bold tracking-tight leading-none">
-                      {profile.name}
-                    </h1>
-                  )}
+                  <h1 className="font-reckless text-4xl md:text-5xl font-bold tracking-tight leading-none">
+                    {profile.name || profile.username}
+                  </h1>
                   <div className="flex items-center gap-2 flex-wrap mt-2">
-                    <span className="text-base text-muted-foreground">@{profile.username}</span>
+                    <span className="text-base font-medium text-muted-foreground">@{profile.username}</span>
                     <KarmaScore karma={makerScore} size="sm" />
                     {s.bestAward && (
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
