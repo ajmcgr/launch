@@ -288,6 +288,32 @@ const Settings = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="banner">Profile banner</Label>
+                    <p className="text-xs text-muted-foreground">Replaces the gradient hero on your profile. Recommended 1500×400 (max 5MB).</p>
+                    <div
+                      className="w-full h-32 rounded-lg overflow-hidden bg-muted border"
+                      style={!profile.banner_image_url ? { backgroundImage: 'linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899)' } : undefined}
+                    >
+                      {profile.banner_image_url && (
+                        <img src={profile.banner_image_url} alt="Banner preview" className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="banner"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerUpload}
+                        disabled={uploadingBanner}
+                      />
+                      {profile.banner_image_url && (
+                        <Button type="button" variant="outline" size="sm" onClick={handleRemoveBanner} disabled={uploadingBanner}>
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
