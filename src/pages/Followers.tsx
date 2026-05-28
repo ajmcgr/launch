@@ -35,7 +35,7 @@ const Followers = () => {
         if (!profileData) { setLoading(false); return; }
         setProfile(profileData);
 
-        const [{ count: followersTotal }, { count: followingTotal }, { count: productsTotal }, { count: collectionsTotal }, { count: communityTotal }, { data: followersData }] = await Promise.all([
+        const results: any[] = await Promise.all([
           supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followed_id', profileData.id),
           supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
           supabase.from('products').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id).eq('status', 'launched'),
