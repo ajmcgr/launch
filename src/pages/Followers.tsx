@@ -35,14 +35,16 @@ const Followers = () => {
         if (!profileData) { setLoading(false); return; }
         setProfile(profileData);
 
+        const sb: any = supabase;
         const results: any[] = await Promise.all([
-          supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followed_id', profileData.id),
-          supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
-          supabase.from('products').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id).eq('status', 'launched'),
-          supabase.from('collections').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id),
-          supabase.from('products').select('*', { count: 'exact', head: true }).eq('submitter_id', profileData.id).neq('owner_id', profileData.id).eq('status', 'launched'),
-          supabase.from('follows').select('follower_id, users!follows_follower_id_fkey(id, username, avatar_url, bio, name)').eq('followed_id', profileData.id),
+          sb.from('follows').select('*', { count: 'exact', head: true }).eq('followed_id', profileData.id),
+          sb.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
+          sb.from('products').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id).eq('status', 'launched'),
+          sb.from('collections').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id),
+          sb.from('products').select('*', { count: 'exact', head: true }).eq('submitter_id', profileData.id).neq('owner_id', profileData.id).eq('status', 'launched'),
+          sb.from('follows').select('follower_id, users!follows_follower_id_fkey(id, username, avatar_url, bio, name)').eq('followed_id', profileData.id),
         ]);
+
         const [r1, r2, r3, r4, r5, r6] = results;
 
         setFollowerCount(r1.count || 0);
