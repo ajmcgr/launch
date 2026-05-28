@@ -109,6 +109,14 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
                   <span className="font-semibold text-foreground tabular-nums">{productsCount}</span>
                   <span className="text-muted-foreground">Launches</span>
                 </Link>
+                <Link to={`/@${profile.username}?tab=collections`} className="inline-flex items-baseline gap-1.5 hover:text-primary transition-colors">
+                  <span className="font-semibold text-foreground tabular-nums">{collectionsCount}</span>
+                  <span className="text-muted-foreground">Collections</span>
+                </Link>
+                <span className="inline-flex items-baseline gap-1.5">
+                  <span className="font-semibold text-foreground tabular-nums">{savesCount}</span>
+                  <span className="text-muted-foreground">Saves</span>
+                </span>
               </div>
             </div>
           </div>
