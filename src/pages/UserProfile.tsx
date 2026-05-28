@@ -715,6 +715,12 @@ const UserProfile = () => {
             {visited.has('community') && <CommunityPanel profile={profile} />}
           </TabsContent>
 
+          <TabsContent value="comments" className="mt-6 pb-12">
+            {visited.has('comments') && <CommentsPanel profile={profile} />}
+          </TabsContent>
+
+
+
           <TabsContent value="achievements" className="mt-6 pb-12">
             {visited.has('achievements') && <AchievementsPanel profile={profile} stats={s} makerScore={makerScore} />}
           </TabsContent>
