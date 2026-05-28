@@ -31,13 +31,15 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
   return (
     <>
       {/* Editorial hero band */}
-      <div className="relative">
-        {profile.banner_image_url ? (
-          <img src={profile.banner_image_url} alt="" className="h-40 md:h-56 w-full object-cover" loading="eager" />
-        ) : (
-          <div className="h-40 md:h-56 w-full" style={{ backgroundImage: heroGradient }} aria-hidden="true" />
-        )}
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="relative overflow-hidden rounded-xl">
+          {profile.banner_image_url ? (
+            <img src={profile.banner_image_url} alt="" className="h-40 md:h-56 w-full object-cover" loading="eager" />
+          ) : (
+            <div className="h-40 md:h-56 w-full" style={{ backgroundImage: heroGradient }} aria-hidden="true" />
+          )}
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+        </div>
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">
