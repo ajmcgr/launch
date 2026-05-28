@@ -37,11 +37,11 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
         ) : (
           <div className="h-40 md:h-56 w-full" style={{ backgroundImage: heroGradient }} aria-hidden="true" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="-mt-10 md:-mt-12 mb-8">
+        <div className="mt-6 md:mt-8 mb-8">
           <div className="flex flex-col md:flex-row md:items-end gap-5 md:gap-7 pt-2">
             <Link to={`/@${profile.username}`} className="shrink-0">
               <Avatar className="h-28 w-28 md:h-36 md:w-36 ring-4 ring-background shadow-lg">
