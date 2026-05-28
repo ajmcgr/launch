@@ -527,6 +527,9 @@ const LaunchDetail = () => {
                 )}
               </div>
               <p className="text-xl text-muted-foreground mt-3">{product.tagline}</p>
+
+              <SubmissionAttribution product={product} currentUserId={user?.id} onClaimed={() => window.location.reload()} />
+              
               
               {/* Mobile Makers - visible on mobile only */}
               {product.makers && product.makers.length > 0 && (
