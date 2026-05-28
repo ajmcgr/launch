@@ -616,7 +616,7 @@ const UserProfile = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="w-full md:w-auto flex flex-wrap h-auto bg-transparent border-b border-border rounded-none p-0 gap-1">
+          <TabsList className="w-full flex flex-wrap justify-center h-auto bg-transparent border-b border-border rounded-none p-0 gap-1">
             <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
             <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
             <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
