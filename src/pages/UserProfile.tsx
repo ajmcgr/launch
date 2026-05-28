@@ -362,26 +362,26 @@ const UserProfile = () => {
         savesAndAwardsRes,
         followCheckRes,
       ] = await Promise.all([
-        supabase.from('products').select('id', { count: 'exact', head: true })
+        sb.from('products').select('id', { count: 'exact', head: true })
           .eq('owner_id', profileData.id).eq('status', 'launched'),
-        supabase.from('products').select('id', { count: 'exact', head: true })
+        sb.from('products').select('id', { count: 'exact', head: true })
           .or(`submitted_by_user_id.eq.${profileData.id},original_submitter_id.eq.${profileData.id}`)
           .eq('submission_type', 'community').eq('status', 'launched'),
         sb.from('user_collections').select('id', { count: 'exact', head: true })
           .eq('user_id', profileData.id).eq('is_public', true),
-        supabase.from('follows').select('follower_id', { count: 'exact', head: true })
+        sb.from('follows').select('follower_id', { count: 'exact', head: true })
           .eq('followed_id', profileData.id),
-        supabase.from('follows').select('followed_id', { count: 'exact', head: true })
+        sb.from('follows').select('followed_id', { count: 'exact', head: true })
           .eq('follower_id', profileData.id),
-        supabase.from('votes').select('product_id', { count: 'exact', head: true })
+        sb.from('votes').select('product_id', { count: 'exact', head: true })
           .eq('user_id', profileData.id).eq('value', 1),
         sessionUser
-          ? supabase.from('follows').select('follower_id').eq('follower_id', sessionUser.id).eq('followed_id', profileData.id).maybeSingle()
-          : Promise.resolve({ data: null }) as any,
+          ? sb.from('follows').select('follower_id').eq('follower_id', sessionUser.id).eq('followed_id', profileData.id).maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
 
       // Best award — cheap query, only winning flags
-      const { data: winRows } = await supabase
+      const { data: winRows } = await sb
         .from('products')
         .select('won_daily, won_weekly, won_monthly')
         .eq('owner_id', profileData.id)
