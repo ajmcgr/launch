@@ -21,7 +21,7 @@ const FounderAchievements = lazy(() => import('@/components/FounderAchievements'
 const sb: any = supabase;
 const PAGE_SIZE = 12;
 
-type TabKey = 'overview' | 'launches' | 'collections' | 'community' | 'achievements';
+type TabKey = 'launches' | 'collections' | 'community' | 'achievements';
 
 interface ProfileStats {
   founderLaunches: number;
