@@ -474,11 +474,20 @@ const UserProfile = () => {
 
       {/* Editorial hero band */}
       <div className="relative">
-        <div
-          className="h-40 md:h-56 w-full"
-          style={{ backgroundImage: heroGradient }}
-          aria-hidden="true"
-        />
+        {profile.banner_image_url ? (
+          <img
+            src={profile.banner_image_url}
+            alt=""
+            className="h-40 md:h-56 w-full object-cover"
+            loading="eager"
+          />
+        ) : (
+          <div
+            className="h-40 md:h-56 w-full"
+            style={{ backgroundImage: heroGradient }}
+            aria-hidden="true"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background pointer-events-none" />
       </div>
 

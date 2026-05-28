@@ -31,6 +31,7 @@ const Settings = () => {
     telegram: '',
     website: '',
     avatar_url: '',
+    banner_image_url: '',
     stripe_customer_id: '',
     email_notifications_enabled: true,
     notify_on_follow: true,
@@ -39,6 +40,7 @@ const Settings = () => {
     notify_on_launch: true,
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
   
   // Pass status
   const { data: passStatus, refetch: refetchPassStatus } = usePass(user?.id);
@@ -70,7 +72,7 @@ const Settings = () => {
       .single();
     
     if (data) {
-      setProfile(data);
+      setProfile({ banner_image_url: '', ...(data as any) });
     }
   };
 
@@ -98,6 +100,7 @@ const Settings = () => {
         telegram: profile.telegram,
         website: profile.website,
         avatar_url: profile.avatar_url,
+        banner_image_url: profile.banner_image_url,
         email_notifications_enabled: profile.email_notifications_enabled,
         notify_on_follow: profile.notify_on_follow,
         notify_on_comment: profile.notify_on_comment,
@@ -203,6 +206,53 @@ const Settings = () => {
     }
   };
 
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB.'); return; }
+    if (!file.type.startsWith('image/')) { toast.error('Please select an image file.'); return; }
+    setUploadingBanner(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${user.id}/banner-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from('user-banners')
+        .upload(path, file, { cacheControl: '3600', upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from('user-banners').getPublicUrl(path);
+      const { error: updErr } = await supabase
+        .from('users')
+        .update({ banner_image_url: publicUrl } as any)
+        .eq('id', user.id);
+      if (updErr) throw updErr;
+      setProfile({ ...profile, banner_image_url: publicUrl });
+      toast.success('Banner updated');
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || 'Failed to upload banner');
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
+
+  const handleRemoveBanner = async () => {
+    if (!user) return;
+    setUploadingBanner(true);
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ banner_image_url: null } as any)
+        .eq('id', user.id);
+      if (error) throw error;
+      setProfile({ ...profile, banner_image_url: '' });
+      toast.success('Banner removed');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to remove banner');
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
+
   const handleManageBilling = async () => {
     try {
       setLoading(true);
@@ -282,6 +332,32 @@ const Settings = () => {
                         onChange={handleAvatarUpload}
                         disabled={uploading}
                       />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="banner">Profile banner</Label>
+                    <p className="text-xs text-muted-foreground">Replaces the gradient hero on your profile. Recommended 1500×400 (max 5MB).</p>
+                    <div
+                      className="w-full h-32 rounded-lg overflow-hidden bg-muted border"
+                      style={!profile.banner_image_url ? { backgroundImage: 'linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899)' } : undefined}
+                    >
+                      {profile.banner_image_url && (
+                        <img src={profile.banner_image_url} alt="Banner preview" className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="banner"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerUpload}
+                        disabled={uploadingBanner}
+                      />
+                      {profile.banner_image_url && (
+                        <Button type="button" variant="outline" size="sm" onClick={handleRemoveBanner} disabled={uploadingBanner}>
+                          Remove
+                        </Button>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
