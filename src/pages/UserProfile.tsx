@@ -96,7 +96,7 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-4">
         {items.map((p) => (
           <LaunchCard key={p.id} {...p} onVote={() => {}} showFollowButton={false} />
         ))}
@@ -150,7 +150,7 @@ function CollectionsPanel({ profile }: { profile: any }) {
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="flex flex-col gap-4">
         {items.map((c: any) => (
           <Card key={c.id} className="overflow-hidden hover:border-primary/50 transition-colors group">
             {c.cover_image_url && (
@@ -226,7 +226,7 @@ function CommunityPanel({ profile }: { profile: any }) {
         <StatBlock label="Claimed by founder" value={items.filter((p) => !!p.claimed_at).length} />
         <StatBlock label="Awaiting claim" value={items.filter((p) => !p.claimed_at).length} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-4">
         {items.map((p) => (
           <LaunchCard key={p.id} {...p} onVote={() => {}} submissionType="community" />
         ))}
@@ -616,7 +616,7 @@ const UserProfile = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="w-full flex flex-col items-center h-auto bg-transparent border-b border-border rounded-none p-0 gap-1">
+          <TabsList className="w-full flex flex-wrap justify-center h-auto bg-transparent border-b border-border rounded-none p-0 gap-1">
             <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
             <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
             <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
