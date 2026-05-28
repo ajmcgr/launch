@@ -147,6 +147,7 @@ export const LaunchCard = ({
           <h3 className="font-semibold text-base hover:text-primary transition-colors">
             {name}
           </h3>
+          <SubmissionTypeBadge type={submissionType} />
           {domainUrl && (
             <a
               href={domainUrl}
