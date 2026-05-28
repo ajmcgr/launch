@@ -43,13 +43,15 @@ const Followers = () => {
           supabase.from('products').select('*', { count: 'exact', head: true }).eq('submitter_id', profileData.id).neq('owner_id', profileData.id).eq('status', 'launched'),
           supabase.from('follows').select('follower_id, users!follows_follower_id_fkey(id, username, avatar_url, bio, name)').eq('followed_id', profileData.id),
         ]);
+        const [r1, r2, r3, r4, r5, r6] = results;
 
-        setFollowerCount(followersTotal || 0);
-        setFollowingCount(followingTotal || 0);
-        setProductsCount(productsTotal || 0);
-        setCollectionsCount(collectionsTotal || 0);
-        setCommunityCount(communityTotal || 0);
-        if (followersData) setFollowers(followersData.map((f: any) => f.users as UserItem).filter(Boolean));
+        setFollowerCount(r1.count || 0);
+        setFollowingCount(r2.count || 0);
+        setProductsCount(r3.count || 0);
+        setCollectionsCount(r4.count || 0);
+        setCommunityCount(r5.count || 0);
+        if (r6.data) setFollowers(r6.data.map((f: any) => f.users as UserItem).filter(Boolean));
+
 
       } catch (e) {
         console.error('Error fetching followers:', e);
