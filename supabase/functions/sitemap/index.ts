@@ -269,9 +269,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Add collections
+    // Add curated collections (only those with >=1 product)
     if (collections) {
       for (const collection of collections) {
+        if (!curatedCounts.has(collection.id)) continue;
         const lastmod = collection.updated_at;
         xml += `
   <url>
@@ -279,6 +280,21 @@ Deno.serve(async (req) => {
     ${lastmod ? `<lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>` : ''}
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>`;
+      }
+    }
+
+    // Add public community collections (only those with >=1 item)
+    if (userCollections) {
+      for (const collection of userCollections) {
+        if (!userCounts.has(collection.id)) continue;
+        const lastmod = collection.updated_at;
+        xml += `
+  <url>
+    <loc>${SITE_URL}/c/${collection.slug}</loc>
+    ${lastmod ? `<lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>` : ''}
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>`;
       }
     }
