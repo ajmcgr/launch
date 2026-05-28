@@ -61,7 +61,7 @@ CREATE POLICY "Admins can view all claims"
   ON public.product_claims FOR SELECT
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND is_admin = true)
+    EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')
   );
 
 DROP POLICY IF EXISTS "Admins can update claims" ON public.product_claims;
@@ -69,7 +69,7 @@ CREATE POLICY "Admins can update claims"
   ON public.product_claims FOR UPDATE
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND is_admin = true)
+    EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')
   );
 
 -- 3. product_reports table -------------------------------------------------
@@ -108,7 +108,7 @@ CREATE POLICY "Admins can view all reports"
   ON public.product_reports FOR SELECT
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND is_admin = true)
+    EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')
   );
 
 -- 4. founder_outreach_log --------------------------------------------------
@@ -130,5 +130,5 @@ CREATE POLICY "Admins read outreach log"
   ON public.founder_outreach_log FOR SELECT
   TO authenticated
   USING (
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND is_admin = true)
+    EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')
   );
