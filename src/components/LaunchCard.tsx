@@ -61,6 +61,7 @@ export const LaunchCard = ({
   icon: IconComponent,
   sponsored,
   sponsoredPosition,
+  submissionType,
   onVote,
   showFollowButton = false,
   isFollowing = false,
