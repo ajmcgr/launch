@@ -13,7 +13,7 @@ import {
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Plus, MoreHorizontal, Globe, Lock, Copy, Trash2, Pencil, Share2, FolderOpen } from 'lucide-react';
+import { Plus, MoreHorizontal, Globe, Lock, Copy, Trash2, Pencil, Share2, FolderOpen, ImagePlus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,6 +27,7 @@ export default function Collections() {
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [editing, setEditing] = useState<Collection | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -59,9 +60,34 @@ export default function Collections() {
       name: editing.name,
       description: editing.description,
       is_public: editing.is_public,
+      cover_image_url: editing.cover_image_url ?? null,
     });
     toast.success('Updated');
     setEditing(null);
+  };
+
+  const handleCoverUpload = async (file: File) => {
+    if (!editing || !userId) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be under 5MB');
+      return;
+    }
+    setUploadingCover(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${userId}/${editing.id}-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from('collection-covers')
+        .upload(path, file, { upsert: true, cacheControl: '3600' });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from('collection-covers').getPublicUrl(path);
+      setEditing({ ...editing, cover_image_url: pub.publicUrl });
+      toast.success('Cover uploaded');
+    } catch (e: any) {
+      toast.error(e?.message || 'Upload failed');
+    } finally {
+      setUploadingCover(false);
+    }
   };
 
   if (!authChecked || (userId && loading)) {
@@ -178,6 +204,41 @@ export default function Collections() {
           <DialogHeader><DialogTitle>Edit collection</DialogTitle></DialogHeader>
           {editing && (
             <div className="space-y-3">
+              <div>
+                <Label>Cover image</Label>
+                <div className="mt-2">
+                  {editing.cover_image_url ? (
+                    <div className="relative w-full h-40 rounded-md overflow-hidden border bg-muted">
+                      <img src={editing.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        className="absolute top-2 right-2 h-7 w-7"
+                        onClick={() => setEditing({ ...editing, cover_image_url: null })}
+                        aria-label="Remove cover"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-md cursor-pointer hover:bg-muted/40 transition-colors text-muted-foreground">
+                      <ImagePlus className="h-6 w-6 mb-1" />
+                      <span className="text-xs">{uploadingCover ? 'Uploading…' : 'Click to upload (max 5MB)'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploadingCover}
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) handleCoverUpload(f);
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
               <div>
                 <Label>Name</Label>
                 <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
