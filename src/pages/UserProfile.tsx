@@ -247,7 +247,7 @@ function AchievementsPanel({ profile, stats, makerScore }: { profile: any; stats
   return (
     <div className="space-y-8">
       {cards.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="flex flex-col gap-3">
           {cards.map((c, i) => (
             <Card key={i} className="p-4 flex items-center gap-3">
               <c.icon className={`h-6 w-6 ${c.tone === 'gold' ? 'text-yellow-500' : c.tone === 'silver' ? 'text-gray-400' : c.tone === 'bronze' ? 'text-amber-600' : 'text-primary'}`} />
