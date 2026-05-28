@@ -138,6 +138,16 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     });
   }, [publicMode]);
 
+  // Bump view count once per public load when the collection is public.
+  useEffect(() => {
+    if (!collection || !collection.is_public) return;
+    if (!publicMode) return;
+    const key = `cv:${collection.slug}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    sb.rpc('increment_collection_view', { _slug: collection.slug });
+  }, [collection, publicMode]);
+
   const isOwner = !publicMode && collection && currentUserId === collection.user_id;
 
   const allCategories = Array.from(new Set(items.flatMap(i => i.product.categories))).sort();
