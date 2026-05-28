@@ -252,11 +252,64 @@ function CommunityPanel({ profile }: { profile: any }) {
         <StatBlock label="Claimed by founder" value={items.filter((p) => !!p.claimed_at).length} />
         <StatBlock label="Awaiting claim" value={items.filter((p) => !p.claimed_at).length} />
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         {items.map((p) => (
-          <LaunchCard key={p.id} {...p} onVote={() => {}} submissionType="community" />
+          <ProfileLaunchRow key={p.id} product={p} submissionType="community" />
         ))}
       </div>
+    </div>
+  );
+}
+
+function CommentsPanel({ profile }: { profile: any }) {
+  const [page, setPage] = useState(0);
+  const [items, setItems] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await sb
+        .from('comments')
+        .select('id, content, created_at, product_id, products(name, slug)', { count: 'exact' })
+        .eq('user_id', profile.id)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      if (cancelled) return;
+      setItems(data || []);
+      setTotal(count || 0);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [profile.id, page]);
+
+  if (loading) return <GridSkeleton rows={1} />;
+  if (!items.length) return <EmptyState icon={MessageSquare} title="No comments yet" />;
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  return (
+    <div>
+      <div className="flex flex-col">
+        {items.map((c: any) => (
+          <Link
+            key={c.id}
+            to={c.products?.slug ? `/launch/${c.products.slug}` : '#'}
+            className="flex flex-col gap-1 py-3 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
+          >
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{c.products?.name || 'Product'}</span>
+              <span>·</span>
+              <span>{new Date(c.created_at).toLocaleDateString()}</span>
+            </div>
+            <p className="text-sm text-foreground/90 line-clamp-3 whitespace-pre-line">{c.content}</p>
+          </Link>
+        ))}
+      </div>
+      <Pager page={page} pages={pages} total={total} onChange={setPage} />
     </div>
   );
 }
