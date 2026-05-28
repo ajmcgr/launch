@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
@@ -332,6 +332,31 @@ const UserProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>(urlTab || 'launches');
   const [visited, setVisited] = useState<Set<TabKey>>(new Set([urlTab || 'launches']));
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB.'); return; }
+    if (!file.type.startsWith('image/')) { toast.error('Please select an image file.'); return; }
+    setUploadingBanner(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${currentUser.id}/banner-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from('user-banners').upload(path, file, { cacheControl: '3600', upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from('user-banners').getPublicUrl(path);
+      const { error: updErr } = await sb.from('users').update({ banner_image_url: publicUrl }).eq('id', currentUser.id);
+      if (updErr) throw updErr;
+      setProfile({ ...profile, banner_image_url: publicUrl });
+      toast.success('Banner updated');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to upload banner');
+    } finally {
+      setUploadingBanner(false);
+      e.target.value = '';
+    }
+  };
 
   // Fetch session + profile + lightweight stats only
   useEffect(() => {
@@ -489,6 +514,24 @@ const UserProfile = () => {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background pointer-events-none" />
+        {isOwnProfile && (
+          <label
+            htmlFor="profile-banner-upload"
+            className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-md bg-background/80 backdrop-blur px-2.5 py-1.5 text-xs font-medium border border-border shadow-sm cursor-pointer hover:bg-background transition-colors"
+            aria-label={profile.banner_image_url ? 'Change banner image' : 'Upload banner image'}
+          >
+            <ImagePlus className="h-3.5 w-3.5" />
+            {uploadingBanner ? 'Uploading…' : (profile.banner_image_url ? 'Change banner' : 'Add banner')}
+            <input
+              id="profile-banner-upload"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleBannerUpload}
+              disabled={uploadingBanner}
+            />
+          </label>
+        )}
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">

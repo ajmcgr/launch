@@ -14,6 +14,7 @@ import { StripeConnectCard } from '@/components/StripeConnectCard';
 import { PassStatus } from '@/components/PassStatus';
 import { usePass } from '@/hooks/use-pass';
 import { useQueryClient } from '@tanstack/react-query';
+import { gradientFor } from '@/lib/gradients';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -339,7 +340,7 @@ const Settings = () => {
                     <p className="text-xs text-muted-foreground">Replaces the gradient hero on your profile. Recommended 1500×400 (max 5MB).</p>
                     <div
                       className="w-full h-32 rounded-lg overflow-hidden bg-muted border"
-                      style={!profile.banner_image_url ? { backgroundImage: 'linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899)' } : undefined}
+                      style={!profile.banner_image_url ? { backgroundImage: gradientFor(user?.id || profile.username || 'x') } : undefined}
                     >
                       {profile.banner_image_url && (
                         <img src={profile.banner_image_url} alt="Banner preview" className="w-full h-full object-cover" />
