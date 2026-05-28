@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
-import { FolderOpen, Eye, Users, TrendingUp, Sparkles, Star, Clock } from 'lucide-react';
+import { FolderOpen, Eye, Users, TrendingUp, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
 
@@ -117,9 +117,6 @@ export default function CollectionsDirectory() {
       </Helmet>
 
       <header className="mb-8 text-center">
-        <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
-          <Sparkles className="h-3.5 w-3.5" /> Curated by the community
-        </div>
         <h1 className="text-4xl md:text-5xl font-reckless font-bold">Collections</h1>
         <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
           Hand-picked groupings of products from Launch. Follow the ones you love.
