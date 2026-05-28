@@ -7,13 +7,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
 import { SeoHead } from '@/components/seo/SeoHead';
+import { gradientFor } from '@/lib/gradients';
 
 const FounderAchievements = lazy(() => import('@/components/FounderAchievements'));
 
@@ -322,15 +323,15 @@ const UserProfile = () => {
   const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
   const { score: makerScore } = useMakerScoreByUsername(username);
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = (searchParams.get('tab') as TabKey) || 'overview';
+  const urlTab = searchParams.get('tab') as TabKey | null;
 
   const [profile, setProfile] = useState<any>(null);
   const [stats, setStats] = useState<ProfileStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
-  const [visited, setVisited] = useState<Set<TabKey>>(new Set([initialTab]));
+  const [activeTab, setActiveTab] = useState<TabKey>(urlTab || 'launches');
+  const [visited, setVisited] = useState<Set<TabKey>>(new Set([urlTab || 'launches']));
 
   // Fetch session + profile + lightweight stats only
   useEffect(() => {
@@ -456,8 +457,11 @@ const UserProfile = () => {
 
   const s = stats!;
 
+  const isOwnProfile = currentUser && currentUser.id === profile.id;
+  const heroGradient = gradientFor(profile.id || profile.username);
+
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-background">
       <SeoHead
         title={`@${profile.username} — Products & collections on Launch`}
         description={profile.bio ? profile.bio.slice(0, 155) : `Explore products launched, collections curated, and activity by @${profile.username} on Launch.`}
@@ -467,22 +471,39 @@ const UserProfile = () => {
           { name: `@${profile.username}`, path: `/@${profile.username}` },
         ]}
       />
+
+      {/* Editorial hero band */}
+      <div className="relative">
+        <div
+          className="h-40 md:h-56 w-full"
+          style={{ backgroundImage: heroGradient }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background pointer-events-none" />
+      </div>
+
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Overview header */}
-        <Card className="p-6 md:p-8 mb-6">
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            <Avatar className="h-24 w-24">
+        {/* Profile header — overlaps hero */}
+        <div className="-mt-20 md:-mt-24 mb-8">
+          <div className="flex flex-col md:flex-row md:items-end gap-5 md:gap-7">
+            <Avatar className="h-28 w-28 md:h-36 md:w-36 ring-4 ring-background shadow-lg shrink-0">
               <AvatarImage src={profile.avatar_url} alt={profile.username} />
-              <AvatarFallback className="text-2xl">{profile.username[0].toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="text-3xl">{profile.username[0].toUpperCase()}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 w-full">
-              <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
+
+            <div className="flex-1 min-w-0 md:pb-2">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h1 className="text-3xl font-bold">@{profile.username}</h1>
-                    <KarmaScore karma={makerScore} size="md" />
+                  {profile.name && (
+                    <h1 className="font-reckless text-4xl md:text-5xl font-bold tracking-tight leading-none">
+                      {profile.name}
+                    </h1>
+                  )}
+                  <div className="flex items-center gap-2 flex-wrap mt-2">
+                    <span className="text-base text-muted-foreground">@{profile.username}</span>
+                    <KarmaScore karma={makerScore} size="sm" />
                     {s.bestAward && (
-                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                         s.bestAward === 'gold' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
                         s.bestAward === 'silver' ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
                         'bg-amber-500/10 text-amber-600 dark:text-amber-400'
@@ -491,12 +512,16 @@ const UserProfile = () => {
                       </span>
                     )}
                   </div>
-                  {profile.name && <p className="text-lg text-muted-foreground">{profile.name}</p>}
-                  {profile.bio && <p className="text-muted-foreground mt-2 max-w-2xl">{profile.bio}</p>}
                 </div>
                 <div className="flex items-center gap-2">
-                  {currentUser && currentUser.id !== profile.id && (
-                    <Button onClick={handleFollow} variant={isFollowing ? 'outline' : 'default'}>
+                  {isOwnProfile ? (
+                    <Link to="/settings">
+                      <Button variant="outline" size="sm">
+                        <Pencil className="h-4 w-4 mr-2" /> Edit profile
+                      </Button>
+                    </Link>
+                  ) : currentUser && (
+                    <Button onClick={handleFollow} variant={isFollowing ? 'outline' : 'default'} size="sm">
                       {isFollowing ? (<><UserMinus className="h-4 w-4 mr-2" />Unfollow</>) : (<><UserPlus className="h-4 w-4 mr-2" />Follow</>)}
                     </Button>
                   )}
@@ -506,53 +531,72 @@ const UserProfile = () => {
                 </div>
               </div>
 
-              {/* Stat strip */}
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-4">
-                <StatBlock label="Founder" value={s.founderLaunches} />
-                <StatBlock label="Community" value={s.communityLaunches} />
-                <StatBlock label="Collections" value={s.collections} />
-                <StatBlock label="Saves" value={s.saves} />
-                <StatBlock label="Followers" value={s.followers} />
+              {profile.bio ? (
+                <p className="text-base md:text-lg text-foreground/80 mt-4 max-w-2xl leading-relaxed whitespace-pre-line">
+                  {profile.bio}
+                </p>
+              ) : isOwnProfile ? (
+                <Link to="/settings" className="inline-block mt-4 text-sm text-muted-foreground hover:text-primary border border-dashed border-border rounded-md px-3 py-2">
+                  + Add a bio to tell people what you build
+                </Link>
+              ) : null}
+
+              {/* Inline stat strip — borderless, dense */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5 text-sm">
+                <InlineStat value={s.founderLaunches} label="Launches" />
+                <InlineStat value={s.collections} label="Collections" />
+                <InlineStat value={s.saves} label="Saves" />
+                <InlineStat value={s.followers} label="Followers" />
+                <InlineStat value={s.following} label="Following" />
               </div>
 
               <SocialLinks profile={profile} />
             </div>
           </div>
-        </Card>
+        </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="w-full md:w-auto flex flex-wrap h-auto">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="launches">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
-            <TabsTrigger value="collections">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
-            <TabsTrigger value="community">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
-            <TabsTrigger value="achievements">Achievements</TabsTrigger>
+          <TabsList className="w-full md:w-auto flex flex-wrap h-auto bg-transparent border-b border-border rounded-none p-0 gap-1">
+            <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
+            <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
+            <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Overview</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
-            <OverviewQuickLinks stats={s} onJump={handleTabChange} />
-          </TabsContent>
-
-          <TabsContent value="launches" className="mt-6">
+          <TabsContent value="launches" className="mt-6 pb-12">
             {visited.has('launches') && <LaunchesPanel profile={profile} currentUser={currentUser} />}
           </TabsContent>
 
-          <TabsContent value="collections" className="mt-6">
+          <TabsContent value="collections" className="mt-6 pb-12">
             {visited.has('collections') && <CollectionsPanel profile={profile} />}
           </TabsContent>
 
-          <TabsContent value="community" className="mt-6">
+          <TabsContent value="community" className="mt-6 pb-12">
             {visited.has('community') && <CommunityPanel profile={profile} />}
           </TabsContent>
 
-          <TabsContent value="achievements" className="mt-6">
+          <TabsContent value="achievements" className="mt-6 pb-12">
             {visited.has('achievements') && <AchievementsPanel profile={profile} stats={s} makerScore={makerScore} />}
+          </TabsContent>
+
+          <TabsContent value="overview" className="mt-6 pb-12">
+            <OverviewQuickLinks stats={s} onJump={handleTabChange} />
           </TabsContent>
         </Tabs>
       </div>
     </div>
   );
 };
+
+function InlineStat({ value, label }: { value: number | string; label: string }) {
+  return (
+    <span className="inline-flex items-baseline gap-1.5">
+      <span className="font-semibold text-foreground tabular-nums">{value}</span>
+      <span className="text-muted-foreground">{label}</span>
+    </span>
+  );
+}
 
 function OverviewQuickLinks({ stats, onJump }: { stats: ProfileStats; onJump: (t: TabKey) => void }) {
   const quick: Array<{ tab: TabKey; icon: any; label: string; value: number }> = [
