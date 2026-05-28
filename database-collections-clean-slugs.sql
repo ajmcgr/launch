@@ -1,6 +1,10 @@
 -- Clean, human-readable slugs for user_collections.
 -- Run in Supabase SQL editor.
 
+-- Required before creating slugify(). Supabase usually installs extensions here.
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA extensions;
+
 -- 1) Slugify helper: lowercase, strip diacritics, keep [a-z0-9-], collapse dashes.
 CREATE OR REPLACE FUNCTION public.slugify(_input text)
 RETURNS text
@@ -10,16 +14,13 @@ AS $$
   SELECT trim(both '-' from
     regexp_replace(
       regexp_replace(
-        lower(unaccent(coalesce(_input, ''))),
+        lower(extensions.unaccent(coalesce(_input, ''))),
         '[^a-z0-9]+', '-', 'g'
       ),
       '-+', '-', 'g'
     )
   );
 $$;
-
--- unaccent extension (safe if already present)
-CREATE EXTENSION IF NOT EXISTS unaccent;
 
 -- 2) Unique slug generator for user_collections.
 CREATE OR REPLACE FUNCTION public.generate_unique_collection_slug(_name text, _id uuid)
