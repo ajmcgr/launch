@@ -163,8 +163,11 @@ export default function CollectionsDirectory() {
               to={`/c/${c.slug}`}
               className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
             >
-              <div className="aspect-[3/1.6] bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 overflow-hidden">
-                {c.cover_image_url ? (
+              <div
+                className="aspect-[3/1.6] overflow-hidden"
+                style={!c.cover_image_url ? { backgroundImage: gradientFor(c.id || c.slug || c.name) } : undefined}
+              >
+                {c.cover_image_url && (
                   <img
                     src={c.cover_image_url}
                     alt={c.name}
@@ -173,10 +176,6 @@ export default function CollectionsDirectory() {
                     height={213}
                     loading="lazy"
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl font-reckless text-primary/40">
-                    {c.name?.[0]?.toUpperCase() ?? '★'}
-                  </div>
                 )}
               </div>
               <div className="p-4 flex-1 flex flex-col">
