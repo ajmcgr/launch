@@ -332,6 +332,31 @@ const UserProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>(urlTab || 'launches');
   const [visited, setVisited] = useState<Set<TabKey>>(new Set([urlTab || 'launches']));
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB.'); return; }
+    if (!file.type.startsWith('image/')) { toast.error('Please select an image file.'); return; }
+    setUploadingBanner(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${currentUser.id}/banner-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from('user-banners').upload(path, file, { cacheControl: '3600', upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from('user-banners').getPublicUrl(path);
+      const { error: updErr } = await sb.from('users').update({ banner_image_url: publicUrl }).eq('id', currentUser.id);
+      if (updErr) throw updErr;
+      setProfile({ ...profile, banner_image_url: publicUrl });
+      toast.success('Banner updated');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to upload banner');
+    } finally {
+      setUploadingBanner(false);
+      e.target.value = '';
+    }
+  };
 
   // Fetch session + profile + lightweight stats only
   useEffect(() => {
