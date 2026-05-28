@@ -10,6 +10,7 @@ interface Props {
   productsCount: number;
   collectionsCount?: number;
   communityCount?: number;
+  savesCount?: number;
   active: 'followers' | 'following';
 }
 
