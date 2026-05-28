@@ -537,15 +537,15 @@ const UserProfile = () => {
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        {/* Profile header — overlaps hero */}
-        <div className="-mt-16 md:-mt-20 mb-8">
-          <div className="flex flex-col md:flex-row md:items-end gap-5 md:gap-7 pt-2">
-            <Avatar className="h-28 w-28 md:h-36 md:w-36 ring-4 ring-background shadow-lg shrink-0">
+        {/* Profile header — only avatar overlaps hero */}
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-start gap-5 md:gap-7">
+            <Avatar className="h-28 w-28 md:h-36 md:w-36 ring-4 ring-background shadow-lg shrink-0 -mt-16 md:-mt-20">
               <AvatarImage src={profile.avatar_url} alt={profile.username} />
               <AvatarFallback className="text-3xl">{profile.username[0].toUpperCase()}</AvatarFallback>
             </Avatar>
 
-            <div className="flex-1 min-w-0 md:pb-2 pt-6 md:pt-10">
+            <div className="flex-1 min-w-0 pt-4 md:pt-6">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="min-w-0">
                   {profile.name && (
