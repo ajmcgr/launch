@@ -514,6 +514,24 @@ const UserProfile = () => {
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background pointer-events-none" />
+        {isOwnProfile && (
+          <label
+            htmlFor="profile-banner-upload"
+            className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-md bg-background/80 backdrop-blur px-2.5 py-1.5 text-xs font-medium border border-border shadow-sm cursor-pointer hover:bg-background transition-colors"
+            aria-label={profile.banner_image_url ? 'Change banner image' : 'Upload banner image'}
+          >
+            <ImagePlus className="h-3.5 w-3.5" />
+            {uploadingBanner ? 'Uploading…' : (profile.banner_image_url ? 'Change banner' : 'Add banner')}
+            <input
+              id="profile-banner-upload"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleBannerUpload}
+              disabled={uploadingBanner}
+            />
+          </label>
+        )}
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">
