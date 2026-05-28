@@ -500,40 +500,42 @@ const UserProfile = () => {
       />
 
       {/* Editorial hero band */}
-      <div className="relative">
-        {profile.banner_image_url ? (
-          <img
-            src={profile.banner_image_url}
-            alt=""
-            className="h-40 md:h-56 w-full object-cover"
-            loading="eager"
-          />
-        ) : (
-          <div
-            className="h-40 md:h-56 w-full"
-            style={{ backgroundImage: heroGradient }}
-            aria-hidden="true"
-          />
-        )}
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
-        {isOwnProfile && (
-          <label
-            htmlFor="profile-banner-upload"
-            className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-md bg-background/80 backdrop-blur px-2.5 py-1.5 text-xs font-medium border border-border shadow-sm cursor-pointer hover:bg-background transition-colors"
-            aria-label={profile.banner_image_url ? 'Change banner image' : 'Upload banner image'}
-          >
-            <ImagePlus className="h-3.5 w-3.5" />
-            {uploadingBanner ? 'Uploading…' : (profile.banner_image_url ? 'Change banner' : 'Add banner')}
-            <input
-              id="profile-banner-upload"
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={handleBannerUpload}
-              disabled={uploadingBanner}
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="relative overflow-hidden rounded-xl">
+          {profile.banner_image_url ? (
+            <img
+              src={profile.banner_image_url}
+              alt=""
+              className="h-40 md:h-56 w-full object-cover"
+              loading="eager"
             />
-          </label>
-        )}
+          ) : (
+            <div
+              className="h-40 md:h-56 w-full"
+              style={{ backgroundImage: heroGradient }}
+              aria-hidden="true"
+            />
+          )}
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+          {isOwnProfile && (
+            <label
+              htmlFor="profile-banner-upload"
+              className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-md bg-background/80 backdrop-blur px-2.5 py-1.5 text-xs font-medium border border-border shadow-sm cursor-pointer hover:bg-background transition-colors"
+              aria-label={profile.banner_image_url ? 'Change banner image' : 'Upload banner image'}
+            >
+              <ImagePlus className="h-3.5 w-3.5" />
+              {uploadingBanner ? 'Uploading…' : (profile.banner_image_url ? 'Change banner' : 'Add banner')}
+              <input
+                id="profile-banner-upload"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={handleBannerUpload}
+                disabled={uploadingBanner}
+              />
+            </label>
+          )}
+        </div>
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">
