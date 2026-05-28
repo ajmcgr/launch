@@ -554,7 +554,7 @@ const UserProfile = () => {
                     </h1>
                   )}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-lg md:text-xl tracking-tight text-foreground">@{profile.username}</span>
+                    <span className="text-base md:text-lg font-normal text-muted-foreground">@{profile.username}</span>
                     <KarmaScore karma={makerScore} size="sm" />
                     {s.bestAward && (
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
