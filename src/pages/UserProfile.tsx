@@ -185,7 +185,7 @@ function CommunityPanel({ profile }: { profile: any }) {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const { data } = await supabase
+      const { data } = await sb
         .from('products')
         .select(`id, slug, name, tagline, claimed_at,
           product_media(url, type),
