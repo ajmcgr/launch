@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
+import { CollectionHero } from '@/components/CollectionHero';
 import { Globe, Lock, Share2, Trash2, Download, ArrowLeft, FolderPlus, LayoutGrid, List as ListIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { removeLaunchFromCollection, saveLaunchToCollections } from '@/hooks/use-collections';
@@ -27,6 +28,8 @@ interface CollectionRow {
   is_public: boolean;
   slug: string;
   updated_at: string;
+  cover_image_url?: string | null;
+  view_count?: number;
 }
 
 interface ItemProduct {
@@ -134,6 +137,16 @@ export default function CollectionDetail({ publicMode = false }: Props) {
       }
     });
   }, [publicMode]);
+
+  // Bump view count once per public load when the collection is public.
+  useEffect(() => {
+    if (!collection || !collection.is_public) return;
+    if (!publicMode) return;
+    const key = `cv:${collection.slug}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    sb.rpc('increment_collection_view', { _slug: collection.slug });
+  }, [collection, publicMode]);
 
   const isOwner = !publicMode && collection && currentUserId === collection.user_id;
 
@@ -247,24 +260,13 @@ export default function CollectionDetail({ publicMode = false }: Props) {
         </Link>
       )}
 
-      <div className="flex items-start justify-between gap-4 mb-6">
-        <div className="min-w-0">
-          <h1 className="text-3xl font-reckless font-bold">{collection.name}</h1>
-          {collection.description && <p className="text-muted-foreground mt-1">{collection.description}</p>}
-          <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-            <Badge variant="secondary" className="flex items-center gap-1">
-              {collection.is_public ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-              {collection.is_public ? 'Public' : 'Private'}
-            </Badge>
-            <span>•</span>
-            <span>{items.length} launches</span>
-          </div>
+      <CollectionHero collection={collection} productCount={items.length} />
+
+      {isOwner && (
+        <div className="flex items-center gap-2 mb-6 -mt-2">
+          <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={handleShare}><Share2 className="h-4 w-4 mr-1" />Share</Button>
-          {isOwner && <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />CSV</Button>}
-        </div>
-      </div>
+      )}
 
       {items.length === 0 ? (
         <div className="text-center py-20 border border-dashed rounded-lg">
