@@ -14,6 +14,7 @@ import { StripeConnectCard } from '@/components/StripeConnectCard';
 import { PassStatus } from '@/components/PassStatus';
 import { usePass } from '@/hooks/use-pass';
 import { useQueryClient } from '@tanstack/react-query';
+import { gradientFor } from '@/lib/gradients';
 
 const Settings = () => {
   const navigate = useNavigate();
