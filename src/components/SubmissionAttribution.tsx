@@ -139,7 +139,7 @@ const ClaimProductModal = ({
     }
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('product_claims').insert({
+      const { error } = await (supabase as any).from('product_claims').insert({
         product_id: productId,
         claimant_user_id: currentUserId,
         verification_method: 'email_domain',
@@ -167,7 +167,7 @@ const ClaimProductModal = ({
     }
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('product_claims').insert({
+      const { error } = await (supabase as any).from('product_claims').insert({
         product_id: productId,
         claimant_user_id: currentUserId,
         verification_method: 'admin',
