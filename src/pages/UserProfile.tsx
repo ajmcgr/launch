@@ -591,13 +591,16 @@ const UserProfile = () => {
   );
 };
 
-function InlineStat({ value, label }: { value: number | string; label: string }) {
-  return (
+function InlineStat({ value, label, href, onClick }: { value: number | string; label: string; href?: string; onClick?: () => void }) {
+  const content = (
     <span className="inline-flex items-baseline gap-1.5">
       <span className="font-semibold text-foreground tabular-nums">{value}</span>
       <span className="text-muted-foreground">{label}</span>
     </span>
   );
+  if (href) return <Link to={href} className="hover:text-primary transition-colors cursor-pointer">{content}</Link>;
+  if (onClick) return <button onClick={onClick} className="hover:text-primary transition-colors cursor-pointer">{content}</button>;
+  return content;
 }
 
 function OverviewQuickLinks({ stats, onJump }: { stats: ProfileStats; onJump: (t: TabKey) => void }) {
