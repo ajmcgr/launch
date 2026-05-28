@@ -41,16 +41,16 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-start gap-5 md:gap-7">
-            <Link to={`/@${profile.username}`} className="shrink-0 -mt-16 md:-mt-20">
+        <div className="mt-6 md:mt-8 mb-8">
+          <div className="flex flex-col md:flex-row md:items-end gap-5 md:gap-7 pt-2">
+            <Link to={`/@${profile.username}`} className="shrink-0">
               <Avatar className="h-28 w-28 md:h-36 md:w-36 ring-4 ring-background shadow-lg">
                 <AvatarImage src={profile.avatar_url} alt={profile.username} />
                 <AvatarFallback className="text-3xl">{profile.username[0].toUpperCase()}</AvatarFallback>
               </Avatar>
             </Link>
 
-            <div className="flex-1 min-w-0 pt-4 md:pt-6">
+            <div className="flex-1 min-w-0 md:pb-2 pt-6 md:pt-10">
               <Link to={`/@${profile.username}`} className="inline-block group">
                 {profile.name && (
                   <h1 className="font-reckless text-3xl md:text-4xl font-bold tracking-tight leading-none text-foreground mb-1 group-hover:text-primary transition-colors">
