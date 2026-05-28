@@ -67,6 +67,7 @@ export const LaunchListItem = ({
   icon: IconComponent,
   sponsored,
   sponsoredPosition,
+  submissionType,
   onVote,
 }: LaunchListItemProps) => {
   const isMobile = useIsMobile();
