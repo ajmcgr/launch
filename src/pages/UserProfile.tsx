@@ -7,13 +7,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
 import { SeoHead } from '@/components/seo/SeoHead';
+import { gradientFor } from '@/lib/gradients';
 
 const FounderAchievements = lazy(() => import('@/components/FounderAchievements'));
 
