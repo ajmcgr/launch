@@ -8,6 +8,8 @@ interface Props {
   followerCount: number;
   followingCount: number;
   productsCount: number;
+  collectionsCount?: number;
+  communityCount?: number;
   active: 'followers' | 'following';
 }
 
@@ -23,28 +25,37 @@ function InlineStat({ value, label, href, active }: { value: number | string; la
   );
 }
 
-export function ProfileMiniHero({ profile, followerCount, followingCount, productsCount, active }: Props) {
+export function ProfileMiniHero({ profile, followerCount, followingCount, productsCount, collectionsCount = 0, communityCount = 0, active }: Props) {
   const heroGradient = profile.username === 'alex'
     ? 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #a855f7 100%)'
     : gradientFor(profile.id || profile.username);
 
+  const tabs: Array<{ key: string; label: string; count?: number }> = [
+    { key: 'launches', label: 'Launches', count: productsCount },
+    { key: 'collections', label: 'Collections', count: collectionsCount },
+    { key: 'community', label: 'Community', count: communityCount },
+    { key: 'achievements', label: 'Achievements' },
+  ];
+
   return (
     <>
       {/* Editorial hero band */}
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4 max-w-5xl pt-6 md:pt-8">
         <div className="relative overflow-hidden rounded-xl">
           {profile.banner_image_url ? (
             <img src={profile.banner_image_url} alt="" className="h-40 md:h-56 w-full object-cover" loading="eager" />
           ) : (
             <div className="h-40 md:h-56 w-full" style={{ backgroundImage: heroGradient }} aria-hidden="true" />
           )}
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+          {!profile.banner_image_url && (
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30 pointer-events-none" />
+          )}
         </div>
       </div>
 
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="mt-6 md:mt-8 mb-8">
-          <div className="flex flex-col md:flex-row md:items-end gap-5 md:gap-7 pt-2">
+        <div className="mt-2 md:mt-3 mb-8">
+          <div className="flex flex-col md:flex-row md:items-start gap-5 md:gap-7 pt-2">
             <Link to={`/@${profile.username}`} className="shrink-0">
               <Avatar className="h-28 w-28 md:h-36 md:w-36 ring-4 ring-background shadow-lg">
                 <AvatarImage src={profile.avatar_url} alt={profile.username} />
@@ -52,7 +63,7 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
               </Avatar>
             </Link>
 
-            <div className="flex-1 min-w-0 md:pb-2 pt-6 md:pt-10">
+            <div className="flex-1 min-w-0 md:pb-2 pt-2 md:pt-4">
               <Link to={`/@${profile.username}`} className="inline-block group">
                 {profile.name && (
                   <h1 className="font-reckless text-3xl md:text-4xl font-bold tracking-tight leading-none text-foreground mb-1 group-hover:text-primary transition-colors">
@@ -100,6 +111,19 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Tabs nav — links back to main profile */}
+        <div className="flex flex-wrap gap-1 border-b border-border mb-6">
+          {tabs.map((t) => (
+            <Link
+              key={t.key}
+              to={`/@${profile.username}?tab=${t.key}`}
+              className="px-3 py-2 text-sm border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t.label}{t.count ? ` · ${t.count}` : ''}
+            </Link>
+          ))}
         </div>
       </div>
     </>
