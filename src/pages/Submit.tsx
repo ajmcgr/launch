@@ -1627,6 +1627,7 @@ const Submit = () => {
                     We'll auto-tag this account on X when your launch goes live. Defaults to your profile X handle — override here if a different account (team, co-founder, etc.) should get tagged.
                   </p>
                 </div>
+                </>}
               </>
             )}
 
