@@ -69,7 +69,15 @@ const ComparePage = () => {
 
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-3">
-            Launch vs {data.competitor}
+            Launch vs{' '}
+            <a
+              href={data.competitorUrl}
+              target="_blank"
+              rel="noopener"
+              className="hover:underline decoration-primary underline-offset-4"
+            >
+              {data.competitor}
+            </a>
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
             {data.oneLiner}
