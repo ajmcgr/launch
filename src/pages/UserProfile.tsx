@@ -500,7 +500,8 @@ const UserProfile = () => {
       />
 
       {/* Editorial hero band */}
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4 max-w-5xl pt-6 md:pt-8">
+
         <div className="relative overflow-hidden rounded-xl">
           {profile.banner_image_url ? (
             <img
