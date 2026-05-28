@@ -10,6 +10,7 @@ export interface Collection {
   slug: string;
   created_at: string;
   updated_at: string;
+  cover_image_url?: string | null;
   item_count?: number;
 }
 
