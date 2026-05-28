@@ -538,21 +538,23 @@ const UserProfile = () => {
 
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Profile header — overlaps hero */}
-        <div className="-mt-14 md:-mt-16 mb-8">
+        <div className="-mt-10 md:-mt-12 mb-8">
           <div className="flex flex-col md:flex-row md:items-end gap-5 md:gap-7 pt-2">
             <Avatar className="h-28 w-28 md:h-36 md:w-36 ring-4 ring-background shadow-lg shrink-0">
               <AvatarImage src={profile.avatar_url} alt={profile.username} />
               <AvatarFallback className="text-3xl">{profile.username[0].toUpperCase()}</AvatarFallback>
             </Avatar>
 
-            <div className="flex-1 min-w-0 md:pb-2">
+            <div className="flex-1 min-w-0 md:pb-2 pt-6 md:pt-10">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="min-w-0">
-                  <h1 className="font-reckless text-4xl md:text-5xl font-bold tracking-tight leading-none text-foreground">
-                    {profile.name || profile.username}
-                  </h1>
-                  <div className="flex items-center gap-2 flex-wrap mt-2">
-                    <span className="text-base font-medium text-muted-foreground">@{profile.username}</span>
+                  {profile.name && (
+                    <h1 className="font-reckless text-3xl md:text-4xl font-bold tracking-tight leading-none text-foreground mb-1">
+                      {profile.name}
+                    </h1>
+                  )}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">@{profile.username}</span>
                     <KarmaScore karma={makerScore} size="sm" />
                     {s.bestAward && (
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
@@ -584,17 +586,17 @@ const UserProfile = () => {
               </div>
 
               {profile.bio ? (
-                <p className="text-base md:text-lg text-foreground/80 mt-4 max-w-2xl leading-relaxed whitespace-pre-line">
+                <p className="text-sm md:text-base text-foreground/80 mt-3 max-w-2xl leading-relaxed whitespace-pre-line">
                   {profile.bio}
                 </p>
               ) : isOwnProfile ? (
-                <Link to="/settings" className="inline-block mt-4 text-sm text-muted-foreground hover:text-primary border border-dashed border-border rounded-md px-3 py-2">
+                <Link to="/settings" className="inline-block mt-3 text-sm text-muted-foreground hover:text-primary border border-dashed border-border rounded-md px-3 py-2">
                   + Add a bio to tell people what you build
                 </Link>
               ) : null}
 
               {/* Inline stat strip — borderless, dense */}
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5 text-sm">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 text-sm tracking-tight">
                 <InlineStat value={s.followers} label="Followers" href={`/@${profile.username}/followers`} />
                 <InlineStat value={s.following} label="Following" href={`/@${profile.username}/following`} />
                 <InlineStat value={s.founderLaunches} label="Launches" onClick={() => handleTabChange('launches')} />
