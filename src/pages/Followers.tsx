@@ -22,6 +22,8 @@ const Followers = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [productsCount, setProductsCount] = useState(0);
+  const [collectionsCount, setCollectionsCount] = useState(0);
+  const [communityCount, setCommunityCount] = useState(0);
 
   useEffect(() => {
     if (!username) return;
@@ -33,17 +35,22 @@ const Followers = () => {
         if (!profileData) { setLoading(false); return; }
         setProfile(profileData);
 
-        const [{ count: followersTotal }, { count: followingTotal }, { count: productsTotal }, { data: followersData }] = await Promise.all([
+        const [{ count: followersTotal }, { count: followingTotal }, { count: productsTotal }, { count: collectionsTotal }, { count: communityTotal }, { data: followersData }] = await Promise.all([
           supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followed_id', profileData.id),
           supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
           supabase.from('products').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id).eq('status', 'launched'),
+          supabase.from('collections').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id),
+          supabase.from('products').select('*', { count: 'exact', head: true }).eq('submitter_id', profileData.id).neq('owner_id', profileData.id).eq('status', 'launched'),
           supabase.from('follows').select('follower_id, users!follows_follower_id_fkey(id, username, avatar_url, bio, name)').eq('followed_id', profileData.id),
         ]);
 
         setFollowerCount(followersTotal || 0);
         setFollowingCount(followingTotal || 0);
         setProductsCount(productsTotal || 0);
+        setCollectionsCount(collectionsTotal || 0);
+        setCommunityCount(communityTotal || 0);
         if (followersData) setFollowers(followersData.map((f: any) => f.users as UserItem).filter(Boolean));
+
       } catch (e) {
         console.error('Error fetching followers:', e);
       } finally {
@@ -71,13 +78,14 @@ const Followers = () => {
         followerCount={followerCount}
         followingCount={followingCount}
         productsCount={productsCount}
+        collectionsCount={collectionsCount}
+        communityCount={communityCount}
         active="followers"
       />
 
       <div className="container mx-auto px-4 max-w-5xl pb-12">
-        <div className="border-b border-border mb-2">
-          <h2 className="font-reckless text-xl font-bold pb-3">Followers</h2>
-        </div>
+        <h2 className="font-reckless text-xl font-bold mb-4">Followers</h2>
+
 
         {followers.length === 0 ? (
           <p className="text-muted-foreground py-12 text-center text-sm">No followers yet</p>
