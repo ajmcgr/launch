@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
+import { CollectionHero } from '@/components/CollectionHero';
 import { Globe, Lock, Share2, Trash2, Download, ArrowLeft, FolderPlus, LayoutGrid, List as ListIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { removeLaunchFromCollection, saveLaunchToCollections } from '@/hooks/use-collections';
@@ -27,6 +28,8 @@ interface CollectionRow {
   is_public: boolean;
   slug: string;
   updated_at: string;
+  cover_image_url?: string | null;
+  view_count?: number;
 }
 
 interface ItemProduct {
