@@ -800,7 +800,7 @@ const Submit = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     // Validate based on current step
     if (step === 1) {
       if (!(formData as any).submissionType) {
