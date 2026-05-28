@@ -89,6 +89,7 @@ const Followers = () => {
         productsCount={productsCount}
         collectionsCount={collectionsCount}
         communityCount={communityCount}
+        savesCount={savesCount}
         active="followers"
       />
 
