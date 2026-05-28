@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
-import { FolderOpen, Eye, Users, TrendingUp, Sparkles, Star, Clock } from 'lucide-react';
+import { FolderOpen, Eye, Users, TrendingUp, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
 
