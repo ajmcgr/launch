@@ -72,7 +72,7 @@ const Settings = () => {
       .single();
     
     if (data) {
-      setProfile(data);
+      setProfile({ banner_image_url: '', ...(data as any) });
     }
   };
 
