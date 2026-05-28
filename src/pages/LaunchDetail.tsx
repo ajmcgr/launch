@@ -21,6 +21,7 @@ import InlineAdSlot from '@/components/InlineAdSlot';
 import LaunchWindowStatus from '@/components/LaunchWindowStatus';
 import ProUpgradeCard from '@/components/ProUpgradeCard';
 import RelatedLaunches from '@/components/RelatedLaunches';
+import { SubmissionAttribution } from '@/components/SubmissionAttribution';
 import { isActiveLaunch } from '@/lib/launchWindow';
 
 
