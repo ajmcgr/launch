@@ -550,11 +550,11 @@ const UserProfile = () => {
 
               {/* Inline stat strip — borderless, dense */}
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5 text-sm">
-                <InlineStat value={s.founderLaunches} label="Launches" />
-                <InlineStat value={s.collections} label="Collections" />
+                <InlineStat value={s.founderLaunches} label="Launches" onClick={() => handleTabChange('launches')} />
+                <InlineStat value={s.collections} label="Collections" onClick={() => handleTabChange('collections')} />
                 <InlineStat value={s.saves} label="Saves" />
-                <InlineStat value={s.followers} label="Followers" />
-                <InlineStat value={s.following} label="Following" />
+                <InlineStat value={s.followers} label="Followers" href={`/@${profile.username}/followers`} />
+                <InlineStat value={s.following} label="Following" href={`/@${profile.username}/following`} />
               </div>
 
               <SocialLinks profile={profile} />
@@ -591,13 +591,16 @@ const UserProfile = () => {
   );
 };
 
-function InlineStat({ value, label }: { value: number | string; label: string }) {
-  return (
+function InlineStat({ value, label, href, onClick }: { value: number | string; label: string; href?: string; onClick?: () => void }) {
+  const content = (
     <span className="inline-flex items-baseline gap-1.5">
       <span className="font-semibold text-foreground tabular-nums">{value}</span>
       <span className="text-muted-foreground">{label}</span>
     </span>
   );
+  if (href) return <Link to={href} className="hover:text-primary transition-colors cursor-pointer">{content}</Link>;
+  if (onClick) return <button onClick={onClick} className="hover:text-primary transition-colors cursor-pointer">{content}</button>;
+  return content;
 }
 
 function OverviewQuickLinks({ stats, onJump }: { stats: ProfileStats; onJump: (t: TabKey) => void }) {
