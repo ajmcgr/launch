@@ -124,6 +124,7 @@ const Submit = () => {
         twitterHandle: '',
         plan: 'free' as 'free' | 'skip' | 'relaunch',
         selectedDate: null as string | null,
+        submissionType: null as 'founder' | 'community' | null,
       };
     }
     const saved = localStorage.getItem('submitFormData');
@@ -143,6 +144,7 @@ const Submit = () => {
       twitterHandle: '',
       plan: 'free' as 'free' | 'skip' | 'relaunch',
       selectedDate: null as string | null,
+      submissionType: null as 'founder' | 'community' | null,
     };
   });
   const [availableTags, setAvailableTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
@@ -877,6 +879,7 @@ const Submit = () => {
 
       if (!currentProductId) {
         // Create new product
+        const submissionType = (formData as any).submissionType || 'founder';
         const { data: newProduct, error: productError } = await supabase
           .from('products')
           .insert({
@@ -892,6 +895,9 @@ const Submit = () => {
             coupon_code: formData.couponCode || null,
             coupon_description: formData.couponDescription || null,
             twitter_handle: formData.twitterHandle?.trim() || null,
+            submission_type: submissionType,
+            submitted_by_user_id: user.id,
+            original_submitter_id: user.id,
           } as any)
           .select()
           .single();
@@ -1538,12 +1544,56 @@ const Submit = () => {
             {step === 1 && (
               <>
                 <div className="space-y-2">
+                  <Label>What type of launch is this? *</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      {
+                        value: 'founder',
+                        emoji: '🚀',
+                        title: 'Founder Launch',
+                        desc: "I'm the founder, team member, or official representative of this product.",
+                        perks: 'Founder attribution · profile visibility · achievements · badge',
+                      },
+                      {
+                        value: 'community',
+                        emoji: '🌎',
+                        title: 'Community Launch',
+                        desc: 'I discovered this product and want to share it with the Launch community.',
+                        perks: 'Community attribution · discovery reputation · achievements',
+                      },
+                    ].map((opt) => {
+                      const selected = (formData as any).submissionType === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => handleInputChange('submissionType' as any, opt.value)}
+                          className={cn(
+                            'text-left rounded-lg border p-4 transition-all hover:border-primary',
+                            selected ? 'border-primary bg-primary/5 ring-2 ring-primary' : 'border-border',
+                          )}
+                        >
+                          <div className="text-2xl mb-1">{opt.emoji}</div>
+                          <div className="font-semibold mb-1">{opt.title}</div>
+                          <div className="text-sm text-muted-foreground mb-2">{opt.desc}</div>
+                          <div className="text-xs text-muted-foreground">{opt.perks}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {!(formData as any).submissionType && (
+                    <p className="text-xs text-muted-foreground">Pick one to continue.</p>
+                  )}
+                </div>
+
+                {(formData as any).submissionType && <>
+                <div className="space-y-2">
                   <Label htmlFor="name">Product Name *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="My Awesome Product"
+                    placeholder={(formData as any).submissionType === 'community' ? "The product's name" : 'My Awesome Product'}
                   />
                 </div>
                 <div className="space-y-2">
