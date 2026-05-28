@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
@@ -21,7 +21,7 @@ const FounderAchievements = lazy(() => import('@/components/FounderAchievements'
 const sb: any = supabase;
 const PAGE_SIZE = 12;
 
-type TabKey = 'launches' | 'collections' | 'community' | 'achievements';
+type TabKey = 'launches' | 'collections' | 'community' | 'comments' | 'achievements';
 
 interface ProfileStats {
   founderLaunches: number;
@@ -96,13 +96,39 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   return (
     <div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         {items.map((p) => (
-          <LaunchCard key={p.id} {...p} onVote={() => {}} showFollowButton={false} />
+          <ProfileLaunchRow key={p.id} product={p} />
         ))}
       </div>
       <Pager page={page} pages={pages} total={total} onChange={setPage} />
     </div>
+  );
+}
+
+function ProfileLaunchRow({ product, submissionType }: { product: any; submissionType?: 'community' }) {
+  return (
+    <Link
+      to={`/launch/${product.slug}`}
+      className="flex items-center gap-3 py-2 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
+    >
+      <img
+        src={product.iconUrl || product.thumbnail || '/placeholder.svg'}
+        alt={product.name}
+        loading="lazy"
+        width={40}
+        height={40}
+        className="h-10 w-10 rounded-md object-cover bg-muted shrink-0"
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold truncate group-hover:text-primary transition-colors">{product.name}</p>
+          {submissionType === 'community' && <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Community</span>}
+        </div>
+        <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
+      </div>
+      <span className="text-xs text-muted-foreground tabular-nums shrink-0">{Math.max(0, product.netVotes)} ▲</span>
+    </Link>
   );
 }
 
