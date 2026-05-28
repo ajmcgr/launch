@@ -36,6 +36,7 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
     { key: 'collections', label: 'Collections', count: collectionsCount },
     { key: 'community', label: 'Community', count: communityCount },
     { key: 'comments', label: 'Comments' },
+    { key: 'upvotes', label: 'Upvotes' },
     { key: 'achievements', label: 'Achievements' },
   ];
 

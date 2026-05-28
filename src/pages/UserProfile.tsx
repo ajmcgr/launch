@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare, ArrowUp } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
@@ -21,7 +21,7 @@ const FounderAchievements = lazy(() => import('@/components/FounderAchievements'
 const sb: any = supabase;
 const PAGE_SIZE = 12;
 
-type TabKey = 'launches' | 'collections' | 'community' | 'comments' | 'achievements';
+type TabKey = 'launches' | 'collections' | 'community' | 'comments' | 'upvotes' | 'achievements';
 
 interface ProfileStats {
   founderLaunches: number;
@@ -308,6 +308,67 @@ function CommentsPanel({ profile }: { profile: any }) {
             <p className="text-sm text-foreground/90 line-clamp-3 whitespace-pre-line">{c.content}</p>
           </Link>
         ))}
+      </div>
+      <Pager page={page} pages={pages} total={total} onChange={setPage} />
+    </div>
+  );
+}
+
+function UpvotesPanel({ profile }: { profile: any }) {
+  const [page, setPage] = useState(0);
+  const [items, setItems] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await sb
+        .from('votes')
+        .select('id, created_at, product_id, products(name, slug, tagline, product_media(url, type))', { count: 'exact' })
+        .eq('user_id', profile.id)
+        .eq('value', 1)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      if (cancelled) return;
+      setItems(data || []);
+      setTotal(count || 0);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [profile.id, page]);
+
+  if (loading) return <GridSkeleton rows={1} />;
+  if (!items.length) return <EmptyState icon={ArrowUp} title="No upvotes yet" />;
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  return (
+    <div>
+      <div className="flex flex-col">
+        {items.map((v: any) => {
+          const p = v.products;
+          if (!p) return null;
+          const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url
+            || p.product_media?.find((m: any) => m.type === 'thumbnail')?.url
+            || '/placeholder.svg';
+          return (
+            <Link
+              key={v.id}
+              to={`/launch/${p.slug}`}
+              className="flex items-center gap-3 py-2 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
+            >
+              <img src={icon} alt={p.name} loading="lazy" width={40} height={40} className="h-10 w-10 rounded-md object-cover bg-muted shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold truncate group-hover:text-primary transition-colors">{p.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{p.tagline}</p>
+              </div>
+              <span className="text-xs text-muted-foreground shrink-0">{new Date(v.created_at).toLocaleDateString()}</span>
+            </Link>
+          );
+        })}
       </div>
       <Pager page={page} pages={pages} total={total} onChange={setPage} />
     </div>
@@ -700,6 +761,7 @@ const UserProfile = () => {
             <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
             <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Comments</TabsTrigger>
+            <TabsTrigger value="upvotes" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Upvotes{s.saves ? ` · ${s.saves}` : ''}</TabsTrigger>
             <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
           </TabsList>
 
@@ -718,6 +780,11 @@ const UserProfile = () => {
           <TabsContent value="comments" className="mt-6 pb-12">
             {visited.has('comments') && <CommentsPanel profile={profile} />}
           </TabsContent>
+
+          <TabsContent value="upvotes" className="mt-6 pb-12">
+            {visited.has('upvotes') && <UpvotesPanel profile={profile} />}
+          </TabsContent>
+
 
 
 
