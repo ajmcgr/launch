@@ -35,21 +35,24 @@ const Following = () => {
         if (!profileData) { setLoading(false); return; }
         setProfile(profileData);
 
+        const sb: any = supabase;
         const results: any[] = await Promise.all([
-          supabase.from('follows').select('*', { count: 'exact', head: true }).eq('followed_id', profileData.id),
-          supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
-          supabase.from('products').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id).eq('status', 'launched'),
-          supabase.from('collections').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id),
-          supabase.from('products').select('*', { count: 'exact', head: true }).eq('submitter_id', profileData.id).neq('owner_id', profileData.id).eq('status', 'launched'),
-          supabase.from('follows').select('followed_id, users!follows_followed_id_fkey(id, username, avatar_url, bio, name)').eq('follower_id', profileData.id),
+          sb.from('follows').select('*', { count: 'exact', head: true }).eq('followed_id', profileData.id),
+          sb.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
+          sb.from('products').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id).eq('status', 'launched'),
+          sb.from('collections').select('*', { count: 'exact', head: true }).eq('owner_id', profileData.id),
+          sb.from('products').select('*', { count: 'exact', head: true }).eq('submitter_id', profileData.id).neq('owner_id', profileData.id).eq('status', 'launched'),
+          sb.from('follows').select('followed_id, users!follows_followed_id_fkey(id, username, avatar_url, bio, name)').eq('follower_id', profileData.id),
         ]);
+        const [r1, r2, r3, r4, r5, r6] = results;
 
-        setFollowerCount(followersTotal || 0);
-        setFollowingCount(followingTotal || 0);
-        setProductsCount(productsTotal || 0);
-        setCollectionsCount(collectionsTotal || 0);
-        setCommunityCount(communityTotal || 0);
-        if (followingData) setFollowing(followingData.map((f: any) => f.users as UserItem).filter(Boolean));
+        setFollowerCount(r1.count || 0);
+        setFollowingCount(r2.count || 0);
+        setProductsCount(r3.count || 0);
+        setCollectionsCount(r4.count || 0);
+        setCommunityCount(r5.count || 0);
+        if (r6.data) setFollowing(r6.data.map((f: any) => f.users as UserItem).filter(Boolean));
+
 
       } catch (e) {
         console.error('Error fetching following:', e);
