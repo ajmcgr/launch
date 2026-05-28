@@ -69,7 +69,15 @@ const ComparePage = () => {
 
         <header className="mb-8">
           <h1 className="text-4xl font-bold mb-3">
-            Launch vs {data.competitor}
+            Launch vs{' '}
+            <a
+              href={data.competitorUrl}
+              target="_blank"
+              rel="noopener"
+              className="hover:underline decoration-primary underline-offset-4"
+            >
+              {data.competitor}
+            </a>
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
             {data.oneLiner}
@@ -105,7 +113,16 @@ const ComparePage = () => {
                 <tr className="text-left">
                   <th className="p-3 font-semibold">Feature</th>
                   <th className="p-3 font-semibold">Launch</th>
-                  <th className="p-3 font-semibold">{data.competitor}</th>
+                  <th className="p-3 font-semibold">
+                    <a
+                      href={data.competitorUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="hover:underline decoration-primary underline-offset-4"
+                    >
+                      {data.competitor}
+                    </a>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -135,7 +152,16 @@ const ComparePage = () => {
               <p className="text-sm text-muted-foreground">{data.pricing.launch}</p>
             </div>
             <div className="rounded-xl bg-muted/30 p-5">
-              <h3 className="font-semibold mb-2">{data.competitor}</h3>
+              <h3 className="font-semibold mb-2">
+                <a
+                  href={data.competitorUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="hover:underline decoration-primary underline-offset-4"
+                >
+                  {data.competitor}
+                </a>
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {data.pricing.competitor}
               </p>
