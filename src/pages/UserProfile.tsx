@@ -550,11 +550,11 @@ const UserProfile = () => {
 
               {/* Inline stat strip — borderless, dense */}
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5 text-sm">
-                <InlineStat value={s.founderLaunches} label="Launches" />
-                <InlineStat value={s.collections} label="Collections" />
+                <InlineStat value={s.founderLaunches} label="Launches" onClick={() => handleTabChange('launches')} />
+                <InlineStat value={s.collections} label="Collections" onClick={() => handleTabChange('collections')} />
                 <InlineStat value={s.saves} label="Saves" />
-                <InlineStat value={s.followers} label="Followers" />
-                <InlineStat value={s.following} label="Following" />
+                <InlineStat value={s.followers} label="Followers" href={`/@${profile.username}/followers`} />
+                <InlineStat value={s.following} label="Following" href={`/@${profile.username}/following`} />
               </div>
 
               <SocialLinks profile={profile} />
