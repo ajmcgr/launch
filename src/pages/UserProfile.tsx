@@ -568,7 +568,6 @@ const UserProfile = () => {
             <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
             <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
             <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
-            <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Overview</TabsTrigger>
           </TabsList>
 
           <TabsContent value="launches" className="mt-6 pb-12">
@@ -585,10 +584,6 @@ const UserProfile = () => {
 
           <TabsContent value="achievements" className="mt-6 pb-12">
             {visited.has('achievements') && <AchievementsPanel profile={profile} stats={s} makerScore={makerScore} />}
-          </TabsContent>
-
-          <TabsContent value="overview" className="mt-6 pb-12">
-            <OverviewQuickLinks stats={s} onJump={handleTabChange} />
           </TabsContent>
         </Tabs>
       </div>
