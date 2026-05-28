@@ -200,6 +200,7 @@ export default function Collections() {
               <div className="text-xs text-muted-foreground mt-1">
                 Updated {formatDistanceToNow(new Date(c.updated_at), { addSuffix: true })}
               </div>
+              </div>
             </div>
           ))}
         </div>
