@@ -37,11 +37,35 @@ Deno.serve(async (req) => {
       .select("id, name")
       .order("name");
 
-    // Fetch all collections
+    // Fetch all curated collections
     const { data: collections } = await supabase
       .from("collections")
-      .select("slug, updated_at")
+      .select("id, slug, updated_at")
       .order("name");
+
+    // Fetch all public user_collections (community-created)
+    const { data: userCollections } = await (supabase as any)
+      .from("user_collections")
+      .select("id, slug, updated_at")
+      .eq("is_public", true);
+
+    // Item counts to filter empty collections from sitemap
+    const curatedIds = (collections ?? []).map((c: any) => c.id);
+    const userColIds = (userCollections ?? []).map((c: any) => c.id);
+
+    const [{ data: curatedItems }, { data: userItems }] = await Promise.all([
+      curatedIds.length
+        ? supabase.from("collection_products").select("collection_id").in("collection_id", curatedIds)
+        : Promise.resolve({ data: [] as any[] }),
+      userColIds.length
+        ? (supabase as any).from("user_collection_items").select("collection_id").in("collection_id", userColIds)
+        : Promise.resolve({ data: [] as any[] }),
+    ]);
+
+    const curatedCounts = new Set<string>();
+    (curatedItems ?? []).forEach((r: any) => curatedCounts.add(r.collection_id));
+    const userCounts = new Set<string>();
+    (userItems ?? []).forEach((r: any) => userCounts.add(r.collection_id));
 
     // Fetch all published blog posts
     const { data: blogPosts } = await (supabase as any)
@@ -245,9 +269,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Add collections
+    // Add curated collections (only those with >=1 product)
     if (collections) {
       for (const collection of collections) {
+        if (!curatedCounts.has(collection.id)) continue;
         const lastmod = collection.updated_at;
         xml += `
   <url>
@@ -255,6 +280,21 @@ Deno.serve(async (req) => {
     ${lastmod ? `<lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>` : ''}
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>`;
+      }
+    }
+
+    // Add public community collections (only those with >=1 item)
+    if (userCollections) {
+      for (const collection of userCollections) {
+        if (!userCounts.has(collection.id)) continue;
+        const lastmod = collection.updated_at;
+        xml += `
+  <url>
+    <loc>${SITE_URL}/c/${collection.slug}</loc>
+    ${lastmod ? `<lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>` : ''}
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>`;
       }
     }

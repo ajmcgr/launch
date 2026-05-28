@@ -76,7 +76,7 @@ export function useCollections() {
         user_id: userId,
         name: name.trim(),
         description: opts.description ?? null,
-        is_public: opts.is_public ?? false,
+        is_public: opts.is_public ?? true,
       })
       .select()
       .single();
@@ -102,7 +102,7 @@ export function useCollections() {
     if (!src || !userId) return null;
     const newCol = await createCollection(`${src.name} (Copy)`, {
       description: src.description ?? undefined,
-      is_public: false,
+      is_public: true,
     });
     if (!newCol) return null;
     const { data: items } = await sb
