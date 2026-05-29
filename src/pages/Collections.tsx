@@ -17,6 +17,7 @@ import { Plus, MoreHorizontal, Globe, Lock, Copy, Trash2, Pencil, Share2, Folder
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
+import { gradientFor } from '@/lib/gradients';
 
 export default function Collections() {
   const navigate = useNavigate();
