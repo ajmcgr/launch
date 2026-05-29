@@ -794,18 +794,9 @@ const ReserveStyles = () => (
       color: inherit; text-decoration: none; transition: color .2s;
     }
     .reserve-footer-line a:hover { color: var(--ink); }
-
-    .reserve-account {
-      position: fixed; right: 20px; bottom: 16px; z-index: 10;
-    }
-    .reserve-account .text-link {
-      font-size: 12px; opacity: 0.75;
-    }
     @media (max-width: 768px) {
       .reserve-footer { left: 16px; bottom: 12px; }
       .reserve-footer-line { font-size: 10px; }
-      .reserve-account { right: 16px; bottom: 12px; }
-      .reserve-account .text-link { font-size: 10px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
