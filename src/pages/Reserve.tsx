@@ -46,14 +46,21 @@ const Reserve = () => {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Auto-fulfill pending reservation after auth (only for fresh signups)
+  // Auto-fulfill pending reservation after auth (in-memory OR persisted across redirects)
   useEffect(() => {
-    if (session && pendingReserve) {
-      void doReserve(pendingReserve, true);
-      setPendingReserve(null);
-      setAuthOpen(false);
-    }
-  }, [session, pendingReserve]); // eslint-disable-line
+    if (!session) return;
+    const persisted = sessionStorage.getItem('reserve:pending');
+    const value = pendingReserve ?? persisted;
+    if (!value) return;
+    sessionStorage.removeItem('reserve:pending');
+    setPendingReserve(null);
+    setAuthOpen(false);
+    (async () => {
+      const ok = await doReserve(value, true);
+      if (ok) navigate('/');
+    })();
+  }, [session]); // eslint-disable-line
+
 
   const check = async (raw?: string) => {
     const value = sanitize(raw ?? input);
