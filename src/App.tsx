@@ -79,6 +79,7 @@ const CollectionDetailPage = lazy(() => import("./pages/CollectionDetail"));
 const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
+const VibeCodeYourFuture = lazy(() => import("./pages/VibeCodeYourFuture"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
@@ -97,7 +98,7 @@ const ScrollToTop = () => {
 const AppContent = () => {
   const location = useLocation();
   const staticPages = ['/about', '/terms', '/privacy'];
-  const standalonePages = ['/reserve'];
+  const standalonePages = ['/reserve', '/vibecodeyourfuture'];
   const isStandalone = standalonePages.includes(location.pathname);
   const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
 
@@ -196,6 +197,7 @@ const AppContent = () => {
             <Route path="/c/:slug" element={<PublicCollection />} />
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
+            <Route path="/vibecodeyourfuture" element={<VibeCodeYourFuture />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
