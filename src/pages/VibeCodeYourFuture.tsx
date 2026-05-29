@@ -63,7 +63,7 @@ const VibeCodeYourFuture = () => {
 
 
               <p>
-                You weren't laid off, you were set free. You've got this. Take a walk. Drink some water.
+                You weren't laid off, you were set free. Take a walk. Drink some water.
               </p>
 
               <p>
