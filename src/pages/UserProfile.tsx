@@ -98,8 +98,8 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   return (
     <div>
       <div className="flex flex-col">
-        {items.map((p) => (
-          <ProfileLaunchRow key={p.id} product={p} />
+        {items.map((p, i) => (
+          <ProfileLaunchRow key={p.id} product={p} rank={page * PAGE_SIZE + i + 1} />
         ))}
       </div>
       <Pager page={page} pages={pages} total={total} onChange={setPage} />
