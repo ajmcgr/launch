@@ -371,7 +371,7 @@ const Reserve = () => {
   );
 };
 
-const IconColumn = ({
+const IconRow = ({
   icons,
   speed,
   reverse,
@@ -382,7 +382,7 @@ const IconColumn = ({
 }) => {
   const doubled = useMemo(() => [...icons, ...icons], [icons]);
   return (
-    <div className="icon-col">
+    <div className="icon-row">
       <div
         className={`icon-track ${reverse ? 'rev' : ''}`}
         style={{ animationDuration: `${speed}s` }}
@@ -401,6 +401,7 @@ const IconColumn = ({
     </div>
   );
 };
+
 
 // All styles scoped under .reserve-root — no leakage to the rest of the app.
 const ReserveStyles = () => (
