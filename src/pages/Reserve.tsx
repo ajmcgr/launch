@@ -34,40 +34,17 @@ const Reserve = () => {
   const [session, setSession] = useState<{ user: { id: string; email?: string } } | null>(null);
   const [reserving, setReserving] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'signup' | 'signin'>('signup');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [pendingReserve, setPendingReserve] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session as any));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s as any));
     return () => sub.subscription.unsubscribe();
   }, []);
-
-  // Pull latest launch icons
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from('product_media')
-        .select('product_id, url, products!inner(id, name, slug, status, created_at)')
-        .eq('type', 'icon')
-        .eq('products.status', 'launched')
-        .not('url', 'is', null)
-        .order('created_at', { ascending: false, referencedTable: 'products' })
-        .limit(400);
-      const seen = new Set<string>();
-      const list: ProductIcon[] = [];
-      for (const item of (data || []) as any[]) {
-        if (seen.has(item.product_id)) continue;
-        seen.add(item.product_id);
-        list.push({
-          id: item.products.id,
-          name: item.products.name,
-          slug: item.products.slug,
-          icon_url: item.url,
-        });
-      }
-      setIcons(list.slice(0, 200));
-    })();
-  }, []);
-
 
   // Auto-fulfill pending reservation after auth
   useEffect(() => {
