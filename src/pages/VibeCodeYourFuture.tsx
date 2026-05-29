@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import alexPhoto from '@/assets/alex-vcyf.png';
+import signature from '@/assets/signature.png';
 
 const VibeCodeYourFuture = () => {
   return (
@@ -75,6 +76,11 @@ const VibeCodeYourFuture = () => {
                     src={alexPhoto}
                     alt="Alex MacGregor"
                     className="w-32 h-32 object-cover mb-4"
+                  />
+                  <img
+                    src={signature}
+                    alt="Alex MacGregor signature"
+                    className="h-16 w-auto mb-2"
                   />
                   <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
                   <p className="text-lg font-bold mb-4">Founder, Launch</p>
