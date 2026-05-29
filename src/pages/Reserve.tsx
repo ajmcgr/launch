@@ -781,7 +781,7 @@ const ReserveStyles = () => (
     .text-toggle:hover { color: var(--ink); }
 
     @media (prefers-reduced-motion: reduce) {
-      .aurora, .icon-track { animation: none !important; }
+      .nebula, .grid-floor, .icon-track { animation: none !important; }
     }
   `}</style>
 );
