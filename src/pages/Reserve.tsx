@@ -149,6 +149,7 @@ const Reserve = () => {
       value,
     });
     toast.success(`@${value} is yours.`);
+    setMyReservation(value);
     setAvailability({ state: 'taken', value, reason: 'reservation' });
     return true;
   };
