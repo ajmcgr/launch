@@ -369,49 +369,42 @@ function UpvotesPanel({ profile }: { profile: any }) {
       setLoading(true);
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-      const { data, count } = await sb
+      const { data: votes, count } = await sb
         .from('votes')
-        .select('id, created_at, product_id, products(name, slug, tagline, product_media(url, type))', { count: 'exact' })
+        .select(`id, created_at, product_id,
+          products!inner(id, slug, name, tagline, domain_url, launch_date, platforms, status,
+            product_media(url, type),
+            product_category_map(product_categories(name)),
+            product_makers(users(id, username, avatar_url, name)))`, { count: 'exact' })
         .eq('user_id', profile.id)
         .eq('value', 1)
+        .eq('products.status', 'launched')
         .order('created_at', { ascending: false })
         .range(from, to);
       if (cancelled) return;
-      setItems(data || []);
+      const products = (votes || []).map((v: any) => v.products).filter(Boolean);
+      const ids = products.map((p: any) => p.id);
+      const [voteCounts, commentCounts, userVotes] = await Promise.all([
+        fetchVoteCounts(ids), fetchCommentCounts(ids), fetchUserVotes(ids),
+      ]);
+      if (cancelled) return;
+      setItems(products.map((p: any) => formatProduct(p, voteCounts, commentCounts, userVotes)));
       setTotal(count || 0);
       setLoading(false);
     })();
     return () => { cancelled = true; };
   }, [profile.id, page]);
 
-  if (loading) return <GridSkeleton rows={1} />;
+  if (loading) return <GridSkeleton />;
   if (!items.length) return <EmptyState icon={ArrowUp} title="No upvotes yet" />;
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   return (
     <div>
       <div className="flex flex-col">
-        {items.map((v: any) => {
-          const p = v.products;
-          if (!p) return null;
-          const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url
-            || p.product_media?.find((m: any) => m.type === 'thumbnail')?.url
-            || '/placeholder.svg';
-          return (
-            <Link
-              key={v.id}
-              to={`/launch/${p.slug}`}
-              className="flex items-center gap-3 py-2 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
-            >
-              <img src={icon} alt={p.name} loading="lazy" width={40} height={40} className="h-10 w-10 rounded-md object-cover bg-muted shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold truncate group-hover:text-primary transition-colors">{p.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{p.tagline}</p>
-              </div>
-              <span className="text-xs text-muted-foreground shrink-0">{new Date(v.created_at).toLocaleDateString()}</span>
-            </Link>
-          );
-        })}
+        {items.map((p, i) => (
+          <ProfileLaunchRow key={p.id} product={p} rank={page * PAGE_SIZE + i + 1} />
+        ))}
       </div>
       <Pager page={page} pages={pages} total={total} onChange={setPage} />
     </div>
