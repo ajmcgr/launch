@@ -314,30 +314,30 @@ const Reserve = () => {
             </a>
           </div>
 
-          <div className="top-foot">
-            {session ? (
-              <button className="text-link" onClick={() => supabase.auth.signOut()}>
-                Sign out
-              </button>
-            ) : (
-              <button
-                className="text-link"
-                onClick={() => {
-                  setAuthMode('signin');
-                  setAuthOpen(true);
-                }}
-              >
-                Already have an account? Sign in
-              </button>
-            )}
-          </div>
-
           <div className="top-foot" style={{ marginTop: '1.75rem' }}>
             <Link to="/" className="text-link" style={{ fontSize: '1.15rem' }}>
               Take me to Launch →
             </Link>
           </div>
         </section>
+
+        <div className="reserve-account">
+          {session ? (
+            <button className="text-link" onClick={() => supabase.auth.signOut()}>
+              Sign out
+            </button>
+          ) : (
+            <button
+              className="text-link"
+              onClick={() => {
+                setAuthMode('signin');
+                setAuthOpen(true);
+              }}
+            >
+              Already have an account? Sign in
+            </button>
+          )}
+        </div>
 
         <footer className="reserve-footer">
           <div className="reserve-footer-line">
