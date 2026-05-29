@@ -78,6 +78,7 @@ const Collections = lazy(() => import("./pages/Collections"));
 const CollectionDetailPage = lazy(() => import("./pages/CollectionDetail"));
 const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
+const Reserve = lazy(() => import("./pages/Reserve"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
