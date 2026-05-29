@@ -471,8 +471,9 @@ const ReserveStyles = () => (
       margin: 0 auto;
     }
     @media (min-width: 900px) {
-      .left { padding: 60px 56px; margin: 0; min-height: 100vh; }
+      .left { padding: 60px 56px; margin: 0; height: 100vh; min-height: 0; overflow-y: auto; }
     }
+
     .reserve-logo { display: inline-block; margin-bottom: 48px; }
     .reserve-logo img {
       height: 44px; display: block;
