@@ -454,8 +454,14 @@ const ReserveStyles = () => (
       margin: 0 auto;
     }
     @media (min-width: 900px) {
-      .reserve-shell { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+      .reserve-shell {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        height: 100vh;
+        min-height: 0;
+        overflow: hidden;
+      }
     }
+
 
     /* LEFT */
     .left {
@@ -465,8 +471,9 @@ const ReserveStyles = () => (
       margin: 0 auto;
     }
     @media (min-width: 900px) {
-      .left { padding: 60px 56px; margin: 0; min-height: 100vh; }
+      .left { padding: 60px 56px; margin: 0; height: 100vh; min-height: 0; overflow-y: auto; }
     }
+
     .reserve-logo { display: inline-block; margin-bottom: 48px; }
     .reserve-logo img {
       height: 44px; display: block;
@@ -569,7 +576,9 @@ const ReserveStyles = () => (
       padding: 0 24px;
       gap: 18px;
       align-items: stretch;
-      min-height: 100vh;
+      height: 100vh;
+      min-height: 0;
+      min-width: 0;
     }
     @media (min-width: 900px) {
       .right { display: flex; }
@@ -581,6 +590,8 @@ const ReserveStyles = () => (
     }
     .icon-col {
       flex: 1; overflow: hidden; position: relative;
+      min-width: 0; min-height: 0; height: 100%;
+
       mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
       -webkit-mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
     }
