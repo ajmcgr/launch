@@ -492,30 +492,35 @@ const ReserveStyles = () => (
     }
     .nebula {
       position: absolute; border-radius: 50%;
-      filter: blur(110px); mix-blend-mode: screen; opacity: 0.55;
-      animation: nebula-drift 52s ease-in-out infinite alternate;
-      will-change: transform;
+      mix-blend-mode: screen; opacity: 0;
+      animation: nebula-fade-in 1.4s ease-out forwards, nebula-drift 52s ease-in-out 1.4s infinite alternate;
+      transform: translate3d(0,0,0);
+      will-change: transform, opacity;
+      contain: layout paint size;
     }
+    /* Use softer radial gradients instead of expensive CSS blur — same look, far cheaper to paint */
     .nebula-a {
       width: 70vw; height: 70vw; left: -18vw; top: -22vw;
-      background: radial-gradient(circle, rgba(96,120,255,0.7), transparent 60%);
+      background: radial-gradient(circle, rgba(96,120,255,0.55) 0%, rgba(96,120,255,0.18) 35%, transparent 70%);
     }
     .nebula-b {
       width: 60vw; height: 60vw; right: -16vw; top: 8vw;
-      background: radial-gradient(circle, rgba(200,90,255,0.55), transparent 60%);
-      animation-delay: -10s; animation-duration: 68s;
+      background: radial-gradient(circle, rgba(200,90,255,0.45) 0%, rgba(200,90,255,0.15) 35%, transparent 70%);
+      animation-delay: 0s, -10s; animation-duration: 1.4s, 68s;
     }
     .nebula-c {
       width: 75vw; height: 75vw; left: 18vw; bottom: -30vw;
-      background: radial-gradient(circle, rgba(40,200,255,0.4), transparent 60%);
-      animation-delay: -18s; animation-duration: 80s;
+      background: radial-gradient(circle, rgba(40,200,255,0.35) 0%, rgba(40,200,255,0.12) 35%, transparent 70%);
+      animation-delay: 0s, -18s; animation-duration: 1.4s, 80s;
     }
     @media (max-width: 768px) {
-      .nebula { filter: blur(70px); opacity: 0.7; }
       .nebula-a { width: 140vw; height: 140vw; left: -35vw; top: -50vw; }
       .nebula-b { width: 120vw; height: 120vw; right: -45vw; top: 25vh; }
       .nebula-c { width: 140vw; height: 140vw; left: -20vw; bottom: -70vw; }
       .grid-floor { bottom: -20vh; height: 60vh; }
+    }
+    @keyframes nebula-fade-in {
+      to { opacity: 0.65; }
     }
     @keyframes nebula-drift {
       0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
