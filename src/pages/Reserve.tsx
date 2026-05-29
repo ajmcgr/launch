@@ -777,6 +777,21 @@ const ReserveStyles = () => (
       content: ''; flex: 1; height: 1px; background: var(--line-strong);
     }
 
+    .reserve-footer {
+      position: fixed; left: 20px; bottom: 16px; z-index: 10;
+    }
+    .reserve-footer-line {
+      font-size: 11px; color: var(--ink-dim); opacity: 0.7; line-height: 1.5; margin: 0;
+    }
+    .reserve-footer-line a {
+      color: inherit; text-decoration: none; transition: color .2s;
+    }
+    .reserve-footer-line a:hover { color: var(--ink); }
+    @media (max-width: 768px) {
+      .reserve-footer { left: 16px; bottom: 12px; }
+      .reserve-footer-line { font-size: 10px; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .nebula, .grid-floor { animation: none !important; }
     }
