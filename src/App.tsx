@@ -78,6 +78,7 @@ const Collections = lazy(() => import("./pages/Collections"));
 const CollectionDetailPage = lazy(() => import("./pages/CollectionDetail"));
 const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
+const Reserve = lazy(() => import("./pages/Reserve"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
@@ -96,11 +97,13 @@ const ScrollToTop = () => {
 const AppContent = () => {
   const location = useLocation();
   const staticPages = ['/about', '/terms', '/privacy'];
-  const showNewsletter = !staticPages.includes(location.pathname);
+  const standalonePages = ['/reserve'];
+  const isStandalone = standalonePages.includes(location.pathname);
+  const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {!isStandalone && <Header />}
       <main className="flex-1">
         <Suspense fallback={
           <div className="min-h-[60vh] py-12" aria-label="Loading" role="status">
@@ -192,6 +195,7 @@ const AppContent = () => {
             <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/c/:slug" element={<PublicCollection />} />
             <Route path="/collections" element={<CollectionsDirectory />} />
+            <Route path="/reserve" element={<Reserve />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -202,7 +206,7 @@ const AppContent = () => {
           <Newsletter />
         </div>
       )}
-      <Footer />
+      {!isStandalone && <Footer />}
       <BookmarkPrompt />
     </div>
   );
