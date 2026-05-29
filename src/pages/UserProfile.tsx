@@ -279,7 +279,7 @@ function CommunityPanel({ profile }: { profile: any }) {
       setLoading(true);
       const { data } = await sb
         .from('products')
-        .select(`id, slug, name, tagline, claimed_at,
+        .select(`id, slug, name, tagline, claimed_at, domain_url, launch_date, platforms,
           product_media(url, type),
           product_category_map(product_categories(name))`)
         .or(`submitted_by_user_id.eq.${profile.id},original_submitter_id.eq.${profile.id}`)
@@ -289,7 +289,9 @@ function CommunityPanel({ profile }: { profile: any }) {
         .limit(50);
       if (cancelled) return;
       const ids = (data || []).map((p: any) => p.id);
-      const voteCounts = await fetchVoteCounts(ids);
+      const [voteCounts, commentCounts, userVotes] = await Promise.all([
+        fetchVoteCounts(ids), fetchCommentCounts(ids), fetchUserVotes(ids),
+      ]);
       let saves = 0;
       if (ids.length) {
         const { count } = await sb
@@ -299,7 +301,7 @@ function CommunityPanel({ profile }: { profile: any }) {
         saves = count || 0;
       }
       if (cancelled) return;
-      setItems((data || []).map((p: any) => formatProduct(p, voteCounts)));
+      setItems((data || []).map((p: any) => ({ ...formatProduct(p, voteCounts, commentCounts, userVotes), claimed_at: p.claimed_at })));
       setSavesGenerated(saves);
       setLoading(false);
     })();
