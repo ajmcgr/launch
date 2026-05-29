@@ -37,15 +37,20 @@ interface ProfileStats {
 }
 
 // ---------- helpers ----------
-const formatProduct = (p: any, voteCounts: Record<string, number>, fallbackMaker?: any) => ({
+const formatProduct = (p: any, voteCounts: Record<string, number>, commentCounts: Record<string, number>, userVotes: Record<string, 1>, fallbackMaker?: any) => ({
   id: p.id,
   slug: p.slug,
   name: p.name,
   tagline: p.tagline,
   thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
   iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+  domainUrl: p.domain_url || undefined,
+  launch_date: p.launch_date || undefined,
+  platforms: (p.platforms || []) as any[],
   categories: p.product_category_map?.map((c: any) => c.product_categories?.name).filter(Boolean) || [],
   netVotes: voteCounts[p.id] || 0,
+  commentCount: commentCounts[p.id] || 0,
+  userVote: userVotes[p.id] || null,
   makers: fallbackMaker ? [fallbackMaker] : (p.product_makers?.map((m: any) => m.users).filter((u: any) => u?.username) || []),
 });
 
@@ -55,6 +60,24 @@ async function fetchVoteCounts(productIds: string[]): Promise<Record<string, num
   const counts: Record<string, number> = {};
   data?.forEach((v: any) => { counts[v.product_id] = (counts[v.product_id] || 0) + v.value; });
   return counts;
+}
+
+async function fetchCommentCounts(productIds: string[]): Promise<Record<string, number>> {
+  if (!productIds.length) return {};
+  const { data } = await sb.from('comments').select('product_id').in('product_id', productIds);
+  const counts: Record<string, number> = {};
+  (data || []).forEach((c: any) => { counts[c.product_id] = (counts[c.product_id] || 0) + 1; });
+  return counts;
+}
+
+async function fetchUserVotes(productIds: string[]): Promise<Record<string, 1>> {
+  if (!productIds.length) return {};
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return {};
+  const { data } = await sb.from('votes').select('product_id, value').in('product_id', productIds).eq('user_id', user.id).eq('value', 1);
+  const map: Record<string, 1> = {};
+  (data || []).forEach((v: any) => { map[v.product_id] = 1; });
+  return map;
 }
 
 // ---------- tab panels ----------
