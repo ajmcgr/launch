@@ -107,7 +107,12 @@ const AppContent = () => {
       {!isStandalone && <Header />}
       <main className="flex-1">
         <Suspense fallback={
-          isStandalone ? (
+          location.pathname === '/reserve' ? (
+            <div className="min-h-screen bg-background flex items-center justify-center" aria-label="Loading" role="status">
+              <div className="h-8 w-8 rounded-full border-2 border-muted border-t-foreground animate-spin opacity-60" />
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isStandalone ? (
             <div className="min-h-screen bg-background py-16" aria-label="Loading" role="status">
               <div className="container mx-auto px-4 max-w-3xl">
                 <div className="border border-border rounded-lg p-8 md:p-12 bg-card space-y-6">
@@ -150,6 +155,7 @@ const AppContent = () => {
             </div>
           )
         }>
+
 
           <Routes>
             <Route path="/" element={<Home />} />
