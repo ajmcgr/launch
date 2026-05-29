@@ -633,17 +633,17 @@ const ReserveStyles = () => (
       max-width: 720px; width: 100%;
       margin: 0 auto;
     }
-    .reserve-logo { display: inline-block; margin-bottom: 36px; }
+    .reserve-logo { display: inline-block; margin-bottom: 32px; }
     .reserve-logo img {
-      height: 48px; display: block;
+      height: 42px; display: block;
       filter: drop-shadow(0 0 18px rgba(255,255,255,0.25));
     }
     @media (min-width: 768px) {
-      .reserve-logo img { height: 56px; }
+      .reserve-logo img { height: 48px; }
     }
     .display {
       font-family: 'Reckless', 'Instrument Serif', Georgia, serif;
-      font-weight: 500; font-size: clamp(40px, 6vw, 72px); line-height: 1.02;
+      font-weight: 500; font-size: clamp(46px, 6.8vw, 78px); line-height: 1.02;
       letter-spacing: -0.02em; margin: 0 0 18px;
     }
     .grad {
