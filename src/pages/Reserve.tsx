@@ -576,7 +576,9 @@ const ReserveStyles = () => (
       padding: 0 24px;
       gap: 18px;
       align-items: stretch;
-      min-height: 100vh;
+      height: 100vh;
+      min-height: 0;
+      min-width: 0;
     }
     @media (min-width: 900px) {
       .right { display: flex; }
@@ -588,6 +590,8 @@ const ReserveStyles = () => (
     }
     .icon-col {
       flex: 1; overflow: hidden; position: relative;
+      min-width: 0; min-height: 0; height: 100%;
+
       mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
       -webkit-mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
     }
