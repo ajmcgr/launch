@@ -68,6 +68,7 @@ interface SponsoredProduct {
   id: string;
   name: string;
   tagline: string | null;
+  description?: string | null;
   slug: string;
   sponsorship_type: string;
   start_date: string;
