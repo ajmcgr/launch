@@ -96,12 +96,14 @@ const VibeCodeYourFuture = () => {
                   />
                   <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
                   <p className="text-lg font-bold mb-4">Founder, Launch</p>
-                  <Link
-                    to="/u/alex"
+                  <a
+                    href="https://x.com/alexmacgregor__"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-primary hover:underline"
                   >
-                    View my profile on Launch
-                  </Link>
+                    Follow me on X
+                  </a>
                 </div>
               </div>
             </div>
