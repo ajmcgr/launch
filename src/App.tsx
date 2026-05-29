@@ -107,25 +107,50 @@ const AppContent = () => {
       {!isStandalone && <Header />}
       <main className="flex-1">
         <Suspense fallback={
-          <div className="min-h-[60vh] py-12" aria-label="Loading" role="status">
-            <div className="container mx-auto px-4 max-w-7xl">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                <div className="lg:col-span-2 space-y-6">
-                  <div className="h-8 w-2/3 rounded-md bg-muted/60 animate-pulse" />
-                  <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
-                  <div className="h-4 w-5/6 rounded bg-muted/50 animate-pulse" />
-                  <div className="aspect-video w-full rounded-xl bg-muted/40 animate-pulse" />
-                </div>
-                <div className="space-y-4">
-                  <div className="h-12 w-full rounded-lg bg-muted/50 animate-pulse" />
-                  <div className="h-12 w-full rounded-lg bg-muted/50 animate-pulse" />
-                  <div className="h-32 w-full rounded-xl bg-muted/40 animate-pulse" />
+          isStandalone ? (
+            <div className="min-h-screen bg-background py-16" aria-label="Loading" role="status">
+              <div className="container mx-auto px-4 max-w-3xl">
+                <div className="border border-border rounded-lg p-8 md:p-12 bg-card space-y-6">
+                  <div className="h-10 w-2/3 mx-auto rounded-md bg-muted/60 animate-pulse" />
+                  <div className="h-4 w-1/2 mx-auto rounded bg-muted/50 animate-pulse" />
+                  <div className="space-y-3 pt-6">
+                    <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-11/12 rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-10/12 rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-9/12 rounded bg-muted/50 animate-pulse" />
+                  </div>
+                  <div className="pt-8 space-y-3">
+                    <div className="h-32 w-32 rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-40 rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-32 rounded bg-muted/50 animate-pulse" />
+                  </div>
                 </div>
               </div>
+              <span className="sr-only">Loading</span>
             </div>
-            <span className="sr-only">Loading</span>
-          </div>
+          ) : (
+            <div className="min-h-[60vh] py-12" aria-label="Loading" role="status">
+              <div className="container mx-auto px-4 max-w-7xl">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="h-8 w-2/3 rounded-md bg-muted/60 animate-pulse" />
+                    <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-5/6 rounded bg-muted/50 animate-pulse" />
+                    <div className="aspect-video w-full rounded-xl bg-muted/40 animate-pulse" />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="h-12 w-full rounded-lg bg-muted/50 animate-pulse" />
+                    <div className="h-12 w-full rounded-lg bg-muted/50 animate-pulse" />
+                    <div className="h-32 w-full rounded-xl bg-muted/40 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          )
         }>
+
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/start" element={<Start />} />
