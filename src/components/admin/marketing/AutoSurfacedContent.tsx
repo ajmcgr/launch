@@ -186,18 +186,28 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   );
 };
 
+// Extract up to N sentences from text, trimmed.
+const firstSentences = (text: string | null | undefined, n = 3): string => {
+  if (!text) return '';
+  const clean = text.replace(/\s+/g, ' ').trim();
+  const matches = clean.match(/[^.!?]+[.!?]+(\s|$)/g);
+  if (!matches) return clean.slice(0, 280);
+  return matches.slice(0, n).join('').trim();
+};
+
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
+  const aboutExcerpt = firstSentences(product.description, 3);
   const iconUrl = getIconUrl(product);
   const htmlText = () => productToHtml(product.name, taglineText, productUrl);
-  const plainText = productToPlain(product.name, taglineText, productUrl);
+  const plainText = `${product.name}\n${taglineText}${aboutExcerpt ? `\n\n${aboutExcerpt}` : ''}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-border">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-start gap-3 flex-1 min-w-0">
         {iconUrl && (
-          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0 mt-0.5" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -215,13 +225,21 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground truncate mt-0.5">
-            {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
+            {taglineText}
           </p>
+          {aboutExcerpt && (
+            <p className="text-sm text-foreground/80 mt-2 leading-relaxed line-clamp-3">
+              {aboutExcerpt}
+            </p>
+          )}
           <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
         </div>
       </div>
       <div className="flex items-center gap-1 ml-2">
         <CopyButton html={htmlText} plain={plainText} label="product" />
+        {aboutExcerpt && (
+          <CopyButton html={`<p>${escapeHtml(aboutExcerpt)}</p>`} plain={aboutExcerpt} label="about" />
+        )}
         <Button
           variant="ghost"
           size="sm"
