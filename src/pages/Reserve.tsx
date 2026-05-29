@@ -46,14 +46,21 @@ const Reserve = () => {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Auto-fulfill pending reservation after auth (only for fresh signups)
+  // Auto-fulfill pending reservation after auth (in-memory OR persisted across redirects)
   useEffect(() => {
-    if (session && pendingReserve) {
-      void doReserve(pendingReserve, true);
-      setPendingReserve(null);
-      setAuthOpen(false);
-    }
-  }, [session, pendingReserve]); // eslint-disable-line
+    if (!session) return;
+    const persisted = sessionStorage.getItem('reserve:pending');
+    const value = pendingReserve ?? persisted;
+    if (!value) return;
+    sessionStorage.removeItem('reserve:pending');
+    setPendingReserve(null);
+    setAuthOpen(false);
+    (async () => {
+      const ok = await doReserve(value, true);
+      if (ok) navigate('/');
+    })();
+  }, [session]); // eslint-disable-line
+
 
   const check = async (raw?: string) => {
     const value = sanitize(raw ?? input);
@@ -83,19 +90,18 @@ const Reserve = () => {
     }
   };
 
-  const doReserve = async (value: string, fromSignup = false) => {
+  const doReserve = async (value: string, fromSignup = false): Promise<boolean> => {
     if (session && !fromSignup) {
       toast.error('Reservations are for new makers only. Sign out to reserve a handle.');
-      return;
+      return false;
     }
     if (!session) {
+      sessionStorage.setItem('reserve:pending', value);
       setPendingReserve(value);
       setAuthMode('signup');
       setAuthOpen(true);
-      return;
+      return false;
     }
-
-
 
     // Check if user already has a reservation
     const { data: existing } = await (db.from('reservations') as any)
@@ -106,7 +112,7 @@ const Reserve = () => {
 
     if (existing) {
       toast.error('You already have a reserved founder handle.');
-      return;
+      return false;
     }
 
     setReserving(true);
@@ -120,7 +126,7 @@ const Reserve = () => {
     if (error) {
       toast.error(error.message.includes('duplicate') ? 'Just got reserved by someone else.' : error.message);
       void check(value);
-      return;
+      return false;
     }
     void (db.from('reserve_events') as any).insert({
       user_id: session.user.id,
@@ -129,7 +135,9 @@ const Reserve = () => {
     });
     toast.success(`@${value} is yours.`);
     setAvailability({ state: 'taken', value, reason: 'reservation' });
+    return true;
   };
+
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
