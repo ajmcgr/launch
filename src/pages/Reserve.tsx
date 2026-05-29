@@ -26,12 +26,6 @@ type Availability =
 
 const sanitize = (raw: string) => raw.replace(/^@+/, '').trim();
 
-interface ProductIcon {
-  id: string;
-  name: string;
-  slug: string;
-  icon_url: string;
-}
 
 const Reserve = () => {
   const navigate = useNavigate();
@@ -40,12 +34,6 @@ const Reserve = () => {
   const [session, setSession] = useState<{ user: { id: string; email?: string } } | null>(null);
   const [reserving, setReserving] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'signup' | 'signin'>('signup');
-  const [authEmail, setAuthEmail] = useState('');
-  const [authPassword, setAuthPassword] = useState('');
-  const [authLoading, setAuthLoading] = useState(false);
-  const [pendingReserve, setPendingReserve] = useState<string | null>(null);
-  const [icons, setIcons] = useState<ProductIcon[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session as any));
