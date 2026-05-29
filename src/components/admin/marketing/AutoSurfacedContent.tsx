@@ -68,6 +68,7 @@ interface SponsoredProduct {
   id: string;
   name: string;
   tagline: string | null;
+  description?: string | null;
   slug: string;
   sponsorship_type: string;
   start_date: string;
@@ -185,18 +186,28 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
   );
 };
 
+// Extract up to N sentences from text, trimmed.
+const firstSentences = (text: string | null | undefined, n = 3): string => {
+  if (!text) return '';
+  const clean = text.replace(/\s+/g, ' ').trim();
+  const matches = clean.match(/[^.!?]+[.!?]+(\s|$)/g);
+  if (!matches) return clean.slice(0, 280);
+  return matches.slice(0, n).join('').trim();
+};
+
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
+  const aboutExcerpt = firstSentences(product.description, 3);
   const iconUrl = getIconUrl(product);
   const htmlText = () => productToHtml(product.name, taglineText, productUrl);
-  const plainText = productToPlain(product.name, taglineText, productUrl);
+  const plainText = `${product.name}\n${taglineText}${aboutExcerpt ? `\n\n${aboutExcerpt}` : ''}\n${productUrl}`;
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-border">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-start gap-3 flex-1 min-w-0">
         {iconUrl && (
-          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0" />
+          <img src={iconUrl} alt={product.name} className="w-8 h-8 rounded-md object-cover flex-shrink-0 mt-0.5" />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -214,13 +225,21 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground truncate mt-0.5">
-            {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
+            {taglineText}
           </p>
+          {aboutExcerpt && (
+            <p className="text-sm text-foreground/80 mt-2 leading-relaxed line-clamp-3">
+              {aboutExcerpt}
+            </p>
+          )}
           <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
         </div>
       </div>
       <div className="flex items-center gap-1 ml-2">
         <CopyButton html={htmlText} plain={plainText} label="product" />
+        {aboutExcerpt && (
+          <CopyButton html={`<p>${escapeHtml(aboutExcerpt)}</p>`} plain={aboutExcerpt} label="about" />
+        )}
         <Button
           variant="ghost"
           size="sm"
@@ -464,7 +483,7 @@ export const AutoSurfacedContent = () => {
             start_date,
             end_date,
             position,
-            products(id, name, tagline, slug, product_media(url, type))
+            products(id, name, tagline, description, slug, product_media(url, type))
           `)
           .lte('start_date', today)
           .gte('end_date', today)
@@ -476,7 +495,7 @@ export const AutoSurfacedContent = () => {
             plan,
             created_at,
             product_id,
-            products(id, name, tagline, slug, product_media(url, type))
+            products(id, name, tagline, description, slug, product_media(url, type))
           `)
           .gte('created_at', oneWeekAgo)
           .not('product_id', 'is', null)
@@ -489,6 +508,7 @@ export const AutoSurfacedContent = () => {
         id: sp.products?.id || sp.id,
         name: sp.products?.name || 'Unknown',
         tagline: sp.products?.tagline,
+        description: sp.products?.description,
         slug: sp.products?.slug || '',
         sponsorship_type: sp.sponsorship_type,
         start_date: sp.start_date,
@@ -505,6 +525,7 @@ export const AutoSurfacedContent = () => {
           id: o.products?.id || o.product_id,
           name: o.products?.name || 'Unknown',
           tagline: o.products?.tagline,
+          description: o.products?.description,
           slug: o.products?.slug || '',
           sponsorship_type: o.plan,
           start_date: o.created_at?.split('T')[0] || '',

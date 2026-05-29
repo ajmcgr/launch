@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare, ArrowUp } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
+import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
@@ -97,8 +98,8 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   return (
     <div>
       <div className="flex flex-col">
-        {items.map((p) => (
-          <ProfileLaunchRow key={p.id} product={p} />
+        {items.map((p, i) => (
+          <ProfileLaunchRow key={p.id} product={p} rank={page * PAGE_SIZE + i + 1} />
         ))}
       </div>
       <Pager page={page} pages={pages} total={total} onChange={setPage} />
@@ -106,29 +107,46 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   );
 }
 
-function ProfileLaunchRow({ product, submissionType }: { product: any; submissionType?: 'community' }) {
+function ProfileLaunchRow({ product, rank, submissionType: _submissionType }: { product: any; rank: number; submissionType?: 'community' }) {
+  const [votes, setVotes] = useState(product.netVotes || 0);
+  const [userVote, setUserVote] = useState<1 | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+      const { data } = await sb.from('votes').select('value').eq('product_id', product.id).eq('user_id', user.id).maybeSingle();
+      if (!cancelled && data?.value === 1) setUserVote(1);
+    })();
+    return () => { cancelled = true; };
+  }, [product.id]);
+
+  const handleVote = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('Please sign in to vote'); return; }
+    if (userVote === 1) {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      setUserVote(null); setVotes((v: number) => v - 1);
+    } else {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      await sb.from('votes').insert({ product_id: product.id, user_id: user.id, value: 1 });
+      setUserVote(1); setVotes((v: number) => v + 1);
+    }
+  };
+
   return (
-    <Link
-      to={`/launch/${product.slug}`}
-      className="flex items-center gap-3 py-2 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
-    >
-      <img
-        src={product.iconUrl || product.thumbnail || '/placeholder.svg'}
-        alt={product.name}
-        loading="lazy"
-        width={40}
-        height={40}
-        className="h-10 w-10 rounded-md object-cover bg-muted shrink-0"
-      />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-semibold truncate group-hover:text-primary transition-colors">{product.name}</p>
-          {submissionType === 'community' && <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Community</span>}
-        </div>
-        <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
-      </div>
-      <span className="text-xs text-muted-foreground tabular-nums shrink-0">{Math.max(0, product.netVotes)} ▲</span>
-    </Link>
+    <CompactLaunchListItem
+      productId={product.id}
+      rank={rank}
+      name={product.name}
+      votes={votes}
+      slug={product.slug}
+      userVote={userVote}
+      onVote={handleVote}
+      makers={product.makers}
+      categories={product.categories}
+    />
   );
 }
 
@@ -253,8 +271,8 @@ function CommunityPanel({ profile }: { profile: any }) {
         <StatBlock label="Awaiting claim" value={items.filter((p) => !p.claimed_at).length} />
       </div>
       <div className="flex flex-col">
-        {items.map((p) => (
-          <ProfileLaunchRow key={p.id} product={p} submissionType="community" />
+        {items.map((p, i) => (
+          <ProfileLaunchRow key={p.id} product={p} rank={i + 1} submissionType="community" />
         ))}
       </div>
     </div>
@@ -757,12 +775,12 @@ const UserProfile = () => {
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="w-full flex flex-wrap justify-center h-auto bg-transparent border-b border-border rounded-none p-0 gap-1">
-            <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
-            <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
-            <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
-            <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Comments</TabsTrigger>
-            <TabsTrigger value="upvotes" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Upvotes{s.saves ? ` · ${s.saves}` : ''}</TabsTrigger>
-            <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
+            <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
+            <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Comments</TabsTrigger>
+            <TabsTrigger value="upvotes" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Upvotes{s.saves ? ` · ${s.saves}` : ''}</TabsTrigger>
+            <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="launches" className="mt-6 pb-12">
