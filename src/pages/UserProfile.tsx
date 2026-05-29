@@ -135,65 +135,42 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
 }
 
 function ProfileLaunchRow({ product, rank, submissionType }: { product: any; rank: number; submissionType?: 'community' }) {
-  const navigate = useNavigate();
+  const [votes, setVotes] = useState<number>(product.netVotes || 0);
+  const [userVote, setUserVote] = useState<1 | null>(product.userVote || null);
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('a') || target.closest('button')) return;
-    navigate(`/launch/${product.slug}`);
+  const handleVote = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('Please sign in to vote'); return; }
+    if (userVote === 1) {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      setUserVote(null); setVotes((v) => v - 1);
+    } else {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      await sb.from('votes').insert({ product_id: product.id, user_id: user.id, value: 1 });
+      setUserVote(1); setVotes((v) => v + 1);
+    }
   };
 
-  const iconUrl = product.iconUrl || product.thumbnail || '';
-  const tagline = product.tagline || '';
-  const truncated = tagline.match(/^[^.!?]*[.!?]/)?.[0] || tagline;
-
   return (
-    <div
-      className="group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
-      onClick={handleCardClick}
-    >
-      <div className="flex items-start gap-3 flex-1 min-w-0">
-        <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
-          <img
-            src={iconUrl || defaultProductIcon}
-            alt={product.name}
-            className="w-full h-full object-cover rounded-lg"
-            width={40}
-            height={40}
-            loading="lazy"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = defaultProductIcon; }}
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-muted-foreground">{rank}.</span>
-            <h3 className="font-semibold text-base text-foreground">{product.name}</h3>
-            {submissionType === 'community' && (
-              <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">Community</span>
-            )}
-            {product.domainUrl && (
-              <a
-                href={product.domainUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
-            {product.id && (
-              <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
-                <SaveToCollectionButton variant="bare" productId={product.id} productName={product.name} />
-              </span>
-            )}
-          </div>
-          {tagline && (
-            <p className="text-sm text-muted-foreground line-clamp-1">{truncated}</p>
-          )}
-        </div>
-      </div>
-    </div>
+    <LaunchListItem
+      id={product.id}
+      slug={product.slug}
+      name={product.name}
+      tagline={product.tagline || ''}
+      thumbnail={product.thumbnail || ''}
+      iconUrl={product.iconUrl}
+      domainUrl={product.domainUrl}
+      categories={product.categories || []}
+      platforms={product.platforms || []}
+      netVotes={votes}
+      userVote={userVote}
+      commentCount={product.commentCount || 0}
+      launch_date={product.launch_date}
+      makers={product.makers || []}
+      rank={rank}
+      submissionType={submissionType ?? null}
+      onVote={handleVote}
+    />
   );
 }
 
