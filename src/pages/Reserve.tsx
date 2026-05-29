@@ -638,52 +638,6 @@ const ReserveStyles = () => (
     }
     .text-link:hover { color: var(--ink); }
 
-    /* BOTTOM — horizontal icon rows */
-    .bottom {
-      padding: 32px 0 48px;
-      display: flex; flex-direction: column; gap: 10px;
-      overflow: hidden;
-    }
-    .icon-row {
-      overflow: hidden;
-      mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
-      -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
-    }
-    .icon-track {
-      display: inline-flex;
-      gap: 10px;
-      padding: 4px 0;
-      white-space: nowrap;
-      animation: scroll-x 160s linear infinite;
-      will-change: transform;
-    }
-    .icon-track.rev { animation-direction: reverse; }
-    @keyframes scroll-x {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
-    .icon-tile {
-      flex: 0 0 auto;
-      display: block;
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      overflow: hidden;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-      transition: transform .2s ease, border-color .2s ease;
-    }
-    @media (min-width: 768px) {
-      .icon-tile { width: 52px; height: 52px; border-radius: 12px; }
-    }
-    .icon-tile:hover {
-      transform: scale(1.12);
-      border-color: rgba(199,210,254,0.5);
-    }
-    .icon-tile img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-    }
-
-
     /* Modal */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(2,3,8,0.7); backdrop-filter: blur(12px);
@@ -707,7 +661,7 @@ const ReserveStyles = () => (
     .text-toggle:hover { color: var(--ink); }
 
     @media (prefers-reduced-motion: reduce) {
-      .nebula, .grid-floor, .icon-track { animation: none !important; }
+      .nebula, .grid-floor { animation: none !important; }
     }
   `}</style>
 );
