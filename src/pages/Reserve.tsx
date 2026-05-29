@@ -151,9 +151,10 @@ const Reserve = () => {
       type: 'founder_handle',
       value,
     });
-    toast.success(`@${value} is yours.`);
+    toast.success(`@${value} is yours. Taking you to Launch…`);
     setMyReservation(value);
     setAvailability({ state: 'taken', value, reason: 'reservation' });
+    setTimeout(() => navigate('/'), 1200);
     return true;
   };
 
