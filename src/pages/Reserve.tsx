@@ -54,7 +54,7 @@ const Reserve = () => {
       const [products, users, votes, reservations, recent] = await Promise.all([
         supabase.from('products').select('*', { count: 'exact', head: true }),
         supabase.from('users').select('*', { count: 'exact', head: true }),
-        supabase.from('product_votes').select('*', { count: 'exact', head: true }),
+        supabase.from('votes').select('*', { count: 'exact', head: true }),
         (db.from('reservations') as any).select('*', { count: 'exact', head: true }),
         supabase
           .from('users')
