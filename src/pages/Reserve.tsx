@@ -144,12 +144,16 @@ const Reserve = () => {
         if (error) throw error;
         toast.success('Check your inbox to confirm — then your handle is locked in.');
       } else {
+        // Existing user signing in — don't auto-reserve
+        setPendingReserve(null);
         const { error } = await supabase.auth.signInWithPassword({
           email: authEmail.trim().toLowerCase(),
           password: authPassword,
         });
         if (error) throw error;
+        setAuthOpen(false);
       }
+
     } catch (err: any) {
       toast.error(err.message ?? 'Auth failed');
     } finally {
