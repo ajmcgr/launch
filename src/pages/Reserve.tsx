@@ -546,25 +546,61 @@ const ReserveStyles = () => (
     }
     .reserve-bg {
       position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+      background: #03040a;
+    }
+    .starfield {
+      position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+    }
+    .nebula {
+      position: absolute; border-radius: 50%;
+      filter: blur(110px); mix-blend-mode: screen; opacity: 0.55;
+      animation: nebula-drift 26s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    .nebula-a {
+      width: 70vw; height: 70vw; left: -18vw; top: -22vw;
+      background: radial-gradient(circle, rgba(96,120,255,0.7), transparent 60%);
+    }
+    .nebula-b {
+      width: 60vw; height: 60vw; right: -16vw; top: 8vw;
+      background: radial-gradient(circle, rgba(200,90,255,0.55), transparent 60%);
+      animation-delay: -10s; animation-duration: 34s;
+    }
+    .nebula-c {
+      width: 75vw; height: 75vw; left: 18vw; bottom: -30vw;
+      background: radial-gradient(circle, rgba(40,200,255,0.4), transparent 60%);
+      animation-delay: -18s; animation-duration: 40s;
+    }
+    @keyframes nebula-drift {
+      0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+      50%  { transform: translate3d(40px,-30px,0) scale(1.08) rotate(8deg); }
+      100% { transform: translate3d(-30px,40px,0) scale(1.04) rotate(-6deg); }
+    }
+    .grid-floor {
+      position: absolute;
+      left: 50%; bottom: -32vh;
+      width: 220%; height: 80vh;
+      transform: translateX(-50%) perspective(800px) rotateX(72deg);
+      transform-origin: 50% 0%;
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(120,140,255,0.18), transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(180,120,255,0.12), transparent 60%),
-        var(--bg);
+        linear-gradient(to right, rgba(160,180,255,0.18) 1px, transparent 1px) 0 0 / 64px 64px,
+        linear-gradient(to bottom, rgba(160,180,255,0.18) 1px, transparent 1px) 0 0 / 64px 64px;
+      mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
+      animation: grid-march 18s linear infinite;
+      opacity: 0.65;
     }
-    .aurora {
-      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
-      mix-blend-mode: screen; animation: drift 22s ease-in-out infinite alternate;
+    @keyframes grid-march {
+      from { background-position: 0 0, 0 0; }
+      to   { background-position: 0 64px, 0 64px; }
     }
-    .aurora-a { width: 720px; height: 720px; left: -10%; top: -20%;
-      background: radial-gradient(circle, rgba(120,140,255,0.65), transparent 60%); }
-    .aurora-b { width: 640px; height: 640px; right: -10%; top: 20%;
-      background: radial-gradient(circle, rgba(180,120,255,0.55), transparent 60%); animation-delay: -8s; }
-    .aurora-c { width: 800px; height: 800px; left: 30%; top: 60%;
-      background: radial-gradient(circle, rgba(80,200,255,0.35), transparent 60%); animation-delay: -14s; }
-    @keyframes drift {
-      0% { transform: translate3d(0,0,0) scale(1); }
-      100% { transform: translate3d(40px,-30px,0) scale(1.08); }
+    .vignette {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 40%, transparent 40%, rgba(0,0,0,0.55) 100%),
+        linear-gradient(180deg, rgba(3,4,10,0) 60%, rgba(3,4,10,0.9) 100%);
     }
+
 
     /* Single-column shell */
     .reserve-shell {
