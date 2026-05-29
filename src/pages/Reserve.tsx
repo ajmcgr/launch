@@ -71,7 +71,10 @@ const Reserve = () => {
     setAuthOpen(false);
     (async () => {
       const ok = await doReserve(value, true);
-      if (ok) setMyReservation(value);
+      if (ok) {
+        setMyReservation(value);
+        setTimeout(() => navigate('/'), 1200);
+      }
     })();
   }, [session]); // eslint-disable-line
 
