@@ -239,6 +239,17 @@ const Reserve = () => {
           </h1>
           <p className="sub">Reserve your founder handle on Launch.</p>
 
+          {myReservation && (
+            <div className="my-reservation" role="status">
+              <div className="my-reservation-head">
+                <Check size={16} /> Reserved
+              </div>
+              <p>
+                Your founder handle is <strong>@{myReservation}</strong>. We'll email you when claiming opens.
+              </p>
+            </div>
+          )}
+
           <div className="checker glass">
             <div className="checker-inner">
               <span className="at">@</span>
