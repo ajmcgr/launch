@@ -63,7 +63,7 @@ const Reserve = () => {
         .eq('products.status', 'launched')
         .not('url', 'is', null)
         .order('created_at', { ascending: false, referencedTable: 'products' })
-        .limit(120);
+        .limit(400);
       const seen = new Set<string>();
       const list: ProductIcon[] = [];
       for (const item of (data || []) as any[]) {
@@ -76,9 +76,10 @@ const Reserve = () => {
           icon_url: item.url,
         });
       }
-      setIcons(list.slice(0, 60));
+      setIcons(list.slice(0, 200));
     })();
   }, []);
+
 
   // Auto-fulfill pending reservation after auth
   useEffect(() => {
