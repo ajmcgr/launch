@@ -62,12 +62,11 @@ const VibeCodeYourFuture = () => {
 
 
               <p>
-                You've got this. Take a walk. Drink some water. Then open a blank
-                file and start.
+                You've got this. Take a walk. Drink some water.
               </p>
 
               <p>
-                <strong>You weren't laid off. You were set free.</strong>
+                <strong>You weren't laid off. You were set free. Stop applying. Start building.</strong>
               </p>
 
               <div className="mt-12">
