@@ -97,7 +97,7 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
       const to = from + PAGE_SIZE - 1;
       const { data, count } = await supabase
         .from('products')
-        .select(`id, slug, name, tagline, won_daily, won_weekly, won_monthly,
+        .select(`id, slug, name, tagline, domain_url, launch_date, platforms, won_daily, won_weekly, won_monthly,
           product_media!inner(url, type),
           product_category_map(product_categories(name))`, { count: 'exact' })
         .eq('owner_id', profile.id)
@@ -107,9 +107,11 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
         .range(from, to);
       if (cancelled) return;
       const ids = (data || []).map((p: any) => p.id);
-      const voteCounts = await fetchVoteCounts(ids);
+      const [voteCounts, commentCounts, userVotes] = await Promise.all([
+        fetchVoteCounts(ids), fetchCommentCounts(ids), fetchUserVotes(ids),
+      ]);
       if (cancelled) return;
-      setItems((data || []).map((p: any) => formatProduct(p, voteCounts, { username: profile.username, avatar_url: profile.avatar_url })));
+      setItems((data || []).map((p: any) => formatProduct(p, voteCounts, commentCounts, userVotes, { username: profile.username, avatar_url: profile.avatar_url })));
       setTotal(count || 0);
       setLoading(false);
     })();
