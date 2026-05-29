@@ -455,11 +455,18 @@ function StatBlock({ label, value }: { label: string; value: number | string }) 
   );
 }
 
-function GridSkeleton({ rows = 2 }: { rows?: number }) {
+function GridSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {Array.from({ length: rows * 3 }).map((_, i) => (
-        <Skeleton key={i} className="h-40 w-full rounded-lg" />
+    <div className="flex flex-col">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center gap-3 py-3 border-b border-border/40 last:border-b-0">
+          <Skeleton className="h-10 w-10 rounded-md shrink-0" />
+          <div className="flex-1 min-w-0 space-y-2">
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-3 w-2/3" />
+          </div>
+          <Skeleton className="h-8 w-12 rounded-md shrink-0" />
+        </div>
       ))}
     </div>
   );
