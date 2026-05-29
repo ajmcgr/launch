@@ -332,8 +332,8 @@ const Reserve = () => {
             )}
           </div>
 
-          <div className="top-foot" style={{ marginTop: '0.5rem' }}>
-            <Link to="/" className="text-link">
+          <div className="top-foot" style={{ marginTop: '1.75rem' }}>
+            <Link to="/" className="text-link" style={{ fontSize: '1.15rem' }}>
               Take me to Launch →
             </Link>
           </div>
