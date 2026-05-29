@@ -454,8 +454,14 @@ const ReserveStyles = () => (
       margin: 0 auto;
     }
     @media (min-width: 900px) {
-      .reserve-shell { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+      .reserve-shell {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        height: 100vh;
+        min-height: 0;
+        overflow: hidden;
+      }
     }
+
 
     /* LEFT */
     .left {
