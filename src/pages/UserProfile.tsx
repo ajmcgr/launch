@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare, ArrowUp, ExternalLink } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
+import { LaunchListItem } from '@/components/LaunchListItem';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
@@ -36,15 +37,20 @@ interface ProfileStats {
 }
 
 // ---------- helpers ----------
-const formatProduct = (p: any, voteCounts: Record<string, number>, fallbackMaker?: any) => ({
+const formatProduct = (p: any, voteCounts: Record<string, number>, commentCounts: Record<string, number>, userVotes: Record<string, 1>, fallbackMaker?: any) => ({
   id: p.id,
   slug: p.slug,
   name: p.name,
   tagline: p.tagline,
   thumbnail: p.product_media?.find((m: any) => m.type === 'thumbnail')?.url || '',
   iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url || '',
+  domainUrl: p.domain_url || undefined,
+  launch_date: p.launch_date || undefined,
+  platforms: (p.platforms || []) as any[],
   categories: p.product_category_map?.map((c: any) => c.product_categories?.name).filter(Boolean) || [],
   netVotes: voteCounts[p.id] || 0,
+  commentCount: commentCounts[p.id] || 0,
+  userVote: userVotes[p.id] || null,
   makers: fallbackMaker ? [fallbackMaker] : (p.product_makers?.map((m: any) => m.users).filter((u: any) => u?.username) || []),
 });
 
@@ -54,6 +60,24 @@ async function fetchVoteCounts(productIds: string[]): Promise<Record<string, num
   const counts: Record<string, number> = {};
   data?.forEach((v: any) => { counts[v.product_id] = (counts[v.product_id] || 0) + v.value; });
   return counts;
+}
+
+async function fetchCommentCounts(productIds: string[]): Promise<Record<string, number>> {
+  if (!productIds.length) return {};
+  const { data } = await sb.from('comments').select('product_id').in('product_id', productIds);
+  const counts: Record<string, number> = {};
+  (data || []).forEach((c: any) => { counts[c.product_id] = (counts[c.product_id] || 0) + 1; });
+  return counts;
+}
+
+async function fetchUserVotes(productIds: string[]): Promise<Record<string, 1>> {
+  if (!productIds.length) return {};
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return {};
+  const { data } = await sb.from('votes').select('product_id, value').in('product_id', productIds).eq('user_id', user.id).eq('value', 1);
+  const map: Record<string, 1> = {};
+  (data || []).forEach((v: any) => { map[v.product_id] = 1; });
+  return map;
 }
 
 // ---------- tab panels ----------
@@ -73,7 +97,7 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
       const to = from + PAGE_SIZE - 1;
       const { data, count } = await supabase
         .from('products')
-        .select(`id, slug, name, tagline, won_daily, won_weekly, won_monthly,
+        .select(`id, slug, name, tagline, domain_url, launch_date, platforms, won_daily, won_weekly, won_monthly,
           product_media!inner(url, type),
           product_category_map(product_categories(name))`, { count: 'exact' })
         .eq('owner_id', profile.id)
@@ -83,9 +107,11 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
         .range(from, to);
       if (cancelled) return;
       const ids = (data || []).map((p: any) => p.id);
-      const voteCounts = await fetchVoteCounts(ids);
+      const [voteCounts, commentCounts, userVotes] = await Promise.all([
+        fetchVoteCounts(ids), fetchCommentCounts(ids), fetchUserVotes(ids),
+      ]);
       if (cancelled) return;
-      setItems((data || []).map((p: any) => formatProduct(p, voteCounts, { username: profile.username, avatar_url: profile.avatar_url })));
+      setItems((data || []).map((p: any) => formatProduct(p, voteCounts, commentCounts, userVotes, { username: profile.username, avatar_url: profile.avatar_url })));
       setTotal(count || 0);
       setLoading(false);
     })();
@@ -109,65 +135,42 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
 }
 
 function ProfileLaunchRow({ product, rank, submissionType }: { product: any; rank: number; submissionType?: 'community' }) {
-  const navigate = useNavigate();
+  const [votes, setVotes] = useState<number>(product.netVotes || 0);
+  const [userVote, setUserVote] = useState<1 | null>(product.userVote || null);
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('a') || target.closest('button')) return;
-    navigate(`/launch/${product.slug}`);
+  const handleVote = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('Please sign in to vote'); return; }
+    if (userVote === 1) {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      setUserVote(null); setVotes((v) => v - 1);
+    } else {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      await sb.from('votes').insert({ product_id: product.id, user_id: user.id, value: 1 });
+      setUserVote(1); setVotes((v) => v + 1);
+    }
   };
 
-  const iconUrl = product.iconUrl || product.thumbnail || '';
-  const tagline = product.tagline || '';
-  const truncated = tagline.match(/^[^.!?]*[.!?]/)?.[0] || tagline;
-
   return (
-    <div
-      className="group/card flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
-      onClick={handleCardClick}
-    >
-      <div className="flex items-start gap-3 flex-1 min-w-0">
-        <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
-          <img
-            src={iconUrl || defaultProductIcon}
-            alt={product.name}
-            className="w-full h-full object-cover rounded-lg"
-            width={40}
-            height={40}
-            loading="lazy"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = defaultProductIcon; }}
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-muted-foreground">{rank}.</span>
-            <h3 className="font-semibold text-base text-foreground">{product.name}</h3>
-            {submissionType === 'community' && (
-              <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">Community</span>
-            )}
-            {product.domainUrl && (
-              <a
-                href={product.domainUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
-            {product.id && (
-              <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
-                <SaveToCollectionButton variant="bare" productId={product.id} productName={product.name} />
-              </span>
-            )}
-          </div>
-          {tagline && (
-            <p className="text-sm text-muted-foreground line-clamp-1">{truncated}</p>
-          )}
-        </div>
-      </div>
-    </div>
+    <LaunchListItem
+      id={product.id}
+      slug={product.slug}
+      name={product.name}
+      tagline={product.tagline || ''}
+      thumbnail={product.thumbnail || ''}
+      iconUrl={product.iconUrl}
+      domainUrl={product.domainUrl}
+      categories={product.categories || []}
+      platforms={product.platforms || []}
+      netVotes={votes}
+      userVote={userVote}
+      commentCount={product.commentCount || 0}
+      launch_date={product.launch_date}
+      makers={product.makers || []}
+      rank={rank}
+      submissionType={submissionType ?? null}
+      onVote={handleVote}
+    />
   );
 }
 
@@ -253,7 +256,7 @@ function CommunityPanel({ profile }: { profile: any }) {
       setLoading(true);
       const { data } = await sb
         .from('products')
-        .select(`id, slug, name, tagline, claimed_at,
+        .select(`id, slug, name, tagline, claimed_at, domain_url, launch_date, platforms,
           product_media(url, type),
           product_category_map(product_categories(name))`)
         .or(`submitted_by_user_id.eq.${profile.id},original_submitter_id.eq.${profile.id}`)
@@ -263,7 +266,9 @@ function CommunityPanel({ profile }: { profile: any }) {
         .limit(50);
       if (cancelled) return;
       const ids = (data || []).map((p: any) => p.id);
-      const voteCounts = await fetchVoteCounts(ids);
+      const [voteCounts, commentCounts, userVotes] = await Promise.all([
+        fetchVoteCounts(ids), fetchCommentCounts(ids), fetchUserVotes(ids),
+      ]);
       let saves = 0;
       if (ids.length) {
         const { count } = await sb
@@ -273,7 +278,7 @@ function CommunityPanel({ profile }: { profile: any }) {
         saves = count || 0;
       }
       if (cancelled) return;
-      setItems((data || []).map((p: any) => formatProduct(p, voteCounts)));
+      setItems((data || []).map((p: any) => ({ ...formatProduct(p, voteCounts, commentCounts, userVotes), claimed_at: p.claimed_at })));
       setSavesGenerated(saves);
       setLoading(false);
     })();
