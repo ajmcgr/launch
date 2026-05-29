@@ -46,10 +46,10 @@ const Reserve = () => {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Auto-fulfill pending reservation after auth
+  // Auto-fulfill pending reservation after auth (only for fresh signups)
   useEffect(() => {
     if (session && pendingReserve) {
-      void doReserve(pendingReserve);
+      void doReserve(pendingReserve, true);
       setPendingReserve(null);
       setAuthOpen(false);
     }
@@ -83,9 +83,9 @@ const Reserve = () => {
     }
   };
 
-  const doReserve = async (value: string) => {
-    if (session) {
-      toast.error('Sign out to reserve a handle — reservations are for new makers only.');
+  const doReserve = async (value: string, fromSignup = false) => {
+    if (session && !fromSignup) {
+      toast.error('Reservations are for new makers only. Sign out to reserve a handle.');
       return;
     }
     if (!session) {
@@ -94,6 +94,7 @@ const Reserve = () => {
       setAuthOpen(true);
       return;
     }
+
 
 
     // Check if user already has a reservation
