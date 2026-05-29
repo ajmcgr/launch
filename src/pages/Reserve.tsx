@@ -119,7 +119,7 @@ const Reserve = () => {
 
     // Check if user already has a reservation
     const { data: existing } = await (db.from('reservations') as any)
-      .select('id')
+      .select('id, value')
       .eq('user_id', session.user.id)
       .eq('type', 'founder_handle')
       .maybeSingle();
