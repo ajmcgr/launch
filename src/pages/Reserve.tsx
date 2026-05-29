@@ -314,9 +314,9 @@ const Reserve = () => {
         <section className="bottom" aria-label="Latest launches">
           {icons.length > 0 && (
             <>
-              <IconRow icons={icons} speed={80} />
-              <IconRow icons={[...icons].reverse()} speed={110} reverse />
-              <IconRow icons={icons.slice(20).concat(icons.slice(0, 20))} speed={95} />
+              <IconRow icons={icons} speed={160} />
+              <IconRow icons={[...icons].reverse()} speed={220} reverse />
+              <IconRow icons={icons.slice(20).concat(icons.slice(0, 20))} speed={190} />
             </>
           )}
         </section>
@@ -452,7 +452,7 @@ const Starfield = () => {
       }
     };
 
-    const SPEED = reduced ? 0 : 1.6;
+    const SPEED = reduced ? 0 : 0.8;
 
     const tick = () => {
       // Deep space wash with trail
@@ -554,7 +554,7 @@ const ReserveStyles = () => (
     .nebula {
       position: absolute; border-radius: 50%;
       filter: blur(110px); mix-blend-mode: screen; opacity: 0.55;
-      animation: nebula-drift 26s ease-in-out infinite alternate;
+      animation: nebula-drift 52s ease-in-out infinite alternate;
       will-change: transform;
     }
     .nebula-a {
@@ -564,12 +564,12 @@ const ReserveStyles = () => (
     .nebula-b {
       width: 60vw; height: 60vw; right: -16vw; top: 8vw;
       background: radial-gradient(circle, rgba(200,90,255,0.55), transparent 60%);
-      animation-delay: -10s; animation-duration: 34s;
+      animation-delay: -10s; animation-duration: 68s;
     }
     .nebula-c {
       width: 75vw; height: 75vw; left: 18vw; bottom: -30vw;
       background: radial-gradient(circle, rgba(40,200,255,0.4), transparent 60%);
-      animation-delay: -18s; animation-duration: 40s;
+      animation-delay: -18s; animation-duration: 80s;
     }
     @keyframes nebula-drift {
       0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
@@ -587,7 +587,7 @@ const ReserveStyles = () => (
         linear-gradient(to bottom, rgba(160,180,255,0.18) 1px, transparent 1px) 0 0 / 64px 64px;
       mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
       -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
-      animation: grid-march 18s linear infinite;
+      animation: grid-march 36s linear infinite;
       opacity: 0.65;
     }
     @keyframes grid-march {
@@ -728,7 +728,7 @@ const ReserveStyles = () => (
       gap: 10px;
       padding: 4px 0;
       white-space: nowrap;
-      animation: scroll-x 80s linear infinite;
+      animation: scroll-x 160s linear infinite;
       will-change: transform;
     }
     .icon-track.rev { animation-direction: reverse; }
