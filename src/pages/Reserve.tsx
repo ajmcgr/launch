@@ -321,24 +321,6 @@ const Reserve = () => {
           </div>
         </section>
 
-        <div className="reserve-account">
-          {session ? (
-            <button className="text-link" onClick={() => supabase.auth.signOut()}>
-              Sign out
-            </button>
-          ) : (
-            <button
-              className="text-link"
-              onClick={() => {
-                setAuthMode('signin');
-                setAuthOpen(true);
-              }}
-            >
-              Already have an account? Sign in
-            </button>
-          )}
-        </div>
-
         <footer className="reserve-footer">
           <div className="reserve-footer-line">
             <span>&copy; Launch 2026</span>
