@@ -130,7 +130,7 @@ export function ProfileMiniHero({ profile, followerCount, followingCount, produc
             <Link
               key={t.key}
               to={`/@${profile.username}?tab=${t.key}`}
-              className="px-3 py-2 text-sm border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors"
+              className="px-5 py-3 text-base border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors"
             >
               {t.label}{t.count ? ` · ${t.count}` : ''}
             </Link>
