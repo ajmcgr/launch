@@ -90,6 +90,19 @@ const Reserve = () => {
       setAuthOpen(true);
       return;
     }
+
+    // Check if user already has a reservation
+    const { data: existing } = await (db.from('reservations') as any)
+      .select('id')
+      .eq('user_id', session.user.id)
+      .eq('type', 'founder_handle')
+      .maybeSingle();
+
+    if (existing) {
+      toast.error('You already have a reserved founder handle.');
+      return;
+    }
+
     setReserving(true);
     const { error } = await (db.from('reservations') as any).insert({
       user_id: session.user.id,

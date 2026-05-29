@@ -25,7 +25,7 @@ const VibeCodeYourFuture = () => {
             <h1 className="text-4xl font-bold mb-8 text-center">Vibe Code Your Future</h1>
 
             <div className="prose prose-gray max-w-none space-y-6">
-              <p className="text-lg">
+              <p className="text-lg text-center">
                 An open letter to anyone who was just laid off.
               </p>
 
@@ -60,23 +60,6 @@ const VibeCodeYourFuture = () => {
                 you can still make things.
               </p>
 
-              <p>
-                That's what Launch is for. It's a quiet little corner of the internet
-                where engineers, designers, PMs, data scientists, marketers and
-                operators are turning their layoffs into launches. No hustle theatre.
-                No "crushing it." Just people building, sharing what they made, and
-                cheering each other on.
-              </p>
-
-              <p>
-                If you want, you can{' '}
-                <Link to="/reserve" className="text-primary hover:underline">
-                  reserve your founder handle
-                </Link>{' '}
-                today. It's free. It's a small act, but small acts compound. One
-                day you might look back at this week and realize it was the week
-                everything changed.
-              </p>
 
               <p>
                 You've got this. Take a walk. Drink some water. Then open a blank
