@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
@@ -276,15 +276,6 @@ const Reserve = () => {
           </div>
         </section>
 
-        <section className="bottom" aria-label="Latest launches">
-          {icons.length > 0 && (
-            <>
-              <IconRow icons={icons} speed={160} />
-              <IconRow icons={[...icons].reverse()} speed={220} reverse />
-              <IconRow icons={icons.slice(20).concat(icons.slice(0, 20))} speed={190} />
-            </>
-          )}
-        </section>
       </div>
 
 
@@ -340,36 +331,6 @@ const Reserve = () => {
   );
 };
 
-const IconRow = ({
-  icons,
-  speed,
-  reverse,
-}: {
-  icons: ProductIcon[];
-  speed: number;
-  reverse?: boolean;
-}) => {
-  const doubled = useMemo(() => [...icons, ...icons], [icons]);
-  return (
-    <div className="icon-row">
-      <div
-        className={`icon-track ${reverse ? 'rev' : ''}`}
-        style={{ animationDuration: `${speed}s` }}
-      >
-        {doubled.map((p, i) => (
-          <Link
-            key={`${p.id}-${i}`}
-            to={`/launch/${p.slug}`}
-            className="icon-tile"
-            title={p.name}
-          >
-            <img src={p.icon_url} alt={p.name} loading="lazy" />
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 
 // Animated warp starfield — pure canvas, GPU-free, lightweight
