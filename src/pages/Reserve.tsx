@@ -331,6 +331,12 @@ const Reserve = () => {
               </button>
             )}
           </div>
+
+          <div className="top-foot" style={{ marginTop: '0.5rem' }}>
+            <Link to="/" className="text-link">
+              Take me to Launch →
+            </Link>
+          </div>
         </section>
 
         <footer className="reserve-footer">
