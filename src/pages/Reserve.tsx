@@ -191,10 +191,14 @@ const Reserve = () => {
       <ReserveStyles />
 
       <div className="reserve-bg" aria-hidden>
-        <div className="aurora aurora-a" />
-        <div className="aurora aurora-b" />
-        <div className="aurora aurora-c" />
+        <Starfield />
+        <div className="nebula nebula-a" />
+        <div className="nebula nebula-b" />
+        <div className="nebula nebula-c" />
+        <div className="grid-floor" />
+        <div className="vignette" />
       </div>
+
 
       <div className="reserve-shell">
         <section className="top">
