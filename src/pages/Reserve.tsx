@@ -510,6 +510,13 @@ const ReserveStyles = () => (
       background: radial-gradient(circle, rgba(40,200,255,0.4), transparent 60%);
       animation-delay: -18s; animation-duration: 80s;
     }
+    @media (max-width: 768px) {
+      .nebula { filter: blur(70px); opacity: 0.7; }
+      .nebula-a { width: 140vw; height: 140vw; left: -35vw; top: -50vw; }
+      .nebula-b { width: 120vw; height: 120vw; right: -45vw; top: 25vh; }
+      .nebula-c { width: 140vw; height: 140vw; left: -20vw; bottom: -70vw; }
+      .grid-floor { bottom: -20vh; height: 60vh; }
+    }
     @keyframes nebula-drift {
       0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
       50%  { transform: translate3d(40px,-30px,0) scale(1.08) rotate(8deg); }
