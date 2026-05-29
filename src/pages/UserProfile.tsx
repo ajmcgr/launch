@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,15 +7,16 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare, ArrowUp } from 'lucide-react';
+import { UserPlus, UserMinus, Globe, Share2, Bookmark, FolderHeart, Trophy, Rocket, Sparkles, ChevronLeft, ChevronRight, Pencil, ImagePlus, MessageSquare, ArrowUp, ExternalLink } from 'lucide-react';
 import { notifyUserFollow } from '@/lib/notifications';
 import { LaunchCard } from '@/components/LaunchCard';
-import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
 import { ProfileSkeleton } from '@/components/ProfileSkeleton';
 import { KarmaScore } from '@/components/KarmaScore';
 import { useMakerScoreByUsername } from '@/hooks/use-maker-score';
 import { SeoHead } from '@/components/seo/SeoHead';
 import { gradientFor } from '@/lib/gradients';
+import defaultProductIcon from '@/assets/default-product-icon.png';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 const FounderAchievements = lazy(() => import('@/components/FounderAchievements'));
 
@@ -107,9 +108,10 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   );
 }
 
-function ProfileLaunchRow({ product, rank, submissionType: _submissionType }: { product: any; rank: number; submissionType?: 'community' }) {
+function ProfileLaunchRow({ product, rank, submissionType }: { product: any; rank: number; submissionType?: 'community' }) {
   const [votes, setVotes] = useState(product.netVotes || 0);
   const [userVote, setUserVote] = useState<1 | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let cancelled = false;
@@ -135,18 +137,83 @@ function ProfileLaunchRow({ product, rank, submissionType: _submissionType }: { 
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('a') || target.closest('button')) return;
+    navigate(`/launch/${product.slug}`);
+  };
+
+  const iconUrl = product.iconUrl || product.thumbnail || '';
+
   return (
-    <CompactLaunchListItem
-      productId={product.id}
-      rank={rank}
-      name={product.name}
-      votes={votes}
-      slug={product.slug}
-      userVote={userVote}
-      onVote={handleVote}
-      makers={product.makers}
-      categories={product.categories}
-    />
+    <div 
+      className="group/card flex items-center gap-3 py-2.5 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+      onClick={handleCardClick}
+    >
+      {/* Icon */}
+      <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
+        {iconUrl ? (
+          <img 
+            src={iconUrl} 
+            alt={product.name} 
+            className="w-full h-full object-cover rounded-lg"
+            width={36}
+            height={36}
+            loading="lazy"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = defaultProductIcon; }}
+          />
+        ) : (
+          <img 
+            src={defaultProductIcon} 
+            alt={product.name} 
+            className="w-full h-full object-cover rounded-lg"
+            width={36}
+            height={36}
+          />
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-bold text-muted-foreground">{rank}.</span>
+          <h3 className="font-semibold text-sm text-foreground truncate">{product.name}</h3>
+          {submissionType === 'community' && (
+            <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">Community</span>
+          )}
+          {product.domainUrl && (
+            <a
+              href={product.domainUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/card:opacity-100"
+            >
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          )}
+          {product.id && (
+            <span className="opacity-0 group-hover/card:opacity-100 transition-opacity">
+              <SaveToCollectionButton variant="bare" productId={product.id} productName={product.name} />
+            </span>
+          )}
+        </div>
+        {product.tagline && (
+          <p className="text-xs text-muted-foreground truncate mt-0.5">{product.tagline}</p>
+        )}
+      </div>
+
+      {/* Vote */}
+      <button
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleVote(); }}
+        className={`flex items-center gap-0.5 text-sm touch-manipulation active:scale-95 transition-colors flex-shrink-0 ${
+          userVote === 1 ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+        }`}
+      >
+        <ArrowUp className="h-4 w-4" />
+        <span className="font-medium text-xs">{Math.max(0, votes)}</span>
+      </button>
+    </div>
   );
 }
 
