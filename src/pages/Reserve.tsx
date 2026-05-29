@@ -39,6 +39,7 @@ const Reserve = () => {
   const [authPassword, setAuthPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [pendingReserve, setPendingReserve] = useState<string | null>(null);
+  const [myReservation, setMyReservation] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session as any));
@@ -46,18 +47,31 @@ const Reserve = () => {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Auto-fulfill pending reservation after auth (in-memory OR persisted across redirects)
+  // Load this user's existing reservation whenever session changes
+  useEffect(() => {
+    if (!session) { setMyReservation(null); return; }
+    (async () => {
+      const { data } = await (db.from('reservations') as any)
+        .select('value')
+        .eq('user_id', session.user.id)
+        .eq('type', 'founder_handle')
+        .maybeSingle();
+      if (data?.value) setMyReservation(data.value);
+    })();
+  }, [session]);
+
+  // Auto-fulfill pending reservation after auth (persisted across email-confirm redirect/new tab)
   useEffect(() => {
     if (!session) return;
-    const persisted = sessionStorage.getItem('reserve:pending');
+    const persisted = localStorage.getItem('reserve:pending');
     const value = pendingReserve ?? persisted;
     if (!value) return;
-    sessionStorage.removeItem('reserve:pending');
+    localStorage.removeItem('reserve:pending');
     setPendingReserve(null);
     setAuthOpen(false);
     (async () => {
       const ok = await doReserve(value, true);
-      if (ok) navigate('/');
+      if (ok) setMyReservation(value);
     })();
   }, [session]); // eslint-disable-line
 
@@ -96,7 +110,7 @@ const Reserve = () => {
       return false;
     }
     if (!session) {
-      sessionStorage.setItem('reserve:pending', value);
+      localStorage.setItem('reserve:pending', value);
       setPendingReserve(value);
       setAuthMode('signup');
       setAuthOpen(true);
@@ -105,12 +119,13 @@ const Reserve = () => {
 
     // Check if user already has a reservation
     const { data: existing } = await (db.from('reservations') as any)
-      .select('id')
+      .select('id, value')
       .eq('user_id', session.user.id)
       .eq('type', 'founder_handle')
       .maybeSingle();
 
     if (existing) {
+      setMyReservation((existing as any).value ?? value);
       toast.error('You already have a reserved founder handle.');
       return false;
     }
@@ -134,6 +149,7 @@ const Reserve = () => {
       value,
     });
     toast.success(`@${value} is yours.`);
+    setMyReservation(value);
     setAvailability({ state: 'taken', value, reason: 'reservation' });
     return true;
   };
@@ -222,6 +238,17 @@ const Reserve = () => {
             Vibe Code <span className="grad">Your Future</span>
           </h1>
           <p className="sub">Reserve your founder handle on Launch.</p>
+
+          {myReservation && (
+            <div className="my-reservation" role="status">
+              <div className="my-reservation-head">
+                <Check size={16} /> Reserved
+              </div>
+              <p>
+                Your founder handle is <strong>@{myReservation}</strong>. We'll email you when claiming opens.
+              </p>
+            </div>
+          )}
 
           <div className="checker glass">
             <div className="checker-inner">
@@ -798,6 +825,22 @@ const ReserveStyles = () => (
       .reserve-footer { left: 16px; bottom: 12px; }
       .reserve-footer-line { font-size: 10px; }
     }
+
+    .my-reservation {
+      max-width: 520px; margin: 0 auto 24px;
+      padding: 14px 18px; border-radius: 14px;
+      background: rgba(120, 220, 160, 0.08);
+      border: 1px solid rgba(120, 220, 160, 0.25);
+      color: var(--ink);
+      backdrop-filter: blur(8px);
+    }
+    .my-reservation-head {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgb(160, 230, 190); margin-bottom: 4px;
+    }
+    .my-reservation p { margin: 0; font-size: 14px; color: var(--ink-dim); }
+    .my-reservation strong { color: var(--ink); }
 
     @media (prefers-reduced-motion: reduce) {
       .nebula, .grid-floor { animation: none !important; }
