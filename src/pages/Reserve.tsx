@@ -719,7 +719,17 @@ const ReserveStyles = () => (
     .result p strong { color: var(--ink); }
     .result-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-bottom: 10px; }
 
-    .top-foot { margin-top: 24px; }
+    .share-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 14px; font-size: 13px; color: var(--ink-dim);
+    }
+    .share-link {
+      color: var(--ink-dim); text-decoration: none; transition: color .2s;
+    }
+    .share-link:hover { color: var(--ink); }
+    .share-dot { opacity: 0.4; }
+
+    .top-foot { margin-top: 18px; }
     .text-link {
       background: transparent; border: 0; color: var(--ink-dim);
       font-size: 13px; cursor: pointer; padding: 0;
