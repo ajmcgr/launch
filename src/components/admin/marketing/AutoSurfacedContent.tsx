@@ -465,7 +465,7 @@ export const AutoSurfacedContent = () => {
             start_date,
             end_date,
             position,
-            products(id, name, tagline, slug, product_media(url, type))
+            products(id, name, tagline, description, slug, product_media(url, type))
           `)
           .lte('start_date', today)
           .gte('end_date', today)
@@ -477,7 +477,7 @@ export const AutoSurfacedContent = () => {
             plan,
             created_at,
             product_id,
-            products(id, name, tagline, slug, product_media(url, type))
+            products(id, name, tagline, description, slug, product_media(url, type))
           `)
           .gte('created_at', oneWeekAgo)
           .not('product_id', 'is', null)
