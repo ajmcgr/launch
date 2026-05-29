@@ -151,6 +151,22 @@ const Reserve = () => {
     }
   };
 
+  const handleOAuth = async (provider: 'google' | 'github') => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/reserve`,
+          queryParams: provider === 'google' ? { prompt: 'select_account' } : undefined,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error(err.message ?? `Failed to continue with ${provider}`);
+    }
+  };
+
+
   return (
     <div className="reserve-root">
       <Helmet>
