@@ -21,25 +21,23 @@ const VibeCodeYourFuture = () => {
 
       <div className="min-h-screen bg-background py-16">
         <div className="container mx-auto px-4 max-w-3xl">
-          {/* Letter */}
           <div className="border border-border rounded-lg p-8 md:p-12 bg-card">
-            <h1 className="font-reckless text-4xl md:text-5xl font-medium mb-2 text-center">
-              Vibe Code Your Future
-            </h1>
-            <p className="text-center text-muted-foreground mb-10">
-              An open letter to anyone who was just laid off.
-            </p>
+            <h1 className="text-4xl font-bold mb-8 text-center">Vibe Code Your Future</h1>
 
-            <div className="prose prose-gray max-w-none space-y-6 text-foreground">
+            <div className="prose prose-gray max-w-none space-y-6">
               <p className="text-lg">
+                An open letter to anyone who was just laid off.
+              </p>
+
+              <p>
                 <strong>Hey,</strong>
               </p>
 
               <p>
-                If you're reading this, there's a good chance you just lost your
-                job. Maybe it was a Slack message. Maybe a calendar invite with no
-                title. Maybe an email at 6am. However it happened, I'm sorry. It
-                hurts, and it's okay that it hurts.
+                If you're reading this, there's a good chance you just lost your job.
+                Maybe it was a Slack message. Maybe a calendar invite with no title.
+                Maybe an email at 6am. However it happened, I'm sorry. It hurts,
+                and it's okay that it hurts.
               </p>
 
               <p>
@@ -49,26 +47,25 @@ const VibeCodeYourFuture = () => {
               </p>
 
               <p>
-                The point is this: a lot of the best founders I know started
-                exactly where you are right now. Not because they planned it.
-                Because the job ended, and they finally had the time, the anger,
-                and the quiet to build the thing they'd been thinking about for
-                years.
+                The point is this: a lot of the best founders I know started exactly
+                where you are right now. Not because they planned it. Because the
+                job ended, and they finally had the time, the anger, and the quiet
+                to build the thing they'd been thinking about for years.
               </p>
 
               <p>
                 You don't need permission. You don't need a co-founder. You don't
-                need a perfect idea. You need a small, honest first step.
-                Something you can ship this week. Something tiny that proves to
-                yourself that you can still make things.
+                need a perfect idea. You need a small, honest first step. Something
+                you can ship this week. Something tiny that proves to yourself that
+                you can still make things.
               </p>
 
               <p>
-                That's what Launch is for. It's a quiet little corner of the
-                internet where engineers, designers, PMs, data scientists,
-                marketers and operators are turning their layoffs into launches.
-                No hustle theatre. No "crushing it." Just people building, sharing
-                what they made, and cheering each other on.
+                That's what Launch is for. It's a quiet little corner of the internet
+                where engineers, designers, PMs, data scientists, marketers and
+                operators are turning their layoffs into launches. No hustle theatre.
+                No "crushing it." Just people building, sharing what they made, and
+                cheering each other on.
               </p>
 
               <p>
@@ -86,7 +83,7 @@ const VibeCodeYourFuture = () => {
                 file and start.
               </p>
 
-              <p className="text-lg">
+              <p>
                 <strong>You weren't laid off. You were set free.</strong>
               </p>
 
@@ -95,71 +92,20 @@ const VibeCodeYourFuture = () => {
                   <img
                     src={alexPhoto}
                     alt="Alex MacGregor"
-                    className="w-24 h-24 object-cover rounded-full mb-4"
+                    className="w-32 h-32 object-cover mb-4"
                   />
                   <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Founder, Launch
-                  </p>
+                  <p className="text-lg font-bold mb-4">Founder, Launch</p>
                   <Link
                     to="/u/alex"
-                    className="inline-flex items-center gap-2 text-primary hover:underline text-sm"
+                    className="inline-flex items-center gap-2 text-primary hover:underline"
                   >
-                    View my profile on Launch →
+                    View my profile on Launch
                   </Link>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Simple, sincere CTA */}
-          <div className="mt-12 text-center">
-            <h2 className="font-reckless text-3xl md:text-4xl font-medium mb-4">
-              Start your next chapter.
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-              Reserve your founder handle and join a community of builders
-              turning uncertainty into momentum.
-            </p>
-            <Link
-              to="/reserve"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold hover:opacity-90 transition"
-            >
-              Reserve your founder handle
-            </Link>
-          </div>
-
-          {/* Info sections — sincere, informational */}
-          <div className="mt-20 grid gap-8 md:grid-cols-2">
-            <div>
-              <h3 className="font-reckless text-2xl font-medium mb-3">
-                Who this is for
-              </h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>Engineers between roles</li>
-                <li>Product managers rethinking the path</li>
-                <li>Designers ready to ship their own work</li>
-                <li>Data scientists with ideas to test</li>
-                <li>Marketers and operators who want to build</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-reckless text-2xl font-medium mb-3">
-                What you can do here
-              </h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>Reserve a founder handle</li>
-                <li>Launch products and get real feedback</li>
-                <li>Build a public founder profile</li>
-                <li>Meet others doing the same thing</li>
-                <li>Trade applying for shipping</li>
-              </ul>
-            </div>
-          </div>
-
-          <p className="mt-20 text-center text-sm text-muted-foreground italic font-reckless">
-            One day you'll look back and realize the layoff was the beginning.
-          </p>
         </div>
       </div>
     </>
