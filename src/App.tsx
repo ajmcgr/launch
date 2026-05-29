@@ -193,6 +193,7 @@ const AppContent = () => {
             <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/c/:slug" element={<PublicCollection />} />
             <Route path="/collections" element={<CollectionsDirectory />} />
+            <Route path="/reserve" element={<Reserve />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
