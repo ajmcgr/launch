@@ -55,10 +55,10 @@ const VibeCodeYourFuture = () => {
               </p>
 
               <p>
-                You don't need permission. You don't need a co-founder. You don't
-                need a perfect idea. You need a small, honest first step. Something
-                you can ship this week. Something tiny that proves to yourself that
-                you can still make things.
+                You don't need permission and you certainly don't need a
+                co-founder or indeed a perfect idea. You need a small, honest
+                first step. Something you can ship this week. Something tiny
+                that proves to yourself that you can still make things.
               </p>
 
 
