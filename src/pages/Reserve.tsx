@@ -191,10 +191,14 @@ const Reserve = () => {
       <ReserveStyles />
 
       <div className="reserve-bg" aria-hidden>
-        <div className="aurora aurora-a" />
-        <div className="aurora aurora-b" />
-        <div className="aurora aurora-c" />
+        <Starfield />
+        <div className="nebula nebula-a" />
+        <div className="nebula nebula-b" />
+        <div className="nebula nebula-c" />
+        <div className="grid-floor" />
+        <div className="vignette" />
       </div>
+
 
       <div className="reserve-shell">
         <section className="top">
@@ -403,6 +407,125 @@ const IconRow = ({
 };
 
 
+// Animated warp starfield — pure canvas, GPU-free, lightweight
+const Starfield = () => {
+  const ref = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+    let w = 0, h = 0, cx = 0, cy = 0;
+    let raf = 0;
+
+    type Star = { x: number; y: number; z: number; pz: number; o: number };
+    const COUNT = 320;
+    const stars: Star[] = [];
+
+    const reset = (s: Star, randomZ = false) => {
+      s.x = (Math.random() - 0.5) * w;
+      s.y = (Math.random() - 0.5) * h;
+      s.z = randomZ ? Math.random() * w : w;
+      s.pz = s.z;
+      s.o = 0.4 + Math.random() * 0.6;
+    };
+
+    const resize = () => {
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      cx = w / 2;
+      cy = h / 2;
+      canvas.width = Math.floor(w * DPR);
+      canvas.height = Math.floor(h * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      if (stars.length === 0) {
+        for (let i = 0; i < COUNT; i++) {
+          const s: Star = { x: 0, y: 0, z: 0, pz: 0, o: 1 };
+          reset(s, true);
+          stars.push(s);
+        }
+      }
+    };
+
+    const SPEED = reduced ? 0 : 1.6;
+
+    const tick = () => {
+      // Deep space wash with trail
+      ctx.fillStyle = 'rgba(5, 6, 10, 0.35)';
+      ctx.fillRect(0, 0, w, h);
+
+      for (const s of stars) {
+        s.pz = s.z;
+        s.z -= SPEED;
+        if (s.z < 1) {
+          reset(s);
+          continue;
+        }
+
+        const k = 128 / s.z;
+        const sx = s.x * k + cx;
+        const sy = s.y * k + cy;
+        if (sx < 0 || sx >= w || sy < 0 || sy >= h) {
+          reset(s);
+          continue;
+        }
+
+        const pk = 128 / s.pz;
+        const px = s.x * pk + cx;
+        const py = s.y * pk + cy;
+
+        const size = Math.max(0.4, (1 - s.z / w) * 2.2);
+        const alpha = Math.min(1, (1 - s.z / w) * s.o);
+
+        // Trailing streak
+        ctx.strokeStyle = `rgba(200, 215, 255, ${alpha * 0.55})`;
+        ctx.lineWidth = size * 0.6;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(sx, sy);
+        ctx.stroke();
+
+        // Head
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (!reduced) raf = requestAnimationFrame(tick);
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+    if (reduced) {
+      // single static frame
+      ctx.fillStyle = '#05060a';
+      ctx.fillRect(0, 0, w, h);
+      for (const s of stars) {
+        const k = 128 / s.z;
+        ctx.fillStyle = `rgba(255,255,255,${0.7 * s.o})`;
+        ctx.fillRect(s.x * k + cx, s.y * k + cy, 1.4, 1.4);
+      }
+    } else {
+      raf = requestAnimationFrame(tick);
+    }
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return <canvas ref={ref} className="starfield" />;
+};
+
+
+
 // All styles scoped under .reserve-root — no leakage to the rest of the app.
 const ReserveStyles = () => (
   <style>{`
@@ -423,25 +546,61 @@ const ReserveStyles = () => (
     }
     .reserve-bg {
       position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+      background: #03040a;
+    }
+    .starfield {
+      position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+    }
+    .nebula {
+      position: absolute; border-radius: 50%;
+      filter: blur(110px); mix-blend-mode: screen; opacity: 0.55;
+      animation: nebula-drift 26s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    .nebula-a {
+      width: 70vw; height: 70vw; left: -18vw; top: -22vw;
+      background: radial-gradient(circle, rgba(96,120,255,0.7), transparent 60%);
+    }
+    .nebula-b {
+      width: 60vw; height: 60vw; right: -16vw; top: 8vw;
+      background: radial-gradient(circle, rgba(200,90,255,0.55), transparent 60%);
+      animation-delay: -10s; animation-duration: 34s;
+    }
+    .nebula-c {
+      width: 75vw; height: 75vw; left: 18vw; bottom: -30vw;
+      background: radial-gradient(circle, rgba(40,200,255,0.4), transparent 60%);
+      animation-delay: -18s; animation-duration: 40s;
+    }
+    @keyframes nebula-drift {
+      0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+      50%  { transform: translate3d(40px,-30px,0) scale(1.08) rotate(8deg); }
+      100% { transform: translate3d(-30px,40px,0) scale(1.04) rotate(-6deg); }
+    }
+    .grid-floor {
+      position: absolute;
+      left: 50%; bottom: -32vh;
+      width: 220%; height: 80vh;
+      transform: translateX(-50%) perspective(800px) rotateX(72deg);
+      transform-origin: 50% 0%;
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(120,140,255,0.18), transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(180,120,255,0.12), transparent 60%),
-        var(--bg);
+        linear-gradient(to right, rgba(160,180,255,0.18) 1px, transparent 1px) 0 0 / 64px 64px,
+        linear-gradient(to bottom, rgba(160,180,255,0.18) 1px, transparent 1px) 0 0 / 64px 64px;
+      mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
+      animation: grid-march 18s linear infinite;
+      opacity: 0.65;
     }
-    .aurora {
-      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
-      mix-blend-mode: screen; animation: drift 22s ease-in-out infinite alternate;
+    @keyframes grid-march {
+      from { background-position: 0 0, 0 0; }
+      to   { background-position: 0 64px, 0 64px; }
     }
-    .aurora-a { width: 720px; height: 720px; left: -10%; top: -20%;
-      background: radial-gradient(circle, rgba(120,140,255,0.65), transparent 60%); }
-    .aurora-b { width: 640px; height: 640px; right: -10%; top: 20%;
-      background: radial-gradient(circle, rgba(180,120,255,0.55), transparent 60%); animation-delay: -8s; }
-    .aurora-c { width: 800px; height: 800px; left: 30%; top: 60%;
-      background: radial-gradient(circle, rgba(80,200,255,0.35), transparent 60%); animation-delay: -14s; }
-    @keyframes drift {
-      0% { transform: translate3d(0,0,0) scale(1); }
-      100% { transform: translate3d(40px,-30px,0) scale(1.08); }
+    .vignette {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 40%, transparent 40%, rgba(0,0,0,0.55) 100%),
+        linear-gradient(180deg, rgba(3,4,10,0) 60%, rgba(3,4,10,0.9) 100%);
     }
+
 
     /* Single-column shell */
     .reserve-shell {
@@ -622,7 +781,7 @@ const ReserveStyles = () => (
     .text-toggle:hover { color: var(--ink); }
 
     @media (prefers-reduced-motion: reduce) {
-      .aurora, .icon-track { animation: none !important; }
+      .nebula, .grid-floor, .icon-track { animation: none !important; }
     }
   `}</style>
 );
