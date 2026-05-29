@@ -197,8 +197,7 @@ const Reserve = () => {
       </div>
 
       <div className="reserve-shell">
-        {/* LEFT */}
-        <section className="left">
+        <section className="top">
           <Link to="/reserve" className="reserve-logo" aria-label="Launch">
             <img src="/media-kit/launch-logo-white.svg" alt="Launch" />
           </Link>
@@ -206,9 +205,7 @@ const Reserve = () => {
           <h1 className="display">
             Vibe Code <span className="grad">Your Future</span>
           </h1>
-          <p className="sub">
-            Reserve your founder handle on Launch.
-          </p>
+          <p className="sub">Reserve your founder handle on Launch.</p>
 
           <div className="checker glass">
             <div className="checker-inner">
@@ -291,7 +288,7 @@ const Reserve = () => {
             )}
           </div>
 
-          <div className="left-foot">
+          <div className="top-foot">
             {session ? (
               <button className="text-link" onClick={() => supabase.auth.signOut()}>
                 Sign out
@@ -310,18 +307,17 @@ const Reserve = () => {
           </div>
         </section>
 
-        {/* RIGHT */}
-        <aside className="right" aria-label="Latest launches">
-          <div className="right-fade" />
+        <section className="bottom" aria-label="Latest launches">
           {icons.length > 0 && (
             <>
-              <IconColumn icons={icons} speed={55} />
-              <IconColumn icons={[...icons].reverse()} speed={75} reverse />
-              <IconColumn icons={icons.slice(10).concat(icons.slice(0, 10))} speed={65} />
+              <IconRow icons={icons} speed={80} />
+              <IconRow icons={[...icons].reverse()} speed={110} reverse />
+              <IconRow icons={icons.slice(20).concat(icons.slice(0, 20))} speed={95} />
             </>
           )}
-        </aside>
+        </section>
       </div>
+
 
       {/* Auth modal */}
       {authOpen && (
