@@ -125,6 +125,7 @@ const Reserve = () => {
       .maybeSingle();
 
     if (existing) {
+      setMyReservation((existing as any).value ?? value);
       toast.error('You already have a reserved founder handle.');
       return false;
     }
