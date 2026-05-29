@@ -80,10 +80,10 @@ const VibeCodeYourFuture = () => {
                   <img
                     src={signature}
                     alt="Alex MacGregor signature"
-                    className="h-10 w-auto mb-2"
+                    className="h-10 w-auto mb-1"
                   />
                   <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
-                  <p className="text-lg font-bold mb-4">Founder, Launch</p>
+                  <p className="text-lg font-bold mb-2">Founder, Launch</p>
                   <a
                     href="https://x.com/alexmacgregor__"
                     target="_blank"
