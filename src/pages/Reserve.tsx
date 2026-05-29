@@ -826,6 +826,22 @@ const ReserveStyles = () => (
       .reserve-footer-line { font-size: 10px; }
     }
 
+    .my-reservation {
+      max-width: 520px; margin: 0 auto 24px;
+      padding: 14px 18px; border-radius: 14px;
+      background: rgba(120, 220, 160, 0.08);
+      border: 1px solid rgba(120, 220, 160, 0.25);
+      color: var(--ink);
+      backdrop-filter: blur(8px);
+    }
+    .my-reservation-head {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgb(160, 230, 190); margin-bottom: 4px;
+    }
+    .my-reservation p { margin: 0; font-size: 14px; color: var(--ink-dim); }
+    .my-reservation strong { color: var(--ink); }
+
     @media (prefers-reduced-motion: reduce) {
       .nebula, .grid-floor { animation: none !important; }
     }
