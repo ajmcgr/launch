@@ -39,6 +39,7 @@ const Reserve = () => {
   const [authPassword, setAuthPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [pendingReserve, setPendingReserve] = useState<string | null>(null);
+  const [myReservation, setMyReservation] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session as any));
@@ -46,18 +47,31 @@ const Reserve = () => {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Auto-fulfill pending reservation after auth (in-memory OR persisted across redirects)
+  // Load this user's existing reservation whenever session changes
+  useEffect(() => {
+    if (!session) { setMyReservation(null); return; }
+    (async () => {
+      const { data } = await (db.from('reservations') as any)
+        .select('value')
+        .eq('user_id', session.user.id)
+        .eq('type', 'founder_handle')
+        .maybeSingle();
+      if (data?.value) setMyReservation(data.value);
+    })();
+  }, [session]);
+
+  // Auto-fulfill pending reservation after auth (persisted across email-confirm redirect/new tab)
   useEffect(() => {
     if (!session) return;
-    const persisted = sessionStorage.getItem('reserve:pending');
+    const persisted = localStorage.getItem('reserve:pending');
     const value = pendingReserve ?? persisted;
     if (!value) return;
-    sessionStorage.removeItem('reserve:pending');
+    localStorage.removeItem('reserve:pending');
     setPendingReserve(null);
     setAuthOpen(false);
     (async () => {
       const ok = await doReserve(value, true);
-      if (ok) navigate('/');
+      if (ok) setMyReservation(value);
     })();
   }, [session]); // eslint-disable-line
 
