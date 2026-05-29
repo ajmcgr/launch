@@ -63,7 +63,7 @@ const Reserve = () => {
         .eq('products.status', 'launched')
         .not('url', 'is', null)
         .order('created_at', { ascending: false, referencedTable: 'products' })
-        .limit(120);
+        .limit(400);
       const seen = new Set<string>();
       const list: ProductIcon[] = [];
       for (const item of (data || []) as any[]) {
@@ -76,9 +76,10 @@ const Reserve = () => {
           icon_url: item.url,
         });
       }
-      setIcons(list.slice(0, 60));
+      setIcons(list.slice(0, 200));
     })();
   }, []);
+
 
   // Auto-fulfill pending reservation after auth
   useEffect(() => {
@@ -196,8 +197,7 @@ const Reserve = () => {
       </div>
 
       <div className="reserve-shell">
-        {/* LEFT */}
-        <section className="left">
+        <section className="top">
           <Link to="/reserve" className="reserve-logo" aria-label="Launch">
             <img src="/media-kit/launch-logo-white.svg" alt="Launch" />
           </Link>
@@ -205,9 +205,7 @@ const Reserve = () => {
           <h1 className="display">
             Vibe Code <span className="grad">Your Future</span>
           </h1>
-          <p className="sub">
-            Reserve your founder handle on Launch.
-          </p>
+          <p className="sub">Reserve your founder handle on Launch.</p>
 
           <div className="checker glass">
             <div className="checker-inner">
@@ -290,7 +288,7 @@ const Reserve = () => {
             )}
           </div>
 
-          <div className="left-foot">
+          <div className="top-foot">
             {session ? (
               <button className="text-link" onClick={() => supabase.auth.signOut()}>
                 Sign out
@@ -309,18 +307,17 @@ const Reserve = () => {
           </div>
         </section>
 
-        {/* RIGHT */}
-        <aside className="right" aria-label="Latest launches">
-          <div className="right-fade" />
+        <section className="bottom" aria-label="Latest launches">
           {icons.length > 0 && (
             <>
-              <IconColumn icons={icons} speed={55} />
-              <IconColumn icons={[...icons].reverse()} speed={75} reverse />
-              <IconColumn icons={icons.slice(10).concat(icons.slice(0, 10))} speed={65} />
+              <IconRow icons={icons} speed={80} />
+              <IconRow icons={[...icons].reverse()} speed={110} reverse />
+              <IconRow icons={icons.slice(20).concat(icons.slice(0, 20))} speed={95} />
             </>
           )}
-        </aside>
+        </section>
       </div>
+
 
       {/* Auth modal */}
       {authOpen && (
@@ -374,7 +371,7 @@ const Reserve = () => {
   );
 };
 
-const IconColumn = ({
+const IconRow = ({
   icons,
   speed,
   reverse,
@@ -385,7 +382,7 @@ const IconColumn = ({
 }) => {
   const doubled = useMemo(() => [...icons, ...icons], [icons]);
   return (
-    <div className="icon-col">
+    <div className="icon-row">
       <div
         className={`icon-track ${reverse ? 'rev' : ''}`}
         style={{ animationDuration: `${speed}s` }}
@@ -404,6 +401,7 @@ const IconColumn = ({
     </div>
   );
 };
+
 
 // All styles scoped under .reserve-root — no leakage to the rest of the app.
 const ReserveStyles = () => (
@@ -445,46 +443,33 @@ const ReserveStyles = () => (
       100% { transform: translate3d(40px,-30px,0) scale(1.08); }
     }
 
-    /* Two-column shell */
+    /* Single-column shell */
     .reserve-shell {
       min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr;
-      max-width: 1400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP — hero */
+    .top {
+      flex: 1;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center;
+      padding: 64px 24px 40px;
+      max-width: 720px; width: 100%;
       margin: 0 auto;
     }
-    @media (min-width: 900px) {
-      .reserve-shell {
-        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-        height: 100vh;
-        min-height: 0;
-        overflow: hidden;
-      }
-    }
-
-
-    /* LEFT */
-    .left {
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 48px 28px 60px;
-      max-width: 620px; width: 100%;
-      margin: 0 auto;
-    }
-    @media (min-width: 900px) {
-      .left { padding: 60px 56px; margin: 0; height: 100vh; min-height: 0; overflow-y: auto; }
-    }
-
-    .reserve-logo { display: inline-block; margin-bottom: 48px; }
+    .reserve-logo { display: inline-block; margin-bottom: 36px; }
     .reserve-logo img {
-      height: 44px; display: block;
+      height: 48px; display: block;
       filter: drop-shadow(0 0 18px rgba(255,255,255,0.25));
     }
-    @media (min-width: 900px) {
-      .reserve-logo img { height: 52px; }
+    @media (min-width: 768px) {
+      .reserve-logo img { height: 56px; }
     }
     .display {
       font-family: 'Reckless', 'Instrument Serif', Georgia, serif;
-      font-weight: 500; font-size: clamp(40px, 5.4vw, 68px); line-height: 1.02;
+      font-weight: 500; font-size: clamp(40px, 6vw, 72px); line-height: 1.02;
       letter-spacing: -0.02em; margin: 0 0 18px;
     }
     .grad {
@@ -494,7 +479,7 @@ const ReserveStyles = () => (
     }
     .sub {
       font-size: clamp(15px, 1.2vw, 17px); color: var(--ink); opacity: 0.78;
-      margin: 0 0 32px; max-width: 480px;
+      margin: 0 0 28px; max-width: 480px;
     }
 
     /* Glass */
@@ -508,7 +493,7 @@ const ReserveStyles = () => (
         0 30px 80px -20px rgba(0,0,0,0.6);
     }
 
-    .checker { padding: 10px; position: relative; max-width: 540px; }
+    .checker { padding: 10px; position: relative; width: 100%; max-width: 560px; }
     .checker::before {
       content: ''; position: absolute; inset: -1px; border-radius: 21px;
       background: linear-gradient(135deg, rgba(165,180,252,0.4), rgba(240,171,252,0.2), transparent 60%);
@@ -560,7 +545,7 @@ const ReserveStyles = () => (
     .result p strong { color: var(--ink); }
     .result-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-bottom: 10px; }
 
-    .left-foot { margin-top: 28px; }
+    .top-foot { margin-top: 24px; }
     .text-link {
       background: transparent; border: 0; color: var(--ink-dim);
       font-size: 13px; cursor: pointer; padding: 0;
@@ -568,63 +553,51 @@ const ReserveStyles = () => (
     }
     .text-link:hover { color: var(--ink); }
 
-    /* RIGHT — icon columns */
-    .right {
-      position: relative;
-      display: none;
+    /* BOTTOM — horizontal icon rows */
+    .bottom {
+      padding: 32px 0 48px;
+      display: flex; flex-direction: column; gap: 10px;
       overflow: hidden;
-      padding: 0 24px;
-      gap: 18px;
-      align-items: stretch;
-      height: 100vh;
-      min-height: 0;
-      min-width: 0;
     }
-    @media (min-width: 900px) {
-      .right { display: flex; }
-    }
-    .right-fade {
-      position: absolute; inset: 0; pointer-events: none; z-index: 2;
-      background:
-        linear-gradient(180deg, var(--bg) 0%, transparent 18%, transparent 82%, var(--bg) 100%);
-    }
-    .icon-col {
-      flex: 1; overflow: hidden; position: relative;
-      min-width: 0; min-height: 0; height: 100%;
-
-      mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
-      -webkit-mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
+    .icon-row {
+      overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
     }
     .icon-track {
-      display: flex; flex-direction: column; gap: 16px;
-      animation: scroll-y 60s linear infinite;
-      padding: 16px 0;
+      display: inline-flex;
+      gap: 10px;
+      padding: 4px 0;
+      white-space: nowrap;
+      animation: scroll-x 80s linear infinite;
       will-change: transform;
     }
     .icon-track.rev { animation-direction: reverse; }
-    @keyframes scroll-y {
-      from { transform: translateY(0); }
-      to { transform: translateY(-50%); }
+    @keyframes scroll-x {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
     }
     .icon-tile {
+      flex: 0 0 auto;
       display: block;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 18px;
+      width: 44px; height: 44px;
+      border-radius: 10px;
       overflow: hidden;
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--line);
-      box-shadow: 0 8px 24px -10px rgba(0,0,0,0.6);
-      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+    @media (min-width: 768px) {
+      .icon-tile { width: 52px; height: 52px; border-radius: 12px; }
     }
     .icon-tile:hover {
-      transform: scale(1.06);
+      transform: scale(1.12);
       border-color: rgba(199,210,254,0.5);
-      box-shadow: 0 14px 34px -10px rgba(165,180,252,0.35);
     }
     .icon-tile img {
       width: 100%; height: 100%; object-fit: cover; display: block;
     }
+
 
     /* Modal */
     .modal-backdrop {
