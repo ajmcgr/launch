@@ -98,11 +98,10 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
       const { data, count } = await supabase
         .from('products')
         .select(`id, slug, name, tagline, domain_url, launch_date, platforms, won_daily, won_weekly, won_monthly,
-          product_media!inner(url, type),
+          product_media(url, type),
           product_category_map(product_categories(name))`, { count: 'exact' })
         .eq('owner_id', profile.id)
         .eq('status', 'launched')
-        .eq('product_media.type', 'thumbnail')
         .order('launch_date', { ascending: false })
         .range(from, to);
       if (cancelled) return;
