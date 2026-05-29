@@ -106,29 +106,46 @@ function LaunchesPanel({ profile, currentUser }: { profile: any; currentUser: an
   );
 }
 
-function ProfileLaunchRow({ product, submissionType }: { product: any; submissionType?: 'community' }) {
+function ProfileLaunchRow({ product, rank, submissionType: _submissionType }: { product: any; rank: number; submissionType?: 'community' }) {
+  const [votes, setVotes] = useState(product.netVotes || 0);
+  const [userVote, setUserVote] = useState<1 | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+      const { data } = await sb.from('votes').select('value').eq('product_id', product.id).eq('user_id', user.id).maybeSingle();
+      if (!cancelled && data?.value === 1) setUserVote(1);
+    })();
+    return () => { cancelled = true; };
+  }, [product.id]);
+
+  const handleVote = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('Please sign in to vote'); return; }
+    if (userVote === 1) {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      setUserVote(null); setVotes((v: number) => v - 1);
+    } else {
+      await sb.from('votes').delete().eq('product_id', product.id).eq('user_id', user.id);
+      await sb.from('votes').insert({ product_id: product.id, user_id: user.id, value: 1 });
+      setUserVote(1); setVotes((v: number) => v + 1);
+    }
+  };
+
   return (
-    <Link
-      to={`/launch/${product.slug}`}
-      className="flex items-center gap-3 py-2 border-b border-border last:border-b-0 hover:bg-muted/30 px-2 -mx-2 rounded-sm transition-colors group"
-    >
-      <img
-        src={product.iconUrl || product.thumbnail || '/placeholder.svg'}
-        alt={product.name}
-        loading="lazy"
-        width={40}
-        height={40}
-        className="h-10 w-10 rounded-md object-cover bg-muted shrink-0"
-      />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-semibold truncate group-hover:text-primary transition-colors">{product.name}</p>
-          {submissionType === 'community' && <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Community</span>}
-        </div>
-        <p className="text-xs text-muted-foreground truncate">{product.tagline}</p>
-      </div>
-      <span className="text-xs text-muted-foreground tabular-nums shrink-0">{Math.max(0, product.netVotes)} ▲</span>
-    </Link>
+    <CompactLaunchListItem
+      productId={product.id}
+      rank={rank}
+      name={product.name}
+      votes={votes}
+      slug={product.slug}
+      userVote={userVote}
+      onVote={handleVote}
+      makers={product.makers}
+      categories={product.categories}
+    />
   );
 }
 
