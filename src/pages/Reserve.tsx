@@ -84,12 +84,17 @@ const Reserve = () => {
   };
 
   const doReserve = async (value: string) => {
+    if (session) {
+      toast.error('Sign out to reserve a handle — reservations are for new makers only.');
+      return;
+    }
     if (!session) {
       setPendingReserve(value);
       setAuthMode('signup');
       setAuthOpen(true);
       return;
     }
+
 
     // Check if user already has a reservation
     const { data: existing } = await (db.from('reservations') as any)
