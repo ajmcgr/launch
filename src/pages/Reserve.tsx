@@ -110,7 +110,7 @@ const Reserve = () => {
       return false;
     }
     if (!session) {
-      sessionStorage.setItem('reserve:pending', value);
+      localStorage.setItem('reserve:pending', value);
       setPendingReserve(value);
       setAuthMode('signup');
       setAuthOpen(true);
