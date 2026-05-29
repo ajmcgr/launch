@@ -316,14 +316,14 @@ const Reserve = () => {
         </section>
 
         <footer className="reserve-footer">
-          <p className="reserve-footer-line">
-            &copy; Launch 2026{' '}
-            <a href="http://trylaunch.ai/contact" target="_blank" rel="noopener noreferrer">Contact</a>{' '}
-            <a href="https://trylaunch.ai/submit" target="_blank" rel="noopener noreferrer">Submit</a>{' '}
-            <a href="https://x.com/trylaunchai" target="_blank" rel="noopener noreferrer">X</a>{' '}
-            <a href="https://instagram.com/trylaunch" target="_blank" rel="noopener noreferrer">Instagram</a>{' '}
+          <div className="reserve-footer-line">
+            <span>&copy; Launch 2026</span>
+            <a href="http://trylaunch.ai/contact" target="_blank" rel="noopener noreferrer">Contact</a>
+            <a href="https://trylaunch.ai/submit" target="_blank" rel="noopener noreferrer">Submit</a>
+            <a href="https://x.com/trylaunchai" target="_blank" rel="noopener noreferrer">X</a>
+            <a href="https://instagram.com/trylaunch" target="_blank" rel="noopener noreferrer">Instagram</a>
             <a href="https://discord.gg/rjnXdm5zgw" target="_blank" rel="noopener noreferrer">Discord</a>
-          </p>
+          </div>
         </footer>
       </div>
 
@@ -781,7 +781,8 @@ const ReserveStyles = () => (
       position: fixed; left: 20px; bottom: 16px; z-index: 10;
     }
     .reserve-footer-line {
-      font-size: 11px; color: var(--ink-dim); opacity: 0.7; line-height: 1.5; margin: 0;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 20px;
+      font-size: 12px; color: var(--ink-dim); opacity: 0.75; line-height: 1.5; margin: 0;
     }
     .reserve-footer-line a {
       color: inherit; text-decoration: none; transition: color .2s;
