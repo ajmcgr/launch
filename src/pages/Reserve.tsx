@@ -368,16 +368,6 @@ const Reserve = () => {
               onChange={(e) => setAuthPassword(e.target.value)}
               className="modal-input"
             />
-
-            <input
-              type="password"
-              required
-              minLength={6}
-              placeholder="Password (min 6)"
-              value={authPassword}
-              onChange={(e) => setAuthPassword(e.target.value)}
-              className="modal-input"
-            />
             <button className="primary-btn lg full" disabled={authLoading} type="submit">
               {authLoading && <Loader2 className="spin" size={16} />}
               {authMode === 'signup' ? 'Create account' : 'Sign in'}
