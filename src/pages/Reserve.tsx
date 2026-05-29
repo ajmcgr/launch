@@ -728,6 +728,24 @@ const ReserveStyles = () => (
       margin-top: 14px; cursor: pointer; padding: 6px; font-family: inherit;
     }
     .text-toggle:hover { color: var(--ink); }
+    .oauth-row { display: grid; gap: 8px; margin-bottom: 14px; }
+    .oauth-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 11px 14px; border-radius: 10px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--line-strong);
+      color: var(--ink); font-size: 14px; font-weight: 500; cursor: pointer;
+      font-family: inherit; transition: background .2s, border-color .2s;
+    }
+    .oauth-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.24); }
+    .oauth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .oauth-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .oauth-divider {
+      display: flex; align-items: center; gap: 10px; color: var(--ink-dim);
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; margin: 4px 0 12px;
+    }
+    .oauth-divider::before, .oauth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--line-strong);
+    }
 
     @media (prefers-reduced-motion: reduce) {
       .nebula, .grid-floor { animation: none !important; }
