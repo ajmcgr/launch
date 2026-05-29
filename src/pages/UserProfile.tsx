@@ -775,12 +775,12 @@ const UserProfile = () => {
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="w-full flex flex-wrap justify-center h-auto bg-transparent border-b border-border rounded-none p-0 gap-1">
-            <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
-            <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
-            <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
-            <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Comments</TabsTrigger>
-            <TabsTrigger value="upvotes" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Upvotes{s.saves ? ` · ${s.saves}` : ''}</TabsTrigger>
-            <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
+            <TabsTrigger value="launches" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Launches{s.founderLaunches ? ` · ${s.founderLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="collections" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Collections{s.collections ? ` · ${s.collections}` : ''}</TabsTrigger>
+            <TabsTrigger value="community" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Community{s.communityLaunches ? ` · ${s.communityLaunches}` : ''}</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Comments</TabsTrigger>
+            <TabsTrigger value="upvotes" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Upvotes{s.saves ? ` · ${s.saves}` : ''}</TabsTrigger>
+            <TabsTrigger value="achievements" className="rounded-none border-b-2 border-transparent px-5 py-3 text-base data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Achievements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="launches" className="mt-6 pb-12">
