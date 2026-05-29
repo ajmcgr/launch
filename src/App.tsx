@@ -97,11 +97,13 @@ const ScrollToTop = () => {
 const AppContent = () => {
   const location = useLocation();
   const staticPages = ['/about', '/terms', '/privacy'];
-  const showNewsletter = !staticPages.includes(location.pathname);
+  const standalonePages = ['/reserve'];
+  const isStandalone = standalonePages.includes(location.pathname);
+  const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {!isStandalone && <Header />}
       <main className="flex-1">
         <Suspense fallback={
           <div className="min-h-[60vh] py-12" aria-label="Loading" role="status">
