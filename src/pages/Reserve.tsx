@@ -407,6 +407,125 @@ const IconRow = ({
 };
 
 
+// Animated warp starfield — pure canvas, GPU-free, lightweight
+const Starfield = () => {
+  const ref = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+    let w = 0, h = 0, cx = 0, cy = 0;
+    let raf = 0;
+
+    type Star = { x: number; y: number; z: number; pz: number; o: number };
+    const COUNT = 320;
+    const stars: Star[] = [];
+
+    const reset = (s: Star, randomZ = false) => {
+      s.x = (Math.random() - 0.5) * w;
+      s.y = (Math.random() - 0.5) * h;
+      s.z = randomZ ? Math.random() * w : w;
+      s.pz = s.z;
+      s.o = 0.4 + Math.random() * 0.6;
+    };
+
+    const resize = () => {
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      cx = w / 2;
+      cy = h / 2;
+      canvas.width = Math.floor(w * DPR);
+      canvas.height = Math.floor(h * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      if (stars.length === 0) {
+        for (let i = 0; i < COUNT; i++) {
+          const s: Star = { x: 0, y: 0, z: 0, pz: 0, o: 1 };
+          reset(s, true);
+          stars.push(s);
+        }
+      }
+    };
+
+    const SPEED = reduced ? 0 : 1.6;
+
+    const tick = () => {
+      // Deep space wash with trail
+      ctx.fillStyle = 'rgba(5, 6, 10, 0.35)';
+      ctx.fillRect(0, 0, w, h);
+
+      for (const s of stars) {
+        s.pz = s.z;
+        s.z -= SPEED;
+        if (s.z < 1) {
+          reset(s);
+          continue;
+        }
+
+        const k = 128 / s.z;
+        const sx = s.x * k + cx;
+        const sy = s.y * k + cy;
+        if (sx < 0 || sx >= w || sy < 0 || sy >= h) {
+          reset(s);
+          continue;
+        }
+
+        const pk = 128 / s.pz;
+        const px = s.x * pk + cx;
+        const py = s.y * pk + cy;
+
+        const size = Math.max(0.4, (1 - s.z / w) * 2.2);
+        const alpha = Math.min(1, (1 - s.z / w) * s.o);
+
+        // Trailing streak
+        ctx.strokeStyle = `rgba(200, 215, 255, ${alpha * 0.55})`;
+        ctx.lineWidth = size * 0.6;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(sx, sy);
+        ctx.stroke();
+
+        // Head
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (!reduced) raf = requestAnimationFrame(tick);
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+    if (reduced) {
+      // single static frame
+      ctx.fillStyle = '#05060a';
+      ctx.fillRect(0, 0, w, h);
+      for (const s of stars) {
+        const k = 128 / s.z;
+        ctx.fillStyle = `rgba(255,255,255,${0.7 * s.o})`;
+        ctx.fillRect(s.x * k + cx, s.y * k + cy, 1.4, 1.4);
+      }
+    } else {
+      raf = requestAnimationFrame(tick);
+    }
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return <canvas ref={ref} className="starfield" />;
+};
+
+
+
 // All styles scoped under .reserve-root — no leakage to the rest of the app.
 const ReserveStyles = () => (
   <style>{`
