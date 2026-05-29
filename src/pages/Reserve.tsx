@@ -314,30 +314,30 @@ const Reserve = () => {
             </a>
           </div>
 
-          <div className="top-foot">
-            {session ? (
-              <button className="text-link" onClick={() => supabase.auth.signOut()}>
-                Sign out
-              </button>
-            ) : (
-              <button
-                className="text-link"
-                onClick={() => {
-                  setAuthMode('signin');
-                  setAuthOpen(true);
-                }}
-              >
-                Already have an account? Sign in
-              </button>
-            )}
-          </div>
-
           <div className="top-foot" style={{ marginTop: '1.75rem' }}>
             <Link to="/" className="text-link" style={{ fontSize: '1.15rem' }}>
               Take me to Launch →
             </Link>
           </div>
         </section>
+
+        <div className="reserve-account">
+          {session ? (
+            <button className="text-link" onClick={() => supabase.auth.signOut()}>
+              Sign out
+            </button>
+          ) : (
+            <button
+              className="text-link"
+              onClick={() => {
+                setAuthMode('signin');
+                setAuthOpen(true);
+              }}
+            >
+              Already have an account? Sign in
+            </button>
+          )}
+        </div>
 
         <footer className="reserve-footer">
           <div className="reserve-footer-line">
@@ -812,9 +812,18 @@ const ReserveStyles = () => (
       color: inherit; text-decoration: none; transition: color .2s;
     }
     .reserve-footer-line a:hover { color: var(--ink); }
+
+    .reserve-account {
+      position: fixed; right: 20px; bottom: 16px; z-index: 10;
+    }
+    .reserve-account .text-link {
+      font-size: 12px; opacity: 0.75;
+    }
     @media (max-width: 768px) {
       .reserve-footer { left: 16px; bottom: 12px; }
       .reserve-footer-line { font-size: 10px; }
+      .reserve-account { right: 16px; bottom: 12px; }
+      .reserve-account .text-link { font-size: 10px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
