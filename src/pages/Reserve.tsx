@@ -46,10 +46,10 @@ const Reserve = () => {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Auto-fulfill pending reservation after auth
+  // Auto-fulfill pending reservation after auth (only for fresh signups)
   useEffect(() => {
     if (session && pendingReserve) {
-      void doReserve(pendingReserve);
+      void doReserve(pendingReserve, true);
       setPendingReserve(null);
       setAuthOpen(false);
     }
@@ -83,13 +83,19 @@ const Reserve = () => {
     }
   };
 
-  const doReserve = async (value: string) => {
+  const doReserve = async (value: string, fromSignup = false) => {
+    if (session && !fromSignup) {
+      toast.error('Reservations are for new makers only. Sign out to reserve a handle.');
+      return;
+    }
     if (!session) {
       setPendingReserve(value);
       setAuthMode('signup');
       setAuthOpen(true);
       return;
     }
+
+
 
     // Check if user already has a reservation
     const { data: existing } = await (db.from('reservations') as any)
@@ -138,12 +144,16 @@ const Reserve = () => {
         if (error) throw error;
         toast.success('Check your inbox to confirm — then your handle is locked in.');
       } else {
+        // Existing user signing in — don't auto-reserve
+        setPendingReserve(null);
         const { error } = await supabase.auth.signInWithPassword({
           email: authEmail.trim().toLowerCase(),
           password: authPassword,
         });
         if (error) throw error;
+        setAuthOpen(false);
       }
+
     } catch (err: any) {
       toast.error(err.message ?? 'Auth failed');
     } finally {
