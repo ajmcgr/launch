@@ -271,8 +271,8 @@ function CommunityPanel({ profile }: { profile: any }) {
         <StatBlock label="Awaiting claim" value={items.filter((p) => !p.claimed_at).length} />
       </div>
       <div className="flex flex-col">
-        {items.map((p) => (
-          <ProfileLaunchRow key={p.id} product={p} submissionType="community" />
+        {items.map((p, i) => (
+          <ProfileLaunchRow key={p.id} product={p} rank={i + 1} submissionType="community" />
         ))}
       </div>
     </div>
