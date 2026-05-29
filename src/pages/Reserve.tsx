@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,12 +26,6 @@ type Availability =
 
 const sanitize = (raw: string) => raw.replace(/^@+/, '').trim();
 
-interface ProductIcon {
-  id: string;
-  name: string;
-  slug: string;
-  icon_url: string;
-}
 
 const Reserve = () => {
   const navigate = useNavigate();
@@ -45,41 +39,12 @@ const Reserve = () => {
   const [authPassword, setAuthPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [pendingReserve, setPendingReserve] = useState<string | null>(null);
-  const [icons, setIcons] = useState<ProductIcon[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session as any));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s as any));
     return () => sub.subscription.unsubscribe();
   }, []);
-
-  // Pull latest launch icons
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from('product_media')
-        .select('product_id, url, products!inner(id, name, slug, status, created_at)')
-        .eq('type', 'icon')
-        .eq('products.status', 'launched')
-        .not('url', 'is', null)
-        .order('created_at', { ascending: false, referencedTable: 'products' })
-        .limit(400);
-      const seen = new Set<string>();
-      const list: ProductIcon[] = [];
-      for (const item of (data || []) as any[]) {
-        if (seen.has(item.product_id)) continue;
-        seen.add(item.product_id);
-        list.push({
-          id: item.products.id,
-          name: item.products.name,
-          slug: item.products.slug,
-          icon_url: item.url,
-        });
-      }
-      setIcons(list.slice(0, 200));
-    })();
-  }, []);
-
 
   // Auto-fulfill pending reservation after auth
   useEffect(() => {
@@ -311,15 +276,6 @@ const Reserve = () => {
           </div>
         </section>
 
-        <section className="bottom" aria-label="Latest launches">
-          {icons.length > 0 && (
-            <>
-              <IconRow icons={icons} speed={160} />
-              <IconRow icons={[...icons].reverse()} speed={220} reverse />
-              <IconRow icons={icons.slice(20).concat(icons.slice(0, 20))} speed={190} />
-            </>
-          )}
-        </section>
       </div>
 
 
@@ -375,36 +331,6 @@ const Reserve = () => {
   );
 };
 
-const IconRow = ({
-  icons,
-  speed,
-  reverse,
-}: {
-  icons: ProductIcon[];
-  speed: number;
-  reverse?: boolean;
-}) => {
-  const doubled = useMemo(() => [...icons, ...icons], [icons]);
-  return (
-    <div className="icon-row">
-      <div
-        className={`icon-track ${reverse ? 'rev' : ''}`}
-        style={{ animationDuration: `${speed}s` }}
-      >
-        {doubled.map((p, i) => (
-          <Link
-            key={`${p.id}-${i}`}
-            to={`/launch/${p.slug}`}
-            className="icon-tile"
-            title={p.name}
-          >
-            <img src={p.icon_url} alt={p.name} loading="lazy" />
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 
 // Animated warp starfield — pure canvas, GPU-free, lightweight
@@ -712,52 +638,6 @@ const ReserveStyles = () => (
     }
     .text-link:hover { color: var(--ink); }
 
-    /* BOTTOM — horizontal icon rows */
-    .bottom {
-      padding: 32px 0 48px;
-      display: flex; flex-direction: column; gap: 10px;
-      overflow: hidden;
-    }
-    .icon-row {
-      overflow: hidden;
-      mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
-      -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
-    }
-    .icon-track {
-      display: inline-flex;
-      gap: 10px;
-      padding: 4px 0;
-      white-space: nowrap;
-      animation: scroll-x 160s linear infinite;
-      will-change: transform;
-    }
-    .icon-track.rev { animation-direction: reverse; }
-    @keyframes scroll-x {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
-    .icon-tile {
-      flex: 0 0 auto;
-      display: block;
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      overflow: hidden;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-      transition: transform .2s ease, border-color .2s ease;
-    }
-    @media (min-width: 768px) {
-      .icon-tile { width: 52px; height: 52px; border-radius: 12px; }
-    }
-    .icon-tile:hover {
-      transform: scale(1.12);
-      border-color: rgba(199,210,254,0.5);
-    }
-    .icon-tile img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-    }
-
-
     /* Modal */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(2,3,8,0.7); backdrop-filter: blur(12px);
@@ -781,7 +661,7 @@ const ReserveStyles = () => (
     .text-toggle:hover { color: var(--ink); }
 
     @media (prefers-reduced-motion: reduce) {
-      .nebula, .grid-floor, .icon-track { animation: none !important; }
+      .nebula, .grid-floor { animation: none !important; }
     }
   `}</style>
 );
