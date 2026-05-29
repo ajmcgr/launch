@@ -66,7 +66,7 @@ const VibeCodeYourFuture = () => {
               </p>
 
               <p>
-                <strong>Stop applying. Start building.</strong>
+                <strong>Then stop applying, and start building.</strong>
               </p>
 
               <div className="mt-12">
