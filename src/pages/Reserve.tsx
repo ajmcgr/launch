@@ -286,6 +286,16 @@ const Reserve = () => {
             )}
           </div>
 
+          <div className="share-row">
+            <a href="mailto:?subject=Reserve%20your%20founder%20handle%20on%20Launch&body=Check%20out%20https://trylaunch.ai/reserve%20%E2%80%94%20reserve%20your%20founder%20handle%20on%20Launch." className="share-link">
+              Share via email
+            </a>
+            <span className="share-dot">·</span>
+            <a href="https://twitter.com/intent/tweet?text=Reserve%20your%20founder%20handle%20on%20Launch%20%F0%9F%9A%80%20https%3A%2F%2Ftrylaunch.ai%2Freserve" target="_blank" rel="noopener noreferrer" className="share-link">
+              Post on X
+            </a>
+          </div>
+
           <div className="top-foot">
             {session ? (
               <button className="text-link" onClick={() => supabase.auth.signOut()}>
@@ -305,6 +315,16 @@ const Reserve = () => {
           </div>
         </section>
 
+        <footer className="reserve-footer">
+          <p className="reserve-footer-line">
+            &copy; Launch 2026{' '}
+            <a href="http://trylaunch.ai/contact" target="_blank" rel="noopener noreferrer">Contact</a>{' '}
+            <a href="https://trylaunch.ai/submit" target="_blank" rel="noopener noreferrer">Submit</a>{' '}
+            <a href="https://x.com/trylaunchai" target="_blank" rel="noopener noreferrer">X</a>{' '}
+            <a href="https://instagram.com/trylaunch" target="_blank" rel="noopener noreferrer">Instagram</a>{' '}
+            <a href="https://discord.gg/rjnXdm5zgw" target="_blank" rel="noopener noreferrer">Discord</a>
+          </p>
+        </footer>
       </div>
 
 
@@ -699,7 +719,17 @@ const ReserveStyles = () => (
     .result p strong { color: var(--ink); }
     .result-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-bottom: 10px; }
 
-    .top-foot { margin-top: 24px; }
+    .share-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 14px; font-size: 13px; color: var(--ink-dim);
+    }
+    .share-link {
+      color: var(--ink-dim); text-decoration: none; transition: color .2s;
+    }
+    .share-link:hover { color: var(--ink); }
+    .share-dot { opacity: 0.4; }
+
+    .top-foot { margin-top: 18px; }
     .text-link {
       background: transparent; border: 0; color: var(--ink-dim);
       font-size: 13px; cursor: pointer; padding: 0;
@@ -745,6 +775,21 @@ const ReserveStyles = () => (
     }
     .oauth-divider::before, .oauth-divider::after {
       content: ''; flex: 1; height: 1px; background: var(--line-strong);
+    }
+
+    .reserve-footer {
+      position: fixed; left: 20px; bottom: 16px; z-index: 10;
+    }
+    .reserve-footer-line {
+      font-size: 11px; color: var(--ink-dim); opacity: 0.7; line-height: 1.5; margin: 0;
+    }
+    .reserve-footer-line a {
+      color: inherit; text-decoration: none; transition: color .2s;
+    }
+    .reserve-footer-line a:hover { color: var(--ink); }
+    @media (max-width: 768px) {
+      .reserve-footer { left: 16px; bottom: 12px; }
+      .reserve-footer-line { font-size: 10px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
