@@ -206,7 +206,7 @@ const AppContent = () => {
           <Newsletter />
         </div>
       )}
-      <Footer />
+      {!isStandalone && <Footer />}
       <BookmarkPrompt />
     </div>
   );
