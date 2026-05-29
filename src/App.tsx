@@ -98,7 +98,7 @@ const ScrollToTop = () => {
 const AppContent = () => {
   const location = useLocation();
   const staticPages = ['/about', '/terms', '/privacy'];
-  const standalonePages = ['/reserve'];
+  const standalonePages = ['/reserve', '/vibecodeyourfuture'];
   const isStandalone = standalonePages.includes(location.pathname);
   const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
 
