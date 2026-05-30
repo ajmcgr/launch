@@ -701,7 +701,7 @@ const ReserveStyles = () => (
       .grid-floor { bottom: -20vh; height: 60vh; }
     }
     @keyframes nebula-fade-in {
-      to { opacity: 0.65; }
+      to { opacity: var(--nebula-opacity, 0.65); }
     }
     @keyframes nebula-drift {
       0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
