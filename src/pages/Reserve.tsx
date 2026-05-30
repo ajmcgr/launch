@@ -751,7 +751,7 @@ const ReserveStyles = () => (
     .reserve-logo { display: inline-block; margin-bottom: 32px; }
     .reserve-logo img {
       height: 42px; display: block;
-      filter: drop-shadow(0 0 18px rgba(255,255,255,0.25));
+      filter: var(--logo-filter, none) drop-shadow(0 0 18px rgba(var(--glow, 255,255,255),0.35));
     }
     @media (min-width: 768px) {
       .reserve-logo img { height: 48px; }
