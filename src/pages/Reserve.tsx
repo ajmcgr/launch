@@ -269,6 +269,11 @@ const Reserve = () => {
         <meta property="og:description" content="Reserve your founder handle on Launch. Build the future." />
         <meta property="og:url" content="https://trylaunch.ai/reserve" />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://trylaunch.ai/reserve-card.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Vibe Code Your Future | Launch" />
+        <meta name="twitter:description" content="Reserve your founder handle on Launch. Build the future." />
+        <meta name="twitter:image" content="https://trylaunch.ai/reserve-card.png" />
       </Helmet>
 
       <PaletteStyles palette={palette} />
