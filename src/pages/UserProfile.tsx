@@ -417,7 +417,7 @@ function AchievementsPanel({ profile, stats, makerScore }: { profile: any; stats
   if (bestAward) cards.push({ icon: Trophy, title: `${bestAward[0].toUpperCase()}${bestAward.slice(1)} Winner`, sub: 'Top-ranked launch', tone: bestAward });
   if (founderLaunches) cards.push({ icon: Rocket, title: `${founderLaunches} Launched`, sub: founderLaunches === 1 ? 'Product shipped' : 'Products shipped' });
   if (collections) cards.push({ icon: FolderHeart, title: 'Curator', sub: `${collections} public collection${collections === 1 ? '' : 's'}` });
-  if (saves) cards.push({ icon: Bookmark, title: `${saves} Saves`, sub: 'Products curated' });
+  if (saves) cards.push({ icon: Bookmark, title: `${saves} Upvotes`, sub: 'Products supported' });
   if (makerScore > 0) cards.push({ icon: Sparkles, title: `${makerScore} Karma`, sub: 'Maker score' });
 
   return (
@@ -792,7 +792,7 @@ const UserProfile = () => {
                 <InlineStat value={s.following} label="Following" href={`/@${profile.username}/following`} />
                 <InlineStat value={s.founderLaunches} label="Launches" onClick={() => handleTabChange('launches')} />
                 <InlineStat value={s.collections} label="Collections" onClick={() => handleTabChange('collections')} />
-                <InlineStat value={s.saves} label="Saves" />
+                <InlineStat value={s.saves} label="Upvotes" onClick={() => handleTabChange('upvotes')} />
               </div>
             </div>
           </div>
