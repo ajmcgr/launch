@@ -61,6 +61,9 @@ const VibeCodeYourFuture = () => {
                 that proves to yourself that you can still make things.
               </p>
 
+              <p>
+                I did. I built <a href="https://trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Launch</a> without any coding experience into the largest vibe code community in the world.
+              </p>
 
               <p>
                 You weren't laid off, you were set free. Take a walk. Drink some water.
