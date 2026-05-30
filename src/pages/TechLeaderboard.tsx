@@ -180,15 +180,6 @@ const TechLeaderboard = () => {
                       <h3 className="font-semibold text-base text-foreground truncate">
                         {item.name}
                       </h3>
-                      {rank <= 3 && (
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
-                          rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
-                          rank === 2 ? 'bg-gray-400/10 text-gray-500 dark:text-gray-400' :
-                          'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                        }`}>
-                          {rank === 1 ? 'Gold' : rank === 2 ? 'Silver' : 'Bronze'}
-                        </span>
-                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-1 font-bold text-sm text-foreground flex-shrink-0 tabular-nums">
