@@ -621,6 +621,10 @@ const Admin = () => {
               <TabsContent value="seo" className="space-y-4">
                 <AdminSeoTab />
               </TabsContent>
+
+              <TabsContent value="collections" className="space-y-4">
+                <AdminCollectionsTab />
+              </TabsContent>
             </Tabs>
           </div>
         </TabsContent>
