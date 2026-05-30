@@ -619,42 +619,54 @@ const Starfield = ({ strokeColor }: { strokeColor: string }) => {
 
 
 // All styles scoped under .reserve-root — no leakage to the rest of the app.
-const PaletteStyles = ({ palette }: { palette: ReservePalette }) => (
-  <style>{`
-    .reserve-root {
-      --neb-a: ${palette.a};
-      --neb-b: ${palette.b};
-      --neb-c: ${palette.c};
-      --grad: ${palette.grad};
-      --grid: ${palette.grid};
-      --glow1: ${palette.glow1};
-      --glow2: ${palette.glow2};
-      --focus: ${palette.focus};
-      --glow: ${palette.glow};
-    }
-  `}</style>
-);
+const PaletteStyles = ({ palette }: { palette: ReservePalette }) => {
+  const isLight = palette.tone === 'light';
+  return (
+    <style>{`
+      .reserve-root {
+        --page-bg: ${palette.bg};
+        --neb-a: ${palette.a};
+        --neb-b: ${palette.b};
+        --neb-c: ${palette.c};
+        --grad: ${palette.grad};
+        --grid: ${palette.grid};
+        --glow1: ${palette.glow1};
+        --glow2: ${palette.glow2};
+        --focus: ${palette.focus};
+        --glow: ${palette.glow};
+        --ink: ${isLight ? '#0a0b14' : '#f4f5f9'};
+        --ink-dim: ${isLight ? 'rgba(10,11,20,0.65)' : '#9aa0b4'};
+        --line: ${isLight ? 'rgba(0,0,0,0.10)' : 'rgba(255,255,255,0.08)'};
+        --line-strong: ${isLight ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.16)'};
+        --vignette: ${isLight
+          ? 'radial-gradient(ellipse 90% 70% at 50% 40%, transparent 50%, rgba(0,0,0,0.18) 100%)'
+          : 'radial-gradient(ellipse 90% 70% at 50% 40%, transparent 40%, rgba(0,0,0,0.55) 100%), linear-gradient(180deg, rgba(3,4,10,0) 60%, rgba(3,4,10,0.6) 100%)'};
+        --nebula-opacity: ${isLight ? '0.35' : '0.65'};
+        --logo-filter: ${isLight ? 'invert(1) brightness(0)' : 'none'};
+      }
+      .reserve-logo img { filter: var(--logo-filter) drop-shadow(0 0 18px rgba(${palette.glow},0.35)); }
+      .vignette { background: var(--vignette) !important; }
+      @keyframes nebula-fade-in { to { opacity: var(--nebula-opacity); } }
+    `}</style>
+  );
+};
 
 const ReserveStyles = () => (
   <style>{`
     .reserve-root {
-      --bg: #05060a;
-      --ink: #f4f5f9;
-      --ink-dim: #9aa0b4;
-      --line: rgba(255,255,255,0.08);
-      --line-strong: rgba(255,255,255,0.16);
       min-height: 100vh;
-      background: var(--bg);
+      background: var(--page-bg, #05060a);
       color: var(--ink);
       font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
       position: relative;
       overflow-x: clip;
       isolation: isolate;
       -webkit-font-smoothing: antialiased;
+      transition: background 600ms ease;
     }
     .reserve-bg {
       position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-      background: #03040a;
+      background: var(--page-bg);
     }
     .starfield {
       position: absolute; inset: 0; width: 100%; height: 100%; display: block;
