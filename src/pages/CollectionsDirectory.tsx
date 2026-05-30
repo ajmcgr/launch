@@ -106,17 +106,22 @@ export default function CollectionsDirectory() {
       }
 
       if (!cancelled) {
-        setItems(enriched.slice(0, 30));
+        setItems(enriched);
+        setPage(1);
         setLoading(false);
       }
     })();
     return () => { cancelled = true; };
   }, [tab]);
 
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const pageItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'trending', label: 'Trending', icon: <TrendingUp className="h-4 w-4" /> },
     { id: 'new', label: 'New', icon: <Clock className="h-4 w-4" /> },
-    { id: 'most_saved', label: 'Most Saved', icon: <Users className="h-4 w-4" /> },
+    { id: 'most_followed', label: 'Most Followed', icon: <Heart className="h-4 w-4" /> },
     { id: 'featured', label: 'Featured', icon: <Star className="h-4 w-4" /> },
   ];
 
