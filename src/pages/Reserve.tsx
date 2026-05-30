@@ -27,6 +27,8 @@ type Availability =
 const sanitize = (raw: string) => raw.replace(/^@+/, '').trim();
 
 interface ReservePalette {
+  bg: string;                // full page background gradient
+  tone: 'light' | 'dark';    // drives text + logo color
   a: string; b: string; c: string;
   grad: string; grid: string;
   glow1: string; glow2: string;
