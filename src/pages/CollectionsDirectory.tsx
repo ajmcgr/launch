@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
-import { FolderOpen, Eye, Users, TrendingUp, Star, Clock } from 'lucide-react';
+import { FolderOpen, Eye, TrendingUp, Star, Clock, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
 
@@ -21,7 +21,9 @@ interface CollectionCard {
   creator?: { username: string; avatar_url?: string | null } | null;
 }
 
-type Tab = 'trending' | 'new' | 'most_saved' | 'featured';
+type Tab = 'trending' | 'new' | 'most_followed' | 'featured';
+
+const PAGE_SIZE = 12;
 
 /**
  * /collections — public directory of collections.
@@ -97,24 +99,29 @@ export default function CollectionsDirectory() {
         enriched.sort((a, b) =>
           new Date(createdAtMap.get(b.id) as string).getTime() -
           new Date(createdAtMap.get(a.id) as string).getTime());
-      } else if (tab === 'most_saved') {
+      } else if (tab === 'most_followed') {
         enriched.sort((a, b) => b.followerCount - a.followerCount);
       } else if (tab === 'featured') {
         enriched = enriched.filter((c) => featuredMap.get(c.id) === true);
       }
 
       if (!cancelled) {
-        setItems(enriched.slice(0, 30));
+        setItems(enriched);
+        setPage(1);
         setLoading(false);
       }
     })();
     return () => { cancelled = true; };
   }, [tab]);
 
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const pageItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'trending', label: 'Trending', icon: <TrendingUp className="h-4 w-4" /> },
     { id: 'new', label: 'New', icon: <Clock className="h-4 w-4" /> },
-    { id: 'most_saved', label: 'Most Saved', icon: <Users className="h-4 w-4" /> },
+    { id: 'most_followed', label: 'Most Followed', icon: <Heart className="h-4 w-4" /> },
     { id: 'featured', label: 'Featured', icon: <Star className="h-4 w-4" /> },
   ];
 
@@ -164,8 +171,9 @@ export default function CollectionsDirectory() {
           <p>No collections {tab === 'featured' ? 'featured' : 'yet'}.</p>
         </div>
       ) : (
+        <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {items.map((c) => (
+          {pageItems.map((c) => (
             <Link
               key={c.id}
               to={`/c/${c.slug}`}
@@ -195,7 +203,7 @@ export default function CollectionsDirectory() {
                   <div className="flex items-center gap-3">
                     <span className="inline-flex items-center gap-1"><FolderOpen className="h-3.5 w-3.5" />{c.itemCount}</span>
                     <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{c.view_count.toLocaleString()}</span>
-                    <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5" />{c.followerCount}</span>
+                    <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" />{c.followerCount}</span>
                   </div>
                   {c.creator && <span className="truncate ml-2">@{c.creator.username}</span>}
                 </div>
@@ -203,6 +211,21 @@ export default function CollectionsDirectory() {
             </Link>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+              <ChevronLeft className="h-4 w-4 mr-1" />Prev
+            </Button>
+            <span className="text-sm text-muted-foreground px-3">
+              Page {page} of {totalPages}
+            </span>
+            <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+              Next<ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        )}
+        </>
       )}
     </div>
   );
