@@ -595,8 +595,7 @@ const Starfield = ({ strokeColor }: { strokeColor: string }) => {
     window.addEventListener('resize', resize);
     if (reduced) {
       // single static frame
-      ctx.fillStyle = '#05060a';
-      ctx.fillRect(0, 0, w, h);
+      ctx.clearRect(0, 0, w, h);
       for (const s of stars) {
         const k = 128 / s.z;
         ctx.fillStyle = `rgba(255,255,255,${0.7 * s.o})`;
