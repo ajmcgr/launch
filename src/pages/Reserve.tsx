@@ -27,6 +27,8 @@ type Availability =
 const sanitize = (raw: string) => raw.replace(/^@+/, '').trim();
 
 interface ReservePalette {
+  bg: string;                // full page background gradient
+  tone: 'light' | 'dark';    // drives text + logo color
   a: string; b: string; c: string;
   grad: string; grid: string;
   glow1: string; glow2: string;
@@ -34,45 +36,44 @@ interface ReservePalette {
   star: string;
 }
 
-// 16 curated palettes — bright + dark. Nebula RGBs use brightened cousin tones
-// so dark-themed palettes remain visible against the deep-space backdrop.
-// Headline `grad` stays luminous (white + pastels) for guaranteed readability.
+// 16 curated palettes — each drives the full page background gradient.
+// `tone` controls text + logo color so contrast stays high.
 const PALETTES: ReservePalette[] = [
-  // — Bright / energetic —
+  // — Bright / energetic (light tone: dark ink) —
   // Electric Blue → Cyan
-  { a: '37,99,235', b: '6,182,212', c: '99,179,237', grad: '#fff 0%, #bae6fd 45%, #67e8f9 100%', grid: '120,180,255', glow1: '125,211,252', glow2: '103,232,249', focus: '186,230,253', glow: '125,211,252', star: '190, 225, 255' },
+  { bg: 'linear-gradient(135deg, #2563EB, #06B6D4)', tone: 'light', a: '37,99,235', b: '6,182,212', c: '99,179,237', grad: '#0b1530 0%, #1e3a8a 50%, #0e7490 100%', grid: '255,255,255', glow1: '125,211,252', glow2: '103,232,249', focus: '186,230,253', glow: '125,211,252', star: '220, 240, 255' },
   // Purple → Pink
-  { a: '124,58,237', b: '236,72,153', c: '167,139,250', grad: '#fff 0%, #e9d5ff 45%, #fbcfe8 100%', grid: '210,150,255', glow1: '216,180,254', glow2: '249,168,212', focus: '233,213,255', glow: '216,180,254', star: '230, 200, 255' },
+  { bg: 'linear-gradient(135deg, #7C3AED, #EC4899)', tone: 'light', a: '124,58,237', b: '236,72,153', c: '167,139,250', grad: '#2e1065 0%, #831843 100%', grid: '255,255,255', glow1: '216,180,254', glow2: '249,168,212', focus: '233,213,255', glow: '216,180,254', star: '255, 220, 245' },
   // Orange → Red
-  { a: '249,115,22', b: '239,68,68', c: '251,146,60', grad: '#fff 0%, #fed7aa 45%, #fecaca 100%', grid: '255,150,100', glow1: '253,186,116', glow2: '252,165,165', focus: '254,215,170', glow: '253,186,116', star: '255, 205, 175' },
+  { bg: 'linear-gradient(135deg, #F97316, #EF4444)', tone: 'light', a: '249,115,22', b: '239,68,68', c: '251,146,60', grad: '#431407 0%, #7f1d1d 100%', grid: '255,255,255', glow1: '253,186,116', glow2: '252,165,165', focus: '254,215,170', glow: '253,186,116', star: '255, 230, 210' },
   // Lime → Emerald
-  { a: '132,204,22', b: '16,185,129', c: '110,231,183', grad: '#fff 0%, #d9f99d 45%, #a7f3d0 100%', grid: '160,220,120', glow1: '190,242,100', glow2: '110,231,183', focus: '217,249,157', glow: '163,230,53', star: '200, 240, 180' },
+  { bg: 'linear-gradient(135deg, #84CC16, #10B981)', tone: 'light', a: '132,204,22', b: '16,185,129', c: '110,231,183', grad: '#1a2e05 0%, #064e3b 100%', grid: '255,255,255', glow1: '190,242,100', glow2: '110,231,183', focus: '217,249,157', glow: '163,230,53', star: '230, 255, 215' },
   // Yellow → Orange
-  { a: '250,204,21', b: '251,146,60', c: '253,224,71', grad: '#fff 0%, #fef08a 45%, #fed7aa 100%', grid: '255,210,80', glow1: '253,224,71', glow2: '253,186,116', focus: '254,240,138', glow: '250,204,21', star: '255, 235, 175' },
+  { bg: 'linear-gradient(135deg, #FACC15, #FB923C)', tone: 'light', a: '250,204,21', b: '251,146,60', c: '253,224,71', grad: '#422006 0%, #7c2d12 100%', grid: '255,255,255', glow1: '253,224,71', glow2: '253,186,116', focus: '254,240,138', glow: '250,204,21', star: '255, 245, 200' },
   // Indigo → Violet
-  { a: '79,70,229', b: '139,92,246', c: '129,140,248', grad: '#fff 0%, #c7d2fe 45%, #ddd6fe 100%', grid: '140,135,250', glow1: '165,180,252', glow2: '196,181,253', focus: '199,210,254', glow: '165,180,252', star: '210, 215, 255' },
+  { bg: 'linear-gradient(135deg, #4F46E5, #8B5CF6)', tone: 'light', a: '79,70,229', b: '139,92,246', c: '129,140,248', grad: '#1e1b4b 0%, #4c1d95 100%', grid: '255,255,255', glow1: '165,180,252', glow2: '196,181,253', focus: '199,210,254', glow: '165,180,252', star: '225, 225, 255' },
   // Pink → Rose
-  { a: '236,72,153', b: '244,63,94', c: '251,113,133', grad: '#fff 0%, #fbcfe8 45%, #fecdd3 100%', grid: '255,130,170', glow1: '249,168,212', glow2: '253,164,175', focus: '251,207,232', glow: '249,168,212', star: '255, 200, 215' },
+  { bg: 'linear-gradient(135deg, #EC4899, #F43F5E)', tone: 'light', a: '236,72,153', b: '244,63,94', c: '251,113,133', grad: '#500724 0%, #881337 100%', grid: '255,255,255', glow1: '249,168,212', glow2: '253,164,175', focus: '251,207,232', glow: '249,168,212', star: '255, 215, 225' },
   // Aqua → Blue
-  { a: '34,211,238', b: '59,130,246', c: '103,232,249', grad: '#fff 0%, #a5f3fc 45%, #bfdbfe 100%', grid: '100,200,240', glow1: '103,232,249', glow2: '147,197,253', focus: '165,243,252', glow: '103,232,249', star: '195, 235, 255' },
+  { bg: 'linear-gradient(135deg, #22D3EE, #3B82F6)', tone: 'light', a: '34,211,238', b: '59,130,246', c: '103,232,249', grad: '#083344 0%, #1e3a8a 100%', grid: '255,255,255', glow1: '103,232,249', glow2: '147,197,253', focus: '165,243,252', glow: '103,232,249', star: '215, 245, 255' },
 
-  // — Premium / dark —
-  // Midnight Blue → Slate (brightened blues for visibility)
-  { a: '59,130,246', b: '100,116,139', c: '71,85,105', grad: '#fff 0%, #cbd5e1 45%, #93c5fd 100%', grid: '120,140,180', glow1: '147,197,253', glow2: '148,163,184', focus: '186,230,253', glow: '147,197,253', star: '180, 195, 220' },
+  // — Premium / dark (dark tone: white ink) —
+  // Midnight Blue → Slate
+  { bg: 'linear-gradient(135deg, #0F172A, #334155)', tone: 'dark', a: '59,130,246', b: '100,116,139', c: '71,85,105', grad: '#fff 0%, #cbd5e1 45%, #93c5fd 100%', grid: '148,163,184', glow1: '147,197,253', glow2: '148,163,184', focus: '186,230,253', glow: '147,197,253', star: '180, 195, 220' },
   // Black → Indigo
-  { a: '79,70,229', b: '49,46,129', c: '99,102,241', grad: '#fff 0%, #c7d2fe 50%, #a5b4fc 100%', grid: '90,95,200', glow1: '129,140,248', glow2: '99,102,241', focus: '165,180,252', glow: '129,140,248', star: '170, 180, 240' },
+  { bg: 'linear-gradient(135deg, #09090B, #312E81)', tone: 'dark', a: '79,70,229', b: '49,46,129', c: '99,102,241', grad: '#fff 0%, #c7d2fe 50%, #a5b4fc 100%', grid: '129,140,248', glow1: '129,140,248', glow2: '99,102,241', focus: '165,180,252', glow: '129,140,248', star: '170, 180, 240' },
   // Dark Purple → Midnight
-  { a: '147,51,234', b: '88,28,135', c: '124,58,237', grad: '#fff 0%, #e9d5ff 45%, #c4b5fd 100%', grid: '140,90,210', glow1: '192,132,252', glow2: '167,139,250', focus: '216,180,254', glow: '192,132,252', star: '215, 190, 255' },
+  { bg: 'linear-gradient(135deg, #581C87, #0F172A)', tone: 'dark', a: '147,51,234', b: '88,28,135', c: '124,58,237', grad: '#fff 0%, #e9d5ff 45%, #c4b5fd 100%', grid: '192,132,252', glow1: '192,132,252', glow2: '167,139,250', focus: '216,180,254', glow: '192,132,252', star: '215, 190, 255' },
   // Forest → Dark Emerald
-  { a: '34,197,94', b: '5,150,105', c: '52,211,153', grad: '#fff 0%, #bbf7d0 45%, #6ee7b7 100%', grid: '60,180,120', glow1: '134,239,172', glow2: '110,231,183', focus: '187,247,208', glow: '134,239,172', star: '180, 230, 200' },
+  { bg: 'linear-gradient(135deg, #14532D, #064E3B)', tone: 'dark', a: '34,197,94', b: '5,150,105', c: '52,211,153', grad: '#fff 0%, #bbf7d0 45%, #6ee7b7 100%', grid: '134,239,172', glow1: '134,239,172', glow2: '110,231,183', focus: '187,247,208', glow: '134,239,172', star: '180, 230, 200' },
   // Dark Crimson → Black
-  { a: '220,38,38', b: '127,29,29', c: '248,113,113', grad: '#fff 0%, #fecaca 45%, #fca5a5 100%', grid: '200,60,60', glow1: '252,165,165', glow2: '248,113,113', focus: '254,202,202', glow: '252,165,165', star: '255, 190, 190' },
+  { bg: 'linear-gradient(135deg, #7F1D1D, #0A0A0A)', tone: 'dark', a: '220,38,38', b: '127,29,29', c: '248,113,113', grad: '#fff 0%, #fecaca 45%, #fca5a5 100%', grid: '252,165,165', glow1: '252,165,165', glow2: '248,113,113', focus: '254,202,202', glow: '252,165,165', star: '255, 190, 190' },
   // Charcoal → Deep Blue
-  { a: '30,58,138', b: '59,130,246', c: '37,99,235', grad: '#fff 0%, #bfdbfe 45%, #93c5fd 100%', grid: '70,100,200', glow1: '147,197,253', glow2: '96,165,250', focus: '191,219,254', glow: '147,197,253', star: '180, 200, 240' },
+  { bg: 'linear-gradient(135deg, #1E293B, #1E3A8A)', tone: 'dark', a: '30,58,138', b: '59,130,246', c: '37,99,235', grad: '#fff 0%, #bfdbfe 45%, #93c5fd 100%', grid: '147,197,253', glow1: '147,197,253', glow2: '96,165,250', focus: '191,219,254', glow: '147,197,253', star: '180, 200, 240' },
   // Dark Teal → Navy
-  { a: '20,184,166', b: '30,64,175', c: '45,212,191', grad: '#fff 0%, #99f6e4 45%, #bfdbfe 100%', grid: '60,140,180', glow1: '94,234,212', glow2: '147,197,253', focus: '153,246,228', glow: '94,234,212', star: '180, 220, 230' },
+  { bg: 'linear-gradient(135deg, #134E4A, #172554)', tone: 'dark', a: '20,184,166', b: '30,64,175', c: '45,212,191', grad: '#fff 0%, #99f6e4 45%, #bfdbfe 100%', grid: '94,234,212', glow1: '94,234,212', glow2: '147,197,253', focus: '153,246,228', glow: '94,234,212', star: '180, 220, 230' },
   // Graphite → Purple
-  { a: '139,92,246', b: '91,33,182', c: '167,139,250', grad: '#fff 0%, #ddd6fe 45%, #c4b5fd 100%', grid: '120,80,200', glow1: '167,139,250', glow2: '196,181,253', focus: '221,214,254', glow: '167,139,250', star: '210, 195, 255' },
+  { bg: 'linear-gradient(135deg, #18181B, #5B21B6)', tone: 'dark', a: '139,92,246', b: '91,33,182', c: '167,139,250', grad: '#fff 0%, #ddd6fe 45%, #c4b5fd 100%', grid: '167,139,250', glow1: '167,139,250', glow2: '196,181,253', focus: '221,214,254', glow: '167,139,250', star: '210, 195, 255' },
 ];
 
 
@@ -618,42 +619,51 @@ const Starfield = ({ strokeColor }: { strokeColor: string }) => {
 
 
 // All styles scoped under .reserve-root — no leakage to the rest of the app.
-const PaletteStyles = ({ palette }: { palette: ReservePalette }) => (
-  <style>{`
-    .reserve-root {
-      --neb-a: ${palette.a};
-      --neb-b: ${palette.b};
-      --neb-c: ${palette.c};
-      --grad: ${palette.grad};
-      --grid: ${palette.grid};
-      --glow1: ${palette.glow1};
-      --glow2: ${palette.glow2};
-      --focus: ${palette.focus};
-      --glow: ${palette.glow};
-    }
-  `}</style>
-);
+const PaletteStyles = ({ palette }: { palette: ReservePalette }) => {
+  const isLight = palette.tone === 'light';
+  return (
+    <style>{`
+      .reserve-root {
+        --page-bg: ${palette.bg};
+        --neb-a: ${palette.a};
+        --neb-b: ${palette.b};
+        --neb-c: ${palette.c};
+        --grad: ${palette.grad};
+        --grid: ${palette.grid};
+        --glow1: ${palette.glow1};
+        --glow2: ${palette.glow2};
+        --focus: ${palette.focus};
+        --glow: ${palette.glow};
+        --ink: ${isLight ? '#0a0b14' : '#f4f5f9'};
+        --ink-dim: ${isLight ? 'rgba(10,11,20,0.65)' : '#9aa0b4'};
+        --line: ${isLight ? 'rgba(0,0,0,0.10)' : 'rgba(255,255,255,0.08)'};
+        --line-strong: ${isLight ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.16)'};
+        --vignette: ${isLight
+          ? 'radial-gradient(ellipse 90% 70% at 50% 40%, transparent 50%, rgba(0,0,0,0.18) 100%)'
+          : 'radial-gradient(ellipse 90% 70% at 50% 40%, transparent 40%, rgba(0,0,0,0.55) 100%), linear-gradient(180deg, rgba(3,4,10,0) 60%, rgba(3,4,10,0.6) 100%)'};
+        --nebula-opacity: ${isLight ? '0.35' : '0.65'};
+        --logo-filter: ${isLight ? 'invert(1) brightness(0)' : 'none'};
+      }
+    `}</style>
+  );
+};
 
 const ReserveStyles = () => (
   <style>{`
     .reserve-root {
-      --bg: #05060a;
-      --ink: #f4f5f9;
-      --ink-dim: #9aa0b4;
-      --line: rgba(255,255,255,0.08);
-      --line-strong: rgba(255,255,255,0.16);
       min-height: 100vh;
-      background: var(--bg);
+      background: var(--page-bg, #05060a);
       color: var(--ink);
       font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
       position: relative;
       overflow-x: clip;
       isolation: isolate;
       -webkit-font-smoothing: antialiased;
+      transition: background 600ms ease;
     }
     .reserve-bg {
       position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-      background: #03040a;
+      background: var(--page-bg);
     }
     .starfield {
       position: absolute; inset: 0; width: 100%; height: 100%; display: block;
@@ -688,7 +698,7 @@ const ReserveStyles = () => (
       .grid-floor { bottom: -20vh; height: 60vh; }
     }
     @keyframes nebula-fade-in {
-      to { opacity: 0.65; }
+      to { opacity: var(--nebula-opacity, 0.65); }
     }
     @keyframes nebula-drift {
       0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
@@ -715,9 +725,7 @@ const ReserveStyles = () => (
     }
     .vignette {
       position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 40%, transparent 40%, rgba(0,0,0,0.55) 100%),
-        linear-gradient(180deg, rgba(3,4,10,0) 60%, rgba(3,4,10,0.9) 100%);
+      background: var(--vignette);
     }
 
 
@@ -740,7 +748,7 @@ const ReserveStyles = () => (
     .reserve-logo { display: inline-block; margin-bottom: 32px; }
     .reserve-logo img {
       height: 42px; display: block;
-      filter: drop-shadow(0 0 18px rgba(255,255,255,0.25));
+      filter: var(--logo-filter, none) drop-shadow(0 0 18px rgba(var(--glow, 255,255,255),0.35));
     }
     @media (min-width: 768px) {
       .reserve-logo img { height: 48px; }
