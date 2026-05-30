@@ -547,9 +547,8 @@ const Starfield = ({ strokeColor }: { strokeColor: string }) => {
     const SPEED = reduced ? 0 : 0.8;
 
     const tick = () => {
-      // Deep space wash with trail
-      ctx.fillStyle = 'rgba(5, 6, 10, 0.35)';
-      ctx.fillRect(0, 0, w, h);
+      // Clear to transparent so page-bg gradient shows through
+      ctx.clearRect(0, 0, w, h);
 
       for (const s of stars) {
         s.pz = s.z;
