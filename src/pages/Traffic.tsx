@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const UMAMI_SHARE_URL = "https://cloud.umami.is/share/KJgFyfZqxqsGoawu/trylaunch.ai";
+const UMAMI_SHARE_URL = "https://cloud.umami.is/share/uzrUbiLh9swkzLoL";
 
 export default function Traffic() {
   useEffect(() => {
