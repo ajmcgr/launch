@@ -36,12 +36,22 @@ export default function CollectionsDirectory() {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      // Fetch all public collections (cap to 100 for now)
-      const { data: cols } = await sb
+      // Order server-side per tab so we don't truncate the most relevant rows.
+      let query = sb
         .from('user_collections')
         .select('id, slug, name, description, cover_image_url, view_count, user_id, created_at, is_featured')
-        .eq('is_public', true)
-        .limit(100);
+        .eq('is_public', true);
+
+      if (tab === 'new') {
+        query = query.order('created_at', { ascending: false });
+      } else if (tab === 'featured') {
+        query = query.eq('is_featured', true).order('created_at', { ascending: false });
+      } else {
+        // trending / most_saved — proxy by view_count, refine client-side
+        query = query.order('view_count', { ascending: false, nullsFirst: false });
+      }
+
+      const { data: cols } = await query.limit(500);
 
       if (!cols?.length) {
         if (!cancelled) { setItems([]); setLoading(false); }
