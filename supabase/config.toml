@@ -74,3 +74,6 @@ verify_jwt = true
 
 [functions.outreach-send-emails]
 verify_jwt = true
+
+[functions.umami-analytics]
+verify_jwt = false

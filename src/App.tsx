@@ -69,6 +69,7 @@ const Start = lazy(() => import("./pages/Start"));
 const VibeCodingPlatform = lazy(() => import("./pages/VibeCodingPlatform"));
 const VibeCodingHub = lazy(() => import("./pages/VibeCodingHub"));
 const Tools = lazy(() => import("./pages/Tools"));
+const Traffic = lazy(() => import("./pages/Traffic"));
 const ToolDetail = lazy(() => import("./pages/ToolDetail"));
 const SeoCollection = lazy(() => import("./pages/SeoCollection"));
 const BestPage = lazy(() => import("./pages/seo/BestPage"));
@@ -208,6 +209,7 @@ const AppContent = () => {
             <Route path="/vibe-coding" element={<VibeCodingHub />} />
             <Route path="/vibe-coding/:slug" element={<VibeCodingPlatform />} />
             <Route path="/tools" element={<Tools />} />
+            <Route path="/traffic" element={<Traffic />} />
             <Route path="/tools/:slug" element={<ToolDetail />} />
             <Route path="/launches/today" element={<LaunchArchive />} />
             <Route path="/launches/:year/:period" element={<LaunchArchivePeriod />} />
