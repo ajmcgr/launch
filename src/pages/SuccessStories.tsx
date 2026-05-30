@@ -44,20 +44,6 @@ const StoryCard = ({ story }: { story: SuccessStory }) => (
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-3">
-        {story.signups && story.signups > 0 && (
-          <Badge variant="secondary" className="gap-1 text-xs">
-            <Users className="h-3 w-3" />
-            {story.signups.toLocaleString()} signups
-          </Badge>
-        )}
-        {story.revenue && story.revenue > 0 && (
-          <Badge variant="secondary" className="gap-1 text-xs">
-            <DollarSign className="h-3 w-3" />
-            ${story.revenue.toLocaleString()}
-          </Badge>
-        )}
-      </div>
 
       {story.testimonial && (
         <div className="bg-muted/50 rounded-lg p-3 border border-border">
@@ -168,32 +154,6 @@ const SuccessStories = () => {
           </p>
         </div>
 
-        {/* Aggregate Stats */}
-        {totals.stories > 0 && (
-          <div className="grid grid-cols-3 gap-4 mb-12">
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <Users className="h-5 w-5 mx-auto mb-2 text-primary" />
-                <p className="text-3xl font-bold">{platformUsers.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Makers on Launch</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <DollarSign className="h-5 w-5 mx-auto mb-2 text-primary" />
-                <p className="text-3xl font-bold">${totals.revenue.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Revenue Generated</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <TrendingUp className="h-5 w-5 mx-auto mb-2 text-primary" />
-                <p className="text-3xl font-bold">{totals.stories}</p>
-                <p className="text-sm text-muted-foreground">Success Stories</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Stories Wall */}
         {loading ? (
