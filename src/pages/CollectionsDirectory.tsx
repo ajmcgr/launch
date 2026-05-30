@@ -21,7 +21,9 @@ interface CollectionCard {
   creator?: { username: string; avatar_url?: string | null } | null;
 }
 
-type Tab = 'trending' | 'new' | 'most_saved' | 'featured';
+type Tab = 'trending' | 'new' | 'most_followed' | 'featured';
+
+const PAGE_SIZE = 12;
 
 /**
  * /collections — public directory of collections.
