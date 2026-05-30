@@ -73,7 +73,8 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     const { data: rows } = await sb
       .from('user_collection_items')
       .select('id, product_id, added_at, note')
-      .eq('collection_id', col.id);
+      .eq('collection_id', col.id)
+      .range(0, 9999);
 
     const productIds = (rows ?? []).map((r: any) => r.product_id);
     if (!productIds.length) { setItems([]); setLoading(false); return; }
