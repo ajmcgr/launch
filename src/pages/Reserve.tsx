@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,6 +26,21 @@ type Availability =
 
 const sanitize = (raw: string) => raw.replace(/^@+/, '').trim();
 
+interface ReservePalette {
+  a: string; b: string; c: string;
+  grad: string; grid: string;
+  glow1: string; glow2: string;
+  focus: string; glow: string;
+  star: string;
+}
+
+const PALETTES: ReservePalette[] = [
+  { a: '96,120,255', b: '200,90,255', c: '40,200,255', grad: '#fff 0%, #c7d2fe 40%, #a5b4fc 70%, #f0abfc 100%', grid: '160,180,255', glow1: '165,180,252', glow2: '240,171,252', focus: '199,210,254', glow: '165,180,252', star: '200, 215, 255' },
+  { a: '255,120,60', b: '255,70,130', c: '255,190,50', grad: '#fff 0%, #fecaca 40%, #fca5a5 70%, #fcd34d 100%', grid: '255,170,120', glow1: '252,165,165', glow2: '253,186,116', focus: '254,215,170', glow: '252,165,165', star: '255, 215, 190' },
+  { a: '40,190,120', b: '30,170,200', c: '90,210,170', grad: '#fff 0%, #a7f3d0 40%, #6ee7b7 70%, #5eead4 100%', grid: '130,210,170', glow1: '110,231,183', glow2: '167,243,208', focus: '153,246,228', glow: '110,231,183', star: '170, 230, 210' },
+  { a: '255,70,150', b: '200,60,220', c: '255,110,200', grad: '#fff 0%, #fbcfe8 40%, #f9a8d4 70%, #c4b5fd 100%', grid: '255,150,200', glow1: '249,168,212', glow2: '196,181,253', focus: '232,211,253', glow: '249,168,212', star: '255, 195, 225' },
+];
+
 
 const Reserve = () => {
   const navigate = useNavigate();
@@ -40,6 +55,7 @@ const Reserve = () => {
   const [authLoading, setAuthLoading] = useState(false);
   const [pendingReserve, setPendingReserve] = useState<string | null>(null);
   const [myReservation, setMyReservation] = useState<string | null>(null);
+  const palette = useMemo(() => PALETTES[Math.floor(Math.random() * PALETTES.length)], []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session as any));
@@ -220,10 +236,11 @@ const Reserve = () => {
         <meta property="og:type" content="website" />
       </Helmet>
 
+      <PaletteStyles palette={palette} />
       <ReserveStyles />
 
       <div className="reserve-bg" aria-hidden>
-        <Starfield />
+        <Starfield strokeColor={palette.star} />
         <div className="nebula nebula-a" />
         <div className="nebula nebula-b" />
         <div className="nebula nebula-c" />
@@ -448,7 +465,7 @@ const Reserve = () => {
 
 
 // Animated warp starfield — pure canvas, GPU-free, lightweight
-const Starfield = () => {
+const Starfield = ({ strokeColor }: { strokeColor: string }) => {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -523,7 +540,7 @@ const Starfield = () => {
         const alpha = Math.min(1, (1 - s.z / w) * s.o);
 
         // Trailing streak
-        ctx.strokeStyle = `rgba(200, 215, 255, ${alpha * 0.55})`;
+        ctx.strokeStyle = `rgba(${strokeColor}, ${alpha * 0.55})`;
         ctx.lineWidth = size * 0.6;
         ctx.beginPath();
         ctx.moveTo(px, py);
@@ -567,6 +584,22 @@ const Starfield = () => {
 
 
 // All styles scoped under .reserve-root — no leakage to the rest of the app.
+const PaletteStyles = ({ palette }: { palette: ReservePalette }) => (
+  <style>{`
+    .reserve-root {
+      --neb-a: ${palette.a};
+      --neb-b: ${palette.b};
+      --neb-c: ${palette.c};
+      --grad: ${palette.grad};
+      --grid: ${palette.grid};
+      --glow1: ${palette.glow1};
+      --glow2: ${palette.glow2};
+      --focus: ${palette.focus};
+      --glow: ${palette.glow};
+    }
+  `}</style>
+);
+
 const ReserveStyles = () => (
   <style>{`
     .reserve-root {
@@ -602,16 +635,16 @@ const ReserveStyles = () => (
     /* Use softer radial gradients instead of expensive CSS blur — same look, far cheaper to paint */
     .nebula-a {
       width: 70vw; height: 70vw; left: -18vw; top: -22vw;
-      background: radial-gradient(circle, rgba(96,120,255,0.55) 0%, rgba(96,120,255,0.18) 35%, transparent 70%);
+      background: radial-gradient(circle, rgba(var(--neb-a),0.55) 0%, rgba(var(--neb-a),0.18) 35%, transparent 70%);
     }
     .nebula-b {
       width: 60vw; height: 60vw; right: -16vw; top: 8vw;
-      background: radial-gradient(circle, rgba(200,90,255,0.45) 0%, rgba(200,90,255,0.15) 35%, transparent 70%);
+      background: radial-gradient(circle, rgba(var(--neb-b),0.45) 0%, rgba(var(--neb-b),0.15) 35%, transparent 70%);
       animation-delay: 0s, -10s; animation-duration: 1.4s, 68s;
     }
     .nebula-c {
       width: 75vw; height: 75vw; left: 18vw; bottom: -30vw;
-      background: radial-gradient(circle, rgba(40,200,255,0.35) 0%, rgba(40,200,255,0.12) 35%, transparent 70%);
+      background: radial-gradient(circle, rgba(var(--neb-c),0.35) 0%, rgba(var(--neb-c),0.12) 35%, transparent 70%);
       animation-delay: 0s, -18s; animation-duration: 1.4s, 80s;
     }
     @media (max-width: 768px) {
@@ -635,8 +668,8 @@ const ReserveStyles = () => (
       transform: translateX(-50%) perspective(800px) rotateX(72deg);
       transform-origin: 50% 0%;
       background:
-        linear-gradient(to right, rgba(160,180,255,0.18) 1px, transparent 1px) 0 0 / 64px 64px,
-        linear-gradient(to bottom, rgba(160,180,255,0.18) 1px, transparent 1px) 0 0 / 64px 64px;
+        linear-gradient(to right, rgba(var(--grid),0.18) 1px, transparent 1px) 0 0 / 64px 64px,
+        linear-gradient(to bottom, rgba(var(--grid),0.18) 1px, transparent 1px) 0 0 / 64px 64px;
       mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
       -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 75%);
       animation: grid-march 36s linear infinite;
@@ -684,9 +717,9 @@ const ReserveStyles = () => (
       letter-spacing: -0.02em; margin: 0 0 18px;
     }
     .grad {
-      background: linear-gradient(135deg, #fff 0%, #c7d2fe 40%, #a5b4fc 70%, #f0abfc 100%);
+      background: linear-gradient(135deg, var(--grad));
       -webkit-background-clip: text; background-clip: text; color: transparent;
-      filter: drop-shadow(0 0 30px rgba(165,180,252,0.25));
+      filter: drop-shadow(0 0 30px rgba(var(--glow),0.25));
     }
     .sub {
       font-size: clamp(15px, 1.2vw, 17px); color: var(--ink); opacity: 0.78;
@@ -707,7 +740,7 @@ const ReserveStyles = () => (
     .checker { padding: 10px; position: relative; width: 100%; max-width: 560px; }
     .checker::before {
       content: ''; position: absolute; inset: -1px; border-radius: 21px;
-      background: linear-gradient(135deg, rgba(165,180,252,0.4), rgba(240,171,252,0.2), transparent 60%);
+      background: linear-gradient(135deg, rgba(var(--glow1),0.4), rgba(var(--glow2),0.2), transparent 60%);
       z-index: -1; filter: blur(20px); opacity: 0.55;
     }
     .checker-inner {
@@ -789,7 +822,7 @@ const ReserveStyles = () => (
       color: var(--ink); padding: 12px 14px; border-radius: 10px; font-size: 14px; margin-bottom: 10px;
       outline: none; transition: border-color .2s; font-family: inherit;
     }
-    .modal-input:focus { border-color: rgba(199,210,254,0.5); }
+    .modal-input:focus { border-color: rgba(var(--focus),0.5); }
     .text-toggle {
       width: 100%; background: transparent; border: 0; color: var(--ink-dim); font-size: 13px;
       margin-top: 14px; cursor: pointer; padding: 6px; font-family: inherit;
