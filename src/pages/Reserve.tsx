@@ -644,7 +644,6 @@ const PaletteStyles = ({ palette }: { palette: ReservePalette }) => {
         --nebula-opacity: ${isLight ? '0.35' : '0.65'};
         --logo-filter: ${isLight ? 'invert(1) brightness(0)' : 'none'};
       }
-      }
     `}</style>
   );
 };
