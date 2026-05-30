@@ -734,7 +734,7 @@ const ReserveStyles = () => (
 
     /* Single-column shell */
     .reserve-shell {
-      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
@@ -747,6 +747,10 @@ const ReserveStyles = () => (
       padding: 64px 24px 40px;
       max-width: 720px; width: 100%;
       margin: 0 auto;
+    }
+    @media (max-width: 768px) {
+      .reserve-shell { min-height: 100dvh; }
+      .top { padding: 24px 20px 32px; }
     }
     .reserve-logo { display: inline-block; margin-bottom: 32px; }
     .reserve-logo img {
