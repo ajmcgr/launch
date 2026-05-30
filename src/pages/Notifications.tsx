@@ -86,6 +86,17 @@ const Notifications = () => {
             navigate(`/launch/${data.slug}`);
           }
         });
+    } else if (notification.related_user_id) {
+      supabase
+        .from('users')
+        .select('username')
+        .eq('id', notification.related_user_id)
+        .single()
+        .then(({ data }) => {
+          if (data?.username) {
+            navigate(`/${data.username}`);
+          }
+        });
     }
   };
 

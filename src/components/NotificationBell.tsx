@@ -76,7 +76,6 @@ export const NotificationBell = () => {
     setOpen(false);
 
     if (notification.related_product_id) {
-      // Navigate to product page
       supabase
         .from('products')
         .select('slug')
@@ -85,6 +84,17 @@ export const NotificationBell = () => {
         .then(({ data }) => {
           if (data?.slug) {
             navigate(`/launch/${data.slug}`);
+          }
+        });
+    } else if (notification.related_user_id) {
+      supabase
+        .from('users')
+        .select('username')
+        .eq('id', notification.related_user_id)
+        .single()
+        .then(({ data }) => {
+          if (data?.username) {
+            navigate(`/${data.username}`);
           }
         });
     }
