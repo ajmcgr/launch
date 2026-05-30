@@ -99,7 +99,7 @@ export default function CollectionsDirectory() {
         enriched.sort((a, b) =>
           new Date(createdAtMap.get(b.id) as string).getTime() -
           new Date(createdAtMap.get(a.id) as string).getTime());
-      } else if (tab === 'most_saved') {
+      } else if (tab === 'most_followed') {
         enriched.sort((a, b) => b.followerCount - a.followerCount);
       } else if (tab === 'featured') {
         enriched = enriched.filter((c) => featuredMap.get(c.id) === true);
