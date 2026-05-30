@@ -13,6 +13,7 @@ import AdminMarketingTab from '@/components/admin/AdminMarketingTab';
 import AdminBlogTab from '@/components/admin/AdminBlogTab';
 import AdminCategorySponsorsTab from '@/components/admin/AdminCategorySponsorsTab';
 import AdminHomepageSponsorsTab from '@/components/admin/AdminHomepageSponsorsTab';
+import AdminCollectionsTab from '@/components/admin/AdminCollectionsTab';
 
 import { format } from 'date-fns';
 
