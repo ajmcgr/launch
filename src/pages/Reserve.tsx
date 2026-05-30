@@ -644,9 +644,7 @@ const PaletteStyles = ({ palette }: { palette: ReservePalette }) => {
         --nebula-opacity: ${isLight ? '0.35' : '0.65'};
         --logo-filter: ${isLight ? 'invert(1) brightness(0)' : 'none'};
       }
-      .reserve-logo img { filter: var(--logo-filter) drop-shadow(0 0 18px rgba(${palette.glow},0.35)); }
-      .vignette { background: var(--vignette) !important; }
-      @keyframes nebula-fade-in { to { opacity: var(--nebula-opacity); } }
+      }
     `}</style>
   );
 };
