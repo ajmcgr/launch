@@ -396,6 +396,7 @@ const Admin = () => {
                 <TabsTrigger value="advertising" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Advertising</TabsTrigger>
                 <TabsTrigger value="blog" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Blog</TabsTrigger>
                 <TabsTrigger value="seo" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">SEO</TabsTrigger>
+                <TabsTrigger value="collections" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Collections</TabsTrigger>
               </TabsList>
 
               <TabsContent value="users" className="space-y-4">
