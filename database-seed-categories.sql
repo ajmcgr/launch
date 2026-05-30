@@ -1,0 +1,71 @@
+-- Seed expanded category taxonomy. Idempotent: ON CONFLICT DO NOTHING on name.
+-- Run in Supabase SQL editor.
+
+INSERT INTO public.product_categories (name) VALUES
+  -- AI
+  ('AI Tools'),
+  ('AI Chat Tools'),
+  ('AI Writing Tools'),
+  ('AI Image Tools'),
+  ('AI Video Tools'),
+  ('AI Design Tools'),
+  ('AI Code Tools'),
+  ('AI Marketing Tools'),
+  ('AI SEO Tools'),
+  ('AI Music Tools'),
+  ('AI Voice Tools'),
+  -- SaaS & Business
+  ('SaaS'),
+  ('Marketing Tools'),
+  ('Sales Tools'),
+  ('Business Analytics'),
+  ('Data Science & Analytics'),
+  ('Finance & FinTech'),
+  ('Personal Finance'),
+  ('E-commerce'),
+  ('Platforms'),
+  ('CMS & No-Code'),
+  ('Blockchain & Crypto'),
+  -- Developer & Engineering
+  ('Developer Tools'),
+  ('Web Development'),
+  ('APIs & Integrations'),
+  ('Databases'),
+  ('DevOps & Cloud'),
+  ('Testing & QA'),
+  ('Mobile Development'),
+  ('Open Source'),
+  ('Security'),
+  ('Serverless'),
+  -- Productivity & Life
+  ('Productivity'),
+  ('Everyday Tools'),
+  ('Utilities'),
+  ('Journaling & Notes'),
+  ('Self-Improvement'),
+  ('Habit Tracking'),
+  ('Mental Health & Wellness'),
+  ('Focus & Mindfulness'),
+  ('Lifestyle Apps & Tools'),
+  ('Health Tech'),
+  -- Design & Creative
+  ('Design Tools'),
+  ('Graphics & Illustration'),
+  ('UI/UX'),
+  ('Creator Tools'),
+  ('Prototyping'),
+  -- Community & Social
+  ('Communities & Forums'),
+  ('Social & Messaging'),
+  ('Newsletters'),
+  ('Media & Publishing'),
+  ('Indie Creations'),
+  ('Fun & Experimental'),
+  -- Apps & Devices
+  ('Mobile Apps'),
+  ('Desktop Apps'),
+  ('Browser Extensions'),
+  ('Gaming Tech'),
+  ('AR/VR'),
+  ('Wearables')
+ON CONFLICT (name) DO NOTHING;

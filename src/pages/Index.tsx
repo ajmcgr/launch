@@ -451,8 +451,6 @@ const Index = () => {
             </button>
           </div>
         )}
-
-        <CategoryCloud />
       </div>
     </div>
   );
