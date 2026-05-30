@@ -24,7 +24,7 @@ export function UserListItem({ user }: Props) {
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2 flex-wrap">
           {user.name && (
-            <span className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+            <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
               {user.name}
             </span>
           )}
