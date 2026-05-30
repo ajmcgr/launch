@@ -728,9 +728,7 @@ const ReserveStyles = () => (
     }
     .vignette {
       position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 90% 70% at 50% 40%, transparent 40%, rgba(0,0,0,0.55) 100%),
-        linear-gradient(180deg, rgba(3,4,10,0) 60%, rgba(3,4,10,0.9) 100%);
+      background: var(--vignette);
     }
 
 
