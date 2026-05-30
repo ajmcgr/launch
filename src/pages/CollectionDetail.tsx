@@ -73,25 +73,36 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     const { data: rows } = await sb
       .from('user_collection_items')
       .select('id, product_id, added_at, note')
-      .eq('collection_id', col.id);
+      .eq('collection_id', col.id)
+      .range(0, 9999);
 
     const productIds = (rows ?? []).map((r: any) => r.product_id);
     if (!productIds.length) { setItems([]); setLoading(false); return; }
 
-    const { data: products } = await sb
-      .from('products')
-      .select(`
-        id, slug, name, tagline, launch_date, domain_url, verified_mrr, mrr_verified_at,
-        product_media(url, type),
-        product_category_map(category_id),
-        product_makers(user_id, users(username, avatar_url))
-      `)
-      .in('id', productIds);
+    // Chunk product + vote lookups: a single .in() with hundreds of UUIDs
+    // exceeds PostgREST's URL length limit and silently returns nothing.
+    const CHUNK = 100;
+    const chunk = <T,>(arr: T[]) => {
+      const out: T[][] = [];
+      for (let i = 0; i < arr.length; i += CHUNK) out.push(arr.slice(i, i + CHUNK));
+      return out;
+    };
+    const idChunks = chunk(productIds);
 
-    const { data: votes } = await sb
-      .from('product_vote_counts')
-      .select('product_id, net_votes')
-      .in('product_id', productIds);
+    const productResults = await Promise.all(idChunks.map((ids) =>
+      sb.from('products').select(`
+          id, slug, name, tagline, launch_date, domain_url, verified_mrr, mrr_verified_at,
+          product_media(url, type),
+          product_category_map(category_id),
+          product_makers(user_id, users(username, avatar_url))
+        `).in('id', ids)
+    ));
+    const products = productResults.flatMap((r: any) => r.data ?? []);
+
+    const voteResults = await Promise.all(idChunks.map((ids) =>
+      sb.from('product_vote_counts').select('product_id, net_votes').in('product_id', ids)
+    ));
+    const votes = voteResults.flatMap((r: any) => r.data ?? []);
     const voteMap = new Map((votes ?? []).map((v: any) => [v.product_id, v.net_votes || 0]));
 
     const { data: cats } = await sb.from('product_categories').select('id, name');
