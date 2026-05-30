@@ -136,7 +136,7 @@ export default function CollectionsDirectory() {
       <header className="mb-8 text-center">
         <h1 className="text-4xl md:text-5xl font-reckless font-bold">Collections</h1>
         <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-          Hand-picked groupings of products from Launch. Follow the ones you love.
+          The best products grouped by Launch users. Follow the ones you love.
         </p>
         <div className="mt-5">
           <Link to="/my-collections">
