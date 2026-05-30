@@ -166,7 +166,7 @@ export const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/my-collections" className="flex items-center gap-2">
                         <Bookmark className="h-4 w-4" />
-                        Collections
+                        My Collections
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
@@ -306,7 +306,7 @@ export const Header = () => {
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <Bookmark className="h-5 w-5" />
-                          Collections
+                          My Collections
                         </Link>
                         <Link 
                           to="/my-products"
