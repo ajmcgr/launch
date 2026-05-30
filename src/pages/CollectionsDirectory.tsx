@@ -171,8 +171,9 @@ export default function CollectionsDirectory() {
           <p>No collections {tab === 'featured' ? 'featured' : 'yet'}.</p>
         </div>
       ) : (
+        <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {items.map((c) => (
+          {pageItems.map((c) => (
             <Link
               key={c.id}
               to={`/c/${c.slug}`}
@@ -202,7 +203,7 @@ export default function CollectionsDirectory() {
                   <div className="flex items-center gap-3">
                     <span className="inline-flex items-center gap-1"><FolderOpen className="h-3.5 w-3.5" />{c.itemCount}</span>
                     <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{c.view_count.toLocaleString()}</span>
-                    <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5" />{c.followerCount}</span>
+                    <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" />{c.followerCount}</span>
                   </div>
                   {c.creator && <span className="truncate ml-2">@{c.creator.username}</span>}
                 </div>
@@ -210,6 +211,21 @@ export default function CollectionsDirectory() {
             </Link>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+              <ChevronLeft className="h-4 w-4 mr-1" />Prev
+            </Button>
+            <span className="text-sm text-muted-foreground px-3">
+              Page {page} of {totalPages}
+            </span>
+            <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+              Next<ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        )}
+        </>
       )}
     </div>
   );
