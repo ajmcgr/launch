@@ -306,7 +306,7 @@ export const Header = () => {
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <Bookmark className="h-5 w-5" />
-                          Collections
+                          My Collections
                         </Link>
                         <Link 
                           to="/my-products"
