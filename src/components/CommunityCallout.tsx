@@ -7,7 +7,7 @@ export const CommunityCallout = () => {
     <div className="w-full bg-muted/30 px-6 py-6 md:py-0 flex items-center md:aspect-[7/1]">
       <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="flex-1 text-center md:text-left">
-          <h3 className="text-lg font-semibold mb-1">Join the Community</h3>
+          <h3 className="text-lg font-semibold mb-1">Join thousands of people building their future</h3>
           <TrustPhrase className="text-sm text-muted-foreground" />
         </div>
         <div className="flex flex-col sm:flex-row gap-3 shrink-0">
