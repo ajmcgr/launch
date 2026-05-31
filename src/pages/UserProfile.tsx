@@ -677,7 +677,7 @@ const UserProfile = () => {
         description={profile.bio ? profile.bio.slice(0, 155) : `Explore products launched, collections curated, and activity by @${profile.username} on Launch.`}
         path={`/@${profile.username}`}
         breadcrumbs={[
-          { name: 'Makers', path: '/makers' },
+          { name: 'Vibe Coders', path: '/vibecoders' },
           { name: `@${profile.username}`, path: `/@${profile.username}` },
         ]}
       />
