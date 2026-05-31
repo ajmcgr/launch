@@ -1036,12 +1036,12 @@ const Home = () => {
                 <div className="w-full bg-muted/30 px-6 py-6 md:py-0 flex items-center md:aspect-[7/1] mb-6">
                   <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="flex-1 text-center md:text-left">
-                      <h3 className="text-lg font-semibold mb-1">Launch your product to 50,000+ {(['founders', 'makers', 'builders', 'indiehackers'])[Math.floor(Math.random() * 4)]}</h3>
-                      <p className="text-sm text-muted-foreground">Get discovered, collect votes, and earn a DR 52 dofollow backlink — it's free to start.</p>
+                      <h3 className="text-lg font-semibold mb-1">Launch your thing to 50,000+ vibe coders</h3>
+                      <p className="text-sm text-muted-foreground">Ship it. Get discovered. Build your reputation — free to start.</p>
                     </div>
                     <div className="shrink-0">
                       <Button asChild className="gap-2">
-                        <Link to="/auth">Submit Your Product →</Link>
+                        <Link to="/auth">Ship It →</Link>
                       </Button>
                     </div>
                   </div>
