@@ -195,7 +195,7 @@ export const Header = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button onClick={handleSubmitClick} className="ml-1">
-                  Ship It
+                  Sign Up
                 </Button>
               </div>
             ) : (
@@ -206,7 +206,7 @@ export const Header = () => {
                   Login
                 </Link>
                 <Button onClick={handleSubmitClick}>
-                  Ship It
+                  Sign Up
                 </Button>
               </div>
             )}
@@ -340,7 +340,7 @@ export const Header = () => {
                         }} 
                         className="w-full mb-2"
                       >
-                        Ship It
+                        Sign Up
                       </Button>
                       <Button 
                         onClick={() => {
@@ -370,7 +370,7 @@ export const Header = () => {
                         }} 
                         className="w-full"
                       >
-                        Ship It
+                        Sign Up
                       </Button>
                     </>
                   )}

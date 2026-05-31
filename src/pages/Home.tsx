@@ -990,7 +990,7 @@ const Home = () => {
 
   const homepageFaqs = [
     { question: 'What is Launch?', answer: 'Launch is the home of vibe coders — the place to ship what you build, get discovered, and build your reputation alongside thousands of people building their future.' },
-    { question: 'How do I ship my thing?', answer: 'Start building an account, hit "Ship It", add your details, and pick a launch date. You can schedule ahead too.' },
+    { question: 'How do I ship my thing?', answer: 'Start building an account, hit "Sign Up", add your details, and pick a launch date. You can schedule ahead too.' },
     { question: 'How does voting work?', answer: 'Vibe coders upvote what they love. Rankings are by time period (Today, Week, Month, Year). Sign in to vote.' },
     { question: 'What are Top Products and Archives?', answer: 'The top 100 launches for each time period. We archive every year so you can revisit what shipped.' },
     { question: 'How do notifications work?', answer: 'Hear it when people vote, comment, or when makers you follow ship something new. Tune it in Settings.' },
@@ -1041,7 +1041,7 @@ const Home = () => {
                     </div>
                     <div className="shrink-0">
                       <Button asChild className="gap-2">
-                        <Link to="/auth">Ship It →</Link>
+                        <Link to="/auth">Sign Up →</Link>
                       </Button>
                     </div>
                   </div>
@@ -1110,7 +1110,7 @@ const Home = () => {
                       How do I ship my thing?
                     </AccordionTrigger>
                     <AccordionContent>
-                      Start building an account, hit "Ship It", add your details, and pick a launch date. You can schedule ahead too.
+                      Start building an account, hit "Sign Up", add your details, and pick a launch date. You can schedule ahead too.
                     </AccordionContent>
                   </AccordionItem>
 
