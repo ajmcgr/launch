@@ -298,7 +298,7 @@ const Reserve = () => {
           <h1 className="display">
             Vibe Code <span className="grad">Your Future</span>
           </h1>
-          <p className="sub">Reserve your founder handle on Launch.</p>
+          <p className="sub">Reserve your identity. Build your reputation.</p>
 
           {myReservation && (
             <div className="my-reservation" role="status">
