@@ -26,7 +26,7 @@ export const KarmaScore = ({ karma, size = 'sm' }: KarmaScoreProps) => {
     <Tooltip>
       <TooltipTrigger asChild>
         {isOnMakers ? content : (
-          <Link to="/makers" className="hover:text-primary transition-colors">
+          <Link to="/vibecoders" className="hover:text-primary transition-colors">
             {content}
           </Link>
         )}
