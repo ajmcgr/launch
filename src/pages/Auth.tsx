@@ -203,14 +203,14 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
-            {isForgotPassword ? 'Reset Password' : (isSignUp ? 'Join Launch' : 'Welcome Back')}
+            {isForgotPassword ? 'Reset Password' : (isSignUp ? 'Start building.' : 'Welcome back.')}
           </CardTitle>
           <CardDescription>
             {isForgotPassword 
               ? 'Enter your email to receive a password reset link'
               : (isSignUp 
-                ? 'Create an account to submit and launch your products'
-                : 'Sign in to discover and launch amazing products'
+                ? 'Join thousands of people building their future.'
+                : 'Sign in to ship your thing and see what vibe coders are building.'
               )
             }
           </CardDescription>
