@@ -484,7 +484,7 @@ const Reserve = () => {
             />
             <button className="primary-btn lg full" disabled={authLoading} type="submit">
               {authLoading && <Loader2 className="spin" size={16} />}
-              {authMode === 'signup' ? 'Create account' : 'Sign in'}
+              {authMode === 'signup' ? 'Start building' : 'Sign in'}
             </button>
             <button
               type="button"
@@ -492,8 +492,8 @@ const Reserve = () => {
               onClick={() => setAuthMode(authMode === 'signup' ? 'signin' : 'signup')}
             >
               {authMode === 'signup'
-                ? 'Already have an account? Sign in'
-                : 'New here? Create an account'}
+                ? 'Already building? Sign in'
+                : 'New here? Start building'}
             </button>
           </form>
         </div>
