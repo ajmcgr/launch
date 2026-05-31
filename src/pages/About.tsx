@@ -5,11 +5,11 @@ const About = () => {
   return (
     <>
       <Helmet>
-        <title>About Launch - Product Discovery Platform</title>
-        <meta name="description" content="Launch is a platform where founders and makers discover and launch amazing products. Learn about our mission to connect innovative makers with engaged audiences." />
+        <title>About Launch - Home of Vibe Coders</title>
+        <meta name="description" content="Launch is a platform where vibe coders discover and launch AI products. We're building the home for the next generation of builders." />
         <link rel="canonical" href="https://trylaunch.ai/about" />
-        <meta property="og:title" content="About Launch - Product Discovery Platform" />
-        <meta property="og:description" content="Launch is a platform where founders and makers discover and launch amazing products." />
+        <meta property="og:title" content="About Launch - Home of Vibe Coders" />
+        <meta property="og:description" content="Launch is a platform where vibe coders discover and launch AI products." />
         <meta property="og:url" content="https://trylaunch.ai/about" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
@@ -18,17 +18,17 @@ const About = () => {
             {
               "@type": "Question",
               "name": "What is Launch?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Launch is a platform where founders and makers discover and launch amazing products. The community votes on products they find interesting, helping the best products rise to the top." }
+              "acceptedAnswer": { "@type": "Answer", "text": "Launch is a platform where vibe coders discover and launch AI products. The community votes on what they find interesting, helping the best products rise to the top." }
             },
             {
               "@type": "Question",
               "name": "How do I launch my product?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Founders submit their products through a simple launch wizard, choosing when they want to go live. The community then votes on products and provides feedback." }
+              "acceptedAnswer": { "@type": "Answer", "text": "Vibe coders submit their AI products through a simple launch wizard, choosing when they want to go live. The community then votes on products and provides feedback." }
             },
             {
               "@type": "Question",
               "name": "Who founded Launch?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Launch was founded by Alex MacGregor to help every great product get discovered and connect innovative makers with engaged audiences." }
+              "acceptedAnswer": { "@type": "Answer", "text": "Launch was founded by Alex MacGregor to help vibe coders get discovered and connect builders with engaged audiences." }
             }
           ]
         })}</script>
@@ -40,9 +40,7 @@ const About = () => {
           
           <div className="prose prose-gray max-w-none space-y-6">
             <p className="text-lg">
-              Launch is a platform where founders and makers discover and launch amazing products.
-              We're building a community that celebrates innovation and helps great products get the
-              attention they deserve.
+              Launch is a platform where vibe coders discover and launch AI products.
             </p>
 
             <p>
@@ -50,20 +48,21 @@ const About = () => {
             </p>
 
             <p>
-              We believe that every great product deserves to be discovered. Our mission is to connect
-              innovative makers with engaged audiences, helping products reach the people who will love them.
+              We believe the future of software is being built by vibe coders — people who use AI to
+              ship products at a speed that was impossible just a few years ago. Our mission is to
+              help these builders get discovered, earn reputation, and find their audience.
             </p>
 
             <p>
-              Founders submit their products through our simple launch wizard, choosing when they want to
-              go live. The community then votes on products they find interesting, helping the best
+              Vibe coders submit their AI products through our simple launch wizard, choosing when they want to
+              go live. The community then votes on what they find interesting, helping the best
               products rise to the top.
             </p>
 
             <p>
-              Whether you're launching your first product or discovering your next favorite tool,
-              Launch is the place to be. Join thousands of founders and tech enthusiasts who
-              are shaping the future of product discovery.
+              Whether you're shipping your first AI tool or hunting for the next product that
+              changes how you work, Launch is where vibe coders gather. Join thousands of builders
+              who are redefining what it means to create software.
             </p>
 
             <div className="mt-12">
