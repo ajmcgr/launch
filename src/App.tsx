@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { Header } from "@/components/Header";
@@ -201,7 +201,8 @@ const AppContent = () => {
             <Route path="/media-kit" element={<MediaKit />} />
             <Route path="/tech/:slug" element={<StackPage />} />
             <Route path="/tech" element={<TechLeaderboard />} />
-            <Route path="/makers" element={<Leaderboard />} />
+            <Route path="/vibecoders" element={<Leaderboard />} />
+            <Route path="/makers" element={<Navigate to="/vibecoders" replace />} />
             <Route path="/success-stories" element={<SuccessStories />} />
             <Route path="/awards" element={<Awards />} />
             <Route path="/compare" element={<CompareHub />} />

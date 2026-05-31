@@ -1511,7 +1511,7 @@ const Submit = () => {
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            {isRescheduling ? 'Reschedule Launch' : 'Ship It'}
+            {isRescheduling ? 'Reschedule Launch' : 'Sign Up'}
           </h1>
           <p className="text-muted-foreground mb-1">
             {isRescheduling ? 'Pick a new launch date.' : 'Launch your thing to 50,000+ vibe coders.'}

@@ -11,7 +11,7 @@ export const KarmaScore = ({ karma, size = 'sm' }: KarmaScoreProps) => {
   if (karma === null || karma === 0) return null;
 
   const location = useLocation();
-  const isOnMakers = location.pathname === '/makers';
+  const isOnMakers = location.pathname === '/vibecoders';
 
   const content = (
     <span className={`inline-flex items-center gap-0.5 text-muted-foreground ${
@@ -26,7 +26,7 @@ export const KarmaScore = ({ karma, size = 'sm' }: KarmaScoreProps) => {
     <Tooltip>
       <TooltipTrigger asChild>
         {isOnMakers ? content : (
-          <Link to="/makers" className="hover:text-primary transition-colors">
+          <Link to="/vibecoders" className="hover:text-primary transition-colors">
             {content}
           </Link>
         )}
