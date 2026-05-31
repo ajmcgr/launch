@@ -64,7 +64,7 @@ const MediaKit = () => {
           {/* Intro */}
           <div className="mb-6">
             <p className="text-lg text-muted-foreground leading-relaxed">
-              <span className="font-bold text-foreground">Launch is the #1 discovery platform</span> for indie makers to share, vote, and discover the next big thing. 
+              <span className="font-bold text-foreground">Launch is the #1 discovery platform</span> for vibe coders to share, vote, and discover the next big thing. 
               Our highly engaged audience of entrepreneurs, developers, and early adopters are actively seeking new tools and products.
             </p>
           </div>
