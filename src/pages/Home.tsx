@@ -746,9 +746,9 @@ const Home = () => {
     if (filteredList.length === 0) {
       return (
         <div className="text-center py-12 text-muted-foreground">
-          <p>No products found for this period.</p>
+          <p>Nothing shipped in this window yet.</p>
           {currentPeriod === 'today' && (
-            <p className="mt-2 text-sm">Be the first to launch today! <Link to="/submit" className="text-primary hover:underline">Submit your product →</Link></p>
+            <p className="mt-2 text-sm">Be the first to ship today. <Link to="/submit" className="text-primary hover:underline">Ship it →</Link></p>
           )}
         </div>
       );
