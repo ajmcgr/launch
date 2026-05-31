@@ -38,7 +38,7 @@ import { ForumActivityWidget } from '@/components/ForumActivityWidget';
 import { SiteStatsWidget } from '@/components/SiteStatsWidget';
 import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
 import { CommunityCallout } from '@/components/CommunityCallout';
-import { NewsletterCompact } from '@/components/NewsletterCompact';
+
 import { PopularSections } from '@/components/PopularSections';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
@@ -1048,12 +1048,6 @@ const Home = () => {
                 </div>
               )}
 
-              {/* Newsletter signup (logged-out) */}
-              {!user && (
-                <div className="mb-6">
-                  <NewsletterCompact />
-                </div>
-              )}
 
               {/* Value Proposition */}
               <div className="text-left mb-8">
