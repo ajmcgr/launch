@@ -262,17 +262,17 @@ const Reserve = () => {
         <title>Vibe Code Your Future | Launch</title>
         <meta
           name="description"
-          content="Reserve your founder handle on Launch. Build your profile, launch products, and join the next generation of founders building the future."
+          content="Reserve your identity on Launch. Build your reputation alongside the next generation of vibe coders shipping their own thing."
         />
         <link rel="canonical" href="https://trylaunch.ai/reserve" />
         <meta property="og:title" content="Vibe Code Your Future | Launch" />
-        <meta property="og:description" content="Reserve your founder handle on Launch. Build the future." />
+        <meta property="og:description" content="Reserve your identity. Build your future." />
         <meta property="og:url" content="https://trylaunch.ai/reserve" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://trylaunch.ai/reserve-card.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Vibe Code Your Future | Launch" />
-        <meta name="twitter:description" content="Reserve your founder handle on Launch. Build the future." />
+        <meta name="twitter:description" content="Reserve your identity. Build your future." />
         <meta name="twitter:image" content="https://trylaunch.ai/reserve-card.png" />
       </Helmet>
 
