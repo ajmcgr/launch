@@ -969,7 +969,7 @@ const Home = () => {
         {/* Low volume encouragement for Today */}
         {showLowVolumeNote && (
           <div className="text-center py-6 text-sm text-muted-foreground">
-            <p>More launches coming soon today! <Link to="/submit" className="text-primary hover:underline">Be next →</Link></p>
+            <p>More vibe coders shipping today. <Link to="/submit" className="text-primary hover:underline">Be next →</Link></p>
           </div>
         )}
         
