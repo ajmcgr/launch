@@ -446,9 +446,9 @@ const Advertise = () => {
       
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Advertise with Launch</h1>
+          <h1 className="text-4xl font-bold mb-4">Get in Front of Vibe Coders</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Reach a highly engaged audience of builders and AI early adopters
+            Reach thousands of builders and founders shipping their own thing.
           </p>
         </div>
 

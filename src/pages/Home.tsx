@@ -746,9 +746,9 @@ const Home = () => {
     if (filteredList.length === 0) {
       return (
         <div className="text-center py-12 text-muted-foreground">
-          <p>No products found for this period.</p>
+          <p>Nothing shipped in this window yet.</p>
           {currentPeriod === 'today' && (
-            <p className="mt-2 text-sm">Be the first to launch today! <Link to="/submit" className="text-primary hover:underline">Submit your product →</Link></p>
+            <p className="mt-2 text-sm">Be the first to ship today. <Link to="/submit" className="text-primary hover:underline">Ship it →</Link></p>
           )}
         </div>
       );
@@ -969,7 +969,7 @@ const Home = () => {
         {/* Low volume encouragement for Today */}
         {showLowVolumeNote && (
           <div className="text-center py-6 text-sm text-muted-foreground">
-            <p>More launches coming soon today! <Link to="/submit" className="text-primary hover:underline">Be next →</Link></p>
+            <p>More vibe coders shipping today. <Link to="/submit" className="text-primary hover:underline">Be next →</Link></p>
           </div>
         )}
         
@@ -989,11 +989,11 @@ const Home = () => {
   };
 
   const homepageFaqs = [
-    { question: 'What is Launch?', answer: 'Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.' },
-    { question: 'How do I submit my product?', answer: 'Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!' },
-    { question: 'How does voting work?', answer: 'Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.' },
-    { question: 'What are Top Products and Archives?', answer: 'Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners.' },
-    { question: 'How do notifications work?', answer: 'Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.' },
+    { question: 'What is Launch?', answer: 'Launch is the home of vibe coders — the place to ship what you build, get discovered, and build your reputation alongside thousands of people building their future.' },
+    { question: 'How do I ship my thing?', answer: 'Start building an account, hit "Ship It", add your details, and pick a launch date. You can schedule ahead too.' },
+    { question: 'How does voting work?', answer: 'Vibe coders upvote what they love. Rankings are by time period (Today, Week, Month, Year). Sign in to vote.' },
+    { question: 'What are Top Products and Archives?', answer: 'The top 100 launches for each time period. We archive every year so you can revisit what shipped.' },
+    { question: 'How do notifications work?', answer: 'Hear it when people vote, comment, or when makers you follow ship something new. Tune it in Settings.' },
   ];
 
   return (
@@ -1036,12 +1036,12 @@ const Home = () => {
                 <div className="w-full bg-muted/30 px-6 py-6 md:py-0 flex items-center md:aspect-[7/1] mb-6">
                   <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="flex-1 text-center md:text-left">
-                      <h3 className="text-lg font-semibold mb-1">Launch your product to 50,000+ {(['founders', 'makers', 'builders', 'indiehackers'])[Math.floor(Math.random() * 4)]}</h3>
-                      <p className="text-sm text-muted-foreground">Get discovered, collect votes, and earn a DR 52 dofollow backlink — it's free to start.</p>
+                      <h3 className="text-lg font-semibold mb-1">Launch your thing to 50,000+ vibe coders</h3>
+                      <p className="text-sm text-muted-foreground">Ship it. Get discovered. Build your reputation — free to start.</p>
                     </div>
                     <div className="shrink-0">
                       <Button asChild className="gap-2">
-                        <Link to="/auth">Submit Your Product →</Link>
+                        <Link to="/auth">Ship It →</Link>
                       </Button>
                     </div>
                   </div>
@@ -1101,16 +1101,16 @@ const Home = () => {
                       What is Launch?
                     </AccordionTrigger>
                     <AccordionContent>
-                      Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
+                      Launch is the home of vibe coders — the place to ship what you build, get discovered, and build your reputation alongside thousands of people building their future.
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="how-submit" className="border rounded-lg px-6">
                     <AccordionTrigger className="text-left text-sm">
-                      How do I submit my product?
+                      How do I ship my thing?
                     </AccordionTrigger>
                     <AccordionContent>
-                      Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!
+                      Start building an account, hit "Ship It", add your details, and pick a launch date. You can schedule ahead too.
                     </AccordionContent>
                   </AccordionItem>
 

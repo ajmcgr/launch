@@ -61,9 +61,9 @@ const Pricing = () => {
     <div className="min-h-screen bg-background py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Launch Your Product</h1>
+          <h1 className="text-4xl font-bold mb-4">Launch Your Thing</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
-            Get your product in front of thousands of technologists, marketers and founders
+            Get in front of thousands of vibe coders, builders, and founders shipping their own thing.
           </p>
           
         </div>

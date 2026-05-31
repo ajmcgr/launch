@@ -252,7 +252,7 @@ const Pass = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Launch Pass</h1>
             <TrustPhrase className="text-sm text-muted-foreground mb-6" />
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              For makers who launch often. Replace per-launch fees with one flat rate.
+              For vibe coders shipping often. One flat rate. Launch as much as you build.
             </p>
             <div className="mb-6">
               <div className="text-5xl md:text-6xl font-bold tracking-tight mb-2">
