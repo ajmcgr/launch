@@ -989,11 +989,11 @@ const Home = () => {
   };
 
   const homepageFaqs = [
-    { question: 'What is Launch?', answer: 'Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.' },
-    { question: 'How do I submit my product?', answer: 'Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!' },
-    { question: 'How does voting work?', answer: 'Users can upvote products they find interesting. Products are ranked based on their votes within specific time periods (Today, This Week, This Month, This Year). You must be logged in to vote.' },
-    { question: 'What are Top Products and Archives?', answer: 'Top Products show the top 100 products for each time period. At the end of each year, we automatically archive these rankings so you can explore past winners.' },
-    { question: 'How do notifications work?', answer: 'Get notified when someone votes on your product, comments, or when people you follow launch new products. Customize your notification preferences in Settings.' },
+    { question: 'What is Launch?', answer: 'Launch is the home of vibe coders — the place to ship what you build, get discovered, and build your reputation alongside thousands of people building their future.' },
+    { question: 'How do I ship my thing?', answer: 'Start building an account, hit "Ship It", add your details, and pick a launch date. You can schedule ahead too.' },
+    { question: 'How does voting work?', answer: 'Vibe coders upvote what they love. Rankings are by time period (Today, Week, Month, Year). Sign in to vote.' },
+    { question: 'What are Top Products and Archives?', answer: 'The top 100 launches for each time period. We archive every year so you can revisit what shipped.' },
+    { question: 'How do notifications work?', answer: 'Hear it when people vote, comment, or when makers you follow ship something new. Tune it in Settings.' },
   ];
 
   return (
