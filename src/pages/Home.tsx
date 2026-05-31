@@ -1101,16 +1101,16 @@ const Home = () => {
                       What is Launch?
                     </AccordionTrigger>
                     <AccordionContent>
-                      Launch is a platform for launching and discovering new AI products. Makers can submit their products, get feedback from the community, and compete for daily, weekly, monthly, and yearly rankings.
+                      Launch is the home of vibe coders — the place to ship what you build, get discovered, and build your reputation alongside thousands of people building their future.
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="how-submit" className="border rounded-lg px-6">
                     <AccordionTrigger className="text-left text-sm">
-                      How do I submit my product?
+                      How do I ship my thing?
                     </AccordionTrigger>
                     <AccordionContent>
-                      Create an account, click "Submit" in the menu, fill out your product details, and choose your launch date. You can even schedule launches in advance!
+                      Start building an account, hit "Ship It", add your details, and pick a launch date. You can schedule ahead too.
                     </AccordionContent>
                   </AccordionItem>
 
