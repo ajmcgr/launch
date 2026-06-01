@@ -179,11 +179,11 @@ Deno.serve(async (req) => {
     );
 
     const now = new Date();
-    const monthStartISO = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+    const thirtyDaysAgoISO = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
     const [productsRes, usersRes, clicksRes, ga4] = await Promise.all([
-      supabase.from("products").select("*", { count: "exact", head: true }).eq("status", "launched").gte("launch_date", monthStartISO),
-      supabase.from("users").select("*", { count: "exact", head: true }).gte("created_at", monthStartISO),
+      supabase.from("products").select("*", { count: "exact", head: true }).eq("status", "launched").gte("launch_date", thirtyDaysAgoISO),
+      supabase.from("users").select("*", { count: "exact", head: true }).gte("created_at", thirtyDaysAgoISO),
       supabase.from("product_analytics_summary").select("total_website_clicks"),
       fetchGA4Data(),
     ]);
