@@ -880,6 +880,8 @@ const ReserveStyles = () => (
       outline: none; transition: border-color .2s; font-family: inherit;
     }
     .modal-input:focus { border-color: rgba(var(--focus),0.5); }
+    .modal-input::placeholder { color: rgba(255,255,255,0.4); }
+    .modal-label { display: block; color: var(--ink-dim); font-size: 12px; font-weight: 500; margin: 8px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .text-toggle {
       width: 100%; background: transparent; border: 0; color: var(--ink-dim); font-size: 13px;
       margin-top: 14px; cursor: pointer; padding: 6px; font-family: inherit;
