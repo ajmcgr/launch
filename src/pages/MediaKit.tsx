@@ -12,7 +12,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 interface PlatformStats {
   launched: number;
   makers: number;
-  clicksSent: number;
   visitorsMTD: number | null;
   pageviewsMTD: number | null;
   sessionsMTD: number | null;
@@ -132,12 +131,6 @@ const MediaKit = () => {
                 )}
                 <p className="text-sm text-muted-foreground font-medium mt-1">New Makers (30d)</p>
               </div>
-              {stats?.clicksSent && stats.clicksSent > 0 ? (
-                <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
-                  <p className="text-4xl font-bold text-primary">{formatStat(stats.clicksSent)}</p>
-                  <p className="text-sm text-muted-foreground font-medium mt-1">Clicks Sent to Makers (30d)</p>
-                </div>
-              ) : null}
               {/* Traffic Sources */}
               <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
                 <h3 className="text-xl font-bold mb-4 text-foreground">

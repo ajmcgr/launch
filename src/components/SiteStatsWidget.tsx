@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Rocket, MousePointerClick, Eye, FileText, Activity } from 'lucide-react';
+import { Users, Rocket, Eye, FileText, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PlatformStats {
   launched: number;
   makers: number;
-  clicksSent: number;
   visitorsMTD: number | null;
   pageviewsMTD: number | null;
   sessionsMTD: number | null;
@@ -48,7 +47,7 @@ export const SiteStatsWidget = () => {
 
       {isLoading || !data ? (
         <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-6 w-full" />
           ))}
         </div>
@@ -95,15 +94,6 @@ export const SiteStatsWidget = () => {
             </span>
             <span className="font-semibold text-foreground">{formatStat(data.makers)}</span>
           </li>
-          {data.clicksSent > 0 && (
-            <li className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <MousePointerClick className="h-3.5 w-3.5" />
-                Clicks sent
-              </span>
-              <span className="font-semibold text-foreground">{formatStat(data.clicksSent)}</span>
-            </li>
-          )}
         </ul>
       )}
       {!isLoading && hasGAData && (
