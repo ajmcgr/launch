@@ -154,13 +154,13 @@ const Awards = () => {
   return (
     <>
       <Helmet>
-        <title>Awards — Top Products of the Week | TryLaunch</title>
+        <title>Vibe Coder Awards — Top Products of the Week | TryLaunch</title>
         <meta name="description" content="Discover the top-ranked products awarded Gold, Silver, and Bronze each week on TryLaunch." />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold font-reckless mb-3">Weekly Awards</h1>
+          <h1 className="text-4xl font-bold font-reckless mb-3">Vibe Coder Awards</h1>
           <p className="text-muted-foreground">
             The top 3 products each week earn Gold, Silver, and Bronze awards based on community votes.
           </p>
