@@ -464,20 +464,28 @@ const Reserve = () => {
               </button>
             </div>
             <div className="oauth-divider"><span>or</span></div>
+            <label className="modal-label" htmlFor="reserve-auth-email">Email</label>
             <input
+              id="reserve-auth-email"
+              name="email"
               type="email"
               required
+              autoComplete="email"
               placeholder="you@founder.com"
               value={authEmail}
               onChange={(e) => setAuthEmail(e.target.value)}
               className="modal-input"
               autoFocus
             />
+            <label className="modal-label" htmlFor="reserve-auth-password">Password</label>
             <input
+              id="reserve-auth-password"
+              name="password"
               type="password"
               required
               minLength={6}
-              placeholder="Password (min 6)"
+              autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'}
+              placeholder="At least 6 characters"
               value={authPassword}
               onChange={(e) => setAuthPassword(e.target.value)}
               className="modal-input"
