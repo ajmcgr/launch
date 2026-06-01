@@ -464,20 +464,28 @@ const Reserve = () => {
               </button>
             </div>
             <div className="oauth-divider"><span>or</span></div>
+            <label className="modal-label" htmlFor="reserve-auth-email">Email</label>
             <input
+              id="reserve-auth-email"
+              name="email"
               type="email"
               required
+              autoComplete="email"
               placeholder="you@founder.com"
               value={authEmail}
               onChange={(e) => setAuthEmail(e.target.value)}
               className="modal-input"
               autoFocus
             />
+            <label className="modal-label" htmlFor="reserve-auth-password">Password</label>
             <input
+              id="reserve-auth-password"
+              name="password"
               type="password"
               required
               minLength={6}
-              placeholder="Password (min 6)"
+              autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'}
+              placeholder="At least 6 characters"
               value={authPassword}
               onChange={(e) => setAuthPassword(e.target.value)}
               className="modal-input"
@@ -872,6 +880,8 @@ const ReserveStyles = () => (
       outline: none; transition: border-color .2s; font-family: inherit;
     }
     .modal-input:focus { border-color: rgba(var(--focus),0.5); }
+    .modal-input::placeholder { color: rgba(255,255,255,0.4); }
+    .modal-label { display: block; color: var(--ink-dim); font-size: 12px; font-weight: 500; margin: 8px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .text-toggle {
       width: 100%; background: transparent; border: 0; color: var(--ink-dim); font-size: 13px;
       margin-top: 14px; cursor: pointer; padding: 6px; font-family: inherit;
