@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Rocket, MousePointerClick, Eye, FileText, Activity } from 'lucide-react';
+import { Users, Rocket, Eye, FileText, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PlatformStats {
   launched: number;
   makers: number;
-  clicksSent: number;
   visitorsMTD: number | null;
   pageviewsMTD: number | null;
   sessionsMTD: number | null;
