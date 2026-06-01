@@ -99,7 +99,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/vibecoders" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Vibe Coders
+                  Top Vibe Coders
                 </Link>
               </li>
               <li>
