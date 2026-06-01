@@ -94,15 +94,6 @@ export const SiteStatsWidget = () => {
             </span>
             <span className="font-semibold text-foreground">{formatStat(data.makers)}</span>
           </li>
-          {data.clicksSent > 0 && (
-            <li className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <MousePointerClick className="h-3.5 w-3.5" />
-                Clicks sent
-              </span>
-              <span className="font-semibold text-foreground">{formatStat(data.clicksSent)}</span>
-            </li>
-          )}
         </ul>
       )}
       {!isLoading && hasGAData && (
