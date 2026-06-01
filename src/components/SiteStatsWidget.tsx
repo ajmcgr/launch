@@ -47,7 +47,7 @@ export const SiteStatsWidget = () => {
 
       {isLoading || !data ? (
         <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-6 w-full" />
           ))}
         </div>
