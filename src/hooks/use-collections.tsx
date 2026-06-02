@@ -78,14 +78,18 @@ export function useCollections() {
   }, []);
 
   useEffect(() => {
+    let currentUid: string | null = null;
     supabase.auth.getSession().then(({ data: { session } }) => {
       const uid = session?.user?.id ?? null;
+      currentUid = uid;
       setUserId(uid);
       if (uid) fetchAll(uid);
       else setLoading(false);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       const uid = session?.user?.id ?? null;
+      if (uid === currentUid) return; // ignore token refreshes — prevents spinner flicker
+      currentUid = uid;
       setUserId(uid);
       if (uid) fetchAll(uid);
       else { setCollections([]); setLoading(false); }
