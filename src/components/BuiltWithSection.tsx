@@ -113,8 +113,9 @@ export default function BuiltWithSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
+  const lgCols = cols === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
   const grid = (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 ${lgCols} gap-5`}>
       {platforms.map((p) => (
         <PlatformCard key={p.slug} platform={p} stats={stats.get(p.slug)} loaded={loaded} />
       ))}
