@@ -1012,16 +1012,7 @@ const Home = () => {
               <TabsTrigger value="all" className="hidden sm:inline-flex text-[11px] sm:text-xs px-2 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">All</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
-              <div className="hidden md:flex items-center relative w-32 h-9 border rounded-md bg-background">
-                <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5" />
-                <Input
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleSearch}
-                  className="pl-7 h-full !text-[11px] sm:!text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-              </div>
+
               <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
               <ViewToggle view={view} onViewChange={handleViewChange} />
