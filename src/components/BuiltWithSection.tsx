@@ -153,10 +153,10 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
         <img
           src={platform.logoUrl}
           alt={`${platform.name} logo`}
-          className="max-h-24 max-w-[70%] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
+          className="max-h-32 max-w-[78%] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
           loading="lazy"
-          width={280}
-          height={96}
+          width={320}
+          height={128}
         />
         <ArrowUpRight className="absolute top-3 right-3 h-4 w-4 text-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
