@@ -65,7 +65,9 @@ export const usePass = (userId: string | undefined) => {
       };
     },
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 1000 * 30, // Cache for 30 seconds so webhook updates surface quickly
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 };
 
