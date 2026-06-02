@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
 import { buildFaqJsonLd, techFaqs, techIntroFallback } from '@/lib/seoFaq';
+import { builtWithBySlug } from '@/lib/builtWithPlatforms';
 
 interface Product {
   id: string;
