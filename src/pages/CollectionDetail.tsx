@@ -37,6 +37,8 @@ interface ItemProduct {
   product_id: string;
   added_at: string;
   note: string | null;
+  added_by: string | null;
+  added_by_username: string | null;
   product: any;
 }
 
