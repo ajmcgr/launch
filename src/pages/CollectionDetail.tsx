@@ -389,7 +389,7 @@ export default function CollectionDetail({ publicMode = false }: Props) {
                   {showAttribution && (
                     <p className="text-[11px] text-muted-foreground mt-1 px-1 flex items-center gap-1">
                       Added by{' '}
-                      <Link to={`/u/${i.added_by_username}`} className="hover:text-primary font-medium">
+                      <Link to={`/${i.added_by_username}`} className="hover:text-primary font-medium">
                         @{i.added_by_username}
                       </Link>
                       {!isOwner && currentUserId && i.added_by === currentUserId && (
