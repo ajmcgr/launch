@@ -14,8 +14,10 @@ interface Stats {
 interface Props {
   /** 'full' = directory section with header; 'home' = homepage section */
   variant?: 'full' | 'home';
-  /** Cap number of platforms shown (e.g. 9 on /collections, 9 on home) */
+  /** Cap number of platforms shown */
   limit?: number;
+  /** When true, render only the card grid (no heading/eyebrow/subtitle). */
+  headless?: boolean;
   title?: string;
   eyebrow?: string;
   subtitle?: string;
@@ -28,6 +30,7 @@ interface Props {
 export default function BuiltWithSection({
   variant = 'full',
   limit,
+  headless = false,
   title,
   eyebrow,
   subtitle,
@@ -55,7 +58,6 @@ export default function BuiltWithSection({
         .in('stack_item_id', ids);
 
       const productIds = Array.from(new Set((maps ?? []).map((m: any) => m.product_id)));
-      // Restrict to launched products
       const { data: launched } = await sb
         .from('products')
         .select('id')
@@ -83,7 +85,6 @@ export default function BuiltWithSection({
         if (!s) { s = { products: 0, founders: 0 }; next.set(slug, s); }
         s.products += 1;
       });
-      // founders: unique users per slug
       const foundersPerSlug = new Map<string, Set<string>>();
       (maps ?? []).forEach((m: any) => {
         const slug = slugById.get(m.stack_item_id);
@@ -109,6 +110,16 @@ export default function BuiltWithSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
+  const grid = (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {platforms.map((p) => (
+        <PlatformCard key={p.slug} platform={p} stats={stats.get(p.slug)} loaded={loaded} />
+      ))}
+    </div>
+  );
+
+  if (headless) return grid;
+
   return (
     <section className={variant === 'home' ? 'py-10' : 'mb-12'}>
       <header className="mb-6 flex items-end justify-between gap-4 flex-wrap">
@@ -126,12 +137,7 @@ export default function BuiltWithSection({
           )}
         </div>
       </header>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {platforms.map((p) => (
-          <PlatformCard key={p.slug} platform={p} stats={stats.get(p.slug)} loaded={loaded} />
-        ))}
-      </div>
+      {grid}
     </section>
   );
 }
@@ -141,25 +147,25 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
   return (
     <Link
       to={`/tech/${platform.slug}`}
-      className="group relative flex flex-col rounded-2xl border bg-card hover:border-foreground/30 hover:shadow-lg transition-all overflow-hidden"
+      className="group relative flex flex-col rounded-xl border bg-card hover:border-foreground/30 hover:shadow-md transition-all overflow-hidden"
     >
-      <div className={`${platform.plate} relative h-28 flex items-center justify-center border-b border-border/60 overflow-hidden`}>
+      <div className={`${platform.plate} relative aspect-[3/1.6] flex items-center justify-center border-b border-border/60 overflow-hidden`}>
         <img
           src={platform.logoUrl}
           alt={`${platform.name} logo`}
-          className="max-h-12 max-w-[60%] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
+          className="max-h-24 max-w-[70%] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
           loading="lazy"
-          width={200}
-          height={48}
+          width={280}
+          height={96}
         />
         <ArrowUpRight className="absolute top-3 right-3 h-4 w-4 text-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
       <div className="p-4 flex-1 flex flex-col">
-        <h3 className="font-semibold text-base group-hover:text-primary transition-colors">
+        <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">
           Built With {platform.name}
         </h3>
         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{platform.description}</p>
-        <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="mt-auto pt-3 flex items-center gap-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <Package className="h-3.5 w-3.5" />
             {loaded ? `${products.toLocaleString()} ${products === 1 ? 'product' : 'products'}` : '— products'}
