@@ -41,7 +41,6 @@ import { CommunityCallout } from '@/components/CommunityCallout';
 
 import { PopularSections } from '@/components/PopularSections';
 import BuiltWithSection from '@/components/BuiltWithSection';
-import CollectionsPreview from '@/components/CollectionsPreview';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 
@@ -1090,10 +1089,13 @@ const Home = () => {
 
               <ThisWeekHighlights view={effectiveView} />
 
-              {/* Explore By Collection — styled to match FAQ heading */}
+              {/* Homepage Sponsor Banner #2 (DB-managed) */}
+              <HomepageSponsorBanners offset={1} limit={1} />
+
+              {/* Explore By Collection — Built With platform cards */}
               <div className="pt-6 pb-4">
                 <h2 className="text-2xl font-bold mb-8 text-left">Explore By Collection</h2>
-                <CollectionsPreview limit={6} />
+                <BuiltWithSection headless />
                 <div className="text-center mt-6">
                   <Link to="/collections">
                     <Button variant="outline">View All Collections</Button>
@@ -1101,13 +1103,6 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Homepage Sponsor Banner #2 (DB-managed) */}
-              <HomepageSponsorBanners offset={1} limit={1} />
-
-              {/* Built With cards — directly above FAQ, same style as /collections */}
-              <div className="pt-6 pb-4">
-                <BuiltWithSection headless />
-              </div>
 
 
 
