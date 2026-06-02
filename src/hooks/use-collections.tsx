@@ -133,7 +133,7 @@ export function useCollections() {
       currentUid = uid;
       setUserId(uid);
       if (uid) fetchAll(uid);
-      else { setCollections([]); setLoading(false); }
+      else { setCollections([]); setSharedCollections([]); setLoading(false); }
     });
     return () => subscription.unsubscribe();
   }, [fetchAll]);
