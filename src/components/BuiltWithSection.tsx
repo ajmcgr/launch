@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { builtWithPlatforms, type BuiltWithPlatform } from '@/lib/builtWithPlatforms';
-import { Users, Package } from 'lucide-react';
+import { FolderOpen, Eye, Heart } from 'lucide-react';
 
 const sb: any = supabase;
 
-interface Stats {
-  products: number;
-  founders: number;
+interface CollectionStats {
+  itemCount: number;
+  views: number;
+  followers: number;
+  creatorUsername?: string | null;
 }
 
 interface Props {
@@ -26,8 +28,8 @@ interface Props {
 }
 
 /**
- * Surfaces the existing /tech/{slug} pages as premium "Built With" cards.
- * Data is fully derived from the existing stack_items + product_stack_map tables.
+ * Surfaces the "Built With {platform}" user_collections as premium cards.
+ * Meta (items / views / followers / creator) matches the rest of the /collections grid.
  */
 export default function BuiltWithSection({
   variant = 'full',
@@ -38,7 +40,7 @@ export default function BuiltWithSection({
   eyebrow,
   subtitle,
 }: Props) {
-  const [stats, setStats] = useState<Map<string, Stats>>(new Map());
+  const [stats, setStats] = useState<Map<string, CollectionStats>>(new Map());
   const [loaded, setLoaded] = useState(false);
 
   const platforms = limit ? builtWithPlatforms.slice(0, limit) : builtWithPlatforms;
@@ -46,62 +48,37 @@ export default function BuiltWithSection({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const slugs = platforms.map((p) => p.slug);
-      const { data: items } = await sb
-        .from('stack_items')
-        .select('id, slug')
-        .in('slug', slugs);
-      const slugById = new Map<number, string>((items ?? []).map((s: any) => [s.id, s.slug]));
-      const ids = (items ?? []).map((s: any) => s.id);
-      if (!ids.length) { if (!cancelled) setLoaded(true); return; }
+      const collectionSlugs = platforms.map((p) => `built-with-${p.slug}`);
+      const { data: cols } = await sb
+        .from('user_collections')
+        .select('id, slug, view_count, user_id')
+        .in('slug', collectionSlugs);
+      if (!cols?.length) { if (!cancelled) setLoaded(true); return; }
 
-      const { data: maps } = await sb
-        .from('product_stack_map')
-        .select('stack_item_id, product_id')
-        .in('stack_item_id', ids);
+      const ids = cols.map((c: any) => c.id);
+      const userIds = Array.from(new Set(cols.map((c: any) => c.user_id)));
 
-      const productIds = Array.from(new Set((maps ?? []).map((m: any) => m.product_id)));
-      const { data: launched } = await sb
-        .from('products')
-        .select('id')
-        .in('id', productIds.length ? productIds : ['00000000-0000-0000-0000-000000000000'])
-        .eq('status', 'launched');
-      const launchedSet = new Set((launched ?? []).map((p: any) => p.id));
+      const [{ data: itemRows }, { data: followRows }, { data: users }] = await Promise.all([
+        sb.from('user_collection_items').select('collection_id').in('collection_id', ids),
+        sb.from('collection_follows').select('collection_id').in('collection_id', ids),
+        sb.from('users').select('id, username').in('id', userIds),
+      ]);
 
-      const { data: makers } = await sb
-        .from('product_makers')
-        .select('product_id, user_id')
-        .in('product_id', productIds.length ? productIds : ['00000000-0000-0000-0000-000000000000']);
+      const itemCounts = new Map<string, number>();
+      (itemRows ?? []).forEach((r: any) => itemCounts.set(r.collection_id, (itemCounts.get(r.collection_id) ?? 0) + 1));
+      const followCounts = new Map<string, number>();
+      (followRows ?? []).forEach((r: any) => followCounts.set(r.collection_id, (followCounts.get(r.collection_id) ?? 0) + 1));
+      const userMap = new Map((users ?? []).map((u: any) => [u.id, u]));
 
-      const productToMakers = new Map<string, Set<string>>();
-      (makers ?? []).forEach((m: any) => {
-        if (!productToMakers.has(m.product_id)) productToMakers.set(m.product_id, new Set());
-        productToMakers.get(m.product_id)!.add(m.user_id);
-      });
-
-      const next = new Map<string, Stats>();
-      (maps ?? []).forEach((m: any) => {
-        const slug = slugById.get(m.stack_item_id);
-        if (!slug) return;
-        if (!launchedSet.has(m.product_id)) return;
-        let s = next.get(slug);
-        if (!s) { s = { products: 0, founders: 0 }; next.set(slug, s); }
-        s.products += 1;
-      });
-      const foundersPerSlug = new Map<string, Set<string>>();
-      (maps ?? []).forEach((m: any) => {
-        const slug = slugById.get(m.stack_item_id);
-        if (!slug) return;
-        if (!launchedSet.has(m.product_id)) return;
-        const users = productToMakers.get(m.product_id);
-        if (!users) return;
-        if (!foundersPerSlug.has(slug)) foundersPerSlug.set(slug, new Set());
-        const set = foundersPerSlug.get(slug)!;
-        users.forEach((u) => set.add(u));
-      });
-      foundersPerSlug.forEach((set, slug) => {
-        const s = next.get(slug);
-        if (s) s.founders = set.size;
+      const next = new Map<string, CollectionStats>();
+      cols.forEach((c: any) => {
+        const platformSlug = c.slug.replace(/^built-with-/, '');
+        next.set(platformSlug, {
+          itemCount: itemCounts.get(c.id) ?? 0,
+          views: c.view_count ?? 0,
+          followers: followCounts.get(c.id) ?? 0,
+          creatorUsername: userMap.get(c.user_id)?.username ?? null,
+        });
       });
 
       if (!cancelled) {
@@ -115,7 +92,7 @@ export default function BuiltWithSection({
 
   const lgCols = cols === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
   const grid = (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 ${lgCols} gap-5`}>
+    <div className={`grid grid-cols-2 ${lgCols} gap-5`}>
       {platforms.map((p) => (
         <PlatformCard key={p.slug} platform={p} stats={stats.get(p.slug)} loaded={loaded} />
       ))}
@@ -146,14 +123,16 @@ export default function BuiltWithSection({
   );
 }
 
-function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform; stats?: Stats; loaded: boolean }) {
-  const products = stats?.products ?? 0;
+function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform; stats?: CollectionStats; loaded: boolean }) {
+  const itemCount = stats?.itemCount ?? 0;
+  const views = stats?.views ?? 0;
+  const followers = stats?.followers ?? 0;
   return (
     <Link
       to={`/c/built-with-${platform.slug}`}
-      className="group relative flex flex-col rounded-xl border bg-card hover:border-foreground/30 hover:shadow-md transition-all overflow-hidden"
+      className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
     >
-      <div className={`${platform.plate} relative aspect-[3/1.6] flex items-center justify-center border-b border-border/60 overflow-hidden`}>
+      <div className={`${platform.plate} aspect-[3/1.6] flex items-center justify-center overflow-hidden`}>
         <img
           src={platform.logoUrl}
           alt={`${platform.name} logo`}
@@ -167,18 +146,14 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
         <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">
           Built With {platform.name}
         </h3>
-        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{platform.description}</p>
-        <div className="mt-auto pt-3 flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Package className="h-3.5 w-3.5" />
-            {loaded ? `${products.toLocaleString()} ${products === 1 ? 'product' : 'products'}` : '— products'}
-          </span>
-          {stats?.founders ? (
-            <span className="inline-flex items-center gap-1">
-              <Users className="h-3.5 w-3.5" />
-              {stats.founders.toLocaleString()} {stats.founders === 1 ? 'founder' : 'founders'}
-            </span>
-          ) : null}
+        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{platform.description}</p>
+        <div className="mt-auto pt-3 flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1"><FolderOpen className="h-3.5 w-3.5" />{loaded ? itemCount : '—'}</span>
+            <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{views.toLocaleString()}</span>
+            <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" />{followers}</span>
+          </div>
+          {stats?.creatorUsername && <span className="truncate ml-2">@{stats.creatorUsername}</span>}
         </div>
       </div>
     </Link>
