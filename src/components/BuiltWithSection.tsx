@@ -18,6 +18,8 @@ interface Props {
   limit?: number;
   /** When true, render only the card grid (no heading/eyebrow/subtitle). */
   headless?: boolean;
+  /** Max number of columns at lg breakpoint (default 3). Use 2 in narrower containers (e.g. homepage with sidebar) so card/logo sizing matches the full-width /collections grid. */
+  cols?: 2 | 3;
   title?: string;
   eyebrow?: string;
   subtitle?: string;
