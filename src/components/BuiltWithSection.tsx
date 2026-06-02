@@ -33,6 +33,7 @@ export default function BuiltWithSection({
   variant = 'full',
   limit,
   headless = false,
+  cols = 3,
   title,
   eyebrow,
   subtitle,
