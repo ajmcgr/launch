@@ -1109,7 +1109,7 @@ const Home = () => {
 
 
 
-              <CommunityCallout />
+              <HomepageSponsorBanners offset={2} limit={1} />
 
               <div className="pt-6 pb-4">
                 <h2 className="text-2xl font-bold mb-8 text-left">Frequently Asked Questions</h2>
