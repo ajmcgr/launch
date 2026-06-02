@@ -1109,6 +1109,8 @@ const Home = () => {
 
 
 
+              <CommunityCallout />
+
               <div className="pt-6 pb-4">
                 <h2 className="text-2xl font-bold mb-8 text-left">Frequently Asked Questions</h2>
                 
@@ -1165,8 +1167,6 @@ const Home = () => {
                   </Link>
                 </div>
               </div>
-
-              <CommunityCallout />
 
               <PopularSections />
             </div>
