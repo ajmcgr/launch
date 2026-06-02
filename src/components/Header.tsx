@@ -14,7 +14,8 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { User, Settings, Package, LogOut, Menu, Bookmark, Megaphone } from 'lucide-react';
+import { User, Settings, Package, LogOut, Menu, Bookmark, Megaphone, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
