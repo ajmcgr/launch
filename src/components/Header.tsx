@@ -246,6 +246,23 @@ export const Header = () => {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] bg-background">
                 <nav className="flex flex-col gap-4 mt-8">
+                  <div className="flex items-center relative h-10 border rounded-md bg-background">
+                    <Search className="absolute left-3 text-muted-foreground h-4 w-4 pointer-events-none" />
+                    <Input
+                      type="search"
+                      placeholder="Search"
+                      value={headerSearch}
+                      onChange={(e) => setHeaderSearch(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && headerSearch.trim()) {
+                          navigate(`/search?q=${encodeURIComponent(headerSearch.trim())}`);
+                          setHeaderSearch('');
+                          setMobileMenuOpen(false);
+                        }
+                      }}
+                      className="pl-9 h-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                  </div>
                   <Link 
                     to="/" 
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
