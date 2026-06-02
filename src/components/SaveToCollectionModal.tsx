@@ -31,7 +31,7 @@ interface Props {
 
 export const SaveToCollectionModal = ({ open, onOpenChange, productId, productName, onSaved }: Props) => {
   const navigate = useNavigate();
-  const { collections, loading, createCollection, userId, refresh } = useCollections();
+  const { collections, sharedCollections, loading, createCollection, userId, refresh } = useCollections();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [note, setNote] = useState('');
   const [creating, setCreating] = useState(false);
