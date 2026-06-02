@@ -150,7 +150,7 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
   const products = stats?.products ?? 0;
   return (
     <Link
-      to={`/tech/${platform.slug}`}
+      to={`/c/built-with-${platform.slug}`}
       className="group relative flex flex-col rounded-xl border bg-card hover:border-foreground/30 hover:shadow-md transition-all overflow-hidden"
     >
       <div className={`${platform.plate} relative aspect-[3/1.6] flex items-center justify-center border-b border-border/60 overflow-hidden`}>
