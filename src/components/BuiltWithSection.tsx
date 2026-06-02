@@ -18,6 +18,8 @@ interface Props {
   limit?: number;
   /** When true, render only the card grid (no heading/eyebrow/subtitle). */
   headless?: boolean;
+  /** Max number of columns at lg breakpoint (default 3). Use 2 in narrower containers (e.g. homepage with sidebar) so card/logo sizing matches the full-width /collections grid. */
+  cols?: 2 | 3;
   title?: string;
   eyebrow?: string;
   subtitle?: string;
@@ -31,6 +33,7 @@ export default function BuiltWithSection({
   variant = 'full',
   limit,
   headless = false,
+  cols = 3,
   title,
   eyebrow,
   subtitle,
@@ -110,8 +113,9 @@ export default function BuiltWithSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
+  const lgCols = cols === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
   const grid = (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 ${lgCols} gap-5`}>
       {platforms.map((p) => (
         <PlatformCard key={p.slug} platform={p} stats={stats.get(p.slug)} loaded={loaded} />
       ))}
