@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { FolderOpen, Eye, TrendingUp, Star, Clock, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
+import BuiltWithSection from '@/components/BuiltWithSection';
 
 const sb: any = supabase;
 
