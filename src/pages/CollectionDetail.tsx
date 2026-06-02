@@ -367,21 +367,49 @@ export default function CollectionDetail({ publicMode = false }: Props) {
           )}
 
           <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
-            {sorted.map((i) => (
-              <div key={i.itemId} className="relative">
-                {isOwner && (
-                  <div className="absolute top-2 right-2 z-20 bg-background/90 backdrop-blur rounded p-1">
-                    <Checkbox
-                      checked={selected.has(i.product_id)}
-                      onCheckedChange={() => toggleSelect(i.product_id)}
-                      aria-label={`Select ${i.product.name}`}
-                    />
-                  </div>
-                )}
-                <LaunchCard {...i.product} onVote={handleVote} />
-                {i.note && <p className="text-xs text-muted-foreground italic mt-1 px-1">“{i.note}”</p>}
-              </div>
-            ))}
+            {sorted.map((i) => {
+              const showAttribution =
+                !!i.added_by_username &&
+                collection &&
+                i.added_by &&
+                i.added_by !== collection.user_id;
+              return (
+                <div key={i.itemId} className="relative">
+                  {isOwner && (
+                    <div className="absolute top-2 right-2 z-20 bg-background/90 backdrop-blur rounded p-1">
+                      <Checkbox
+                        checked={selected.has(i.product_id)}
+                        onCheckedChange={() => toggleSelect(i.product_id)}
+                        aria-label={`Select ${i.product.name}`}
+                      />
+                    </div>
+                  )}
+                  <LaunchCard {...i.product} onVote={handleVote} />
+                  {i.note && <p className="text-xs text-muted-foreground italic mt-1 px-1">"{i.note}"</p>}
+                  {showAttribution && (
+                    <p className="text-[11px] text-muted-foreground mt-1 px-1 flex items-center gap-1">
+                      Added by{' '}
+                      <Link to={`/u/${i.added_by_username}`} className="hover:text-primary font-medium">
+                        @{i.added_by_username}
+                      </Link>
+                      {!isOwner && currentUserId && i.added_by === currentUserId && (
+                        <button
+                          className="ml-1 text-muted-foreground hover:text-destructive underline-offset-2 hover:underline"
+                          onClick={async () => {
+                            if (!confirm(`Remove ${i.product.name} from this collection?`)) return;
+                            await removeLaunchFromCollection(collection!.id, i.product_id);
+                            setItems((prev) => prev.filter((x) => x.itemId !== i.itemId));
+                            toast.success('Removed');
+                          }}
+                        >
+                          remove
+                        </button>
+                      )}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </>
       )}
