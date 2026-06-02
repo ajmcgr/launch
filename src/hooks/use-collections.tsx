@@ -206,7 +206,7 @@ export async function listCollaborators(collectionId: string): Promise<Collabora
   const ids = (rows ?? []).map((r: any) => r.user_id);
   if (!ids.length) return [];
   const { data: users } = await sb.from('users').select('id, username, avatar_url').in('id', ids);
-  const um = new Map((users ?? []).map((u: any) => [u.id, u]));
+  const um = new Map<string, any>((users ?? []).map((u: any) => [u.id, u]));
   return (rows ?? []).map((r: any) => ({
     id: r.id,
     user_id: r.user_id,
