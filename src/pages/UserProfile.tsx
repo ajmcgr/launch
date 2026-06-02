@@ -222,7 +222,7 @@ function CollectionsPanel({ profile }: { profile: any }) {
           <Card key={c.id} className="overflow-hidden hover:border-primary/50 transition-colors group">
             {c.cover_image_url && (
               <Link to={`/c/${c.slug}`} className="block aspect-[16/9] bg-muted overflow-hidden">
-                <img src={c.cover_image_url} alt={c.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+                <img src={c.cover_image_url} alt={c.name} loading="lazy" className="w-full h-full object-cover" />
               </Link>
             )}
             <div className="p-4">

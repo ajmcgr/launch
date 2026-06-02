@@ -136,7 +136,7 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
         <img
           src={platform.logoUrl}
           alt={`${platform.name} logo`}
-          className="max-h-32 max-w-[78%] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
+          className="max-h-32 max-w-[78%] object-contain"
           loading="lazy"
           width={320}
           height={128}
