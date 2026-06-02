@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { gradientFor } from '@/lib/gradients';
+import CollectionCoverArt from '@/components/CollectionCoverArt';
 
 export default function Collections() {
   const navigate = useNavigate();
@@ -157,11 +158,8 @@ export default function Collections() {
               <Link
                 to={`/my-collections/${c.slug}`}
                 className="block aspect-[3/1.6] bg-muted overflow-hidden"
-                style={!c.cover_image_url ? { backgroundImage: gradientFor(c.id || c.slug || c.name) } : undefined}
               >
-                {c.cover_image_url && (
-                  <img src={c.cover_image_url} alt={c.name} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform" loading="lazy" />
-                )}
+                <CollectionCoverArt slug={c.slug} name={c.name} coverImageUrl={c.cover_image_url} />
               </Link>
               <div className="p-4">
               <div className="flex items-start justify-between gap-2 mb-2">
