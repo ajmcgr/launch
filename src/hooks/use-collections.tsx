@@ -64,11 +64,11 @@ export function useCollections() {
         (maps ?? []).forEach((m: any) => {
           perStack[m.stack_item_id] = (perStack[m.stack_item_id] ?? 0) + 1;
         });
-        const stackBySlug = new Map((stackItems ?? []).map((s: any) => [s.slug, s.id]));
+        const stackBySlug = new Map<string, any>((stackItems ?? []).map((s: any) => [s.slug, s.id]));
         builtWith.forEach((c: Collection) => {
           const platformSlug = c.slug.replace(/^built-with-/, '');
           const sid = stackBySlug.get(platformSlug);
-          if (sid) counts[c.id] = (counts[c.id] ?? 0) + (perStack[sid] ?? 0);
+          if (sid) counts[c.id] = (counts[c.id] ?? 0) + (perStack[String(sid)] ?? 0);
         });
       }
     }
