@@ -81,6 +81,7 @@ const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
 const VibeCodeYourFuture = lazy(() => import("./pages/VibeCodeYourFuture"));
+const Search = lazy(() => import("./pages/Search"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
@@ -232,6 +233,7 @@ const AppContent = () => {
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
             <Route path="/vibecodeyourfuture" element={<VibeCodeYourFuture />} />
+            <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
