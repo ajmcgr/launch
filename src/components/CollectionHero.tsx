@@ -4,8 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
-  X, Linkedin, Link2, Eye, Bookmark, Users, FolderOpen, Heart, HeartOff, Globe, Lock,
+  Linkedin, Link2, Eye, Bookmark, Users, FolderOpen, Heart, HeartOff, Globe, Lock,
 } from 'lucide-react';
+
+const XLogo = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 import { toast } from 'sonner';
 
 const sb: any = supabase;
@@ -162,7 +168,7 @@ export const CollectionHero = ({ collection, productCount }: Props) => {
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Share:</span>
             <a href={xUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm"><X className="h-4 w-4 mr-1" />X</Button>
+              <Button variant="outline" size="sm"><XLogo className="h-4 w-4 mr-1" />X</Button>
             </a>
             <a href={liUrl} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm"><Linkedin className="h-4 w-4 mr-1" />LinkedIn</Button>
