@@ -120,6 +120,17 @@ export const Header = () => {
             <Link to="/" className="flex items-center">
               <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
+            <div className="hidden md:flex items-center relative w-56 h-9 border rounded-md bg-background">
+              <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5 pointer-events-none" />
+              <Input
+                type="search"
+                placeholder="Search products & collections"
+                value={headerSearch}
+                onChange={(e) => setHeaderSearch(e.target.value)}
+                onKeyDown={handleHeaderSearch}
+                className="pl-7 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+            </div>
             <nav className="hidden md:flex items-center gap-6">
               <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Launches
