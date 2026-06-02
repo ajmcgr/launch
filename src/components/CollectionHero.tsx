@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
-  Twitter, Linkedin, Link2, Eye, Bookmark, Users, FolderOpen, Heart, HeartOff, Globe, Lock,
+  X, Linkedin, Link2, Eye, Bookmark, Users, FolderOpen, Heart, HeartOff, Globe, Lock,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
