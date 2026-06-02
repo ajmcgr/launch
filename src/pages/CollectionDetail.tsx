@@ -299,9 +299,19 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
       <CollectionHero collection={collection} productCount={items.length} />
 
-      {isOwner && (
-        <div className="flex items-center gap-2 mb-6 -mt-2">
-          <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
+      {(isOwner || canContribute) && (
+        <div className="flex flex-wrap items-center gap-2 mb-6 -mt-2">
+          {isOwner && (
+            <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
+          )}
+          {canContribute && (
+            <Button variant="outline" size="sm" onClick={() => navigate('/products')}>
+              <FolderPlus className="h-4 w-4 mr-1" /> Add launches
+            </Button>
+          )}
+          {isCollaborator && !isOwner && (
+            <span className="text-xs text-muted-foreground">You're a collaborator on this collection</span>
+          )}
         </div>
       )}
 
@@ -309,8 +319,8 @@ export default function CollectionDetail({ publicMode = false }: Props) {
         <div className="text-center py-20 border border-dashed rounded-lg">
           <FolderPlus className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <h2 className="text-lg font-semibold mb-1">This collection is empty</h2>
-          <p className="text-sm text-muted-foreground mb-4">{isOwner ? 'Browse launches and save your favorites.' : 'Nothing here yet.'}</p>
-          {isOwner && <Button onClick={() => navigate('/products')}>Browse launches</Button>}
+          <p className="text-sm text-muted-foreground mb-4">{canContribute ? 'Browse launches and save your favorites.' : 'Nothing here yet.'}</p>
+          {canContribute && <Button onClick={() => navigate('/products')}>Browse launches</Button>}
         </div>
       ) : (
         <>
