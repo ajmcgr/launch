@@ -19,6 +19,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { gradientFor } from '@/lib/gradients';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
+import CollectionCollaboratorsPanel from '@/components/CollectionCollaboratorsPanel';
 
 export default function Collections() {
   const navigate = useNavigate();
@@ -263,6 +264,9 @@ export default function Collections() {
                   {editing.is_public ? 'Public' : 'Private'}
                 </Label>
                 <Switch checked={editing.is_public} onCheckedChange={(v) => setEditing({ ...editing, is_public: v })} />
+              </div>
+              <div className="border-t pt-3">
+                <CollectionCollaboratorsPanel collectionId={editing.id} />
               </div>
             </div>
           )}

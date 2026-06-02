@@ -31,7 +31,7 @@ interface Props {
 
 export const SaveToCollectionModal = ({ open, onOpenChange, productId, productName, onSaved }: Props) => {
   const navigate = useNavigate();
-  const { collections, loading, createCollection, userId, refresh } = useCollections();
+  const { collections, sharedCollections, loading, createCollection, userId, refresh } = useCollections();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [note, setNote] = useState('');
   const [creating, setCreating] = useState(false);
@@ -119,18 +119,36 @@ export const SaveToCollectionModal = ({ open, onOpenChange, productId, productNa
         <div className="space-y-3 max-h-72 overflow-y-auto pr-1" role="list" aria-label="Your collections">
           {loading ? (
             <div className="text-sm text-muted-foreground">Loading…</div>
-          ) : collections.length === 0 && !creating ? (
+          ) : collections.length === 0 && sharedCollections.length === 0 && !creating ? (
             <div className="text-sm text-muted-foreground">No collections yet. Create your first one below.</div>
           ) : (
-            collections.map((c) => (
-              <label key={c.id} className="flex items-center gap-3 cursor-pointer p-2 rounded-md hover:bg-muted/50" role="listitem">
-                <Checkbox checked={selected.has(c.id)} onCheckedChange={() => toggle(c.id)} aria-label={`Toggle ${c.name}`} />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{c.name}</div>
-                  <div className="text-xs text-muted-foreground">{c.item_count ?? 0} launches{c.is_public ? ' • Public' : ''}</div>
-                </div>
-              </label>
-            ))
+            <>
+              {collections.map((c) => (
+                <label key={c.id} className="flex items-center gap-3 cursor-pointer p-2 rounded-md hover:bg-muted/50" role="listitem">
+                  <Checkbox checked={selected.has(c.id)} onCheckedChange={() => toggle(c.id)} aria-label={`Toggle ${c.name}`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{c.name}</div>
+                    <div className="text-xs text-muted-foreground">{c.item_count ?? 0} launches{c.is_public ? ' • Public' : ''}</div>
+                  </div>
+                </label>
+              ))}
+              {sharedCollections.length > 0 && (
+                <>
+                  <div className="text-xs uppercase tracking-wide text-muted-foreground pt-2 pl-1">Shared with you</div>
+                  {sharedCollections.map((c) => (
+                    <label key={c.id} className="flex items-center gap-3 cursor-pointer p-2 rounded-md hover:bg-muted/50" role="listitem">
+                      <Checkbox checked={selected.has(c.id)} onCheckedChange={() => toggle(c.id)} aria-label={`Toggle ${c.name}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">{c.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {c.item_count ?? 0} launches{c.owner_username ? ` • by @${c.owner_username}` : ''}
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </>
+              )}
+            </>
           )}
         </div>
 

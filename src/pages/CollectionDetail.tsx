@@ -37,6 +37,8 @@ interface ItemProduct {
   product_id: string;
   added_at: string;
   note: string | null;
+  added_by: string | null;
+  added_by_username: string | null;
   product: any;
 }
 
@@ -54,6 +56,8 @@ export default function CollectionDetail({ publicMode = false }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [otherCollections, setOtherCollections] = useState<CollectionRow[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [collaboratorIds, setCollaboratorIds] = useState<Set<string>>(new Set());
+  const [ownerUsername, setOwnerUsername] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,9 +76,17 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
     const { data: rows } = await sb
       .from('user_collection_items')
-      .select('id, product_id, added_at, note')
+      .select('id, product_id, added_at, note, added_by')
       .eq('collection_id', col.id)
       .range(0, 9999);
+
+    // Fetch collaborators (for permission checks + attribution display) and owner name
+    const [{ data: collabs }, { data: ownerRow }] = await Promise.all([
+      sb.from('collection_collaborators').select('user_id').eq('collection_id', col.id),
+      sb.from('users').select('username').eq('id', col.user_id).maybeSingle(),
+    ]);
+    setCollaboratorIds(new Set((collabs ?? []).map((r: any) => r.user_id)));
+    setOwnerUsername(ownerRow?.username ?? null);
 
     const productIds = (rows ?? []).map((r: any) => r.product_id);
     if (!productIds.length) { setItems([]); setLoading(false); return; }
@@ -109,6 +121,15 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     const catMap = new Map((cats ?? []).map((c: any) => [c.id, c.name]));
 
     const productMap = new Map<string, any>((products ?? []).map((p: any) => [p.id, p]));
+
+    // Fetch usernames for "added by" attribution.
+    const adderIds = Array.from(new Set((rows ?? []).map((r: any) => r.added_by).filter(Boolean))) as string[];
+    const adderMap = new Map<string, string>();
+    if (adderIds.length) {
+      const { data: addersData } = await sb.from('users').select('id, username').in('id', adderIds);
+      (addersData ?? []).forEach((u: any) => adderMap.set(u.id, u.username));
+    }
+
     const enriched = (rows ?? []).map((r: any) => {
       const p = productMap.get(r.product_id);
       if (!p) return null;
@@ -121,6 +142,8 @@ export default function CollectionDetail({ publicMode = false }: Props) {
         product_id: r.product_id,
         added_at: r.added_at,
         note: r.note,
+        added_by: r.added_by ?? null,
+        added_by_username: r.added_by ? adderMap.get(r.added_by) ?? null : null,
         product: {
           id: p.id, slug: p.slug, name: p.name, tagline: p.tagline,
           thumbnail, iconUrl: icon, domainUrl: p.domain_url,
@@ -159,7 +182,10 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     sb.rpc('increment_collection_view', { _slug: collection.slug });
   }, [collection, publicMode]);
 
-  const isOwner = !publicMode && collection && currentUserId === collection.user_id;
+  const isOwner = collection && currentUserId === collection.user_id;
+  const isCollaborator = !!(collection && currentUserId && collaboratorIds.has(currentUserId));
+  const canContribute = !!(currentUserId && (isOwner || isCollaborator));
+  // Owner-only privileges (bulk delete/move, edit collection settings) gated by `isOwner` below.
 
   const allCategories = Array.from(new Set(items.flatMap(i => i.product.categories))).sort();
   const filtered = items.filter(i => category === 'all' || i.product.categories.includes(category));
@@ -273,9 +299,19 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
       <CollectionHero collection={collection} productCount={items.length} />
 
-      {isOwner && (
-        <div className="flex items-center gap-2 mb-6 -mt-2">
-          <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
+      {(isOwner || canContribute) && (
+        <div className="flex flex-wrap items-center gap-2 mb-6 -mt-2">
+          {isOwner && (
+            <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
+          )}
+          {canContribute && (
+            <Button variant="outline" size="sm" onClick={() => navigate('/products')}>
+              <FolderPlus className="h-4 w-4 mr-1" /> Add launches
+            </Button>
+          )}
+          {isCollaborator && !isOwner && (
+            <span className="text-xs text-muted-foreground">You're a collaborator on this collection</span>
+          )}
         </div>
       )}
 
@@ -283,8 +319,8 @@ export default function CollectionDetail({ publicMode = false }: Props) {
         <div className="text-center py-20 border border-dashed rounded-lg">
           <FolderPlus className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <h2 className="text-lg font-semibold mb-1">This collection is empty</h2>
-          <p className="text-sm text-muted-foreground mb-4">{isOwner ? 'Browse launches and save your favorites.' : 'Nothing here yet.'}</p>
-          {isOwner && <Button onClick={() => navigate('/products')}>Browse launches</Button>}
+          <p className="text-sm text-muted-foreground mb-4">{canContribute ? 'Browse launches and save your favorites.' : 'Nothing here yet.'}</p>
+          {canContribute && <Button onClick={() => navigate('/products')}>Browse launches</Button>}
         </div>
       ) : (
         <>
@@ -331,21 +367,49 @@ export default function CollectionDetail({ publicMode = false }: Props) {
           )}
 
           <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
-            {sorted.map((i) => (
-              <div key={i.itemId} className="relative">
-                {isOwner && (
-                  <div className="absolute top-2 right-2 z-20 bg-background/90 backdrop-blur rounded p-1">
-                    <Checkbox
-                      checked={selected.has(i.product_id)}
-                      onCheckedChange={() => toggleSelect(i.product_id)}
-                      aria-label={`Select ${i.product.name}`}
-                    />
-                  </div>
-                )}
-                <LaunchCard {...i.product} onVote={handleVote} />
-                {i.note && <p className="text-xs text-muted-foreground italic mt-1 px-1">“{i.note}”</p>}
-              </div>
-            ))}
+            {sorted.map((i) => {
+              const showAttribution =
+                !!i.added_by_username &&
+                collection &&
+                i.added_by &&
+                i.added_by !== collection.user_id;
+              return (
+                <div key={i.itemId} className="relative">
+                  {isOwner && (
+                    <div className="absolute top-2 right-2 z-20 bg-background/90 backdrop-blur rounded p-1">
+                      <Checkbox
+                        checked={selected.has(i.product_id)}
+                        onCheckedChange={() => toggleSelect(i.product_id)}
+                        aria-label={`Select ${i.product.name}`}
+                      />
+                    </div>
+                  )}
+                  <LaunchCard {...i.product} onVote={handleVote} />
+                  {i.note && <p className="text-xs text-muted-foreground italic mt-1 px-1">"{i.note}"</p>}
+                  {showAttribution && (
+                    <p className="text-[11px] text-muted-foreground mt-1 px-1 flex items-center gap-1">
+                      Added by{' '}
+                      <Link to={`/${i.added_by_username}`} className="hover:text-primary font-medium">
+                        @{i.added_by_username}
+                      </Link>
+                      {!isOwner && currentUserId && i.added_by === currentUserId && (
+                        <button
+                          className="ml-1 text-muted-foreground hover:text-destructive underline-offset-2 hover:underline"
+                          onClick={async () => {
+                            if (!confirm(`Remove ${i.product.name} from this collection?`)) return;
+                            await removeLaunchFromCollection(collection!.id, i.product_id);
+                            setItems((prev) => prev.filter((x) => x.itemId !== i.itemId));
+                            toast.success('Removed');
+                          }}
+                        >
+                          remove
+                        </button>
+                      )}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </>
       )}
