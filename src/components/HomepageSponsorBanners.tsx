@@ -31,7 +31,7 @@ interface Props {
  * Renders DB-managed homepage sponsor banners.
  * Falls back to bundled Media + Roach banners if no active sponsors exist.
  */
-const HomepageSponsorBanners = ({ limit, offset = 0, className }: Props) => {
+const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = false }: Props) => {
   const [sponsors, setSponsors] = useState<Sponsor[] | null>(null);
   const trackedRef = useRef<Set<string>>(new Set());
 
