@@ -94,7 +94,6 @@ const Home = () => {
   });
   const [currentPeriod, setCurrentPeriod] = useState<'all' | 'today' | 'week' | 'month' | 'year'>('week');
   const [sort, setSort] = useState<'rated' | 'popular' | 'latest' | 'revenue' | 'maker'>('popular');
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   
   const handlePlatformToggle = (platform: Platform) => {
@@ -103,13 +102,6 @@ const Home = () => {
         ? prev.filter(p => p !== platform)
         : [...prev, platform]
     );
-  };
-  
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-    }
   };
   
   // Use the saved view preference (mobile defaults to 'list' if no preference saved)
