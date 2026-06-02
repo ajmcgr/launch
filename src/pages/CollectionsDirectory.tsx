@@ -6,6 +6,7 @@ import { FolderOpen, Eye, TrendingUp, Star, Clock, Heart, ChevronLeft, ChevronRi
 import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
 import BuiltWithSection from '@/components/BuiltWithSection';
+import CollectionCoverArt from '@/components/CollectionCoverArt';
 
 const sb: any = supabase;
 
@@ -87,7 +88,10 @@ export default function CollectionsDirectory() {
         itemCount: itemCounts.get(c.id) ?? 0,
         followerCount: followCounts.get(c.id) ?? 0,
         creator: userMap.get(c.user_id) ?? null,
-      })).filter((c: CollectionCard) => c.itemCount > 0);
+      }))
+        .filter((c: CollectionCard) => c.itemCount > 0)
+        // Built With collections are pinned at top via <BuiltWithSection /> — avoid duplicates in the grid.
+        .filter((c: CollectionCard) => !c.slug.startsWith('built-with-'));
 
       // Tag created_at on the raw rows for sorting
       const createdAtMap = new Map(cols.map((c: any) => [c.id, c.created_at]));
@@ -186,20 +190,8 @@ export default function CollectionsDirectory() {
               to={`/c/${c.slug}`}
               className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
             >
-              <div
-                className="aspect-[3/1.6] overflow-hidden"
-                style={!c.cover_image_url ? { backgroundImage: gradientFor(c.id || c.slug || c.name) } : undefined}
-              >
-                {c.cover_image_url && (
-                  <img
-                    src={c.cover_image_url}
-                    alt={c.name}
-                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
-                    width={400}
-                    height={213}
-                    loading="lazy"
-                  />
-                )}
+              <div className="aspect-[3/1.6] overflow-hidden">
+                <CollectionCoverArt slug={c.slug} name={c.name} coverImageUrl={c.cover_image_url} />
               </div>
               <div className="p-4 flex-1 flex flex-col">
                 <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">{c.name}</h3>
