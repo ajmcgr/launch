@@ -23,13 +23,15 @@ interface Props {
   limit?: number;
   offset?: number;
   className?: string;
+  /** If no sponsor exists at this offset, still render the bundled media banner. */
+  fallbackMedia?: boolean;
 }
 
 /**
  * Renders DB-managed homepage sponsor banners.
  * Falls back to bundled Media + Roach banners if no active sponsors exist.
  */
-const HomepageSponsorBanners = ({ limit, offset = 0, className }: Props) => {
+const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = false }: Props) => {
   const [sponsors, setSponsors] = useState<Sponsor[] | null>(null);
   const trackedRef = useRef<Set<string>>(new Set());
 
@@ -67,7 +69,10 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className }: Props) => {
     { id: 'fallback-media-2', sponsor_name: 'Media', banner_image_url: '/src/assets/sponsors/media-banner.png', destination_url: 'https://trymedia.ai/' },
   ];
 
-  const sliced = list.slice(offset, limit !== undefined ? offset + limit : undefined);
+  let sliced = list.slice(offset, limit !== undefined ? offset + limit : undefined);
+  if (sliced.length === 0 && fallbackMedia) {
+    sliced = [{ id: 'fallback-media-slot', sponsor_name: 'Media', banner_image_url: '/src/assets/sponsors/media-banner.png', destination_url: 'https://trymedia.ai/' }];
+  }
   if (sliced.length === 0) return null;
 
   const handleClick = (id: string) => {
