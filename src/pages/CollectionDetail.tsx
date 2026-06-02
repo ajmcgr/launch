@@ -182,7 +182,10 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     sb.rpc('increment_collection_view', { _slug: collection.slug });
   }, [collection, publicMode]);
 
-  const isOwner = !publicMode && collection && currentUserId === collection.user_id;
+  const isOwner = collection && currentUserId === collection.user_id;
+  const isCollaborator = !!(collection && currentUserId && collaboratorIds.has(currentUserId));
+  const canContribute = !!(currentUserId && (isOwner || isCollaborator));
+  // Owner-only privileges (bulk delete/move, edit collection settings) gated by `isOwner` below.
 
   const allCategories = Array.from(new Set(items.flatMap(i => i.product.categories))).sort();
   const filtered = items.filter(i => category === 'all' || i.product.categories.includes(category));
