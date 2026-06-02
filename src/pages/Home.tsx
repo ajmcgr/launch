@@ -41,7 +41,6 @@ import { CommunityCallout } from '@/components/CommunityCallout';
 
 import { PopularSections } from '@/components/PopularSections';
 import BuiltWithSection from '@/components/BuiltWithSection';
-import CollectionsPreview from '@/components/CollectionsPreview';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 
