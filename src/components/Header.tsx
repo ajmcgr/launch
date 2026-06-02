@@ -33,7 +33,15 @@ export const Header = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState('');
   const { formattedMemberCount } = useMemberCount();
+
+  const handleHeaderSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && headerSearch.trim()) {
+      navigate(`/search?q=${encodeURIComponent(headerSearch.trim())}`);
+      setHeaderSearch('');
+    }
+  };
 
   // Check if we should show the Launch Pass promo (after Jan 26, 2026)
   const showLaunchPassPromo = new Date() >= new Date('2026-01-26T00:00:00');
