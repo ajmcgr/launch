@@ -265,6 +265,9 @@ export default function Collections() {
                 </Label>
                 <Switch checked={editing.is_public} onCheckedChange={(v) => setEditing({ ...editing, is_public: v })} />
               </div>
+              <div className="border-t pt-3">
+                <CollectionCollaboratorsPanel collectionId={editing.id} />
+              </div>
             </div>
           )}
           <DialogFooter>
