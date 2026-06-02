@@ -116,7 +116,7 @@ export const Header = () => {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-14 items-center justify-between">
           {/* Left: Logo + Navigation */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 md:gap-6">
             <Link to="/" className="flex items-center">
               <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
