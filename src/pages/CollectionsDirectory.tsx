@@ -146,11 +146,6 @@ export default function CollectionsDirectory() {
         </div>
       </header>
 
-      <BuiltWithSection
-        eyebrow="Featured"
-        title="Built With"
-        subtitle="Discover the best products built with the world's leading vibe coding tools — auto-curated from product tags."
-      />
 
       <div className="flex justify-center gap-1 mb-8 border-b">
         {tabs.map((t) => (
@@ -179,6 +174,11 @@ export default function CollectionsDirectory() {
         </div>
       ) : (
         <>
+        {tab === 'trending' && page === 1 && (
+          <div className="mb-5">
+            <BuiltWithSection headless />
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {pageItems.map((c) => (
             <Link
