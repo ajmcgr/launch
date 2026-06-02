@@ -64,6 +64,7 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className }: Props) => {
   const list: Sponsor[] = sponsors.length > 0 ? sponsors : [
     { id: 'fallback-media', sponsor_name: 'Media', banner_image_url: '/src/assets/sponsors/media-banner.png', destination_url: 'https://trymedia.ai/' },
     { id: 'fallback-roach', sponsor_name: 'Roach', banner_image_url: '/src/assets/sponsors/roach-banner.png', destination_url: 'https://roachclo.com/' },
+    { id: 'fallback-media-2', sponsor_name: 'Media', banner_image_url: '/src/assets/sponsors/media-banner.png', destination_url: 'https://trymedia.ai/' },
   ];
 
   const sliced = list.slice(offset, limit !== undefined ? offset + limit : undefined);
