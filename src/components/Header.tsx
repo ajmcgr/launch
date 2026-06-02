@@ -132,9 +132,6 @@ export const Header = () => {
               />
             </div>
             <nav className="hidden md:flex items-center gap-6">
-              <Link to="/" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Launches
-              </Link>
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
@@ -263,13 +260,6 @@ export const Header = () => {
                       className="pl-9 h-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </div>
-                  <Link 
-                    to="/" 
-                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Launches
-                  </Link>
                   <Link 
                     to="/products" 
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
