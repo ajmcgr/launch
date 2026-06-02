@@ -233,6 +233,7 @@ const AppContent = () => {
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
             <Route path="/vibecodeyourfuture" element={<VibeCodeYourFuture />} />
+            <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
