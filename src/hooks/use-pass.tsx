@@ -51,9 +51,9 @@ export const usePass = (userId: string | undefined) => {
       const hasActivePlan = data.plan === 'annual_access';
       const hasActiveStatus = data.subscription_status === 'active';
       
-      // Be lenient: if they have the plan and valid expiry, consider it active
-      // This handles cases where the webhook hasn't updated subscription_status yet
-      const hasActivePass = hasActivePlan && hasValidExpiry && (hasActiveStatus || data.subscription_status === 'inactive' || !data.subscription_status);
+      // Be lenient: if they have the plan and a valid future expiry, treat as active.
+      // This covers webhook lag and Stripe's transient 'incomplete'/'trialing'/'past_due' states.
+      const hasActivePass = hasActivePlan && hasValidExpiry;
 
       return {
         hasActivePass,
