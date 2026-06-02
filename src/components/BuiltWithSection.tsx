@@ -68,7 +68,7 @@ export default function BuiltWithSection({
       (itemRows ?? []).forEach((r: any) => itemCounts.set(r.collection_id, (itemCounts.get(r.collection_id) ?? 0) + 1));
       const followCounts = new Map<string, number>();
       (followRows ?? []).forEach((r: any) => followCounts.set(r.collection_id, (followCounts.get(r.collection_id) ?? 0) + 1));
-      const userMap = new Map((users ?? []).map((u: any) => [u.id, u]));
+      const userMap = new Map<string, any>((users ?? []).map((u: any) => [u.id, u]));
 
       const next = new Map<string, CollectionStats>();
       cols.forEach((c: any) => {
