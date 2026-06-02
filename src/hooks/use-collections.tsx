@@ -76,6 +76,45 @@ export function useCollections() {
     }
     setCollections((cols ?? []).map((c: Collection) => ({ ...c, item_count: counts[c.id] ?? 0 })));
 
+    // Shared collections (where the user is a collaborator, not the owner)
+    try {
+      const { data: shares } = await sb
+        .from('collection_collaborators')
+        .select('collection_id')
+        .eq('user_id', uid);
+      const sharedIds = (shares ?? []).map((s: any) => s.collection_id);
+      if (sharedIds.length) {
+        const { data: sharedCols } = await sb
+          .from('user_collections')
+          .select('*')
+          .in('id', sharedIds)
+          .order('updated_at', { ascending: false });
+        const ownerIds = Array.from(new Set((sharedCols ?? []).map((c: any) => c.user_id)));
+        const { data: owners } = ownerIds.length
+          ? await sb.from('users').select('id, username').in('id', ownerIds)
+          : { data: [] };
+        const om = new Map<string, string>((owners ?? []).map((o: any) => [o.id, o.username]));
+        const { data: sharedItems } = await sb
+          .from('user_collection_items')
+          .select('collection_id')
+          .in('collection_id', sharedIds);
+        const sharedCounts: Record<string, number> = {};
+        (sharedItems ?? []).forEach((i: any) => {
+          sharedCounts[i.collection_id] = (sharedCounts[i.collection_id] ?? 0) + 1;
+        });
+        setSharedCollections((sharedCols ?? []).map((c: any) => ({
+          ...c,
+          item_count: sharedCounts[c.id] ?? 0,
+          owner_username: om.get(c.user_id) ?? null,
+        })));
+      } else {
+        setSharedCollections([]);
+      }
+    } catch (e) {
+      console.error('shared collections fetch failed', e);
+      setSharedCollections([]);
+    }
+
     setLoading(false);
   }, []);
 
