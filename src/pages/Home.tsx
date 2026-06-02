@@ -1095,7 +1095,7 @@ const Home = () => {
               {/* Explore By Collection — Built With platform cards */}
               <div className="pt-6 pb-4">
                 <h2 className="text-2xl font-bold mb-8 text-left">Explore By Collection</h2>
-                <BuiltWithSection headless />
+                <BuiltWithSection headless cols={2} />
                 <div className="text-center mt-6">
                   <Link to="/collections">
                     <Button variant="outline" className="border-2 border-muted-foreground/20">View All Collections →</Button>
