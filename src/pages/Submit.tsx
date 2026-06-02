@@ -649,34 +649,75 @@ const Submit = () => {
     }));
   };
 
+  // Map common user inputs to canonical Built With collection slugs so that
+  // typing "lovable", "Lovable.dev", "lovable ai" etc. all map to the single
+  // canonical `lovable` stack_item (and likewise for the other AI builders).
+  const BUILT_WITH_ALIASES: Record<string, { slug: string; name: string }> = {
+    'lovable': { slug: 'lovable', name: 'Lovable' },
+    'lovabledev': { slug: 'lovable', name: 'Lovable' },
+    'lovableai': { slug: 'lovable', name: 'Lovable' },
+    'cursor': { slug: 'cursor', name: 'Cursor' },
+    'cursorai': { slug: 'cursor', name: 'Cursor' },
+    'cursorsh': { slug: 'cursor', name: 'Cursor' },
+    'bolt': { slug: 'bolt', name: 'Bolt' },
+    'boltnew': { slug: 'bolt', name: 'Bolt' },
+    'replit': { slug: 'replit', name: 'Replit' },
+    'replitagent': { slug: 'replit', name: 'Replit' },
+    'claudecode': { slug: 'claude-code', name: 'Claude Code' },
+    'claude': { slug: 'claude-code', name: 'Claude Code' },
+    'codex': { slug: 'codex', name: 'Codex' },
+    'openaicodex': { slug: 'codex', name: 'Codex' },
+    'googleaistudio': { slug: 'google-ai-studio', name: 'Google AI Studio' },
+    'aistudio': { slug: 'google-ai-studio', name: 'Google AI Studio' },
+    'base44': { slug: 'base44', name: 'Base44' },
+    'v0': { slug: 'v0', name: 'v0' },
+    'v0dev': { slug: 'v0', name: 'v0' },
+    'vercelv0': { slug: 'v0', name: 'v0' },
+  };
+
   const handleCreateStackItem = async () => {
     const trimmedName = newStackName.trim();
     if (!trimmedName) return;
-    
+
+    // Normalize and check for Built With alias
+    const normalized = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+    const alias = BUILT_WITH_ALIASES[normalized];
+
+    // Compute target slug/name (alias-aware)
+    const targetSlug = alias
+      ? alias.slug
+      : trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const targetName = alias ? alias.name : trimmedName;
+
+    // Check if a matching item already exists (by slug or name)
     const existing = availableStackItems.find(
-      s => s.name.toLowerCase() === trimmedName.toLowerCase()
+      s => s.slug === targetSlug || s.name.toLowerCase() === targetName.toLowerCase()
     );
     if (existing) {
-      toast.error('This stack item already exists');
+      if (formData.stackItems.includes(existing.id)) {
+        toast.info(`"${existing.name}" is already selected`);
+      } else {
+        setFormData(prev => ({ ...prev, stackItems: [...prev.stackItems, existing.id] }));
+        toast.success(`"${existing.name}" added to stack!`);
+      }
+      setNewStackName('');
       return;
     }
-    
+
     setIsCreatingStack(true);
     try {
-      const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      
       const { data, error } = await supabase
         .from('stack_items')
-        .insert({ name: trimmedName, slug })
+        .insert({ name: targetName, slug: targetSlug })
         .select('id, name, slug')
         .single();
-      
+
       if (error) throw error;
-      
+
       setAvailableStackItems(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
       setFormData(prev => ({ ...prev, stackItems: [...prev.stackItems, data.id] }));
       setNewStackName('');
-      toast.success(`"${trimmedName}" added to stack!`);
+      toast.success(`"${data.name}" added to stack!`);
     } catch (error: any) {
       console.error('Error creating stack item:', error);
       toast.error('Failed to create stack item');
