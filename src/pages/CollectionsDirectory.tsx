@@ -146,11 +146,6 @@ export default function CollectionsDirectory() {
         </div>
       </header>
 
-      <BuiltWithSection
-        eyebrow="Featured"
-        title="Built With"
-        subtitle="Discover the best products built with the world's leading vibe coding tools — auto-curated from product tags."
-      />
 
       <div className="flex justify-center gap-1 mb-8 border-b">
         {tabs.map((t) => (
