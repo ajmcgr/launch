@@ -113,7 +113,7 @@ export default function CollectionsPreview({ limit = 6 }: Props) {
               <img
                 src={c.cover_image_url}
                 alt={c.name}
-                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
+                className="w-full h-full object-cover"
                 width={400}
                 height={213}
                 loading="lazy"
