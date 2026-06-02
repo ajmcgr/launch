@@ -193,7 +193,7 @@ export function useCollections() {
 
   const refresh = useCallback(() => { if (userId) return fetchAll(userId); }, [userId, fetchAll]);
 
-  return { collections, loading, userId, createCollection, updateCollection, deleteCollection, duplicateCollection, refresh };
+  return { collections, sharedCollections, loading, userId, createCollection, updateCollection, deleteCollection, duplicateCollection, refresh };
 }
 
 export async function saveLaunchToCollections(
