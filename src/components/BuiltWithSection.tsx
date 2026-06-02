@@ -158,7 +158,6 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
           width={320}
           height={128}
         />
-        <ArrowUpRight className="absolute top-3 right-3 h-4 w-4 text-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
       <div className="p-4 flex-1 flex flex-col">
         <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">
