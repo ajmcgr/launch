@@ -161,7 +161,10 @@ export async function saveLaunchToCollections(
   note?: string
 ) {
   if (!collectionIds.length) return;
-  const rows = collectionIds.map((cid) => ({ collection_id: cid, product_id: productId, note: note || null }));
+  const { data: { session } } = await supabase.auth.getSession();
+  const uid = session?.user?.id;
+  if (!uid) throw new Error('Not signed in');
+  const rows = collectionIds.map((cid) => ({ collection_id: cid, product_id: productId, note: note || null, added_by: uid }));
   const { error } = await sb.from('user_collection_items').upsert(rows, { onConflict: 'collection_id,product_id' });
   if (error) throw error;
 }
@@ -182,4 +185,78 @@ export async function getSavedCollectionIds(productId: string, userId: string): 
     .eq('product_id', productId)
     .eq('collections.user_id', userId);
   return (data ?? []).map((r: any) => r.collection_id);
+}
+
+// ---- Collaborators ----
+
+export interface CollaboratorInfo {
+  id: string;
+  user_id: string;
+  created_at: string;
+  username: string | null;
+  avatar_url: string | null;
+}
+
+export async function listCollaborators(collectionId: string): Promise<CollaboratorInfo[]> {
+  const { data: rows } = await sb
+    .from('collection_collaborators')
+    .select('id, user_id, created_at')
+    .eq('collection_id', collectionId)
+    .order('created_at', { ascending: true });
+  const ids = (rows ?? []).map((r: any) => r.user_id);
+  if (!ids.length) return [];
+  const { data: users } = await sb.from('users').select('id, username, avatar_url').in('id', ids);
+  const um = new Map((users ?? []).map((u: any) => [u.id, u]));
+  return (rows ?? []).map((r: any) => ({
+    id: r.id,
+    user_id: r.user_id,
+    created_at: r.created_at,
+    username: um.get(r.user_id)?.username ?? null,
+    avatar_url: um.get(r.user_id)?.avatar_url ?? null,
+  }));
+}
+
+export async function inviteCollaboratorByUsername(
+  collectionId: string,
+  username: string
+): Promise<{ ok: boolean; error?: string }> {
+  const cleaned = username.trim().replace(/^@/, '');
+  if (!cleaned) return { ok: false, error: 'Enter a username' };
+  const { data: u } = await sb.from('users').select('id, username').ilike('username', cleaned).maybeSingle();
+  if (!u) return { ok: false, error: `No user found with username "${cleaned}"` };
+  const { data: { session } } = await supabase.auth.getSession();
+  const uid = session?.user?.id;
+  if (!uid) return { ok: false, error: 'Not signed in' };
+  if (u.id === uid) return { ok: false, error: "You're already the owner" };
+  const { error } = await sb.from('collection_collaborators').insert({
+    collection_id: collectionId,
+    user_id: u.id,
+    invited_by: uid,
+  });
+  if (error) {
+    if (error.code === '23505') return { ok: false, error: 'Already a collaborator' };
+    return { ok: false, error: error.message };
+  }
+  return { ok: true };
+}
+
+export async function removeCollaborator(collectionId: string, userId: string) {
+  const { error } = await sb
+    .from('collection_collaborators')
+    .delete()
+    .eq('collection_id', collectionId)
+    .eq('user_id', userId);
+  if (error) throw error;
+}
+
+export async function listEditableCollectionIds(userId: string): Promise<Set<string>> {
+  // Collections this user can add launches to (owner OR collaborator).
+  const [{ data: owned }, { data: collab }] = await Promise.all([
+    sb.from('user_collections').select('id').eq('user_id', userId),
+    sb.from('collection_collaborators').select('collection_id').eq('user_id', userId),
+  ]);
+  const ids = new Set<string>();
+  (owned ?? []).forEach((r: any) => ids.add(r.id));
+  (collab ?? []).forEach((r: any) => ids.add(r.collection_id));
+  return ids;
 }
