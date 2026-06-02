@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { builtWithPlatforms, type BuiltWithPlatform } from '@/lib/builtWithPlatforms';
-import { ArrowUpRight, Users, Package } from 'lucide-react';
+import { Users, Package } from 'lucide-react';
 
 const sb: any = supabase;
 
