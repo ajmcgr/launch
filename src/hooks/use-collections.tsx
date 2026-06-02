@@ -220,11 +220,13 @@ export async function removeLaunchFromCollection(collectionId: string, productId
 }
 
 export async function getSavedCollectionIds(productId: string, userId: string): Promise<string[]> {
+  const editable = await listEditableCollectionIds(userId);
+  if (!editable.size) return [];
   const { data } = await sb
     .from('user_collection_items')
-    .select('collection_id, user_collections!inner(user_id)')
+    .select('collection_id')
     .eq('product_id', productId)
-    .eq('collections.user_id', userId);
+    .in('collection_id', Array.from(editable));
   return (data ?? []).map((r: any) => r.collection_id);
 }
 
