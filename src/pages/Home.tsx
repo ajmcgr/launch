@@ -36,10 +36,9 @@ import { PlatformStats } from '@/components/PlatformStats';
 import { ThisWeekHighlights } from '@/components/ThisWeekHighlights';
 import { ForumActivityWidget } from '@/components/ForumActivityWidget';
 import { SiteStatsWidget } from '@/components/SiteStatsWidget';
-import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
+
 import { CommunityCallout } from '@/components/CommunityCallout';
 
-import { PopularSections } from '@/components/PopularSections';
 import BuiltWithSection from '@/components/BuiltWithSection';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
@@ -1168,7 +1167,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <PopularSections />
+              
             </div>
 
             {/* Right sidebar (hidden on mobile) */}
