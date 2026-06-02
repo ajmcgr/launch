@@ -26,7 +26,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+
 import { format, getWeek } from 'date-fns';
 
 import { OrganizationSchema, WebSiteSchema, FAQSchema } from '@/components/JsonLd';
