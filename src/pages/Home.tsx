@@ -40,6 +40,7 @@ import { PopularTechThisWeek } from '@/components/PopularTechThisWeek';
 import { CommunityCallout } from '@/components/CommunityCallout';
 
 import { PopularSections } from '@/components/PopularSections';
+import BuiltWithSection from '@/components/BuiltWithSection';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 
@@ -1087,6 +1088,15 @@ const Home = () => {
               <HomepageSponsorBanners offset={0} limit={1} />
 
               <ThisWeekHighlights view={effectiveView} />
+
+              {/* Explore By Platform — auto-curated from tech tags */}
+              <BuiltWithSection
+                variant="home"
+                eyebrow="Explore By Platform"
+                title="Where vibe coders get discovered"
+                subtitle="Browse the best products built with Lovable, Cursor, Bolt, Replit, Claude Code, Codex, Google AI Studio, Base44 and v0."
+                limit={9}
+              />
 
               {/* Homepage Sponsor Banner #2 (DB-managed) */}
               <HomepageSponsorBanners offset={1} limit={1} />

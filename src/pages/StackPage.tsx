@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
 import { buildFaqJsonLd, techFaqs, techIntroFallback } from '@/lib/seoFaq';
+import { builtWithBySlug } from '@/lib/builtWithPlatforms';
 
 interface Product {
   id: string;
@@ -46,6 +47,8 @@ const StackPage = () => {
 
   const [stackInfo, setStackInfo] = useState<StackInfo | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [founderCount, setFounderCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -91,11 +94,27 @@ const StackPage = () => {
 
       if (productIds.length === 0) {
         setProducts([]);
+        setTotalProducts(0);
+        setFounderCount(0);
         setHasMore(false);
         setLoading(false);
         setLoadingMore(false);
         return;
       }
+
+      // Hero counts (only on first page load)
+      if (pageNum === 0) {
+        const [{ data: launchedIds }, { data: makerRows }] = await Promise.all([
+          supabase.from('products').select('id').in('id', productIds).eq('status', 'launched'),
+          supabase.from('product_makers').select('user_id, product_id').in('product_id', productIds),
+        ]);
+        const launchedSet = new Set((launchedIds ?? []).map((p: any) => p.id));
+        setTotalProducts(launchedSet.size);
+        const founders = new Set<string>();
+        (makerRows ?? []).forEach((m: any) => { if (launchedSet.has(m.product_id)) founders.add(m.user_id); });
+        setFounderCount(founders.size);
+      }
+
 
       // Fetch products
       const from = pageNum * ITEMS_PER_PAGE;
@@ -268,17 +287,44 @@ const StackPage = () => {
         )}
       </Helmet>
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{pageTitle}</h1>
-          <p className="text-muted-foreground">
-            {products.length} {products.length === 1 ? 'product' : 'products'} built with {stackInfo?.name || slug}
-          </p>
-          {introText && (
-            <p className="text-base text-muted-foreground leading-relaxed mt-4 max-w-3xl">
-              {introText}
-            </p>
-          )}
-        </div>
+        {(() => {
+          const platform = slug ? builtWithBySlug.get(slug) : undefined;
+          const displayName = platform?.name || stackInfo?.name || slug;
+          const productsCount = totalProducts || products.length;
+          return (
+            <div className="mb-8">
+              <div className="flex items-center gap-4 mb-4">
+                {platform && (
+                  <div className={`${platform.plate} h-16 w-16 rounded-2xl border flex items-center justify-center shrink-0 overflow-hidden`}>
+                    <img src={platform.logoUrl} alt={`${platform.name} logo`} className="max-h-10 max-w-[80%] object-contain" width={64} height={40} />
+                  </div>
+                )}
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-reckless font-bold">
+                    {platform ? `Built With ${platform.name}` : `Products built with ${displayName}`}
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    {platform
+                      ? `Discover the best products built with ${platform.name} from the Launch community.`
+                      : `${productsCount} ${productsCount === 1 ? 'product' : 'products'} built with ${displayName}`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-5 text-sm">
+                <span><span className="font-semibold text-foreground">{productsCount.toLocaleString()}</span> <span className="text-muted-foreground">{productsCount === 1 ? 'product' : 'products'}</span></span>
+                {founderCount > 0 && (
+                  <span><span className="font-semibold text-foreground">{founderCount.toLocaleString()}</span> <span className="text-muted-foreground">{founderCount === 1 ? 'founder' : 'founders'}</span></span>
+                )}
+              </div>
+              {introText && !platform && (
+                <p className="text-base text-muted-foreground leading-relaxed mt-4 max-w-3xl">
+                  {introText}
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
 
         <div className="flex items-center justify-between mb-6">
           <SortToggle sort={sortBy} onSortChange={setSortBy} />

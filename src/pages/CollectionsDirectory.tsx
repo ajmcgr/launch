@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { FolderOpen, Eye, TrendingUp, Star, Clock, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
+import BuiltWithSection from '@/components/BuiltWithSection';
 
 const sb: any = supabase;
 
@@ -144,6 +145,12 @@ export default function CollectionsDirectory() {
           </Link>
         </div>
       </header>
+
+      <BuiltWithSection
+        eyebrow="Featured"
+        title="Built With"
+        subtitle="Discover the best products built with the world's leading vibe coding tools — auto-curated from product tags."
+      />
 
       <div className="flex justify-center gap-1 mb-8 border-b">
         {tabs.map((t) => (
