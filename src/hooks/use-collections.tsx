@@ -12,6 +12,7 @@ export interface Collection {
   updated_at: string;
   cover_image_url?: string | null;
   item_count?: number;
+  owner_username?: string | null;
 }
 
 const sb: any = supabase;
