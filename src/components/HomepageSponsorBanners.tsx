@@ -23,6 +23,8 @@ interface Props {
   limit?: number;
   offset?: number;
   className?: string;
+  /** If no sponsor exists at this offset, still render the bundled media banner. */
+  fallbackMedia?: boolean;
 }
 
 /**
