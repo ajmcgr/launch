@@ -56,6 +56,8 @@ export default function CollectionDetail({ publicMode = false }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [otherCollections, setOtherCollections] = useState<CollectionRow[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [collaboratorIds, setCollaboratorIds] = useState<Set<string>>(new Set());
+  const [ownerUsername, setOwnerUsername] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
