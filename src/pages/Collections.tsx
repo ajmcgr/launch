@@ -19,6 +19,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { gradientFor } from '@/lib/gradients';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
+import CollectionCollaboratorsPanel from '@/components/CollectionCollaboratorsPanel';
 
 export default function Collections() {
   const navigate = useNavigate();
