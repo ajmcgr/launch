@@ -1092,7 +1092,7 @@ const Home = () => {
               <HomepageSponsorBanners offset={1} limit={1} />
 
               {/* Explore By Collection — Built With platform cards */}
-              <div className="pt-6 pb-4">
+              <div className="py-6">
                 <h2 className="text-2xl font-bold mb-8 text-left">Explore By Collections</h2>
                 <BuiltWithSection headless cols={3} />
                 <div className="text-center mt-6">
@@ -1110,7 +1110,7 @@ const Home = () => {
 
               <HomepageSponsorBanners offset={2} limit={1} fallbackMedia />
 
-              <div className="pt-6 pb-4">
+              <div className="py-6">
                 <h2 className="text-2xl font-bold mb-8 text-left">Frequently Asked Questions</h2>
                 
                 <Accordion type="single" collapsible className="w-full space-y-4">
