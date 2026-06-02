@@ -146,15 +146,12 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
         <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">
           Built With {platform.name}
         </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{platform.description}</p>
-        <div className="mt-auto pt-3 flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1"><FolderOpen className="h-3.5 w-3.5" />{loaded ? itemCount : '—'}</span>
-            <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{views.toLocaleString()}</span>
-            <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" />{followers}</span>
-          </div>
-          {stats?.creatorUsername && <span className="truncate ml-2">@{stats.creatorUsername}</span>}
+        <div className="mt-auto pt-3 flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1"><FolderOpen className="h-3.5 w-3.5" />{loaded ? itemCount : '—'}</span>
+          <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{views.toLocaleString()}</span>
+          <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" />{followers}</span>
         </div>
+
       </div>
     </Link>
   );
