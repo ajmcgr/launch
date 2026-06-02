@@ -287,17 +287,44 @@ const StackPage = () => {
         )}
       </Helmet>
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{pageTitle}</h1>
-          <p className="text-muted-foreground">
-            {products.length} {products.length === 1 ? 'product' : 'products'} built with {stackInfo?.name || slug}
-          </p>
-          {introText && (
-            <p className="text-base text-muted-foreground leading-relaxed mt-4 max-w-3xl">
-              {introText}
-            </p>
-          )}
-        </div>
+        {(() => {
+          const platform = slug ? builtWithBySlug.get(slug) : undefined;
+          const displayName = platform?.name || stackInfo?.name || slug;
+          const productsCount = totalProducts || products.length;
+          return (
+            <div className="mb-8">
+              <div className="flex items-center gap-4 mb-4">
+                {platform && (
+                  <div className={`${platform.plate} h-16 w-16 rounded-2xl border flex items-center justify-center shrink-0 overflow-hidden`}>
+                    <img src={platform.logoUrl} alt={`${platform.name} logo`} className="max-h-10 max-w-[80%] object-contain" width={64} height={40} />
+                  </div>
+                )}
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-reckless font-bold">
+                    {platform ? `Built With ${platform.name}` : `Products built with ${displayName}`}
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    {platform
+                      ? `Discover the best products built with ${platform.name} from the Launch community.`
+                      : `${productsCount} ${productsCount === 1 ? 'product' : 'products'} built with ${displayName}`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-5 text-sm">
+                <span><span className="font-semibold text-foreground">{productsCount.toLocaleString()}</span> <span className="text-muted-foreground">{productsCount === 1 ? 'product' : 'products'}</span></span>
+                {founderCount > 0 && (
+                  <span><span className="font-semibold text-foreground">{founderCount.toLocaleString()}</span> <span className="text-muted-foreground">{founderCount === 1 ? 'founder' : 'founders'}</span></span>
+                )}
+              </div>
+              {introText && !platform && (
+                <p className="text-base text-muted-foreground leading-relaxed mt-4 max-w-3xl">
+                  {introText}
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
 
         <div className="flex items-center justify-between mb-6">
           <SortToggle sort={sortBy} onSortChange={setSortBy} />
