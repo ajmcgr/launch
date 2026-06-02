@@ -168,7 +168,7 @@ export const CollectionHero = ({ collection, productCount }: Props) => {
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Share:</span>
             <a href={xUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm"><X className="h-4 w-4 mr-1" />X</Button>
+              <Button variant="outline" size="sm"><XLogo className="h-4 w-4 mr-1" />X</Button>
             </a>
             <a href={liUrl} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm"><Linkedin className="h-4 w-4 mr-1" />LinkedIn</Button>
