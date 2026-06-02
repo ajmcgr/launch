@@ -45,7 +45,35 @@ export function useCollections() {
         counts[i.collection_id] = (counts[i.collection_id] ?? 0) + 1;
       });
     }
+    // Built With collections derive their items from product_stack_map.
+    const builtWith = (cols ?? []).filter((c: Collection) => c.slug?.startsWith('built-with-'));
+    if (builtWith.length) {
+      const slugs = builtWith.map((c: Collection) => c.slug.replace(/^built-with-/, ''));
+      const { data: stackItems } = await sb
+        .from('stack_items')
+        .select('id, slug')
+        .in('slug', slugs);
+      const stackIds = (stackItems ?? []).map((s: any) => s.id);
+      if (stackIds.length) {
+        const { data: maps } = await sb
+          .from('product_stack_map')
+          .select('stack_item_id, products!inner(status)')
+          .in('stack_item_id', stackIds)
+          .eq('products.status', 'launched');
+        const perStack: Record<string, number> = {};
+        (maps ?? []).forEach((m: any) => {
+          perStack[m.stack_item_id] = (perStack[m.stack_item_id] ?? 0) + 1;
+        });
+        const stackBySlug = new Map<string, any>((stackItems ?? []).map((s: any) => [s.slug, s.id]));
+        builtWith.forEach((c: Collection) => {
+          const platformSlug = c.slug.replace(/^built-with-/, '');
+          const sid = stackBySlug.get(platformSlug);
+          if (sid) counts[c.id] = (counts[c.id] ?? 0) + (perStack[String(sid)] ?? 0);
+        });
+      }
+    }
     setCollections((cols ?? []).map((c: Collection) => ({ ...c, item_count: counts[c.id] ?? 0 })));
+
     setLoading(false);
   }, []);
 
