@@ -47,6 +47,8 @@ const StackPage = () => {
 
   const [stackInfo, setStackInfo] = useState<StackInfo | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [founderCount, setFounderCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
