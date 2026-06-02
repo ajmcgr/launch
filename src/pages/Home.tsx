@@ -1098,7 +1098,7 @@ const Home = () => {
                 <BuiltWithSection headless />
                 <div className="text-center mt-6">
                   <Link to="/collections">
-                    <Button variant="outline">View All Collections</Button>
+                    <Button variant="outline" className="border-2 border-muted-foreground/20">View All Collections →</Button>
                   </Link>
                 </div>
               </div>
