@@ -19,6 +19,7 @@ const sb: any = supabase;
 
 export function useCollections() {
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [sharedCollections, setSharedCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
