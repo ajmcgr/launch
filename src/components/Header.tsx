@@ -120,7 +120,7 @@ export const Header = () => {
             <Link to="/" className="flex items-center">
               <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
-            <div className="flex items-center relative w-24 sm:w-40 md:w-56 h-9 border rounded-md bg-background">
+            <div className="hidden md:flex items-center relative w-56 h-9 border rounded-md bg-background">
               <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5 pointer-events-none" />
               <Input
                 type="search"
