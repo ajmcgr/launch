@@ -121,6 +121,15 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     const catMap = new Map((cats ?? []).map((c: any) => [c.id, c.name]));
 
     const productMap = new Map<string, any>((products ?? []).map((p: any) => [p.id, p]));
+
+    // Fetch usernames for "added by" attribution.
+    const adderIds = Array.from(new Set((rows ?? []).map((r: any) => r.added_by).filter(Boolean))) as string[];
+    const adderMap = new Map<string, string>();
+    if (adderIds.length) {
+      const { data: addersData } = await sb.from('users').select('id, username').in('id', adderIds);
+      (addersData ?? []).forEach((u: any) => adderMap.set(u.id, u.username));
+    }
+
     const enriched = (rows ?? []).map((r: any) => {
       const p = productMap.get(r.product_id);
       if (!p) return null;
@@ -133,6 +142,8 @@ export default function CollectionDetail({ publicMode = false }: Props) {
         product_id: r.product_id,
         added_at: r.added_at,
         note: r.note,
+        added_by: r.added_by ?? null,
+        added_by_username: r.added_by ? adderMap.get(r.added_by) ?? null : null,
         product: {
           id: p.id, slug: p.slug, name: p.name, tagline: p.tagline,
           thumbnail, iconUrl: icon, domainUrl: p.domain_url,
