@@ -94,11 +94,27 @@ const StackPage = () => {
 
       if (productIds.length === 0) {
         setProducts([]);
+        setTotalProducts(0);
+        setFounderCount(0);
         setHasMore(false);
         setLoading(false);
         setLoadingMore(false);
         return;
       }
+
+      // Hero counts (only on first page load)
+      if (pageNum === 0) {
+        const [{ data: launchedIds }, { data: makerRows }] = await Promise.all([
+          supabase.from('products').select('id').in('id', productIds).eq('status', 'launched'),
+          supabase.from('product_makers').select('user_id, product_id').in('product_id', productIds),
+        ]);
+        const launchedSet = new Set((launchedIds ?? []).map((p: any) => p.id));
+        setTotalProducts(launchedSet.size);
+        const founders = new Set<string>();
+        (makerRows ?? []).forEach((m: any) => { if (launchedSet.has(m.product_id)) founders.add(m.user_id); });
+        setFounderCount(founders.size);
+      }
+
 
       // Fetch products
       const from = pageNum * ITEMS_PER_PAGE;
