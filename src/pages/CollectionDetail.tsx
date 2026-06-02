@@ -76,9 +76,17 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
     const { data: rows } = await sb
       .from('user_collection_items')
-      .select('id, product_id, added_at, note')
+      .select('id, product_id, added_at, note, added_by')
       .eq('collection_id', col.id)
       .range(0, 9999);
+
+    // Fetch collaborators (for permission checks + attribution display) and owner name
+    const [{ data: collabs }, { data: ownerRow }] = await Promise.all([
+      sb.from('collection_collaborators').select('user_id').eq('collection_id', col.id),
+      sb.from('users').select('username').eq('id', col.user_id).maybeSingle(),
+    ]);
+    setCollaboratorIds(new Set((collabs ?? []).map((r: any) => r.user_id)));
+    setOwnerUsername(ownerRow?.username ?? null);
 
     const productIds = (rows ?? []).map((r: any) => r.product_id);
     if (!productIds.length) { setItems([]); setLoading(false); return; }
