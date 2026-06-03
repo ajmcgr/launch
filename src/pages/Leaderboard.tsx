@@ -59,15 +59,24 @@ const formatWeekLabel = (weekStart: string) => {
   return `${date.toLocaleDateString('en-US', opts)} – ${end.toLocaleDateString('en-US', opts)}`;
 };
 
+const PAGE_SIZE = 50;
+
 const Leaderboard = () => {
   const [sortMode, setSortMode] = useState<SortMode>('alltime');
   const [weekFilter, setWeekFilter] = useState<string | undefined>(undefined);
+  const [page, setPage] = useState(1);
   const { users, loading, availableWeeks } = useMakerScores(sortMode, weekFilter);
 
   // Filter out zero-score users for weekly view
   const filteredUsers = ['today', 'weekly', 'monthly', 'yearly'].includes(sortMode)
     ? users.filter((u) => u.weeklyScore > 0)
     : users;
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pagedUsers = filteredUsers.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  useEffect(() => { setPage(1); }, [sortMode, weekFilter]);
 
   return (
     <div className="min-h-screen bg-background py-6">
