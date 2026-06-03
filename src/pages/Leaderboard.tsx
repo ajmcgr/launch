@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -59,15 +59,24 @@ const formatWeekLabel = (weekStart: string) => {
   return `${date.toLocaleDateString('en-US', opts)} – ${end.toLocaleDateString('en-US', opts)}`;
 };
 
+const PAGE_SIZE = 50;
+
 const Leaderboard = () => {
   const [sortMode, setSortMode] = useState<SortMode>('alltime');
   const [weekFilter, setWeekFilter] = useState<string | undefined>(undefined);
+  const [page, setPage] = useState(1);
   const { users, loading, availableWeeks } = useMakerScores(sortMode, weekFilter);
 
   // Filter out zero-score users for weekly view
   const filteredUsers = ['today', 'weekly', 'monthly', 'yearly'].includes(sortMode)
     ? users.filter((u) => u.weeklyScore > 0)
     : users;
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pagedUsers = filteredUsers.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  useEffect(() => { setPage(1); }, [sortMode, weekFilter]);
 
   return (
     <div className="min-h-screen bg-background py-6">
@@ -145,8 +154,8 @@ const Leaderboard = () => {
               </p>
             </div>
           ) : (
-            filteredUsers.map((user, index) => {
-              const rank = index + 1;
+            pagedUsers.map((user, index) => {
+              const rank = (currentPage - 1) * PAGE_SIZE + index + 1;
               const score = getScoreLabel(sortMode, user);
 
               return (
@@ -186,6 +195,34 @@ const Leaderboard = () => {
             })
           )}
         </div>
+
+        {/* Pagination */}
+        {!loading && filteredUsers.length > PAGE_SIZE && (
+          <div className="mt-6 flex items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground tabular-nums">
+              {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Points breakdown */}
         {sortMode === 'weekly' && (
