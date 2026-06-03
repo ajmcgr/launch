@@ -223,6 +223,14 @@ const Leaderboard = () => {
             </div>
           </div>
         )}
+
+        {/* Points breakdown */}
+        {sortMode === 'weekly' && (
+          <div className="mt-8 text-center text-xs text-muted-foreground space-y-1 border-t pt-6">
+            <p className="font-medium text-foreground/70">How points are earned</p>
+            <p>+10 launch · +5 review received · +15 referral signup · +3 share click · +20 boost purchase</p>
+          </div>
+        )}
       </div>
     </div>
   );
