@@ -1978,7 +1978,7 @@ const Submit = () => {
                   </div>
                   <div className="flex gap-2 mt-2">
                     <Input
-                      placeholder="Add custom technology..."
+                      placeholder="Add tech (e.g. Next.js, React, Tailwind)"
                       value={newStackName}
                       onChange={(e) => setNewStackName(e.target.value)}
                       onKeyDown={(e) => {
@@ -2000,6 +2000,9 @@ const Submit = () => {
                       {isCreatingStack ? 'Adding...' : 'Add'}
                     </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Tip: separate multiple with commas — we'll add each as its own tag.
+                  </p>
                 </div>
 
                 <div className="space-y-2 pt-4 border-t">
