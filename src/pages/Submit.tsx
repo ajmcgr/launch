@@ -675,52 +675,89 @@ const Submit = () => {
     'vercelv0': { slug: 'v0', name: 'v0' },
   };
 
-  const handleCreateStackItem = async () => {
-    const trimmedName = newStackName.trim();
-    if (!trimmedName) return;
+  const addSingleStackItem = async (
+    rawName: string,
+    workingList: Array<{ id: number; name: string; slug: string }>,
+    selectedIds: number[]
+  ): Promise<{ list: Array<{ id: number; name: string; slug: string }>; selected: number[]; added: boolean }> => {
+    const trimmedName = rawName.trim();
+    if (!trimmedName) return { list: workingList, selected: selectedIds, added: false };
 
-    // Normalize and check for Built With alias
     const normalized = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '');
     const alias = BUILT_WITH_ALIASES[normalized];
-
-    // Compute target slug/name (alias-aware)
     const targetSlug = alias
       ? alias.slug
       : trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const targetName = alias ? alias.name : trimmedName;
+    if (!targetSlug) return { list: workingList, selected: selectedIds, added: false };
 
-    // Check if a matching item already exists (by slug or name)
-    const existing = availableStackItems.find(
+    const existing = workingList.find(
       s => s.slug === targetSlug || s.name.toLowerCase() === targetName.toLowerCase()
     );
     if (existing) {
-      if (formData.stackItems.includes(existing.id)) {
-        toast.info(`"${existing.name}" is already selected`);
-      } else {
-        setFormData(prev => ({ ...prev, stackItems: [...prev.stackItems, existing.id] }));
-        toast.success(`"${existing.name}" added to stack!`);
+      if (selectedIds.includes(existing.id)) {
+        return { list: workingList, selected: selectedIds, added: false };
       }
-      setNewStackName('');
-      return;
+      return { list: workingList, selected: [...selectedIds, existing.id], added: true };
     }
+
+    const { data, error } = await supabase
+      .from('stack_items')
+      .insert({ name: targetName, slug: targetSlug })
+      .select('id, name, slug')
+      .single();
+    if (error || !data) throw error || new Error('Insert failed');
+
+    const newList = [...workingList, data].sort((a, b) => a.name.localeCompare(b.name));
+    return { list: newList, selected: [...selectedIds, data.id], added: true };
+  };
+
+  const handleCreateStackItem = async () => {
+    const raw = newStackName.trim();
+    if (!raw) return;
+
+    // Split on commas, semicolons, slashes, pipes, or newlines so users can
+    // paste a whole stack at once instead of jamming it into one item.
+    const parts = Array.from(
+      new Set(
+        raw
+          .split(/[,;\/|\n]+/)
+          .map((p) => p.trim())
+          .filter(Boolean)
+      )
+    );
 
     setIsCreatingStack(true);
     try {
-      const { data, error } = await supabase
-        .from('stack_items')
-        .insert({ name: targetName, slug: targetSlug })
-        .select('id, name, slug')
-        .single();
+      let list = availableStackItems;
+      let selected = formData.stackItems;
+      let addedCount = 0;
+      const failed: string[] = [];
 
-      if (error) throw error;
+      for (const part of parts) {
+        try {
+          const result = await addSingleStackItem(part, list, selected);
+          list = result.list;
+          selected = result.selected;
+          if (result.added) addedCount += 1;
+        } catch (e) {
+          console.error('Stack item failed:', part, e);
+          failed.push(part);
+        }
+      }
 
-      setAvailableStackItems(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
-      setFormData(prev => ({ ...prev, stackItems: [...prev.stackItems, data.id] }));
+      setAvailableStackItems(list);
+      setFormData((prev) => ({ ...prev, stackItems: selected }));
       setNewStackName('');
-      toast.success(`"${data.name}" added to stack!`);
-    } catch (error: any) {
-      console.error('Error creating stack item:', error);
-      toast.error('Failed to create stack item');
+
+      if (addedCount > 0) {
+        toast.success(
+          addedCount === 1 ? 'Added to stack!' : `${addedCount} technologies added to stack!`
+        );
+      } else if (failed.length === 0) {
+        toast.info('Already selected');
+      }
+      if (failed.length) toast.error(`Failed to add: ${failed.join(', ')}`);
     } finally {
       setIsCreatingStack(false);
     }
