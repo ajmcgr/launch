@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { toZonedTime } from 'https://esm.sh/date-fns-tz@3';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
 import { postAlexComment } from '../_shared/auto-comment.ts';
+import { isCronAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
@@ -14,7 +15,12 @@ const PST_TIMEZONE = 'America/Los_Angeles';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders }
+
+  if (!isCronAuthorized(req)) {
+    return unauthorizedResponse(corsHeaders);
+  }
+);
   }
 
   try {
