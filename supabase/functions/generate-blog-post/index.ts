@@ -346,6 +346,10 @@ Return everything via the tool call.`;
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  if (!isCronAuthorized(req)) {
+    return unauthorizedResponse(corsHeaders);
+  }
+
   try {
     const requestBody = await req.json().catch(() => ({}));
     const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
