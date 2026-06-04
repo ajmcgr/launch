@@ -223,11 +223,6 @@ const Leaderboard = () => {
                               {user.totalReviews} reviews
                             </span>
                           )}
-                          {trend?.platforms && trend.platforms.length > 0 && (
-                            <span className="inline-flex items-center gap-0.5">
-                              Built with {trend.platforms.join(' • ')}
-                            </span>
-                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 font-bold text-sm text-foreground flex-shrink-0 tabular-nums">
