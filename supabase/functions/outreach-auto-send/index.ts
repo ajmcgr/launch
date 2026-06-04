@@ -2,6 +2,7 @@
 // Designed to be called by pg_cron. Conservative defaults to protect sender reputation.
 // Override per-call via JSON body: { dailyCap?: number, minScore?: number, scoreLimit?: number, dryRun?: boolean }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { isCronAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
