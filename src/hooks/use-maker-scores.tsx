@@ -234,7 +234,7 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
           avatar_url: user.avatar_url,
           name: user.name,
           weeklyScore: scoreMap.get(user.id) || 0,
-          karma: 0,
+          karma: karmaMap.get(user.id) || 0,
           totalLaunches: totalLaunchMap.get(user.id) || 0,
           totalReviews: reviewCountMap.get(user.id) || 0,
         }));
@@ -255,7 +255,7 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
       case 'yearly':
         return copy.sort((a, b) => b.weeklyScore - a.weeklyScore);
       case 'alltime':
-        return copy.sort((a, b) => b.totalLaunches - a.totalLaunches);
+        return copy.sort((a, b) => b.karma - a.karma || b.totalLaunches - a.totalLaunches);
       default:
         return copy;
     }
