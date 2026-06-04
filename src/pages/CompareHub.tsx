@@ -83,11 +83,11 @@ const CompareHub = () => {
         <section className="mt-16 pt-10 border-t border-border/40">
           <h2 className="text-2xl font-bold mb-4">Why compare?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Most makers launch on multiple platforms — that's the smart play.
+            Most vibe coders launch on multiple platforms — that's the smart play.
             Each directory has a different audience, ranking algorithm and SEO
-            profile. Use these comparisons to decide where to spend your launch
-            energy and which platforms deserve a recurring slot in your
-            distribution stack.
+            profile. Use these comparisons to decide where vibe-coded products
+            actually get traction and which platforms deserve a recurring slot
+            in your distribution stack.
           </p>
         </section>
       </div>
