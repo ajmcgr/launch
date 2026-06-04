@@ -141,7 +141,7 @@ const discovererPerks = [
   },
   {
     icon: MessageCircle,
-    title: 'Talk to the makers',
+    title: 'Talk to the vibe coders',
     description: 'Comment, ask questions, and share feedback directly with founders.',
   },
   {
