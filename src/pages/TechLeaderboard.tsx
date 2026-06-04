@@ -16,12 +16,9 @@ const TAB_CONFIG: { key: SortMode; label: string }[] = [
   { key: 'alltime', label: 'All' },
 ];
 
-const getRankBadge = (rank: number) => {
-  if (rank === 1) return <Trophy className="h-4 w-4 text-yellow-500" />;
-  if (rank === 2) return <Medal className="h-4 w-4 text-gray-400" />;
-  if (rank === 3) return <Award className="h-4 w-4 text-amber-600" />;
-  return <span className="text-sm font-bold text-muted-foreground">{rank}</span>;
-};
+const getRankBadge = (rank: number) => (
+  <span className="text-sm font-bold text-muted-foreground">{rank}</span>
+);
 
 const getStartDate = (mode: SortMode): string | null => {
   const now = new Date();
