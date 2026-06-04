@@ -497,7 +497,7 @@ const Start = () => {
                 </Button>
               </section>
 
-              {/* Maker benefits — kept consistent as a final card grid before CTA */}
+              {/* Vibe Coder benefits — kept consistent as a final card grid before CTA */}
               <section className="scroll-mt-24">
                 <SectionHeader
                   eyebrow="Why founders choose Launch"
