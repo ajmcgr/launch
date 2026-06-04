@@ -1085,8 +1085,8 @@ export const AutoSurfacedContent = () => {
       isLoading: gemsLoading,
     },
     {
-      title: "👀 Launch Makers to Watch",
-      description: "Prolific makers with multiple products",
+      title: "👀 Launch Vibe Coders to Watch",
+      description: "Prolific vibe coders with multiple products",
       icon: null,
       builders: buildersToWatch,
       isLoading: buildersLoading,
