@@ -729,7 +729,7 @@ export const AutoSurfacedContent = () => {
     },
   });
 
-  // Top Makers by Karma
+  // Top Vibe Coders by Karma
   const { data: topMakersByKarma, isLoading: topMakersLoading } = useQuery({
     queryKey: ['auto-top-makers-karma'],
     queryFn: async () => {
@@ -992,9 +992,9 @@ export const AutoSurfacedContent = () => {
     }
     
     if (topMakersByKarma && topMakersByKarma.length > 0) {
-      htmlSections.push(`<h2>${escapeHtml('⚡ Top Makers by Karma')}</h2>` + topMakersByKarma
+      htmlSections.push(`<h2>${escapeHtml('⚡ Top Vibe Coders by Karma')}</h2>` + topMakersByKarma
         .map((m) => `<p><a href="https://trylaunch.ai/@${m.username}">${escapeHtml(m.name || m.username)}</a> (@${escapeHtml(m.username)}) — ${m.karma} karma</p>`).join(''));
-      plainSections.push(`⚡ Top Makers by Karma\n\n` + topMakersByKarma
+      plainSections.push(`⚡ Top Vibe Coders by Karma\n\n` + topMakersByKarma
         .map((m) => `${m.name || m.username} (@${m.username}) — ${m.karma} karma\nhttps://trylaunch.ai/@${m.username}`).join('\n\n'));
     }
     
@@ -1092,8 +1092,8 @@ export const AutoSurfacedContent = () => {
       isLoading: buildersLoading,
     },
     {
-      title: "⚡ Top Makers by Karma",
-      description: "Top 10 makers ranked by karma score",
+      title: "⚡ Top Vibe Coders by Karma",
+      description: "Top 10 vibe coders ranked by karma score",
       icon: null,
       topMakers: topMakersByKarma,
       isLoading: topMakersLoading,
