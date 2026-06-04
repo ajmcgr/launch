@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Trophy, Medal, Award, Zap } from 'lucide-react';
+import { Zap, Info, Users, Rocket, Star } from 'lucide-react';
 import { useMakerScores } from '@/hooks/use-maker-scores';
+import { useLeaderboardTrends } from '@/hooks/use-leaderboard-trends';
+import { LeaderboardTrendsSections, RankDelta } from '@/components/LeaderboardTrendsSections';
+import { BuilderBadges, getBuilderBadges } from '@/components/BuilderBadges';
 import {
   Select,
   SelectContent,
@@ -22,10 +25,6 @@ const TAB_CONFIG: { key: SortMode; label: string }[] = [
   { key: 'yearly', label: 'Year' },
   { key: 'alltime', label: 'All' },
 ];
-
-const getRankBadge = (rank: number) => {
-  return <span className="text-sm font-bold text-muted-foreground">{rank}</span>;
-};
 
 const getScoreLabel = (sortMode: SortMode, user: any) => {
   switch (sortMode) {
@@ -66,8 +65,16 @@ const Leaderboard = () => {
   const [weekFilter, setWeekFilter] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
   const { users, loading, availableWeeks } = useMakerScores(sortMode, weekFilter);
+  const { builders: trendBuilders } = useLeaderboardTrends();
 
-  // Filter out zero-score users for weekly view
+  // Build maps from trend data for fast lookup
+  const trendsByUserId = useMemo(() => {
+    const m = new Map<string, (typeof trendBuilders)[number]>();
+    trendBuilders.forEach((b) => m.set(b.user_id, b));
+    return m;
+  }, [trendBuilders]);
+
+  // Filter out zero-score users for non-alltime views
   const filteredUsers = ['today', 'weekly', 'monthly', 'yearly'].includes(sortMode)
     ? users.filter((u) => u.weeklyScore > 0)
     : users;
@@ -82,14 +89,27 @@ const Leaderboard = () => {
     <div className="min-h-screen bg-background py-6">
       <Helmet>
         <title>Top Vibe Coders | Launch</title>
-        <meta name="description" content="Top vibe coders on Launch ranked by weekly distribution score. Earn points through launches, reviews, shares, and boosts." />
+        <meta
+          name="description"
+          content="Live leaderboard of the top vibe coders on Launch. Track trending builders, biggest risers, new entrants, and weekly rank movement."
+        />
       </Helmet>
 
-      <div className="container mx-auto px-4 max-w-5xl">
-        <h1 className="text-4xl font-bold text-center mb-6 font-reckless">Top Vibe Coders</h1>
+      <div className="container mx-auto px-4 max-w-7xl">
+        <header className="text-center mb-2">
+          <h1 className="text-4xl font-bold font-reckless">Top Vibe Coders</h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Where vibe coders get discovered. Rankings refresh weekly — climb to earn badges and visibility.
+          </p>
+        </header>
+
+        {/* Trending / Risers / Fallers / New entrants */}
+        <section className="mt-6">
+          <LeaderboardTrendsSections />
+        </section>
 
         {/* Sort Tabs */}
-        <div className="flex items-center justify-center mb-6">
+        <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
           <div className="flex items-center gap-1 border rounded-lg p-1">
             {TAB_CONFIG.map((tab) => (
               <button
@@ -111,7 +131,6 @@ const Leaderboard = () => {
             ))}
           </div>
 
-          {/* Week selector for weekly mode */}
           {sortMode === 'weekly' && availableWeeks.length > 1 && (
             <Select
               value={weekFilter || availableWeeks[0]}
@@ -131,11 +150,11 @@ const Leaderboard = () => {
           )}
         </div>
 
-        {/* Leaderboard List */}
-        <div>
+        {/* Main leaderboard */}
+        <div className="rounded-xl border bg-card overflow-hidden">
           {loading ? (
             Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 py-3 px-2">
+              <div key={i} className="flex items-center gap-3 py-3 px-4">
                 <Skeleton className="h-4 w-5" />
                 <Skeleton className="h-10 w-10 rounded-lg" />
                 <div className="flex-1">
@@ -157,13 +176,24 @@ const Leaderboard = () => {
             pagedUsers.map((user, index) => {
               const rank = (currentPage - 1) * PAGE_SIZE + index + 1;
               const score = getScoreLabel(sortMode, user);
+              const trend = trendsByUserId.get(user.user_id);
+              const badges = trend ? getBuilderBadges(trend) : [];
+              const showDelta = sortMode === 'weekly' || sortMode === 'today';
 
               return (
                 <Link
                   key={user.user_id}
                   to={`/@${user.username}`}
-                  className="flex items-center gap-3 py-3 px-2 hover:bg-muted/30 transition-colors"
+                  className="flex items-center gap-3 py-3 px-4 hover:bg-muted/30 transition-colors border-b last:border-b-0"
                 >
+                  <span className="text-sm font-bold text-muted-foreground tabular-nums w-8 text-right flex-shrink-0">
+                    {rank}
+                  </span>
+                  {showDelta && (
+                    <span className="w-10 flex-shrink-0 flex justify-start">
+                      <RankDelta change={trend?.rankChange ?? null} />
+                    </span>
+                  )}
                   <Avatar className="h-10 w-10 rounded-lg flex-shrink-0">
                     <AvatarImage src={user.avatar_url || ''} alt={user.username} />
                     <AvatarFallback className="rounded-lg">
@@ -171,17 +201,36 @@ const Leaderboard = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-5 flex justify-center flex-shrink-0">
-                        {getRankBadge(rank)}
-                      </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <h3 className="font-semibold text-base text-foreground truncate">
                         {user.name || `@${user.username}`}
                       </h3>
+                      <BuilderBadges badges={badges} max={3} />
                     </div>
-                    {user.name && (
-                      <p className="text-sm text-muted-foreground truncate">@{user.username}</p>
-                    )}
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5 flex-wrap">
+                      {user.name && <span>@{user.username}</span>}
+                      <span className="inline-flex items-center gap-0.5">
+                        <Rocket className="h-3 w-3" />
+                        {user.totalLaunches} launches
+                      </span>
+                      {trend && trend.followers > 0 && (
+                        <span className="inline-flex items-center gap-0.5">
+                          <Users className="h-3 w-3" />
+                          {trend.followers.toLocaleString()} followers
+                        </span>
+                      )}
+                      {user.totalReviews > 0 && (
+                        <span className="inline-flex items-center gap-0.5">
+                          <Star className="h-3 w-3" />
+                          {user.totalReviews} reviews
+                        </span>
+                      )}
+                      {trend?.platforms && trend.platforms.length > 0 && (
+                        <span className="inline-flex items-center gap-0.5">
+                          Built with {trend.platforms.join(' • ')}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 font-bold text-sm text-foreground flex-shrink-0 tabular-nums">
                     <Zap className="h-3.5 w-3.5" />
@@ -224,13 +273,23 @@ const Leaderboard = () => {
           </div>
         )}
 
-        {/* Points breakdown */}
-        {sortMode === 'weekly' && (
-          <div className="mt-8 text-center text-xs text-muted-foreground space-y-1 border-t pt-6">
-            <p className="font-medium text-foreground/70">How points are earned</p>
-            <p>+10 launch · +5 review received · +15 referral signup · +3 share click · +20 boost purchase</p>
-          </div>
-        )}
+        {/* How rankings work */}
+        <div className="mt-10 rounded-xl border bg-muted/30 p-5">
+          <h2 className="text-sm font-bold text-foreground flex items-center gap-1.5 mb-2">
+            <Info className="h-4 w-4" />
+            How rankings work
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            The Vibe Coder leaderboard refreshes every week. Rankings are calculated using a weighted blend of
+            product launches, votes received, followers gained, profile engagement, and community activity
+            (reviews, comments, referrals, boosts). Exact weights stay private to keep the leaderboard fair —
+            but consistency wins. Launch quality products, support other builders, and your rank will climb.
+          </p>
+          <p className="text-xs text-muted-foreground mt-3">
+            <span className="font-medium text-foreground/70">Earn badges:</span>{' '}
+            🏆 Top 10 · 💯 Top 100 · 🚀 Top Launcher · ⚡ Rising Builder · 🔥 Trending · 🆕 New Entrant
+          </p>
+        </div>
       </div>
     </div>
   );
