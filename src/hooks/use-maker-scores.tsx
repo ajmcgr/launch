@@ -111,12 +111,34 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
             .select('owner_id, launch_date')
             .eq('status', 'launched');
 
-      const [scoresRes, totalLaunchesRes, periodLaunchesRes, reviewsRes, weeksRes, allTimeScoresRes] = await Promise.all([
+      // Helper: page through results to bypass PostgREST's default 1000-row cap.
+      // Without this, large tables (maker_scores, products) get silently truncated
+      // and makers fall off the leaderboard even though they have karma.
+      const fetchAllPaged = async <T,>(
+        build: (from: number, to: number) => any,
+      ): Promise<T[]> => {
+        const pageSize = 1000;
+        const all: T[] = [];
+        let from = 0;
+        for (;;) {
+          const { data, error } = await build(from, from + pageSize - 1);
+          if (error || !data || data.length === 0) break;
+          all.push(...(data as T[]));
+          if (data.length < pageSize) break;
+          from += pageSize;
+        }
+        return all;
+      };
+
+      const [scoresRes, totalLaunchesData, periodLaunchesRes, reviewsRes, weeksRes, allTimeScoresData] = await Promise.all([
         scoresQuery,
-        supabase
-          .from('products')
-          .select('owner_id')
-          .eq('status', 'launched'),
+        fetchAllPaged<{ owner_id: string }>((f, t) =>
+          supabase
+            .from('products')
+            .select('owner_id')
+            .eq('status', 'launched')
+            .range(f, t),
+        ),
         periodLaunchesQuery,
         supabase
           .from('product_ratings')
@@ -125,10 +147,16 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
           .from('maker_scores' as any)
           .select('week_start_date')
           .order('week_start_date', { ascending: false }),
-        supabase
-          .from('maker_scores' as any)
-          .select('user_id, points'),
+        fetchAllPaged<{ user_id: string; points: number }>((f, t) =>
+          supabase
+            .from('maker_scores' as any)
+            .select('user_id, points')
+            .range(f, t),
+        ),
       ]);
+
+      const totalLaunchesRes = { data: totalLaunchesData, error: null as any };
+      const allTimeScoresRes = { data: allTimeScoresData, error: null as any };
 
       const karmaMap = new Map<string, number>();
       if (!allTimeScoresRes.error && allTimeScoresRes.data) {
