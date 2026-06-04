@@ -356,7 +356,7 @@ const Start = () => {
                 </div>
               </section>
 
-              {/* For Makers */}
+              {/* For Vibe Coders */}
               <section id={sections[1].id} className="scroll-mt-24">
                 <SectionHeader
                   eyebrow={sections[1].eyebrow}
