@@ -83,7 +83,7 @@ export const useLeaderboardTrends = () => {
 
       (weeklyLaunchesRes.data as any[] | null)?.forEach((p) => {
         weeklyLaunchMap.set(p.owner_id, (weeklyLaunchMap.get(p.owner_id) || 0) + 1);
-        const tags: string[] = p.builder_platform_tags || [];
+        const tags: string[] = p.platforms || [];
         if (tags && tags.length) {
           const set = platformMap.get(p.owner_id) || new Set<string>();
           tags.forEach((t) => set.add(t));
