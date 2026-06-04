@@ -111,7 +111,7 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
             .select('owner_id, launch_date')
             .eq('status', 'launched');
 
-      const [scoresRes, totalLaunchesRes, periodLaunchesRes, reviewsRes, weeksRes] = await Promise.all([
+      const [scoresRes, totalLaunchesRes, periodLaunchesRes, reviewsRes, weeksRes, allTimeScoresRes] = await Promise.all([
         scoresQuery,
         supabase
           .from('products')
@@ -125,7 +125,17 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
           .from('maker_scores' as any)
           .select('week_start_date')
           .order('week_start_date', { ascending: false }),
+        supabase
+          .from('maker_scores' as any)
+          .select('user_id, points'),
       ]);
+
+      const karmaMap = new Map<string, number>();
+      if (!allTimeScoresRes.error && allTimeScoresRes.data) {
+        (allTimeScoresRes.data as any[]).forEach((s) => {
+          karmaMap.set(s.user_id, (karmaMap.get(s.user_id) || 0) + (s.points || 0));
+        });
+      }
 
       const scoreMap = new Map<string, number>();
       if (!scoresRes.error && scoresRes.data) {
@@ -189,6 +199,7 @@ export const useMakerScores = (sortMode: SortMode = 'weekly', weekFilter?: strin
       const userIds = new Set<string>();
       scoreMap.forEach((_, userId) => userIds.add(userId));
       totalLaunchMap.forEach((_, userId) => userIds.add(userId));
+      karmaMap.forEach((_, userId) => userIds.add(userId));
 
       if (userIds.size === 0) {
         setUsers([]);
