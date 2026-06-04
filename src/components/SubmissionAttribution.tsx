@@ -127,6 +127,7 @@ const ClaimProductModal = ({
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const handleEmailClaim = async () => {
     if (!currentUserId) {
@@ -139,16 +140,14 @@ const ClaimProductModal = ({
     }
     setSubmitting(true);
     try {
-      const { error } = await (supabase as any).from('product_claims').insert({
-        product_id: productId,
-        claimant_user_id: currentUserId,
-        verification_method: 'email_domain',
-        verification_email: email.trim().toLowerCase(),
-        status: 'pending',
-        message: 'Auto-verify via company email',
+      const { data, error } = await supabase.functions.invoke('request-product-claim', {
+        body: { productId, email: email.trim().toLowerCase() },
       });
-      if (error) throw error;
-      onSuccess();
+      if (error || (data && (data as any).error)) {
+        throw new Error((data && (data as any).error) || error?.message || 'Failed to send verification');
+      }
+      setSent(true);
+      toast.success('Check your inbox for the verification link.');
     } catch (e: any) {
       toast.error(e.message || 'Failed to submit claim');
     } finally {
@@ -215,7 +214,7 @@ const ClaimProductModal = ({
           </button>
         </div>
 
-        {tab === 'email' && (
+        {tab === 'email' && !sent && (
           <div className="space-y-3">
             <Label htmlFor="claim-email">
               Email address {productDomain ? `@${productDomain}` : ''}
@@ -228,11 +227,22 @@ const ClaimProductModal = ({
               placeholder={productDomain ? `you@${productDomain}` : 'you@yourdomain.com'}
             />
             <p className="text-xs text-muted-foreground">
-              We'll verify your claim against the product's domain. Admin review may be required.
+              We'll email you a verification link. Click it and the launch is instantly transferred to your account — no admin review.
             </p>
             <Button onClick={handleEmailClaim} disabled={submitting} className="w-full">
-              {submitting ? 'Submitting…' : 'Submit claim'}
+              {submitting ? 'Sending…' : 'Send verification email'}
             </Button>
+          </div>
+        )}
+
+        {tab === 'email' && sent && (
+          <div className="space-y-3 text-center py-4">
+            <p className="text-sm">
+              We sent a verification link to <strong>{email}</strong>.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Click the link in the email to instantly claim this launch. The link expires in 24 hours.
+            </p>
           </div>
         )}
 
