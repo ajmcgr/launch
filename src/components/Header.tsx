@@ -120,7 +120,7 @@ export const Header = () => {
             <Link to="/" className="flex items-center">
               <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
-            <div className="hidden md:flex items-center relative w-56 h-9 border rounded-md bg-background">
+            <div className="hidden md:flex items-center relative w-40 h-9 border rounded-md bg-background">
               <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5 pointer-events-none" />
               <Input
                 type="search"
@@ -135,11 +135,11 @@ export const Header = () => {
               <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Products
               </Link>
-              <Link to="/collections" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Collections
-              </Link>
               <Link to="/vibecoders" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Coders
+              </Link>
+              <Link to="/collections" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+                Collections
               </Link>
               <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
                 Newsletter
@@ -271,18 +271,18 @@ export const Header = () => {
                     Products
                   </Link>
                   <Link
-                    to="/collections"
-                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Collections
-                  </Link>
-                  <Link
                     to="/vibecoders"
                     className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Coders
+                  </Link>
+                  <Link
+                    to="/collections"
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Collections
                   </Link>
                   <a 
                     href="https://newsletter.trylaunch.ai/" 

@@ -34,7 +34,7 @@ const getScoreLabel = (sortMode: SortMode, user: any) => {
     case 'yearly':
       return user.weeklyScore;
     case 'alltime':
-      return user.totalLaunches;
+      return user.karma;
   }
 };
 
@@ -46,7 +46,7 @@ const getScoreUnit = (sortMode: SortMode) => {
     case 'yearly':
       return 'pts';
     case 'alltime':
-      return 'launches';
+      return 'karma';
   }
 };
 
