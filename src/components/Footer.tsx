@@ -104,7 +104,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link to="/tech" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Top Tech
+                  Top Tech Stacks
                 </Link>
               </li>
               <li>

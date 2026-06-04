@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 
+const PAGE_SIZE = 5;
+
 interface AwardProduct {
   id: string;
   name: string;
@@ -30,6 +32,7 @@ interface WeekGroup {
 const Awards = () => {
   const [weeks, setWeeks] = useState<WeekGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetchAwards();
@@ -182,18 +185,47 @@ const Awards = () => {
             <p className="text-muted-foreground">No awards have been given yet. Check back soon!</p>
           </div>
         ) : (
-          <div className="space-y-10">
-            {weeks.map((week, idx) => (
-              <div key={idx}>
-                <h2 className="text-lg font-semibold mb-4 text-muted-foreground">{week.weekLabel}</h2>
-                <div className="space-y-3">
-                  {renderAwardCard(week.gold, 'gold')}
-                  {renderAwardCard(week.silver, 'silver')}
-                  {renderAwardCard(week.bronze, 'bronze')}
+          <>
+            <div className="space-y-10">
+              {weeks.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((week, idx) => (
+                <div key={idx}>
+                  <h2 className="text-lg font-semibold mb-4 text-muted-foreground">{week.weekLabel}</h2>
+                  <div className="space-y-3">
+                    {renderAwardCard(week.gold, 'gold')}
+                    {renderAwardCard(week.silver, 'silver')}
+                    {renderAwardCard(week.bronze, 'bronze')}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {weeks.length > PAGE_SIZE && (
+              <div className="mt-10 flex items-center justify-between gap-4">
+                <p className="text-xs text-muted-foreground tabular-nums">
+                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, weeks.length)} of {weeks.length}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    Page {page} of {Math.ceil(weeks.length / PAGE_SIZE)}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(Math.ceil(weeks.length / PAGE_SIZE), p + 1))}
+                    disabled={page >= Math.ceil(weeks.length / PAGE_SIZE)}
+                    className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </>
