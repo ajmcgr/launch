@@ -1100,7 +1100,7 @@ export const AutoSurfacedContent = () => {
     },
     {
       title: "🛠️ Most Popular Tech on Launch",
-      description: "Top 5 technologies used by makers",
+      description: "Top 5 technologies used by vibe coders",
       icon: null,
       stackItems: popularTech,
       isLoading: techLoading,
