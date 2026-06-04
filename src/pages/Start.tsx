@@ -219,7 +219,7 @@ const faqs = [
   {
     icon: HelpCircle,
     title: 'Can I just browse without launching?',
-    description: 'Absolutely. Browse today\'s launches, follow makers, and subscribe to the newsletter.',
+    description: 'Absolutely. Browse today\'s launches, follow vibe coders, and subscribe to the newsletter.',
   },
 ];
 
