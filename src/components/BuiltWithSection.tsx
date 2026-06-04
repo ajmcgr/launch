@@ -129,7 +129,7 @@ function PlatformCard({ platform, stats, loaded }: { platform: BuiltWithPlatform
   const followers = stats?.followers ?? 0;
   return (
     <Link
-      to={`/c/built-with-${platform.slug}`}
+      to={`/collections/built-with-${platform.slug}`}
       className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
     >
       <div className={`${platform.plate} aspect-[3/1.6] flex items-center justify-center overflow-hidden`}>
