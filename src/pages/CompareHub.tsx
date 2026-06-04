@@ -4,9 +4,9 @@ import { ArrowRight } from 'lucide-react';
 import { comparisons } from '@/lib/comparisons';
 
 const CompareHub = () => {
-  const title = 'Launch vs Alternatives — Compare Product Launch Platforms (2026)';
+  const title = 'Launch vs Alternatives — Best Launch Platforms for Vibe Coders (2026)';
   const description =
-    'Compare Launch with Product Hunt, BetaList, Peerlist and Uneed. Pricing, dofollow backlinks, verified revenue, ranking systems — the honest breakdown for indie makers.';
+    'Compare Launch with Product Hunt, BetaList, Peerlist and Uneed. Pricing, dofollow backlinks, verified revenue, ranking systems — the honest breakdown for vibe coders shipping vibe-coded products.';
 
   const itemListJsonLd = {
     '@context': 'https://schema.org',
