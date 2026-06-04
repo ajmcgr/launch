@@ -33,10 +33,11 @@ const CompareHub = () => {
 
       <div className="container mx-auto px-4 max-w-4xl">
         <header className="mb-10">
-          <h1 className="text-4xl font-bold mb-4">Launch vs alternatives</h1>
+          <h1 className="text-4xl font-bold mb-4">Launch vs alternatives for vibe coders</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Honest comparisons between Launch and other product launch platforms.
-            Pricing, ranking, audience, backlinks — no fluff.
+            Honest comparisons between Launch and other launch platforms — built for
+            vibe coders shipping vibe-coded products. Pricing, ranking, audience,
+            backlinks. No fluff.
           </p>
         </header>
 
