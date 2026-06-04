@@ -31,11 +31,11 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://www.g2.com',
     oneLiner: 'A maker-first launchpad with dofollow backlinks vs. an enterprise software review marketplace.',
     metaDescription:
-      'Launch vs G2 in 2026: compare pricing, audience, backlink quality and discoverability for indie SaaS and AI startups.',
+      'Launch vs G2 in 2026: compare pricing, audience, backlink quality and discoverability for vibe-coded SaaS and AI startups.',
     summary:
-      'G2 is built for enterprise buyers comparing established SaaS vendors — getting listed is slow, reviews are gated, and meaningful visibility costs thousands per month. Launch is built for indie makers and AI founders who need fast distribution, dofollow backlinks, and a real audience of builders without enterprise pricing.',
+      'G2 is built for enterprise buyers comparing established SaaS vendors — getting listed is slow, reviews are gated, and meaningful visibility costs thousands per month. Launch is built for vibe coders who need fast distribution, dofollow backlinks, and a real audience of builders without enterprise pricing.',
     whoIsItFor: {
-      launch: 'Indie makers, AI founders, and bootstrapped SaaS shipping new products.',
+      launch: 'Vibe coders and bootstrapped founders shipping new products.',
       competitor: 'Established B2B SaaS vendors selling into mid-market and enterprise.',
     },
     rows: [
@@ -54,7 +54,7 @@ export const comparisons: Comparison[] = [
       {
         question: 'Is Launch a G2 alternative?',
         answer:
-          'Not directly — G2 is a buyer-intent review marketplace for enterprise SaaS. Launch is a discovery and launchpad for indie products. Many makers use Launch for early traction and G2 later once they sell into enterprise.',
+          'Not directly — G2 is a buyer-intent review marketplace for enterprise SaaS. Launch is a discovery and launchpad for vibe-coded products. Many makers use Launch for early traction and G2 later once they sell into enterprise.',
       },
       {
         question: 'Is Launch cheaper than G2?',
@@ -67,13 +67,13 @@ export const comparisons: Comparison[] = [
     slug: 'launch-vs-product-hunt',
     competitor: 'Product Hunt',
     competitorUrl: 'https://www.producthunt.com',
-    oneLiner: 'A focused launchpad for indie makers vs. the largest mainstream product directory.',
+    oneLiner: 'A focused launchpad for vibe coders vs. the largest mainstream product directory.',
     metaDescription:
-      'Launch vs Product Hunt in 2026: compare pricing, ranking algorithm, audience, dofollow backlinks and visibility for indie makers.',
+      'Launch vs Product Hunt in 2026: compare pricing, ranking algorithm, audience, dofollow backlinks and visibility for vibe coders.',
     summary:
-      'Product Hunt is the biggest product launch site on the internet, but its scale means most launches get drowned out by the top 5 of the day. Launch is a smaller, focused alternative built for indie makers and AI founders who want real upvotes, real feedback and dofollow backlinks — not a popularity contest hijacked by hunters.',
+      'Product Hunt is the biggest product launch site on the internet, but its scale means most launches get drowned out by the top 5 of the day. Launch is a smaller, focused alternative built for vibe coders who want real upvotes, real feedback and dofollow backlinks — not a popularity contest hijacked by hunters.',
     whoIsItFor: {
-      launch: 'Indie makers, solo founders, AI builders shipping side-projects who want a fair shot at visibility.',
+      launch: 'Vibe coders and solo vibe coders shipping side-projects who want a fair shot at visibility.',
       competitor: 'Funded startups with a network and budget for a coordinated launch day.',
     },
     rows: [
@@ -93,7 +93,7 @@ export const comparisons: Comparison[] = [
       {
         question: 'Is Launch a Product Hunt alternative?',
         answer:
-          'Yes — Launch is a focused alternative to Product Hunt designed for indie makers and AI founders. It offers dofollow backlinks, instant Pro launches, and verified MRR badges that Product Hunt does not provide.',
+          'Yes — Launch is a focused alternative to Product Hunt designed for vibe coders. It offers dofollow backlinks, instant Pro launches, and verified MRR badges that Product Hunt does not provide.',
       },
       {
         question: 'Can I launch on both Product Hunt and Launch?',
@@ -115,9 +115,9 @@ export const comparisons: Comparison[] = [
     metaDescription:
       'Launch vs There\'s An AI For That (TAAFT) in 2026: compare pricing, audience quality, dofollow backlinks and visibility for AI tools.',
     summary:
-      'There\'s An AI For That is the largest AI tools directory by volume, but most listings are auto-aggregated and submissions sit in a long queue unless you pay for priority. Launch is a community-driven alternative with daily leaderboards, real upvotes from makers, dofollow backlinks, and verified MRR — built for AI founders who want engagement, not just a directory entry.',
+      'There\'s An AI For That is the largest AI tools directory by volume, but most listings are auto-aggregated and submissions sit in a long queue unless you pay for priority. Launch is a community-driven alternative with daily leaderboards, real upvotes from makers, dofollow backlinks, and verified MRR — built for vibe coders who want engagement, not just a directory entry.',
     whoIsItFor: {
-      launch: 'AI founders and indie makers who want community engagement, upvotes and SEO traction.',
+      launch: 'vibe coders who want community engagement, upvotes and SEO traction.',
       competitor: 'AI tool builders who want a passive directory listing in the largest AI catalog.',
     },
     rows: [
@@ -136,12 +136,12 @@ export const comparisons: Comparison[] = [
       {
         question: 'Is Launch better than There\'s An AI For That for launching an AI tool?',
         answer:
-          'For launch day momentum, yes — Launch has daily leaderboards, real maker upvotes and dofollow backlinks. TAAFT is better for passive long-tail directory traffic. Most AI founders use both.',
+          'For launch day momentum, yes — Launch has daily leaderboards, real maker upvotes and dofollow backlinks. TAAFT is better for passive long-tail directory traffic. Most vibe coders use both.',
       },
       {
         question: 'Does Launch only accept AI products?',
         answer:
-          'No, Launch accepts any indie product, but AI tools are a major category with their own tags and discovery pages.',
+          'No, Launch accepts any vibe-coded product, but AI tools are a major category with their own tags and discovery pages.',
       },
     ],
   },
@@ -151,7 +151,7 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://news.ycombinator.com',
     oneLiner: 'A predictable maker launchpad with permanent SEO pages vs. an unpredictable Show HN front page.',
     metaDescription:
-      'Launch vs Hacker News (Show HN) in 2026: compare audience, ranking, backlinks and predictability for indie product launches.',
+      'Launch vs Hacker News (Show HN) in 2026: compare audience, ranking, backlinks and predictability for vibe coding launches.',
     summary:
       'Show HN can be incredible if you hit the front page — but most submissions sink within an hour with zero traction. Launch gives makers a predictable launch surface: a daily leaderboard everyone sees, dofollow backlinks, permanent archive pages, and a community that actually upvotes new products instead of penalizing them.',
     whoIsItFor: {
@@ -159,7 +159,7 @@ export const comparisons: Comparison[] = [
       competitor: 'Technical founders with a story or technically interesting product hoping for a front-page hit.',
     },
     rows: [
-      { feature: 'Audience', launch: 'Indie makers, AI founders, early adopters', competitor: 'Developers, hackers, tech-curious' },
+      { feature: 'Audience', launch: 'Vibe coders and early adopters', competitor: 'Developers, hackers, tech-curious' },
       { feature: 'Submission cost', launch: 'Free or $39 Pro', competitor: 'Free' },
       { feature: 'Predictability', launch: 'Guaranteed visibility on leaderboard', competitor: 'Lottery — most posts get no traction', winner: 'launch' },
       { feature: 'Dofollow backlink', launch: 'Yes', competitor: 'Nofollow', winner: 'launch' },
@@ -189,7 +189,7 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://peerlist.io',
     oneLiner: 'Product launches with maker scoring vs. a developer-focused professional network.',
     metaDescription:
-      'Launch vs Peerlist: which platform is better for launching an indie product in 2026? Compare audience, ranking and backlinks.',
+      'Launch vs Peerlist: which platform is better for launching an vibe-coded product in 2026? Compare audience, ranking and backlinks.',
     summary:
       'Peerlist is primarily a professional network for developers — Project Spotlight is a secondary feature. Launch is purpose-built for product launches with daily/weekly leaderboards, verified revenue, and a Maker Score that compounds over time as you launch more products and engage with the community.',
     whoIsItFor: {
@@ -221,7 +221,7 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://betalist.com',
     oneLiner: 'Live product launches and ongoing visibility vs. pre-launch beta signups.',
     metaDescription:
-      'Launch vs BetaList: compare pricing, audience, backlink quality and post-launch visibility for indie startups in 2026.',
+      'Launch vs BetaList: compare pricing, audience, backlink quality and post-launch visibility for vibe-coded startups in 2026.',
     summary:
       'BetaList is built for collecting early-access signups before a product is live. Launch is built for the actual launch and the long tail after. Most makers use BetaList once, then need a real launch platform — Launch fills that gap and keeps your product discoverable in archives, tags and tech pages indefinitely.',
     whoIsItFor: {
@@ -259,11 +259,11 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://uneed.best',
     oneLiner: 'Maker-first launch with verified revenue vs. a curated tools directory.',
     metaDescription:
-      'Launch vs Uneed in 2026: compare pricing, ranking system, dofollow backlinks and audience for indie product launches.',
+      'Launch vs Uneed in 2026: compare pricing, ranking system, dofollow backlinks and audience for vibe coding launches.',
     summary:
       'Uneed is a curated weekly directory with limited daily slots. Launch lets anyone submit on any day with no editorial bottleneck, and stacks programmatic SEO around tags, tech pages and permanent archive URLs to keep your product discoverable long after launch day.',
     whoIsItFor: {
-      launch: 'Any indie maker who wants instant or queued launching with no curation lottery.',
+      launch: 'Any vibe coder who wants instant or queued launching with no curation lottery.',
       competitor: 'Makers with polished products willing to wait for editorial selection.',
     },
     rows: [
@@ -291,11 +291,11 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://alternative.me/',
     oneLiner: 'A maker-first launchpad with daily upvotes vs. a crowdsourced software-alternatives directory.',
     metaDescription:
-      'Launch vs Alternative.me in 2026: compare audience, dofollow backlinks, pricing and visibility for indie SaaS and AI tools.',
+      'Launch vs Alternative.me in 2026: compare audience, dofollow backlinks, pricing and visibility for vibe-coded SaaS and AI tools.',
     summary:
       'Alternative.me is a long-tail SEO directory of "alternatives to X" lists, populated mostly by community suggestions. Listings are slow to surface and rarely drive an actual launch moment. Launch is a daily launch board with leaderboards, real maker upvotes, dofollow backlinks and a permanent product page that compounds in search.',
     whoIsItFor: {
-      launch: 'Indie makers and AI founders who want a real launch event plus ongoing SEO.',
+      launch: 'Vibe coders and vibe coders who want a real launch event plus ongoing SEO.',
       competitor: 'Makers who want to appear on long-tail "alternative to..." lists.',
     },
     rows: [
@@ -321,13 +321,13 @@ export const comparisons: Comparison[] = [
     slug: 'launch-vs-indiehackers',
     competitor: 'Indie Hackers',
     competitorUrl: 'https://www.indiehackers.com',
-    oneLiner: 'A dedicated product launchpad with dofollow SEO vs. a community for indie founders.',
+    oneLiner: 'A dedicated product launchpad with dofollow SEO vs. a community for vibe coders.',
     metaDescription:
-      'Launch vs Indie Hackers in 2026: compare launch visibility, backlinks, audience and pricing for indie SaaS founders.',
+      'Launch vs Indie Hackers in 2026: compare launch visibility, backlinks, audience and pricing for vibe coders.',
     summary:
       'Indie Hackers is the canonical community for bootstrapped founders — great for stories, revenue transparency and conversation, but its product directory is secondary and posts fade fast. Launch is a dedicated launch board with daily leaderboards, dofollow backlinks, verified MRR, and permanent product pages.',
     whoIsItFor: {
-      launch: 'Indie makers who want a focused launch event and lasting SEO value.',
+      launch: 'Vibe coders who want a focused launch event and lasting SEO value.',
       competitor: 'Founders looking for community, revenue stories and peer discussion.',
     },
     rows: [
@@ -355,7 +355,7 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://betalist.com/',
     oneLiner: 'A live-launch board with daily leaderboards vs. a pre-launch waitlist directory.',
     metaDescription:
-      'Launch vs BetaList: compare pre-launch waitlists with live launch events for indie founders in 2026.',
+      'Launch vs BetaList: compare pre-launch waitlists with live launch events for vibe coders in 2026.',
     summary:
       'BetaList is the classic pre-launch waitlist board — submit before you ship and collect early signups. Launch is for the launch event itself and the long tail afterwards, with dofollow backlinks, permanent SEO pages and an active forum. The two are complementary.',
     whoIsItFor: {
@@ -387,11 +387,11 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://toolfio.com/',
     oneLiner: 'A community launch board vs. a curated tools directory.',
     metaDescription:
-      'Launch vs Toolfio in 2026: compare audience, dofollow backlinks, pricing and discovery for indie tools and AI products.',
+      'Launch vs Toolfio in 2026: compare audience, dofollow backlinks, pricing and discovery for vibe-coded tools and AI products.',
     summary:
       'Toolfio is a curated tools directory — clean design, editorial selection, but limited daily volume and no real launch event. Launch is open-submission with a daily leaderboard, dofollow backlinks, verified MRR, and a programmatic SEO surface across tags and tech pages.',
     whoIsItFor: {
-      launch: 'Any indie maker who wants instant or queued launching with no curation lottery.',
+      launch: 'Any vibe coder who wants instant or queued launching with no curation lottery.',
       competitor: 'Makers happy to wait for editorial inclusion in a curated list.',
     },
     rows: [
@@ -419,11 +419,11 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'http://toolfolio.io/',
     oneLiner: 'A community launch board vs. a personal portfolio-style tools directory.',
     metaDescription:
-      'Launch vs Toolfolio in 2026: compare audience, dofollow backlinks, pricing and discovery for indie tools and AI products.',
+      'Launch vs Toolfolio in 2026: compare audience, dofollow backlinks, pricing and discovery for vibe-coded tools and AI products.',
     summary:
       'Toolfolio is a portfolio-style directory where makers showcase the tools they use and build. Launch is an open-submission launch board with a daily leaderboard, dofollow backlinks, verified MRR, and a programmatic SEO surface across tags and tech pages.',
     whoIsItFor: {
-      launch: 'Indie makers who want a launch event with upvotes, backlinks, and discovery.',
+      launch: 'Vibe coders who want a launch event with upvotes, backlinks, and discovery.',
       competitor: 'Makers who want a personal portfolio-style page of tools they use or built.',
     },
     rows: [
@@ -451,11 +451,11 @@ export const comparisons: Comparison[] = [
     competitorUrl: 'https://fazier.com/',
     oneLiner: 'A maker-first launch board with verified revenue vs. another indie launch directory.',
     metaDescription:
-      'Launch vs Fazier in 2026: compare pricing, ranking, dofollow backlinks and audience for indie product launches.',
+      'Launch vs Fazier in 2026: compare pricing, ranking, dofollow backlinks and audience for vibe coding launches.',
     summary:
       'Fazier is an indie launch board similar in spirit to Launch — submit, get upvotes, get a backlink. Launch goes further with verified Stripe MRR badges, a Maker Score that compounds across launches, an active Discourse forum, 20+ free founder tools and programmatic SEO around tags and tech pages.',
     whoIsItFor: {
-      launch: 'Indie makers who want a launch event plus a long-tail SEO surface and active community.',
+      launch: 'Vibe coders who want a launch event plus a long-tail SEO surface and active community.',
       competitor: 'Makers who want a simple secondary listing alongside other launch boards.',
     },
     rows: [
