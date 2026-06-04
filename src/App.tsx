@@ -82,6 +82,7 @@ const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
 const VibeCodeYourFuture = lazy(() => import("./pages/VibeCodeYourFuture"));
 const Search = lazy(() => import("./pages/Search"));
+const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 
 const queryClient = new QueryClient();
@@ -164,6 +165,7 @@ const AppContent = () => {
             <Route path="/start" element={<Start />} />
             <Route path="/products" element={<Products />} />
             <Route path="/submit" element={<Submit />} />
+            <Route path="/claim/verify" element={<ClaimVerify />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/launch/:slug" element={<LaunchDetail />} />
