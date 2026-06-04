@@ -39,12 +39,12 @@ const sections: Section[] = [
     eyebrowIcon: Sparkles,
     title: 'What is Launch?',
     description:
-      'A daily product discovery platform where founders ship new AI and tech products, and the community upvotes the best ones. Friendlier and founder-first — built for makers who actually want to grow.',
+      'A daily product discovery platform where founders ship new AI and tech products, and the community upvotes the best ones. Friendlier and founder-first — built for vibe coders who actually want to grow.',
   },
   {
-    id: 'for-makers',
-    label: 'For Makers',
-    eyebrow: 'For Makers',
+    id: 'for-vibecoders',
+    label: 'For Vibe Coders',
+    eyebrow: 'For Vibe Coders',
     eyebrowIcon: Megaphone,
     title: 'Launch your product in four steps',
     description:
