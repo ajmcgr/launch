@@ -985,9 +985,9 @@ export const AutoSurfacedContent = () => {
     await addProductSection('Launch Hidden Gems', '💎', hiddenGemsWithIcons);
     
     if (buildersToWatch && buildersToWatch.length > 0) {
-      htmlSections.push(`<h2>${escapeHtml('👀 Launch Makers to Watch')}</h2>` + buildersToWatch
+      htmlSections.push(`<h2>${escapeHtml('👀 Launch Vibe Coders to Watch')}</h2>` + buildersToWatch
         .map((b) => `<p><a href="https://trylaunch.ai/@${b.username}">${escapeHtml(b.name || b.username)}</a> (@${escapeHtml(b.username)})</p>`).join(''));
-      plainSections.push(`👀 Launch Makers to Watch\n\n` + buildersToWatch
+      plainSections.push(`👀 Launch Vibe Coders to Watch\n\n` + buildersToWatch
         .map((b) => `${b.name || b.username} (@${b.username})\nhttps://trylaunch.ai/@${b.username}`).join('\n\n'));
     }
     
@@ -1085,8 +1085,8 @@ export const AutoSurfacedContent = () => {
       isLoading: gemsLoading,
     },
     {
-      title: "👀 Launch Makers to Watch",
-      description: "Prolific makers with multiple products",
+      title: "👀 Launch Vibe Coders to Watch",
+      description: "Prolific vibe coders with multiple products",
       icon: null,
       builders: buildersToWatch,
       isLoading: buildersLoading,
@@ -1100,7 +1100,7 @@ export const AutoSurfacedContent = () => {
     },
     {
       title: "🛠️ Most Popular Tech on Launch",
-      description: "Top 5 technologies used by makers",
+      description: "Top 5 technologies used by vibe coders",
       icon: null,
       stackItems: popularTech,
       isLoading: techLoading,
