@@ -24,10 +24,13 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Get auth header
+    // Validate caller JWT
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('Missing authorization header');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      });
     }
 
     const supabaseAdmin = createClient(
@@ -35,7 +38,32 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    const token = authHeader.replace('Bearer ', '');
+    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      });
+    }
+
     const { userId, type, title, message, relatedProductId, relatedUserId, sendEmail = true }: NotificationRequest = await req.json();
+
+    // Basic input validation
+    if (!userId || typeof userId !== 'string' || !type || !title || !message) {
+      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+    const allowedTypes = ['new_follower', 'new_comment', 'product_launch', 'new_vote'];
+    if (!allowedTypes.includes(type)) {
+      return new Response(JSON.stringify({ error: 'Invalid notification type' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+
 
     // Create in-app notification
     const { data: notification, error: notifError } = await supabaseAdmin
