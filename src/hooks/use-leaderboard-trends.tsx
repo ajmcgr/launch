@@ -59,7 +59,7 @@ export const useLeaderboardTrends = () => {
           .lt('week_start_date', currentWeekStr),
         supabase
           .from('products')
-          .select('owner_id, builder_platform_tags')
+          .select('owner_id, platforms')
           .eq('status', 'launched')
           .gte('launch_date', `${currentWeekStr}T00:00:00Z`)
           .lte('launch_date', `${toDateStr(weekEnd)}T23:59:59Z`),
