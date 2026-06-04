@@ -39,12 +39,12 @@ const sections: Section[] = [
     eyebrowIcon: Sparkles,
     title: 'What is Launch?',
     description:
-      'A daily product discovery platform where founders ship new AI and tech products, and the community upvotes the best ones. Friendlier and founder-first — built for makers who actually want to grow.',
+      'A daily product discovery platform where founders ship new AI and tech products, and the community upvotes the best ones. Friendlier and founder-first — built for vibe coders who actually want to grow.',
   },
   {
-    id: 'for-makers',
-    label: 'For Makers',
-    eyebrow: 'For Makers',
+    id: 'for-vibecoders',
+    label: 'For Vibe Coders',
+    eyebrow: 'For Vibe Coders',
     eyebrowIcon: Megaphone,
     title: 'Launch your product in four steps',
     description:
@@ -141,7 +141,7 @@ const discovererPerks = [
   },
   {
     icon: MessageCircle,
-    title: 'Talk to the makers',
+    title: 'Talk to the vibe coders',
     description: 'Comment, ask questions, and share feedback directly with founders.',
   },
   {
@@ -219,7 +219,7 @@ const faqs = [
   {
     icon: HelpCircle,
     title: 'Can I just browse without launching?',
-    description: 'Absolutely. Browse today\'s launches, follow makers, and subscribe to the newsletter.',
+    description: 'Absolutely. Browse today\'s launches, follow vibe coders, and subscribe to the newsletter.',
   },
 ];
 
@@ -356,7 +356,7 @@ const Start = () => {
                 </div>
               </section>
 
-              {/* For Makers */}
+              {/* For Vibe Coders */}
               <section id={sections[1].id} className="scroll-mt-24">
                 <SectionHeader
                   eyebrow={sections[1].eyebrow}
@@ -497,7 +497,7 @@ const Start = () => {
                 </Button>
               </section>
 
-              {/* Maker benefits — kept consistent as a final card grid before CTA */}
+              {/* Vibe Coder benefits — kept consistent as a final card grid before CTA */}
               <section className="scroll-mt-24">
                 <SectionHeader
                   eyebrow="Why founders choose Launch"
