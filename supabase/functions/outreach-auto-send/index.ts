@@ -78,6 +78,10 @@ async function scoreOne(p: any, openaiKey: string): Promise<ScoreResult | null> 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
+  if (!isCronAuthorized(req)) {
+    return unauthorizedResponse(corsHeaders);
+  }
+
   try {
     if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY missing');
     const openaiKey = Deno.env.get('OPENAI_API_KEY');
