@@ -109,12 +109,16 @@ function EmptyRow({ msg }: { msg: string }) {
   return <p className="text-xs text-muted-foreground py-3 text-center">{msg}</p>;
 }
 
-export function LeaderboardTrendsSections() {
+export function LeaderboardTrendsSections({ stacked = false }: { stacked?: boolean } = {}) {
   const { builders, loading } = useLeaderboardTrends();
+
+  const gridClass = stacked
+    ? 'grid gap-4 grid-cols-1'
+    : 'grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8';
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className={gridClass}>
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="rounded-xl border bg-card p-4">
             <Skeleton className="h-4 w-24 mb-3" />
@@ -151,7 +155,7 @@ export function LeaderboardTrendsSections() {
     .slice(0, 5);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div className={gridClass}>
       <SectionCard
         title="Trending Vibe Coders"
         icon={Flame}
