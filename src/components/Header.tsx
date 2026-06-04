@@ -277,6 +277,13 @@ export const Header = () => {
                   >
                     Collections
                   </Link>
+                  <Link
+                    to="/vibecoders"
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Coders
+                  </Link>
                   <a 
                     href="https://newsletter.trylaunch.ai/" 
                     target="_blank" 
