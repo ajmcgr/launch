@@ -129,7 +129,7 @@ const MediaKit = () => {
                     {stats?.makers ? formatStat(stats.makers) : '—'}
                   </p>
                 )}
-                <p className="text-sm text-muted-foreground font-medium mt-1">New Makers (30d)</p>
+                <p className="text-sm text-muted-foreground font-medium mt-1">New Vibe Coders (30d)</p>
               </div>
               {/* Traffic Sources */}
               <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
