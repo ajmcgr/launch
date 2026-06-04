@@ -127,6 +127,7 @@ const ClaimProductModal = ({
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const handleEmailClaim = async () => {
     if (!currentUserId) {
@@ -139,16 +140,14 @@ const ClaimProductModal = ({
     }
     setSubmitting(true);
     try {
-      const { error } = await (supabase as any).from('product_claims').insert({
-        product_id: productId,
-        claimant_user_id: currentUserId,
-        verification_method: 'email_domain',
-        verification_email: email.trim().toLowerCase(),
-        status: 'pending',
-        message: 'Auto-verify via company email',
+      const { data, error } = await supabase.functions.invoke('request-product-claim', {
+        body: { productId, email: email.trim().toLowerCase() },
       });
-      if (error) throw error;
-      onSuccess();
+      if (error || (data && (data as any).error)) {
+        throw new Error((data && (data as any).error) || error?.message || 'Failed to send verification');
+      }
+      setSent(true);
+      toast.success('Check your inbox for the verification link.');
     } catch (e: any) {
       toast.error(e.message || 'Failed to submit claim');
     } finally {
