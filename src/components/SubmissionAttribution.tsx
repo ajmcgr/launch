@@ -214,7 +214,7 @@ const ClaimProductModal = ({
           </button>
         </div>
 
-        {tab === 'email' && (
+        {tab === 'email' && !sent && (
           <div className="space-y-3">
             <Label htmlFor="claim-email">
               Email address {productDomain ? `@${productDomain}` : ''}
@@ -227,11 +227,22 @@ const ClaimProductModal = ({
               placeholder={productDomain ? `you@${productDomain}` : 'you@yourdomain.com'}
             />
             <p className="text-xs text-muted-foreground">
-              We'll verify your claim against the product's domain. Admin review may be required.
+              We'll email you a verification link. Click it and the launch is instantly transferred to your account — no admin review.
             </p>
             <Button onClick={handleEmailClaim} disabled={submitting} className="w-full">
-              {submitting ? 'Submitting…' : 'Submit claim'}
+              {submitting ? 'Sending…' : 'Send verification email'}
             </Button>
+          </div>
+        )}
+
+        {tab === 'email' && sent && (
+          <div className="space-y-3 text-center py-4">
+            <p className="text-sm">
+              We sent a verification link to <strong>{email}</strong>.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Click the link in the email to instantly claim this launch. The link expires in 24 hours.
+            </p>
           </div>
         )}
 
