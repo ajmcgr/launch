@@ -4,9 +4,9 @@ import { ArrowRight } from 'lucide-react';
 import { comparisons } from '@/lib/comparisons';
 
 const CompareHub = () => {
-  const title = 'Launch vs Alternatives — Compare Product Launch Platforms (2026)';
+  const title = 'Launch vs Alternatives — Best Launch Platforms for Vibe Coders (2026)';
   const description =
-    'Compare Launch with Product Hunt, BetaList, Peerlist and Uneed. Pricing, dofollow backlinks, verified revenue, ranking systems — the honest breakdown for indie makers.';
+    'Compare Launch with Product Hunt, BetaList, Peerlist and Uneed. Pricing, dofollow backlinks, verified revenue, ranking systems — the honest breakdown for vibe coders shipping vibe-coded products.';
 
   const itemListJsonLd = {
     '@context': 'https://schema.org',
@@ -33,10 +33,11 @@ const CompareHub = () => {
 
       <div className="container mx-auto px-4 max-w-4xl">
         <header className="mb-10">
-          <h1 className="text-4xl font-bold mb-4">Launch vs alternatives</h1>
+          <h1 className="text-4xl font-bold mb-4">Launch vs alternatives for vibe coders</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Honest comparisons between Launch and other product launch platforms.
-            Pricing, ranking, audience, backlinks — no fluff.
+            Honest comparisons between Launch and other launch platforms — built for
+            vibe coders shipping vibe-coded products. Pricing, ranking, audience,
+            backlinks. No fluff.
           </p>
         </header>
 
@@ -82,11 +83,11 @@ const CompareHub = () => {
         <section className="mt-16 pt-10 border-t border-border/40">
           <h2 className="text-2xl font-bold mb-4">Why compare?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Most makers launch on multiple platforms — that's the smart play.
+            Most vibe coders launch on multiple platforms — that's the smart play.
             Each directory has a different audience, ranking algorithm and SEO
-            profile. Use these comparisons to decide where to spend your launch
-            energy and which platforms deserve a recurring slot in your
-            distribution stack.
+            profile. Use these comparisons to decide where vibe-coded products
+            actually get traction and which platforms deserve a recurring slot
+            in your distribution stack.
           </p>
         </section>
       </div>
