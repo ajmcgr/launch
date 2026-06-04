@@ -103,13 +103,8 @@ const Leaderboard = () => {
           </p>
         </header>
 
-        {/* Trending / Risers / Fallers / New entrants */}
-        <section className="mt-6">
-          <LeaderboardTrendsSections />
-        </section>
-
         {/* Sort Tabs */}
-        <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
+        <div className="flex items-center justify-center gap-3 mt-6 mb-6 flex-wrap">
           <div className="flex items-center gap-1 border rounded-lg p-1">
             {TAB_CONFIG.map((tab) => (
               <button
@@ -150,128 +145,138 @@ const Leaderboard = () => {
           )}
         </div>
 
-        {/* Main leaderboard */}
-        <div className="rounded-xl border bg-card overflow-hidden">
-          {loading ? (
-            Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 py-3 px-4">
-                <Skeleton className="h-4 w-5" />
-                <Skeleton className="h-10 w-10 rounded-lg" />
-                <div className="flex-1">
-                  <Skeleton className="h-4 w-32 mb-1" />
-                  <Skeleton className="h-3 w-20" />
+        {/* Two-column layout: main board + stacked trends */}
+        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+          <div>
+            {/* Main leaderboard */}
+            <div className="rounded-xl border bg-card overflow-hidden">
+              {loading ? (
+                Array.from({ length: 10 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 py-3 px-4">
+                    <Skeleton className="h-4 w-5" />
+                    <Skeleton className="h-10 w-10 rounded-lg" />
+                    <div className="flex-1">
+                      <Skeleton className="h-4 w-32 mb-1" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))
+              ) : filteredUsers.length === 0 ? (
+                <div className="py-16 text-center text-muted-foreground">
+                  <p className="text-sm">
+                    {sortMode === 'weekly'
+                      ? 'No scores yet this week. Launch a product to get on the board!'
+                      : 'No maker data yet.'}
+                  </p>
                 </div>
-                <Skeleton className="h-4 w-16" />
-              </div>
-            ))
-          ) : filteredUsers.length === 0 ? (
-            <div className="py-16 text-center text-muted-foreground">
-              <p className="text-sm">
-                {sortMode === 'weekly'
-                  ? 'No scores yet this week. Launch a product to get on the board!'
-                  : 'No maker data yet.'}
-              </p>
-            </div>
-          ) : (
-            pagedUsers.map((user, index) => {
-              const rank = (currentPage - 1) * PAGE_SIZE + index + 1;
-              const score = getScoreLabel(sortMode, user);
-              const trend = trendsByUserId.get(user.user_id);
-              const badges = trend ? getBuilderBadges(trend) : [];
-              const showDelta = sortMode === 'weekly' || sortMode === 'today';
+              ) : (
+                pagedUsers.map((user, index) => {
+                  const rank = (currentPage - 1) * PAGE_SIZE + index + 1;
+                  const score = getScoreLabel(sortMode, user);
+                  const trend = trendsByUserId.get(user.user_id);
+                  const badges = trend ? getBuilderBadges(trend) : [];
+                  const showDelta = sortMode === 'weekly' || sortMode === 'today';
 
-              return (
-                <Link
-                  key={user.user_id}
-                  to={`/@${user.username}`}
-                  className="flex items-center gap-3 py-3 px-4 hover:bg-muted/30 transition-colors border-b last:border-b-0"
-                >
-                  <span className="text-sm font-bold text-muted-foreground tabular-nums w-8 text-right flex-shrink-0">
-                    {rank}
-                  </span>
-                  {showDelta && (
-                    <span className="w-10 flex-shrink-0 flex justify-start">
-                      <RankDelta change={trend?.rankChange ?? null} />
-                    </span>
-                  )}
-                  <Avatar className="h-10 w-10 rounded-lg flex-shrink-0">
-                    <AvatarImage src={user.avatar_url || ''} alt={user.username} />
-                    <AvatarFallback className="rounded-lg">
-                      {user.username?.[0]?.toUpperCase() || '?'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <h3 className="font-semibold text-base text-foreground truncate">
-                        {user.name || `@${user.username}`}
-                      </h3>
-                      <BuilderBadges badges={badges} max={3} />
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5 flex-wrap">
-                      {user.name && <span>@{user.username}</span>}
-                      <span className="inline-flex items-center gap-0.5">
-                        <Rocket className="h-3 w-3" />
-                        {user.totalLaunches} launches
+                  return (
+                    <Link
+                      key={user.user_id}
+                      to={`/@${user.username}`}
+                      className="flex items-center gap-3 py-3 px-4 hover:bg-muted/30 transition-colors border-b last:border-b-0"
+                    >
+                      <span className="text-sm font-bold text-muted-foreground tabular-nums w-8 text-right flex-shrink-0">
+                        {rank}
                       </span>
-                      {trend && trend.followers > 0 && (
-                        <span className="inline-flex items-center gap-0.5">
-                          <Users className="h-3 w-3" />
-                          {trend.followers.toLocaleString()} followers
+                      {showDelta && (
+                        <span className="w-10 flex-shrink-0 flex justify-start">
+                          <RankDelta change={trend?.rankChange ?? null} />
                         </span>
                       )}
-                      {user.totalReviews > 0 && (
-                        <span className="inline-flex items-center gap-0.5">
-                          <Star className="h-3 w-3" />
-                          {user.totalReviews} reviews
+                      <Avatar className="h-10 w-10 rounded-lg flex-shrink-0">
+                        <AvatarImage src={user.avatar_url || ''} alt={user.username} />
+                        <AvatarFallback className="rounded-lg">
+                          {user.username?.[0]?.toUpperCase() || '?'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="font-semibold text-base text-foreground truncate">
+                            {user.name || `@${user.username}`}
+                          </h3>
+                          <BuilderBadges badges={badges} max={3} />
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5 flex-wrap">
+                          {user.name && <span>@{user.username}</span>}
+                          <span className="inline-flex items-center gap-0.5">
+                            <Rocket className="h-3 w-3" />
+                            {user.totalLaunches} launches
+                          </span>
+                          {trend && trend.followers > 0 && (
+                            <span className="inline-flex items-center gap-0.5">
+                              <Users className="h-3 w-3" />
+                              {trend.followers.toLocaleString()} followers
+                            </span>
+                          )}
+                          {user.totalReviews > 0 && (
+                            <span className="inline-flex items-center gap-0.5">
+                              <Star className="h-3 w-3" />
+                              {user.totalReviews} reviews
+                            </span>
+                          )}
+                          {trend?.platforms && trend.platforms.length > 0 && (
+                            <span className="inline-flex items-center gap-0.5">
+                              Built with {trend.platforms.join(' • ')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 font-bold text-sm text-foreground flex-shrink-0 tabular-nums">
+                        <Zap className="h-3.5 w-3.5" />
+                        {score.toLocaleString()}
+                        <span className="text-[10px] font-normal text-muted-foreground ml-0.5">
+                          {getScoreUnit(sortMode)}
                         </span>
-                      )}
-                      {trend?.platforms && trend.platforms.length > 0 && (
-                        <span className="inline-flex items-center gap-0.5">
-                          Built with {trend.platforms.join(' • ')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 font-bold text-sm text-foreground flex-shrink-0 tabular-nums">
-                    <Zap className="h-3.5 w-3.5" />
-                    {score.toLocaleString()}
-                    <span className="text-[10px] font-normal text-muted-foreground ml-0.5">
-                      {getScoreUnit(sortMode)}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })
-          )}
-        </div>
-
-        {/* Pagination */}
-        {!loading && filteredUsers.length > PAGE_SIZE && (
-          <div className="mt-6 flex items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground tabular-nums">
-              {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length}
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
-              >
-                Previous
-              </button>
-              <span className="text-xs text-muted-foreground tabular-nums">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
-              >
-                Next
-              </button>
+                      </div>
+                    </Link>
+                  );
+                })
+              )}
             </div>
+
+            {/* Pagination */}
+            {!loading && filteredUsers.length > PAGE_SIZE && (
+              <div className="mt-6 flex items-center justify-between gap-4">
+                <p className="text-xs text-muted-foreground tabular-nums">
+                  {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredUsers.length)} of {filteredUsers.length}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="inline-flex items-center rounded-md border px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-muted/50 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Right column: stacked trend cards */}
+          <aside className="space-y-4">
+            <LeaderboardTrendsSections stacked />
+          </aside>
+        </div>
 
         {/* How rankings work */}
         <div className="mt-10 rounded-xl border bg-muted/30 p-5">
