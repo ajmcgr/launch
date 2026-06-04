@@ -1,64 +1,64 @@
-# Invite-only collaborative collections
+# Founder vs Community Launches — Claim Flow
 
-Let collection owners invite specific users to add launches to their collection, and show "Added by @user" attribution on each item.
+Distinguish who submitted each product, and let real founders verify ownership via email-domain match.
 
-## Database (new migration)
+## Data model (new migration)
 
-1. **`collection_collaborators` table**
-   - `id uuid pk`, `collection_id uuid → user_collections(id) on delete cascade`
-   - `user_id uuid → auth.users(id) on delete cascade`
-   - `invited_by uuid`, `created_at timestamptz default now()`
-   - `unique(collection_id, user_id)`
-   - GRANT select/insert/delete to `authenticated`; all to `service_role`.
-   - RLS:
-     - SELECT: owner of collection OR the collaborator themself
-     - INSERT/DELETE: only collection owner
+Add to `public.products`:
+- `submission_source` text default `'community'` — `'founder' | 'community'`
+- `claimed_at` timestamptz null
+- `claimed_by` uuid null (references `auth.users(id)`)
 
-2. **`user_collection_items.added_by uuid`** (nullable) — who added the launch. Backfill = parent collection's `user_id`.
+New table `public.product_claim_requests`:
+- `id`, `product_id`, `requested_by`, `email`, `token` (unique), `expires_at` (24h), `verified_at`, `created_at`
+- RLS: users see/insert only their own rows; service_role full access
 
-3. **Security-definer function** `public.is_collection_collaborator(_cid uuid, _uid uuid) returns boolean` — bypasses RLS to avoid recursion.
+**No backfill.** Existing products keep `submission_source='community'`, `claimed_at=null`. They'll all show as "Community submitted" until claimed.
 
-4. **Update RLS on `user_collection_items`**:
-   - INSERT: allowed if `auth.uid()` is owner OR `is_collection_collaborator(collection_id, auth.uid())`. Also force `added_by = auth.uid()` via a check.
-   - DELETE: owner of collection OR `added_by = auth.uid()` (contributor can remove their own).
-   - UPDATE: unchanged (owner only — note editing).
+## Submission flow
 
-5. **Public read** of `collection_collaborators` for displaying member list on public collections.
+On `/submit`, add a checkbox: *"I'm the founder / on the founding team."*
+- Checked → `submission_source='founder'`, `claimed_by=owner_id`, `claimed_at=now()` (auto-claimed since they're authed and submitting)
+- Unchecked → `submission_source='community'`, `claimed_at=null`
 
-## Backend hooks (`src/hooks/use-collections.tsx` + new helper)
+## Claim flow (for unclaimed products)
 
-- Extend save flow to set `added_by: auth.uid()` on insert.
-- New helper functions:
-  - `listCollaborators(collectionId)` → joined with `users` for username/avatar
-  - `inviteCollaborator(collectionId, username)` → lookup user by username, insert row
-  - `removeCollaborator(collectionId, userId)`
-  - `listEditableCollections(uid)` → owner OR collaborator (used by SaveToCollectionModal so invitees see those collections in the picker)
+Product detail page shows **"Claim this launch"** CTA when `claimed_at IS NULL`.
 
-## UI
+1. User enters an email at the product's root domain (parsed from `domain_url`)
+2. Edge function `request-product-claim`:
+   - Validates email's domain matches product's domain
+   - Generates token, stores claim request, sends Resend verification email
+3. User clicks link → `/claim/verify?token=...` → edge function `verify-product-claim`:
+   - Marks request verified
+   - Sets `products.claimed_by = requesting user`, `claimed_at = now()`, `owner_id = requesting user`, `submission_source = 'founder'`
 
-1. **Collection settings (My Collections → edit modal)**
-   - New "Collaborators" section: input + Invite button, list of current collaborators with remove (×).
-   - Helper text: "Invited users can add launches to this collection. Only you can remove them or edit collection settings."
+## UI badges
 
-2. **Public collection page (`PublicCollection.tsx`)**
-   - If viewer is owner or collaborator: show "Add launch" button (already exists for owner — extend permission check).
-   - Under each launch card: small "Added by @username" line (link to profile). Skip when `added_by` matches the collection owner to keep the owner's own collections clean.
-   - Small "Collaborators" avatar stack near the header for collaborative collections.
+Small inline badge near product title on detail page (not in dense feed rows, per homepage aesthetic rules):
+- `claimed_at` set → "By Founder" (subtle check icon)
+- Otherwise → "Community submitted"
 
-3. **SaveToCollectionModal**
-   - Source list from `listEditableCollections` so invitees see collections they can contribute to, labeled with "Shared by @owner".
+## Files
 
-## Files touched
+- New migration: `add_product_claim_columns_and_requests.sql`
+- New edge functions: `supabase/functions/request-product-claim/index.ts`, `supabase/functions/verify-product-claim/index.ts`
+- New route: `src/pages/ClaimVerify.tsx` (calls verify fn, shows status)
+- New component: `src/components/ClaimLaunchDialog.tsx` (email input + submit)
+- Edit: `src/pages/Submit.tsx` — add founder checkbox, write new fields
+- Edit: `src/pages/ProductDetail.tsx` (and/or `ToolDetail.tsx`) — badge + Claim CTA
+- Edit: `src/App.tsx` — register `/claim/verify` route
 
-- New: `database-collection-collaborators.sql` (migration content)
-- Edit: `src/hooks/use-collections.tsx`
-- Edit: `src/components/SaveToCollectionModal.tsx`
-- Edit: `src/pages/PublicCollection.tsx`
-- Edit: `src/pages/MyCollections.tsx` (or wherever the edit modal lives — confirm during impl)
-- Edit: `src/integrations/supabase/types.ts` regen note (manual after migration)
+## Constraints respected
 
-## Out of scope
+- Edge function HTML uses string concatenation (per memory)
+- Functions deploy manually via Supabase dashboard (per memory)
+- No tracking pixels; uses Resend for the verification email
+- Founder claim email is transactional (not bulk), so it's allowed
+- `max-w-7xl` layout, semantic tokens for badge colors
 
-- Public open-to-all contributions, suggestion queues, notifications on invite (can add later).
+## Open detail (minor)
 
-Confirm and I'll ship it.
+Domain match logic: I'll strip `www.`, accept any subdomain of the root (so `alex@mail.acme.com` works for `acme.com`). Public-email blocklist (gmail, yahoo, outlook, proton, icloud) → rejected with a clear error.
+
+Ship?
