@@ -331,6 +331,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newProducts || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -341,6 +342,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newUsers || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -351,6 +353,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newVotes || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -361,6 +364,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newRatings || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -371,6 +375,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newComments || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -381,6 +386,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">🎯 {(stats?.totalPromotions || 0) + (stats?.totalSponsorships || 0)}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newAdvertisers || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -391,6 +397,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newBadges || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -401,6 +408,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
+                  <div className="text-xs text-muted-foreground mt-1">across launches</div>
                 </CardContent>
               </Card>
 
@@ -411,6 +419,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+${(stats?.newRevenue || 0).toLocaleString()} past 7 days</div>
                 </CardContent>
               </Card>
             </div>
