@@ -115,8 +115,8 @@ export const Header = () => {
       
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-14 md:h-16 items-center justify-between">
-          {/* Left: Logo + Navigation */}
-          <div className="flex items-center gap-2 md:gap-6">
+          {/* Left: Logo + Search */}
+          <div className="flex items-center gap-2 md:gap-6 flex-shrink-0">
             <Link to="/" className="flex items-center">
               <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
@@ -131,33 +131,35 @@ export const Header = () => {
                 className="pl-7 h-full text-xs border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Products
-              </Link>
-              <Link to="/vibecoders" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Coders
-              </Link>
-              <Link to="/collections" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Collections
-              </Link>
-              <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Newsletter
-              </a>
-              <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Forums
-              </a>
-              <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Pricing
-              </Link>
-              <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
-                Advertise
-              </Link>
-            </nav>
           </div>
+
+          {/* Center: Navigation */}
+          <nav className="hidden md:flex items-center justify-center gap-6 flex-1">
+            <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Products
+            </Link>
+            <Link to="/vibecoders" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Coders
+            </Link>
+            <Link to="/collections" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Collections
+            </Link>
+            <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Newsletter
+            </a>
+            <a href="https://forums.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Forums
+            </a>
+            <Link to="/pricing" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Pricing
+            </Link>
+            <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Advertise
+            </Link>
+          </nav>
           
           {/* Right: Actions */}
-          <div className="flex items-center gap-4 ml-2">
+          <div className="flex items-center gap-4 ml-2 flex-shrink-0">
 
             {/* Desktop User Menu */}
             {user ? (
