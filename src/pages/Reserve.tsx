@@ -197,6 +197,30 @@ const Reserve = () => {
       void check(value);
       return false;
     }
+
+    // Also set the user's username to the reserved handle (only if currently the
+    // auto-generated email-local-part default and the handle isn't taken by another user).
+    try {
+      const { data: me } = await supabase
+        .from('users')
+        .select('username')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (me && me.username?.toLowerCase() !== value.toLowerCase()) {
+        const { data: clash } = await supabase
+          .from('users')
+          .select('id')
+          .ilike('username', value)
+          .neq('id', session.user.id)
+          .maybeSingle();
+        if (!clash) {
+          await supabase.from('users').update({ username: value }).eq('id', session.user.id);
+        }
+      }
+    } catch (e) {
+      console.error('username sync failed', e);
+    }
+
     void (db.from('reserve_events') as any).insert({
       user_id: session.user.id,
       type: 'founder_handle',
@@ -210,18 +234,24 @@ const Reserve = () => {
   };
 
 
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
     try {
       if (authMode === 'signup') {
+        const reservedHandle = pendingReserve ?? localStorage.getItem('reserve:pending') ?? undefined;
         const { error } = await supabase.auth.signUp({
           email: authEmail.trim().toLowerCase(),
           password: authPassword,
-          options: { emailRedirectTo: `${window.location.origin}/reserve` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/reserve`,
+            data: reservedHandle ? { username: reservedHandle } : undefined,
+          },
         });
         if (error) throw error;
         toast.success('Check your inbox to confirm — then your handle is locked in.');
+
       } else {
         // Existing user signing in — don't auto-reserve
         setPendingReserve(null);
