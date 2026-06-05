@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
 import BuiltWithSection from '@/components/BuiltWithSection';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
+import { CollectionCardSkeleton } from '@/components/CollectionCardSkeleton';
 
 const sb: any = supabase;
 
@@ -167,10 +168,7 @@ export default function CollectionsDirectory() {
       </div>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-muted-foreground">
-          <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-foreground animate-spin" />
-          <p className="text-sm mt-3">Loading collections…</p>
-        </div>
+        <CollectionCardSkeleton count={9} />
       ) : items.length === 0 ? (
         <div className="py-20 text-center text-muted-foreground">
           <FolderOpen className="h-10 w-10 mx-auto mb-3 opacity-50" />

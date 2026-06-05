@@ -14,6 +14,7 @@ import {
 import { LaunchCard } from '@/components/LaunchCard';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { CollectionHero } from '@/components/CollectionHero';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Globe, Lock, Share2, Trash2, Download, ArrowLeft, FolderPlus, LayoutGrid, List as ListIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { removeLaunchFromCollection, saveLaunchToCollections } from '@/hooks/use-collections';
@@ -266,9 +267,22 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 max-w-7xl py-20 flex flex-col items-center justify-center text-muted-foreground">
-        <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-foreground animate-spin" />
-        <p className="text-sm mt-3">Loading collection…</p>
+      <div className="container mx-auto px-4 max-w-7xl py-8">
+        {/* Hero skeleton */}
+        <div className="mb-6 rounded-xl border bg-card overflow-hidden">
+          <Skeleton className="aspect-[3/1] w-full rounded-none" />
+          <div className="p-6 space-y-3">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-4 w-3/4" />
+            <div className="flex items-center gap-3 pt-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
+        </div>
+        {/* Items skeleton */}
+        <ProductSkeleton view="grid" count={6} />
       </div>
     );
   }
