@@ -117,6 +117,7 @@ const AppContent = () => {
     '/vibecoders', '/makers', '/awards', '/success-stories', '/compare',
     '/vibe-coding', '/tools', '/traffic', '/notifications', '/blog',
   ].includes(path) || path.startsWith('/launches');
+  const isStart = path === '/start';
 
   return (
     <div className="flex flex-col min-h-screen">
