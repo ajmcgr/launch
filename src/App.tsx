@@ -217,8 +217,48 @@ const AppContent = () => {
               </div>
               <span className="sr-only">Loading</span>
             </div>
+          ) : isFAQ ? (
+            <div className="container mx-auto px-4 max-w-4xl py-12" aria-label="Loading" role="status">
+              <div className="text-center mb-8 space-y-3">
+                <div className="h-10 w-96 mx-auto rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-80 mx-auto rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="space-y-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="border rounded-lg px-6 py-4 space-y-3">
+                    <div className="h-5 w-2/3 rounded bg-muted/60 animate-pulse" />
+                    <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-4/5 rounded bg-muted/50 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isContact ? (
+            <div className="container mx-auto px-4 max-w-xl py-12" aria-label="Loading" role="status">
+              <div className="text-center mb-8 space-y-2">
+                <div className="h-10 w-64 mx-auto rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-96 mx-auto rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="border border-border rounded-lg p-8 md:p-12 bg-card space-y-6">
+                <div className="space-y-2">
+                  <div className="h-5 w-24 rounded bg-muted/60 animate-pulse" />
+                  <div className="h-10 w-full rounded-md bg-muted/50 animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-5 w-24 rounded bg-muted/60 animate-pulse" />
+                  <div className="h-10 w-full rounded-md bg-muted/50 animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-5 w-24 rounded bg-muted/60 animate-pulse" />
+                  <div className="h-36 w-full rounded-md bg-muted/50 animate-pulse" />
+                </div>
+                <div className="h-11 w-full rounded-md bg-muted/60 animate-pulse" />
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
           ) : isArticle ? (
-            <div className="container mx-auto px-4 max-w-3xl py-12" aria-label="Loading" role="status">
+            <div className="container mx-auto px-4 max-w-4xl py-12" aria-label="Loading" role="status">
               <div className="space-y-4 mb-8">
                 <div className="h-10 w-2/3 rounded-md bg-muted/60 animate-pulse" />
                 <div className="h-4 w-1/3 rounded bg-muted/50 animate-pulse" />
