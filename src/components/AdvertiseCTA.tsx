@@ -22,7 +22,7 @@ const AdvertiseCTA = ({ className, compact = false }: AdvertiseCTAProps) => {
   }
 
   return (
-    <div className={`w-full bg-muted/30 px-6 flex items-center aspect-[7/1] ${className || ''}`}>
+    <div className={`w-full bg-muted/30 rounded-lg px-6 flex items-center aspect-[7/1] ${className || ''}`}>
       <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="flex-1 text-center md:text-left">
           <h3 className="text-lg font-semibold mb-1">Promote Your Product</h3>
