@@ -110,8 +110,10 @@ const AppContent = () => {
   const isCollectionDetail = /^\/(c|collections|my-collections)\/[^/]+$/.test(path);
   const isPricing = path === '/pricing' || path === '/pass';
   const isAdvertise = path === '/advertise';
-  const isArticle = ['/about', '/terms', '/privacy', '/contact', '/media-kit', '/faq'].includes(path)
+  const isArticle = ['/about', '/terms', '/privacy', '/media-kit'].includes(path)
     || path.startsWith('/blog/');
+  const isFAQ = path === '/faq';
+  const isContact = path === '/contact';
   const isListPage = [
     '/products', '/forums', '/newsletter', '/tags', '/categories', '/tech',
     '/vibecoders', '/makers', '/awards', '/success-stories', '/compare',
