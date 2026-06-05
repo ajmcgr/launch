@@ -21,6 +21,7 @@ import { gradientFor } from '@/lib/gradients';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
 import CollectionCollaboratorsPanel from '@/components/CollectionCollaboratorsPanel';
 import { CollectionCardSkeleton } from '@/components/CollectionCardSkeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Collections() {
   const navigate = useNavigate();
