@@ -240,13 +240,18 @@ const Reserve = () => {
     setAuthLoading(true);
     try {
       if (authMode === 'signup') {
+        const reservedHandle = pendingReserve ?? localStorage.getItem('reserve:pending') ?? undefined;
         const { error } = await supabase.auth.signUp({
           email: authEmail.trim().toLowerCase(),
           password: authPassword,
-          options: { emailRedirectTo: `${window.location.origin}/reserve` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/reserve`,
+            data: reservedHandle ? { username: reservedHandle } : undefined,
+          },
         });
         if (error) throw error;
         toast.success('Check your inbox to confirm — then your handle is locked in.');
+
       } else {
         // Existing user signing in — don't auto-reserve
         setPendingReserve(null);
