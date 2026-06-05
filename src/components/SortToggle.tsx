@@ -7,9 +7,10 @@ interface SortToggleProps {
   onSortChange: (sort: 'rated' | 'popular' | 'latest' | 'revenue' | 'maker') => void;
   iconOnly?: boolean;
   showRevenue?: boolean;
+  showMaker?: boolean;
 }
 
-export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue = false }: SortToggleProps) => {
+export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue = false, showMaker = false }: SortToggleProps) => {
   const isMobile = useIsMobile();
   
   return (
@@ -45,28 +46,28 @@ export const SortToggle = ({ sort, onSortChange, iconOnly = false, showRevenue =
         {!iconOnly && <span className="text-xs">Latest</span>}
       </Toggle>
       {showRevenue && !isMobile && (
-        <>
-          <Toggle
-            pressed={sort === 'revenue'}
-            onPressedChange={() => onSortChange('revenue')}
-            aria-label="Sort by revenue"
-            size="sm"
-            className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
-          >
-            <DollarSign className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
-            {!iconOnly && <span className="text-xs">Revenue</span>}
-          </Toggle>
-          <Toggle
-            pressed={sort === 'maker'}
-            onPressedChange={() => onSortChange('maker')}
-            aria-label="Sort by maker karma"
-            size="sm"
-            className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
-          >
-            <Zap className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
-            {!iconOnly && <span className="text-xs">Maker</span>}
-          </Toggle>
-        </>
+        <Toggle
+          pressed={sort === 'revenue'}
+          onPressedChange={() => onSortChange('revenue')}
+          aria-label="Sort by revenue"
+          size="sm"
+          className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
+        >
+          <DollarSign className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
+          {!iconOnly && <span className="text-xs">Revenue</span>}
+        </Toggle>
+      )}
+      {showMaker && !isMobile && (
+        <Toggle
+          pressed={sort === 'maker'}
+          onPressedChange={() => onSortChange('maker')}
+          aria-label="Sort by maker karma"
+          size="sm"
+          className="data-[state=on]:bg-muted data-[state=on]:text-foreground dark:hover:text-white h-7 px-2"
+        >
+          <Zap className={`h-3.5 w-3.5 ${iconOnly ? '' : 'mr-1'}`} />
+          {!iconOnly && <span className="text-xs">Maker</span>}
+        </Toggle>
       )}
     </div>
   );
