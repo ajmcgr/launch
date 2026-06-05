@@ -20,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { gradientFor } from '@/lib/gradients';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
 import CollectionCollaboratorsPanel from '@/components/CollectionCollaboratorsPanel';
+import { CollectionCardSkeleton } from '@/components/CollectionCardSkeleton';
 
 export default function Collections() {
   const navigate = useNavigate();
