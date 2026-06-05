@@ -172,6 +172,80 @@ const AppContent = () => {
               </div>
               <span className="sr-only">Loading</span>
             </div>
+          ) : isPricing ? (
+            <div className="container mx-auto px-4 max-w-7xl py-12" aria-label="Loading" role="status">
+              <div className="mb-10 flex flex-col items-center gap-3">
+                <div className="h-10 w-72 rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-96 rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="rounded-xl border bg-card p-6 space-y-4">
+                    <div className="h-6 w-24 rounded bg-muted/60 animate-pulse" />
+                    <div className="h-10 w-32 rounded bg-muted/60 animate-pulse" />
+                    <div className="space-y-2 pt-2">
+                      {Array.from({ length: 5 }).map((__, j) => (
+                        <div key={j} className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                      ))}
+                    </div>
+                    <div className="h-10 w-full rounded-md bg-muted/60 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isAdvertise ? (
+            <div className="container mx-auto px-4 max-w-7xl py-12" aria-label="Loading" role="status">
+              <div className="mb-10 flex flex-col items-center gap-3">
+                <div className="h-10 w-80 rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-2/3 max-w-lg rounded bg-muted/50 animate-pulse" />
+                <div className="h-4 w-1/2 max-w-md rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="rounded-xl border bg-card p-6 space-y-3">
+                    <div className="h-6 w-32 rounded bg-muted/60 animate-pulse" />
+                    <div className="h-8 w-24 rounded bg-muted/60 animate-pulse" />
+                    <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-4/5 rounded bg-muted/50 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isArticle ? (
+            <div className="container mx-auto px-4 max-w-3xl py-12" aria-label="Loading" role="status">
+              <div className="space-y-4 mb-8">
+                <div className="h-10 w-2/3 rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-1/3 rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="space-y-3">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className={`h-4 ${i % 4 === 3 ? 'w-2/3' : 'w-full'} rounded bg-muted/50 animate-pulse`} />
+                ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isListPage ? (
+            <div className="container mx-auto px-4 max-w-7xl py-8" aria-label="Loading" role="status">
+              <div className="mb-6 space-y-2">
+                <div className="h-8 w-64 rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-80 rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="space-y-1">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="flex items-start gap-3 py-3 px-2">
+                    <div className="h-10 w-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0" />
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="h-4 w-32 rounded bg-muted/60 animate-pulse" />
+                      <div className="h-3 w-64 rounded bg-muted/50 animate-pulse" />
+                    </div>
+                    <div className="h-9 w-10 rounded-md bg-muted/50 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
           ) : isStandalone ? (
             <div className="min-h-screen bg-background py-16" aria-label="Loading" role="status">
               <div className="container mx-auto px-4 max-w-3xl">
@@ -195,21 +269,22 @@ const AppContent = () => {
               <span className="sr-only">Loading</span>
             </div>
           ) : (
-            <div className="min-h-[60vh] py-12" aria-label="Loading" role="status">
-              <div className="container mx-auto px-4 max-w-7xl">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                  <div className="lg:col-span-2 space-y-6">
-                    <div className="h-8 w-2/3 rounded-md bg-muted/60 animate-pulse" />
-                    <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
-                    <div className="h-4 w-5/6 rounded bg-muted/50 animate-pulse" />
-                    <div className="aspect-video w-full rounded-xl bg-muted/40 animate-pulse" />
+            <div className="container mx-auto px-4 max-w-7xl py-8" aria-label="Loading" role="status">
+              <div className="mb-6 space-y-2">
+                <div className="h-8 w-64 rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-80 rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="space-y-1">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex items-start gap-3 py-3 px-2">
+                    <div className="h-10 w-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0" />
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="h-4 w-32 rounded bg-muted/60 animate-pulse" />
+                      <div className="h-3 w-64 rounded bg-muted/50 animate-pulse" />
+                    </div>
+                    <div className="h-9 w-10 rounded-md bg-muted/50 animate-pulse" />
                   </div>
-                  <div className="space-y-4">
-                    <div className="h-12 w-full rounded-lg bg-muted/50 animate-pulse" />
-                    <div className="h-12 w-full rounded-lg bg-muted/50 animate-pulse" />
-                    <div className="h-32 w-full rounded-xl bg-muted/40 animate-pulse" />
-                  </div>
-                </div>
+                ))}
               </div>
               <span className="sr-only">Loading</span>
             </div>
