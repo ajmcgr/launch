@@ -403,21 +403,52 @@ const LaunchDetail = () => {
             {/* Main Content Skeleton */}
             <div className="lg:col-span-2 space-y-10">
               <div>
-                <Skeleton className="h-10 w-3/4 mb-3" />
-                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-10 w-2/3 mb-3" />
+                <Skeleton className="h-6 w-11/12" />
               </div>
               <Skeleton className="w-full aspect-video rounded-xl" />
-              <div className="space-y-4">
+              <div className="space-y-3">
+                <Skeleton className="h-6 w-24 mb-4" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
                 <Skeleton className="h-4 w-3/4" />
               </div>
             </div>
             {/* Sidebar Skeleton */}
-            <div className="space-y-6">
-              <Skeleton className="h-12 w-full rounded-lg" />
-              <Skeleton className="h-12 w-full rounded-lg" />
-              <Skeleton className="h-32 w-full rounded-xl" />
+            <div className="lg:col-span-1">
+              <div className="sticky top-6 space-y-6">
+                <div className="p-5 bg-muted/30 rounded-xl space-y-5">
+                  <Skeleton className="h-14 w-full rounded-md" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-12 w-full rounded-md" />
+                    <Skeleton className="h-11 w-full rounded-md" />
+                    <Skeleton className="h-11 w-full rounded-md" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-5 w-32" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-9 w-9 rounded-full" />
+                      <div className="flex-1 space-y-1.5">
+                        <Skeleton className="h-3 w-24" />
+                        <Skeleton className="h-3 w-32" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <div className="flex flex-wrap gap-1.5">
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                      <Skeleton className="h-5 w-20 rounded-full" />
+                      <Skeleton className="h-5 w-14 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
