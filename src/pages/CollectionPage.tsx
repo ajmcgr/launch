@@ -97,15 +97,14 @@ const CollectionPage = () => {
       if (error) throw error;
 
       if (!collection) {
-        // Fall back to user-created collections (e.g. built-with-*)
-        navigate(`/c/${slug}`, { replace: true });
+        navigate('/404');
         return;
       }
 
       setCollectionInfo(collection);
     } catch (error) {
       console.error('Error fetching collection:', error);
-      navigate(`/c/${slug}`, { replace: true });
+      navigate('/404');
     }
   };
 

@@ -195,7 +195,7 @@ const AppContent = () => {
             <Route path="/tag/:slug" element={<TagPage />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:slug" element={<CategoryPage />} />
-            <Route path="/collections/:slug" element={<CollectionPage />} />
+            <Route path="/collections/:slug" element={<PublicCollection />} />
             <Route path="/pass" element={<Pass />} />
             <Route path="/pass/graphic" element={<PassGraphic />} />
             <Route path="/product-hunt-alternative" element={<ProductHuntAlternative />} />
