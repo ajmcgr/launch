@@ -117,6 +117,7 @@ const AppContent = () => {
     '/vibecoders', '/makers', '/awards', '/success-stories', '/compare',
     '/vibe-coding', '/tools', '/traffic', '/notifications', '/blog',
   ].includes(path) || path.startsWith('/launches');
+  const isStart = path === '/start';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -244,6 +245,49 @@ const AppContent = () => {
                     <div className="h-9 w-10 rounded-md bg-muted/50 animate-pulse" />
                   </div>
                 ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isStart ? (
+            <div aria-label="Loading" role="status">
+              <section className="py-16 md:py-24">
+                <div className="container mx-auto px-4 max-w-4xl flex flex-col items-center gap-6">
+                  <div className="h-6 w-44 rounded-full bg-muted/60 animate-pulse" />
+                  <div className="h-12 md:h-16 w-full max-w-3xl rounded-md bg-muted/60 animate-pulse" />
+                  <div className="h-10 md:h-14 w-5/6 max-w-2xl rounded-md bg-muted/60 animate-pulse" />
+                  <div className="h-4 w-2/3 max-w-xl rounded bg-muted/50 animate-pulse mt-2" />
+                  <div className="h-4 w-1/2 max-w-md rounded bg-muted/50 animate-pulse" />
+                  <div className="flex gap-3 mt-4">
+                    <div className="h-11 w-40 rounded-md bg-muted/60 animate-pulse" />
+                    <div className="h-11 w-40 rounded-md bg-muted/50 animate-pulse" />
+                  </div>
+                </div>
+              </section>
+              <div className="container mx-auto px-4 max-w-7xl pb-12">
+                <div className="grid lg:grid-cols-[minmax(0,1fr)_220px] gap-12 justify-center">
+                  <div className="min-w-0 max-w-3xl mx-auto w-full space-y-12">
+                    {Array.from({ length: 2 }).map((_, i) => (
+                      <div key={i} className="space-y-4">
+                        <div className="h-4 w-24 rounded bg-muted/60 animate-pulse" />
+                        <div className="h-8 w-2/3 rounded-md bg-muted/60 animate-pulse" />
+                        <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                        <div className="grid sm:grid-cols-3 gap-4 pt-2">
+                          {Array.from({ length: 3 }).map((_, j) => (
+                            <div key={j} className="h-32 rounded-lg bg-muted/40 animate-pulse" />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="hidden lg:block">
+                    <div className="h-4 w-24 rounded bg-muted/60 animate-pulse mb-4" />
+                    <div className="space-y-2">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="h-3 w-32 rounded bg-muted/50 animate-pulse" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
               <span className="sr-only">Loading</span>
             </div>
