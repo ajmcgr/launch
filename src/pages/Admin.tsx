@@ -63,16 +63,23 @@ const Admin = () => {
   const { data: stats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
+      const sevenDaysAgoISO = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const [
-        allProductsRes, 
-        usersRes, 
-        votesRes, 
-        ratingsRes, 
-        sponsoredRes, 
+        allProductsRes,
+        usersRes,
+        votesRes,
+        ratingsRes,
+        sponsoredRes,
         ordersRes,
         commentsRes,
         badgesRes,
         mrrRes,
+        newProductsRes,
+        newUsersRes,
+        newVotesRes,
+        newRatingsRes,
+        newCommentsRes,
+        newBadgesRes,
       ] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('users').select('id', { count: 'exact', head: true }),
@@ -83,26 +90,41 @@ const Admin = () => {
         supabase.from('comments').select('id', { count: 'exact', head: true }),
         supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'launched'),
         supabase.from('products').select('verified_mrr').not('verified_mrr', 'is', null),
+        supabase.from('products').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgoISO),
+        supabase.from('users').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgoISO),
+        supabase.from('votes').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgoISO),
+        supabase.from('product_ratings').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgoISO),
+        supabase.from('comments').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgoISO),
+        supabase.from('products').select('id', { count: 'exact', head: true }).eq('status', 'launched').gte('launch_date', sevenDaysAgoISO),
       ]);
-
 
       // Calculate advertising revenue from all sponsorships
       const sponsorships = sponsoredRes.data || [];
       let totalRevenue = 0;
+      let newRevenue = 0;
+      let newAdvertisers = 0;
       sponsorships.forEach(sp => {
-        if (sp.sponsorship_type === 'website') totalRevenue += 750;
-        else if (sp.sponsorship_type === 'newsletter') totalRevenue += 500;
-        else if (sp.sponsorship_type === 'combined') totalRevenue += 1000;
-        else if (sp.sponsorship_type === 'boost') totalRevenue += 19;
+        const price = sp.sponsorship_type === 'website' ? 750
+          : sp.sponsorship_type === 'newsletter' ? 500
+          : sp.sponsorship_type === 'combined' ? 1000
+          : sp.sponsorship_type === 'boost' ? 19 : 0;
+        totalRevenue += price;
+        if (sp.start_date && sp.start_date >= sevenDaysAgoISO) {
+          newRevenue += price;
+          newAdvertisers += 1;
+        }
       });
 
       // Add launch revenues (join = $9, skip = $39)
       const orders = ordersRes.data || [];
       orders.forEach(order => {
-        if (order.plan === 'join') totalRevenue += 9;
-        else if (order.plan === 'skip') totalRevenue += 39;
+        const price = order.plan === 'join' ? 9 : order.plan === 'skip' ? 39 : 0;
+        totalRevenue += price;
+        if (order.created_at && order.created_at >= sevenDaysAgoISO) {
+          newRevenue += price;
+          newAdvertisers += 1;
+        }
       });
-
 
       // Calculate total verified MRR (stored in cents, convert to dollars)
       const mrrProducts = mrrRes.data || [];
@@ -115,10 +137,18 @@ const Admin = () => {
         totalRatings: ratingsRes.count || 0,
         totalSponsorships: sponsorships.length,
         totalPromotions: orders.length,
-        totalRevenue: totalRevenue,
+        totalRevenue,
         totalComments: commentsRes.count || 0,
         totalBadges: badgesRes.count || 0,
-        totalVerifiedMRR: totalVerifiedMRR,
+        totalVerifiedMRR,
+        newProducts: newProductsRes.count || 0,
+        newUsers: newUsersRes.count || 0,
+        newVotes: newVotesRes.count || 0,
+        newRatings: newRatingsRes.count || 0,
+        newComments: newCommentsRes.count || 0,
+        newBadges: newBadgesRes.count || 0,
+        newAdvertisers,
+        newRevenue,
       };
     },
     enabled: isAdmin,
@@ -301,6 +331,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newProducts || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -311,6 +342,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newUsers || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -321,6 +353,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newVotes || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -331,6 +364,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newRatings || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -341,6 +375,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newComments || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -351,6 +386,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">🎯 {(stats?.totalPromotions || 0) + (stats?.totalSponsorships || 0)}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newAdvertisers || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -361,6 +397,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newBadges || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
@@ -371,6 +408,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
+                  <div className="text-xs text-muted-foreground mt-1">across launches</div>
                 </CardContent>
               </Card>
 
@@ -381,6 +419,7 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+${(stats?.newRevenue || 0).toLocaleString()} past 7 days</div>
                 </CardContent>
               </Card>
             </div>
