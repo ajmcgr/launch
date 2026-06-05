@@ -96,9 +96,15 @@ export default function Collections() {
 
   if (!authChecked || (userId && loading)) {
     return (
-      <div className="container mx-auto px-4 max-w-7xl py-20 flex flex-col items-center justify-center text-muted-foreground">
-        <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-foreground animate-spin" />
-        <p className="text-sm mt-3">Loading collections…</p>
+      <div className="container mx-auto px-4 max-w-7xl py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <Skeleton className="h-9 w-36" />
+        </div>
+        <CollectionCardSkeleton count={6} />
       </div>
     );
   }
