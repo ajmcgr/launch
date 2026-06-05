@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { gradientFor } from '@/lib/gradients';
 import BuiltWithSection from '@/components/BuiltWithSection';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
+import { CollectionCardSkeleton } from '@/components/CollectionCardSkeleton';
 
 const sb: any = supabase;
 
