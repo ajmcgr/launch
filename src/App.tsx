@@ -105,6 +105,10 @@ const AppContent = () => {
   const isStandalone = standalonePages.includes(location.pathname);
   const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
 
+  const path = location.pathname;
+  const isCollectionsList = path === '/collections' || path === '/my-collections' || path === '/search';
+  const isCollectionDetail = /^\/(c|collections|my-collections)\/[^/]+$/.test(path);
+
   return (
     <div className="flex flex-col min-h-screen">
       {!isStandalone && <Header />}
