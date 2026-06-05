@@ -95,16 +95,17 @@ const CollectionPage = () => {
         .maybeSingle();
 
       if (error) throw error;
-      
+
       if (!collection) {
-        navigate('/404');
+        // Fall back to user-created collections (e.g. built-with-*)
+        navigate(`/c/${slug}`, { replace: true });
         return;
       }
 
       setCollectionInfo(collection);
     } catch (error) {
       console.error('Error fetching collection:', error);
-      navigate('/404');
+      navigate(`/c/${slug}`, { replace: true });
     }
   };
 
