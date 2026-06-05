@@ -108,6 +108,14 @@ const AppContent = () => {
   const path = location.pathname;
   const isCollectionsList = path === '/collections' || path === '/my-collections' || path === '/search';
   const isCollectionDetail = /^\/(c|collections|my-collections)\/[^/]+$/.test(path);
+  const isPricing = path === '/pricing' || path === '/pass';
+  const isAdvertise = path === '/advertise';
+  const isArticle = ['/about', '/terms', '/privacy', '/contact', '/media-kit'].includes(path);
+  const isListPage = [
+    '/products', '/forums', '/newsletter', '/tags', '/categories', '/tech',
+    '/vibecoders', '/makers', '/awards', '/success-stories', '/compare',
+    '/vibe-coding', '/tools', '/traffic', '/notifications',
+  ].includes(path) || path.startsWith('/launches');
 
   return (
     <div className="flex flex-col min-h-screen">
