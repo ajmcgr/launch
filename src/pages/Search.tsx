@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { FolderOpen, Eye, Heart, Package, Search as SearchIcon } from 'lucide-react';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
+import { ProductSkeleton } from '@/components/ProductSkeleton';
+import { CollectionCardSkeleton } from '@/components/CollectionCardSkeleton';
 
 const sb: any = supabase;
 
