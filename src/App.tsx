@@ -116,9 +116,10 @@ const AppContent = () => {
   const isContact = path === '/contact';
   const isListPage = [
     '/products', '/forums', '/newsletter', '/tags', '/categories', '/tech',
-    '/vibecoders', '/makers', '/awards', '/success-stories', '/compare',
+    '/awards', '/success-stories', '/compare',
     '/vibe-coding', '/tools', '/traffic', '/notifications', '/blog',
   ].includes(path) || path.startsWith('/launches');
+  const isVibecoders = path === '/vibecoders' || path === '/makers';
   const isStart = path === '/start';
 
   return (
@@ -267,6 +268,60 @@ const AppContent = () => {
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className={`h-4 ${i % 4 === 3 ? 'w-2/3' : 'w-full'} rounded bg-muted/50 animate-pulse`} />
                 ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isVibecoders ? (
+            <div className="container mx-auto px-4 max-w-7xl py-6" aria-label="Loading" role="status">
+              {/* Header */}
+              <div className="text-center mb-2 space-y-2">
+                <div className="h-10 w-64 mx-auto rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-96 mx-auto rounded bg-muted/50 animate-pulse" />
+              </div>
+              {/* Sort tabs */}
+              <div className="flex items-center justify-center gap-3 mt-6 mb-6">
+                <div className="flex items-center gap-1 border rounded-lg p-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-7 w-14 rounded-md bg-muted/40 animate-pulse" />
+                  ))}
+                </div>
+              </div>
+              {/* Two-column layout */}
+              <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+                {/* Main leaderboard */}
+                <div className="rounded-xl border bg-card overflow-hidden">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 py-3 px-4">
+                      <div className="h-4 w-5 rounded bg-muted/50 animate-pulse" />
+                      <div className="h-10 w-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <div className="h-4 w-32 rounded bg-muted/60 animate-pulse" />
+                        <div className="h-3 w-48 rounded bg-muted/50 animate-pulse" />
+                      </div>
+                      <div className="h-4 w-16 rounded bg-muted/50 animate-pulse" />
+                    </div>
+                  ))}
+                </div>
+                {/* Right column trend cards */}
+                <aside className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="rounded-xl border bg-card p-4 space-y-3">
+                      <div className="h-4 w-32 rounded bg-muted/60 animate-pulse" />
+                      {Array.from({ length: 4 }).map((__, j) => (
+                        <div key={j} className="flex items-center gap-2.5 py-1">
+                          <div className="h-8 w-8 rounded-md bg-muted/50 animate-pulse" />
+                          <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </aside>
+              </div>
+              {/* How rankings work */}
+              <div className="mt-10 rounded-xl border bg-muted/30 p-5 space-y-2">
+                <div className="h-4 w-40 rounded bg-muted/60 animate-pulse" />
+                <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
+                <div className="h-3 w-5/6 rounded bg-muted/50 animate-pulse" />
               </div>
               <span className="sr-only">Loading</span>
             </div>
