@@ -110,11 +110,12 @@ const AppContent = () => {
   const isCollectionDetail = /^\/(c|collections|my-collections)\/[^/]+$/.test(path);
   const isPricing = path === '/pricing' || path === '/pass';
   const isAdvertise = path === '/advertise';
-  const isArticle = ['/about', '/terms', '/privacy', '/contact', '/media-kit'].includes(path);
+  const isArticle = ['/about', '/terms', '/privacy', '/contact', '/media-kit', '/faq'].includes(path)
+    || path.startsWith('/blog/');
   const isListPage = [
     '/products', '/forums', '/newsletter', '/tags', '/categories', '/tech',
     '/vibecoders', '/makers', '/awards', '/success-stories', '/compare',
-    '/vibe-coding', '/tools', '/traffic', '/notifications',
+    '/vibe-coding', '/tools', '/traffic', '/notifications', '/blog',
   ].includes(path) || path.startsWith('/launches');
 
   return (
