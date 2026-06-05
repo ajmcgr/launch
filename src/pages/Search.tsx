@@ -128,9 +128,9 @@ export default function Search() {
       {!q ? (
         <p className="text-muted-foreground">Type a query in the header search bar to find products and collections.</p>
       ) : loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-muted-foreground">
-          <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-foreground animate-spin" />
-          <p className="text-sm mt-3">Searching…</p>
+        <div className="space-y-12">
+          <ProductSkeleton view="list" count={4} />
+          <CollectionCardSkeleton count={3} />
         </div>
       ) : products.length === 0 && collections.length === 0 ? (
         <div className="py-20 text-center text-muted-foreground">
