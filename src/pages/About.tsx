@@ -38,7 +38,7 @@ const About = () => {
         <div className="border border-border rounded-lg p-8 md:p-12 bg-card">
           <h1 className="text-4xl font-bold mb-8 text-center">About Launch</h1>
           
-          <div className="prose prose-gray max-w-none space-y-6">
+          <div className="prose prose-gray dark:prose-invert max-w-none space-y-6">
             <p className="text-lg">
               Launch is a platform where vibe coders discover and launch AI products.
             </p>

@@ -25,7 +25,7 @@ const VibeCodeYourFuture = () => {
           <div className="border border-border rounded-lg p-8 md:p-12 bg-card">
             <h1 className="text-4xl font-bold mb-8 text-center">Vibe Code Your Future</h1>
 
-            <div className="prose prose-lg prose-gray max-w-none space-y-6">
+            <div className="prose prose-lg prose-gray dark:prose-invert max-w-none space-y-6">
               <p className="text-lg text-center">
                 An open letter to anyone who was just laid off.
               </p>

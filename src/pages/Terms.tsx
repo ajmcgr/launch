@@ -4,7 +4,7 @@ const Terms = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-8 text-center">Terms of Service</h1>
         
-        <div className="prose prose-gray max-w-none space-y-6">
+        <div className="prose prose-gray dark:prose-invert max-w-none space-y-6">
           <p className="text-lg">
             Please read these terms and conditions carefully before using Our Service.
           </p>
