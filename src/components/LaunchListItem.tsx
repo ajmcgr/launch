@@ -96,7 +96,7 @@ export const LaunchListItem = ({
 
   return (
     <div 
-      className="group/card hover:bg-muted/30 transition-colors cursor-pointer"
+      className="group/card rounded-lg hover:bg-muted/30 transition-colors cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="flex items-start gap-3 py-3 px-2">

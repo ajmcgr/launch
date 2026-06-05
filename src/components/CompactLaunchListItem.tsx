@@ -69,7 +69,7 @@ export const CompactLaunchListItem = ({
   
   return (
     <div 
-      className="group/card flex items-start gap-3 py-2 px-2 hover:bg-muted/30 transition-colors cursor-pointer"
+      className="group/card flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-muted/30 transition-colors cursor-pointer"
       onClick={handleCardClick}
     >
       <span className="text-sm font-bold text-muted-foreground w-6 text-right flex-shrink-0 pt-0.5">
