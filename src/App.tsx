@@ -105,6 +105,10 @@ const AppContent = () => {
   const isStandalone = standalonePages.includes(location.pathname);
   const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
 
+  const path = location.pathname;
+  const isCollectionsList = path === '/collections' || path === '/my-collections' || path === '/search';
+  const isCollectionDetail = /^\/(c|collections|my-collections)\/[^/]+$/.test(path);
+
   return (
     <div className="flex flex-col min-h-screen">
       {!isStandalone && <Header />}
@@ -113,6 +117,51 @@ const AppContent = () => {
           location.pathname === '/reserve' ? (
             <div className="min-h-screen bg-background flex items-center justify-center" aria-label="Loading" role="status">
               <div className="h-8 w-8 rounded-full border-2 border-muted border-t-foreground animate-spin opacity-60" />
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isCollectionsList ? (
+            <div className="container mx-auto px-4 max-w-7xl py-8" aria-label="Loading" role="status">
+              <div className="mb-8 flex flex-col items-center gap-3">
+                <div className="h-10 w-64 rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-4 w-80 rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="flex flex-col rounded-xl overflow-hidden border bg-card">
+                    <div className="aspect-[3/1.6] w-full bg-muted/50 animate-pulse" />
+                    <div className="p-4 space-y-2">
+                      <div className="h-5 w-2/3 rounded bg-muted/60 animate-pulse" />
+                      <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                      <div className="h-4 w-4/5 rounded bg-muted/50 animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : isCollectionDetail ? (
+            <div className="container mx-auto px-4 max-w-7xl py-8" aria-label="Loading" role="status">
+              <div className="mb-6 rounded-xl border bg-card overflow-hidden">
+                <div className="aspect-[3/1] w-full bg-muted/50 animate-pulse" />
+                <div className="p-6 space-y-3">
+                  <div className="h-8 w-1/2 rounded bg-muted/60 animate-pulse" />
+                  <div className="h-4 w-3/4 rounded bg-muted/50 animate-pulse" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="rounded-lg border border-border p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="h-12 w-12 rounded-lg bg-muted/50 animate-pulse" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-5 w-32 rounded bg-muted/60 animate-pulse" />
+                        <div className="h-4 w-24 rounded bg-muted/50 animate-pulse" />
+                      </div>
+                    </div>
+                    <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                  </div>
+                ))}
+              </div>
               <span className="sr-only">Loading</span>
             </div>
           ) : isStandalone ? (
