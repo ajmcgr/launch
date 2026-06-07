@@ -25,7 +25,7 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   const productUrl = `https://trylaunch.ai/launch/${productSlug}`;
   const ogShareUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${productSlug}`;
   
-  const xShareText = `🚀 Just launched ${productName} on @trylaunchai!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${ogShareUrl}`;
+  const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${ogShareUrl}\n\ncc @trylaunchai`;
   
   const linkedInShareText = `🚀 Excited to announce: I just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nWould love your support - check it out and let me know what you think!\n\n${ogShareUrl}`;
   
