@@ -317,7 +317,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
     queryFn: async () => {
       const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
       
-      const [productsRes, votesRes, categoriesRes, commentsRes] = await Promise.all([
+      const [productsRes, votesRes, categoriesRes] = await Promise.all([
         supabase
           .from('products')
           .select(`
@@ -331,15 +331,19 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
           .order('launch_date', { ascending: false }),
         supabase.from('product_vote_counts').select('product_id, net_votes'),
         supabase.from('product_categories').select('id, name'),
-        supabase.from('comments').select('product_id')
       ]);
       
       if (productsRes.error) throw productsRes.error;
       
+      const productIds = (productsRes.data || []).map((p: any) => p.id);
+      const { data: commentsData } = productIds.length
+        ? await supabase.from('comments').select('product_id').in('product_id', productIds)
+        : { data: [] as any[] };
+      
       const votesMap = new Map((votesRes.data || []).map((v: any) => [v.product_id, v.net_votes || 0]));
       const categoryMap = new Map((categoriesRes.data || []).map((c: any) => [c.id, c.name]));
       const commentMap = new Map<string, number>();
-      (commentsRes.data || []).forEach((c: any) => {
+      (commentsData || []).forEach((c: any) => {
         commentMap.set(c.product_id, (commentMap.get(c.product_id) || 0) + 1);
       });
       
