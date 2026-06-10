@@ -41,14 +41,15 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
     iconColor: 'text-amber-500',
   },
   live_window: {
-    icon: Clock,
+    icon: Zap,
     getTitle: () => 'Your 24h launch window is live now',
-    getMessage: () => 'This is when ~70% of launch-day traffic happens. Pro adds newsletter feature + X/LinkedIn posts in the next few hours.',
-    cta: 'Boost while it matters — $39',
-    borderColor: 'border-green-500/20',
-    bgColor: 'bg-green-500/5',
-    iconColor: 'text-green-500',
+    getMessage: () => 'This is when ~70% of launch-day traffic happens. Boost pins you to the top for the next 24h.',
+    cta: 'Boost while it matters — $19',
+    borderColor: 'border-primary/20',
+    bgColor: 'bg-primary/5',
+    iconColor: 'text-primary',
   },
+
   low_traction: {
     icon: Eye,
     getTitle: () => 'Free launches average ~12 views in 24h',
