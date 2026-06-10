@@ -66,7 +66,7 @@ const SidebarSponsoredAd = () => {
                 adType: 'custom',
                 href: s.custom_target_url,
                 external: true,
-                name: s.custom_title || 'Sponsored',
+                name: s.custom_title || 'Ad',
                 tagline: s.custom_description || '',
                 iconUrl: s.custom_image_url || undefined,
               };
@@ -97,7 +97,7 @@ const SidebarSponsoredAd = () => {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Sponsored</h3>
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Ad</h3>
       </div>
       <div className="space-y-2">
         {sponsored.map((item) => {

@@ -244,7 +244,7 @@ const Home = () => {
           if (sponsored.ad_type === 'custom' && sponsored.custom_target_url) {
             customMap.set(sponsored.position, {
               id: sponsored.id,
-              title: sponsored.custom_title || 'Sponsored',
+              title: sponsored.custom_title || 'Ad',
               description: sponsored.custom_description || null,
               imageUrl: sponsored.custom_image_url || '',
               targetUrl: sponsored.custom_target_url,
