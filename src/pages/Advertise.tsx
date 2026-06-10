@@ -806,7 +806,7 @@ const Advertise = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="bg-muted/30 rounded-lg p-4 border">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Sponsored</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Ad</p>
                       <div className="flex items-start gap-3">
                         <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
                           <span className="text-lg font-bold text-primary">Y</span>
@@ -1198,7 +1198,7 @@ const Advertise = () => {
                         <div className="space-y-2">
                           <Label className="text-xs uppercase tracking-wider text-muted-foreground">Preview</Label>
                           <div className="border rounded-lg p-4 bg-background">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Sponsored</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Ad</p>
                             {customAd.image_url && (
                               <img
                                 src={customAd.image_url}
@@ -1304,7 +1304,7 @@ const Advertise = () => {
                         <p className="text-sm font-medium">Website Preview</p>
                       </div>
                       <div className="bg-background rounded-lg p-3 border">
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Sponsored</p>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Ad</p>
                         <div className="flex items-start gap-3">
                           <img 
                             src={getSelectedProduct()?.iconUrl || defaultProductIcon} 

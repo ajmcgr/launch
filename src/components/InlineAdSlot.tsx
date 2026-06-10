@@ -67,7 +67,7 @@ const InlineAdSlot = () => {
             adType: 'custom',
             href: s.custom_target_url,
             external: true,
-            name: s.custom_title || 'Sponsored',
+            name: s.custom_title || 'Ad',
             tagline: s.custom_description || '',
             iconUrl: s.custom_image_url || undefined,
           });
@@ -115,7 +115,7 @@ const InlineAdSlot = () => {
             {sponsored.name}
           </p>
           <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 flex-shrink-0 text-muted-foreground border-muted-foreground/30">
-            Sponsored
+            Ad
           </Badge>
         </div>
         {sponsored.tagline && (

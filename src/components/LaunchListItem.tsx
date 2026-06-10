@@ -136,7 +136,7 @@ export const LaunchListItem = ({
                 onClick={(e) => e.stopPropagation()}
                 className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded hover:bg-muted/80 transition-colors"
               >
-                Sponsored
+                Ad
               </Link>
             )}
             {rank && !sponsored && (
