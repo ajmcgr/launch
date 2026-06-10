@@ -56,11 +56,11 @@ const InlineAdSlot = () => {
         .lte('start_date', today)
         .gte('end_date', today)
         .in('sponsorship_type', ['website', 'combined'])
-        .order('position', { ascending: true })
-        .limit(1);
+        .order('position', { ascending: true });
 
       if (data && data.length > 0) {
-        const s: any = data[0];
+        // Rotate: pick a random active ad per page load so all partners get exposure
+        const s: any = data[Math.floor(Math.random() * data.length)];
         if (s.ad_type === 'custom' && s.custom_target_url) {
           setSponsored({
             key: s.id,
