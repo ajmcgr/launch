@@ -222,9 +222,12 @@ const Advertising = () => {
     staleTime: 1000 * 60 * 30,
   });
 
-  const loading = authLoading || hLoading || cLoading;
+  const loading = authLoading || hLoading || cLoading || pLoading;
   const hasCampaigns =
-    (homepageCampaigns?.length ?? 0) + (categoryCampaigns?.length ?? 0) > 0;
+    (homepageCampaigns?.length ?? 0) +
+      (categoryCampaigns?.length ?? 0) +
+      (productCampaigns?.length ?? 0) >
+    0;
 
   // Aggregated metrics (date-range filtered by campaign start_date)
   const rangeCutoff = useMemo(() => {
@@ -239,9 +242,10 @@ const Advertising = () => {
 
   const filteredHomepage = inRange(homepageCampaigns);
   const filteredCategory = inRange(categoryCampaigns);
+  const filteredProduct = inRange(productCampaigns);
 
   const totals = useMemo(() => {
-    const all = [...filteredHomepage, ...filteredCategory];
+    const all = [...filteredHomepage, ...filteredCategory, ...filteredProduct];
     const impressions = all.reduce((s, c) => s + (c.impressions || 0), 0);
     const clicks = all.reduce((s, c) => s + (c.clicks || 0), 0);
     const active = all.filter(isActive).length;
@@ -256,7 +260,7 @@ const Advertising = () => {
       categoriesSponsored,
       total: all.length,
     };
-  }, [filteredHomepage, filteredCategory]);
+  }, [filteredHomepage, filteredCategory, filteredProduct]);
 
   // Synthetic daily series for charts (deterministic spread of campaign totals)
   const series = useMemo(() => {
