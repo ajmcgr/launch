@@ -1,8 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { weightedShuffle } from '@/lib/weightedPick';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 import roachBanner from '@/assets/sponsors/roach-banner.png';
+
+
 
 interface Sponsor {
   id: string;
@@ -40,12 +43,13 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = 
       const today = new Date().toISOString().split('T')[0];
       const { data } = await (supabase as any)
         .from('homepage_sponsors')
-        .select('id, sponsor_name, banner_image_url, destination_url')
+        .select('id, sponsor_name, banner_image_url, destination_url, weight')
         .eq('enabled', true)
         .lte('start_date', today)
-        .gte('end_date', today)
-        .order('position', { ascending: true });
-      setSponsors((data as Sponsor[]) || []);
+        .gte('end_date', today);
+      // Weighted random order so every active sponsor rotates fairly.
+      const shuffled = weightedShuffle((data as any[]) || []);
+      setSponsors(shuffled as Sponsor[]);
     };
     fetchSponsors();
   }, []);

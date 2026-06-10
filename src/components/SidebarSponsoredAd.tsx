@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
+import { weightedShuffle } from '@/lib/weightedPick';
+
+
 
 interface SponsoredItem {
   key: string;
@@ -38,6 +41,7 @@ const SidebarSponsoredAd = () => {
         .select(`
           id,
           ad_type,
+          weight,
           product_id,
           custom_image_url,
           custom_title,
@@ -53,12 +57,12 @@ const SidebarSponsoredAd = () => {
         `)
         .lte('start_date', today)
         .gte('end_date', today)
-        .in('sponsorship_type', ['website', 'combined'])
-        .order('position', { ascending: true })
-        .limit(2);
+        .in('sponsorship_type', ['website', 'combined']);
 
       if (data && data.length > 0) {
-        const items: SponsoredItem[] = data
+        // Weighted shuffle across ALL active ads, then take 2.
+        const shuffled = weightedShuffle(data as any[]).slice(0, 2);
+        const items: SponsoredItem[] = shuffled
           .map((s: any): SponsoredItem | null => {
             if (s.ad_type === 'custom' && s.custom_target_url) {
               return {
