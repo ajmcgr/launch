@@ -179,7 +179,7 @@ const Advertising = () => {
       // 2) Fetch sponsored_products tied to those products
       const { data, error } = await (supabase as any)
         .from('sponsored_products')
-        .select('id, product_id, start_date, end_date, sponsorship_type, custom_title, custom_target_url, impressions, clicks')
+        .select('id, product_id, start_date, end_date, sponsorship_type, custom_title, custom_target_url')
         .in('product_id', ownedIds)
         .order('start_date', { ascending: false });
       if (error) throw error;
@@ -193,8 +193,8 @@ const Advertising = () => {
           start_date: s.start_date,
           end_date: s.end_date,
           enabled: true,
-          impressions: s.impressions ?? 0,
-          clicks: s.clicks ?? 0,
+          impressions: 0,
+          clicks: 0,
           sponsorship_type: s.sponsorship_type,
         };
       });
