@@ -726,6 +726,11 @@ const LaunchDetail = () => {
               categoryNames={categories}
               stackItemIds={stackItems.map((s) => s.id)}
             />
+
+            {/* Secondary Inline Ad Slot — doubles inventory per product page */}
+            <div className="pt-8">
+              <InlineAdSlot />
+            </div>
           </div>
 
           {/* Right Sidebar - Desktop Only */}

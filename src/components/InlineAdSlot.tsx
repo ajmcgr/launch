@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
+import { weightedPick } from '@/lib/weightedPick';
 
 interface SponsoredItem {
   key: string;
@@ -40,6 +41,7 @@ const InlineAdSlot = () => {
         .select(`
           id,
           ad_type,
+          weight,
           product_id,
           custom_image_url,
           custom_title,
@@ -55,12 +57,12 @@ const InlineAdSlot = () => {
         `)
         .lte('start_date', today)
         .gte('end_date', today)
-        .in('sponsorship_type', ['website', 'combined'])
-        .order('position', { ascending: true });
+        .in('sponsorship_type', ['website', 'combined']);
 
       if (data && data.length > 0) {
-        // Rotate: pick a random active ad per page load so all partners get exposure
-        const s: any = data[Math.floor(Math.random() * data.length)];
+        // Weighted rotation: ads with higher `weight` are more likely to appear.
+        const s: any = weightedPick(data as any[]);
+        if (!s) { setLoading(false); return; }
         if (s.ad_type === 'custom' && s.custom_target_url) {
           setSponsored({
             key: s.id,

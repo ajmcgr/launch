@@ -884,7 +884,19 @@ const Advertise = () => {
                 <AccordionItem value="item-3">
                   <AccordionTrigger>How many sponsored slots are available?</AccordionTrigger>
                   <AccordionContent>
-                    Newsletter sponsorships are limited to one sponsor per issue to ensure maximum visibility. Website placements have limited availability each month. This ensures each sponsor gets meaningful exposure without overcrowding.
+                    Website inventory rotates fairly across every active advertiser. The sidebar shows 2 ads per page (weighted random), the inline ad appears twice on every product page (above comments and below related launches), and homepage banners are shuffled on each load. Newsletter sponsorships remain limited to one per issue so the inbox slot stays uncrowded.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-rotation">
+                  <AccordionTrigger>How does rotation work between advertisers?</AccordionTrigger>
+                  <AccordionContent>
+                    Every active ad is picked using a weighted-random algorithm, so each partner gets a fair share of impressions regardless of when they bought. We can boost a campaign's <code>weight</code> if you upgrade your placement — higher weight = more frequent appearances.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-dashboard">
+                  <AccordionTrigger>Where do I see my ad performance?</AccordionTrigger>
+                  <AccordionContent>
+                    Once your campaign goes live, sign in and head to <a href="/advertising" className="text-primary underline">/advertising</a> — you'll get a full dashboard with impressions, clicks, CTR, and per-placement breakdowns for every active campaign you own (homepage, category, product inline/sidebar, and newsletter).
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-4">

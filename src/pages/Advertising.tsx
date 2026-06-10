@@ -78,6 +78,18 @@ interface CategorySponsor {
   category?: { name: string; slug: string } | null;
 }
 
+interface ProductCampaign {
+  id: string;
+  sponsor_name: string;
+  destination_url: string;
+  start_date: string;
+  end_date: string;
+  enabled: boolean;
+  impressions: number;
+  clicks: number;
+  sponsorship_type: string;
+}
+
 const ctr = (clicks: number, impressions: number) =>
   impressions > 0 ? (clicks / impressions) * 100 : 0;
 
@@ -152,6 +164,43 @@ const Advertising = () => {
     },
   });
 
+  // Product-level ads (sponsored_products) — owned by user via products.user_id
+  const { data: productCampaigns = [], isLoading: pLoading } = useQuery({
+    queryKey: ['advertising', 'product-ads', user?.id],
+    enabled: !!user,
+    queryFn: async (): Promise<ProductCampaign[]> => {
+      // 1) Find products owned by this user
+      const { data: ownedProducts } = await supabase
+        .from('products')
+        .select('id, name, slug')
+        .eq('owner_id', user!.id);
+      const ownedIds = (ownedProducts ?? []).map((p: any) => p.id);
+      if (ownedIds.length === 0) return [];
+      // 2) Fetch sponsored_products tied to those products
+      const { data, error } = await (supabase as any)
+        .from('sponsored_products')
+        .select('id, product_id, start_date, end_date, sponsorship_type, custom_title, custom_target_url')
+        .in('product_id', ownedIds)
+        .order('start_date', { ascending: false });
+      if (error) throw error;
+      const productMap = new Map<string, any>((ownedProducts ?? []).map((p: any) => [p.id, p]));
+      return ((data ?? []) as any[]).map((s) => {
+        const p = productMap.get(s.product_id);
+        return {
+          id: s.id,
+          sponsor_name: s.custom_title || p?.name || 'Product Ad',
+          destination_url: s.custom_target_url || (p?.slug ? `/launch/${p.slug}` : '#'),
+          start_date: s.start_date,
+          end_date: s.end_date,
+          enabled: true,
+          impressions: 0,
+          clicks: 0,
+          sponsorship_type: s.sponsorship_type,
+        };
+      });
+    },
+  });
+
   const { data: platformStats } = useQuery({
     queryKey: ['advertising', 'platform-stats'],
     queryFn: async () => {
@@ -173,9 +222,12 @@ const Advertising = () => {
     staleTime: 1000 * 60 * 30,
   });
 
-  const loading = authLoading || hLoading || cLoading;
+  const loading = authLoading || hLoading || cLoading || pLoading;
   const hasCampaigns =
-    (homepageCampaigns?.length ?? 0) + (categoryCampaigns?.length ?? 0) > 0;
+    (homepageCampaigns?.length ?? 0) +
+      (categoryCampaigns?.length ?? 0) +
+      (productCampaigns?.length ?? 0) >
+    0;
 
   // Aggregated metrics (date-range filtered by campaign start_date)
   const rangeCutoff = useMemo(() => {
@@ -190,9 +242,10 @@ const Advertising = () => {
 
   const filteredHomepage = inRange(homepageCampaigns);
   const filteredCategory = inRange(categoryCampaigns);
+  const filteredProduct = inRange(productCampaigns);
 
   const totals = useMemo(() => {
-    const all = [...filteredHomepage, ...filteredCategory];
+    const all = [...filteredHomepage, ...filteredCategory, ...filteredProduct];
     const impressions = all.reduce((s, c) => s + (c.impressions || 0), 0);
     const clicks = all.reduce((s, c) => s + (c.clicks || 0), 0);
     const active = all.filter(isActive).length;
@@ -207,7 +260,7 @@ const Advertising = () => {
       categoriesSponsored,
       total: all.length,
     };
-  }, [filteredHomepage, filteredCategory]);
+  }, [filteredHomepage, filteredCategory, filteredProduct]);
 
   // Synthetic daily series for charts (deterministic spread of campaign totals)
   const series = useMemo(() => {
@@ -467,6 +520,32 @@ const Advertising = () => {
                 ],
               }))}
             />
+
+            <CampaignSection
+              title="Product Ad Slots (Inline + Sidebar Rotation)"
+              empty="No product ad campaigns yet."
+              columns={['Campaign', 'Type', 'Status', 'Start', 'End', 'Destination']}
+              rows={productCampaigns.map((c) => ({
+                key: c.id,
+                cells: [
+                  c.sponsor_name,
+                  <Badge key="t" variant="outline" className="capitalize">{c.sponsorship_type}</Badge>,
+                  <StatusBadge key="s" active={isActive(c)} />,
+                  c.start_date,
+                  c.end_date,
+                  <a
+                    key="u"
+                    href={c.destination_url}
+                    target={c.destination_url.startsWith('http') ? '_blank' : undefined}
+                    rel="noreferrer"
+                    className="text-primary inline-flex items-center gap-1 hover:underline"
+                  >
+                    Open <ExternalLink className="h-3 w-3" />
+                  </a>,
+                ],
+              }))}
+            />
+
 
             <CampaignSection
               title="Newsletter Sponsorships"

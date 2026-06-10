@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { weightedPick } from '@/lib/weightedPick';
 import mediaBanner from '@/assets/sponsors/media-banner.png';
 
 interface Sponsor {
@@ -27,16 +28,15 @@ const CategorySponsorBanner = ({ categoryId, categoryName }: Props) => {
       const today = new Date().toISOString().split('T')[0];
       const { data } = await (supabase as any)
         .from('category_sponsors')
-        .select('id, sponsor_name, banner_image_url, destination_url')
+        .select('id, sponsor_name, banner_image_url, destination_url, weight')
         .eq('category_id', categoryId)
         .eq('enabled', true)
         .lte('start_date', today)
-        .gte('end_date', today)
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .gte('end_date', today);
 
       if (cancelled) return;
-      const s = (data && data.length > 0 ? (data[0] as Sponsor) : null);
+      // Weighted random pick across ALL active sponsors for this category.
+      const s = weightedPick((data as any[]) || []) as Sponsor | null;
       setSponsor(s);
       setLoading(false);
     };
