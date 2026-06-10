@@ -114,9 +114,9 @@ const InlineAdSlot = () => {
           <p className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
             {sponsored.name}
           </p>
-          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 flex-shrink-0 text-muted-foreground border-muted-foreground/30">
+          <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">
             Ad
-          </Badge>
+          </span>
         </div>
         {sponsored.tagline && (
           <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
