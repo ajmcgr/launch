@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Clock, Eye, AlertTriangle, X, Rocket } from 'lucide-react';
+import { TrendingUp, Clock, Eye, AlertTriangle, X, Rocket, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import {
   UpgradeTriggerType,
   trackUpgradeTrigger,
   isDismissed,
   dismissTrigger,
 } from '@/lib/upgradeTracking';
+
 
 interface ProUpgradeCardProps {
   productId: string;
