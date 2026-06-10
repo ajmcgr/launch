@@ -78,6 +78,18 @@ interface CategorySponsor {
   category?: { name: string; slug: string } | null;
 }
 
+interface ProductCampaign {
+  id: string;
+  sponsor_name: string;
+  destination_url: string;
+  start_date: string;
+  end_date: string;
+  enabled: boolean;
+  impressions: number;
+  clicks: number;
+  sponsorship_type: string;
+}
+
 const ctr = (clicks: number, impressions: number) =>
   impressions > 0 ? (clicks / impressions) * 100 : 0;
 
@@ -149,6 +161,43 @@ const Advertising = () => {
       return ((data ?? []) as CategorySponsor[]).filter((s) =>
         identifiers.includes((s.sponsor_name ?? '').toLowerCase())
       );
+    },
+  });
+
+  // Product-level ads (sponsored_products) — owned by user via products.user_id
+  const { data: productCampaigns = [], isLoading: pLoading } = useQuery({
+    queryKey: ['advertising', 'product-ads', user?.id],
+    enabled: !!user,
+    queryFn: async (): Promise<ProductCampaign[]> => {
+      // 1) Find products owned by this user
+      const { data: ownedProducts } = await supabase
+        .from('products')
+        .select('id, name, slug')
+        .eq('owner_id', user!.id);
+      const ownedIds = (ownedProducts ?? []).map((p: any) => p.id);
+      if (ownedIds.length === 0) return [];
+      // 2) Fetch sponsored_products tied to those products
+      const { data, error } = await (supabase as any)
+        .from('sponsored_products')
+        .select('id, product_id, start_date, end_date, sponsorship_type, custom_title, custom_target_url, impressions, clicks')
+        .in('product_id', ownedIds)
+        .order('start_date', { ascending: false });
+      if (error) throw error;
+      const productMap = new Map<string, any>((ownedProducts ?? []).map((p: any) => [p.id, p]));
+      return ((data ?? []) as any[]).map((s) => {
+        const p = productMap.get(s.product_id);
+        return {
+          id: s.id,
+          sponsor_name: s.custom_title || p?.name || 'Product Ad',
+          destination_url: s.custom_target_url || (p?.slug ? `/launch/${p.slug}` : '#'),
+          start_date: s.start_date,
+          end_date: s.end_date,
+          enabled: true,
+          impressions: s.impressions ?? 0,
+          clicks: s.clicks ?? 0,
+          sponsorship_type: s.sponsorship_type,
+        };
+      });
     },
   });
 
