@@ -522,6 +522,32 @@ const Advertising = () => {
             />
 
             <CampaignSection
+              title="Product Ad Slots (Inline + Sidebar Rotation)"
+              empty="No product ad campaigns yet."
+              columns={['Campaign', 'Type', 'Status', 'Start', 'End', 'Destination']}
+              rows={productCampaigns.map((c) => ({
+                key: c.id,
+                cells: [
+                  c.sponsor_name,
+                  <Badge key="t" variant="outline" className="capitalize">{c.sponsorship_type}</Badge>,
+                  <StatusBadge key="s" active={isActive(c)} />,
+                  c.start_date,
+                  c.end_date,
+                  <a
+                    key="u"
+                    href={c.destination_url}
+                    target={c.destination_url.startsWith('http') ? '_blank' : undefined}
+                    rel="noreferrer"
+                    className="text-primary inline-flex items-center gap-1 hover:underline"
+                  >
+                    Open <ExternalLink className="h-3 w-3" />
+                  </a>,
+                ],
+              }))}
+            />
+
+
+            <CampaignSection
               title="Newsletter Sponsorships"
               empty="No newsletter sponsorships yet. Contact sales to book a slot."
               columns={['Sends', 'Opens', 'Open Rate', 'Clicks', 'CTR', 'Campaign Date']}
