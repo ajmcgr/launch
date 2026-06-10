@@ -109,9 +109,11 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
 const ProUpgradeCard = (props: ProUpgradeCardProps) => {
   const { productId, triggerType, variant = 'card' } = props;
   const [dismissed, setDismissed] = useState(false);
+  const [boostLoading, setBoostLoading] = useState(false);
 
   const config = TRIGGER_CONFIG[triggerType];
   const Icon = config.icon;
+  const isBoostCta = triggerType === 'live_window';
 
   useEffect(() => {
     if (isDismissed(triggerType, productId)) {
@@ -133,6 +135,48 @@ const ProUpgradeCard = (props: ProUpgradeCardProps) => {
     trackUpgradeTrigger(productId, triggerType, 'trigger_clicked');
   };
 
+  const handleBoost = async () => {
+    handleClick();
+    setBoostLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please log in first');
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { plan: 'boost', productId },
+      });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (err) {
+      console.error('Boost checkout error:', err);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setBoostLoading(false);
+    }
+  };
+
+  const ctaButton = isBoostCta ? (
+    <Button
+      size={variant === 'inline' ? 'sm' : 'default'}
+      className={variant === 'inline' ? 'h-7 text-xs flex-shrink-0' : 'w-full mt-2'}
+      onClick={handleBoost}
+      disabled={boostLoading}
+    >
+      {boostLoading ? 'Loading...' : config.cta}
+    </Button>
+  ) : (
+    <Button
+      size={variant === 'inline' ? 'sm' : 'default'}
+      className={variant === 'inline' ? 'h-7 text-xs flex-shrink-0' : 'w-full mt-2'}
+      asChild
+      onClick={handleClick}
+    >
+      <Link to="/pricing">{config.cta}</Link>
+    </Button>
+  );
+
   if (variant === 'inline') {
     return (
       <div className={`mt-3 flex items-center gap-3 p-3 rounded-lg border ${config.borderColor} ${config.bgColor}`}>
@@ -140,9 +184,7 @@ const ProUpgradeCard = (props: ProUpgradeCardProps) => {
         <p className="text-sm text-muted-foreground flex-1">
           {config.getMessage(props)}
         </p>
-        <Button size="sm" className="h-7 text-xs flex-shrink-0" asChild onClick={handleClick}>
-          <Link to="/pricing">{config.cta}</Link>
-        </Button>
+        {ctaButton}
         <button onClick={handleDismiss} className="text-muted-foreground/50 hover:text-muted-foreground p-0.5">
           <X className="h-3 w-3" />
         </button>
@@ -165,11 +207,10 @@ const ProUpgradeCard = (props: ProUpgradeCardProps) => {
       <p className="text-xs text-muted-foreground pr-4">
         {config.getMessage(props)}
       </p>
-      <Button size="sm" className="w-full mt-2" asChild onClick={handleClick}>
-        <Link to="/pricing">{config.cta}</Link>
-      </Button>
+      {ctaButton}
     </div>
   );
 };
+
 
 export default ProUpgradeCard;
