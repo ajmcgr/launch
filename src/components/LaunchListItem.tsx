@@ -250,7 +250,7 @@ export const LaunchListItem = ({
             </Button>
           </Link>
           
-          {!sponsored && onVote && (
+          {onVote && (
             <Button
               size="sm"
               variant="outline"

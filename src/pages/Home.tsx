@@ -642,6 +642,17 @@ const Home = () => {
     };
 
     setProducts(prev => prev.map(p => (p.id === productId ? applyOptimistic(p) : p)));
+    setSponsoredProducts(prev => {
+      let changed = false;
+      const next = new Map(prev);
+      prev.forEach((p, pos) => {
+        if (p.id === productId) {
+          next.set(pos, applyOptimistic(p));
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
 
     try {
       const { data: existingVotes, error: existingVotesError } = await supabase
@@ -690,6 +701,17 @@ const Home = () => {
         userVote: revertedUserVote,
       });
       setProducts(prev => prev.map(p => (p.id === productId ? revert(p) : p)));
+      setSponsoredProducts(prev => {
+        let changed = false;
+        const next = new Map(prev);
+        prev.forEach((p, pos) => {
+          if (p.id === productId) {
+            next.set(pos, revert(p));
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
       toast.error('Failed to record vote');
     }
   };
@@ -798,7 +820,7 @@ const Home = () => {
               votes={featuredBoost.netVotes}
               slug={featuredBoost.slug}
               userVote={featuredBoost.userVote}
-              onVote={() => {}}
+              onVote={() => handleVote(featuredBoost.id)}
               launchDate={featuredBoost.launch_date}
               commentCount={featuredBoost.commentCount}
               makers={featuredBoost.makers}
@@ -819,6 +841,7 @@ const Home = () => {
               rank={1}
               sponsored
               sponsoredPosition={0}
+              onVote={handleVote}
             />
           );
         } else {
@@ -829,6 +852,7 @@ const Home = () => {
               rank={1}
               sponsored
               sponsoredPosition={0}
+              onVote={handleVote}
             />
           );
         }
@@ -848,6 +872,7 @@ const Home = () => {
             {...pos1Sponsor}
             sponsored
             sponsoredPosition={1}
+            onVote={handleVote}
           />
         );
       }
@@ -924,6 +949,7 @@ const Home = () => {
                     {...sponsor}
                     sponsored
                     sponsoredPosition={sponsorPosition}
+                    onVote={handleVote}
                   />
                 );
               }

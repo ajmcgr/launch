@@ -150,21 +150,19 @@ export const CompactLaunchListItem = ({
       </div>
       
       {/* Vote button */}
-      {!sponsored && (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onVote();
-          }}
-          className={`flex items-center gap-0.5 text-sm touch-manipulation active:scale-95 transition-colors flex-shrink-0 pt-0.5 ${
-            userVote === 1 ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-          }`}
-        >
-          <ChevronUp className="h-4 w-4" />
-          <span className="font-medium text-xs">{Math.max(0, votes)}</span>
-        </button>
-      )}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onVote();
+        }}
+        className={`flex items-center gap-0.5 text-sm touch-manipulation active:scale-95 transition-colors flex-shrink-0 pt-0.5 ${
+          userVote === 1 ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+        }`}
+      >
+        <ChevronUp className="h-4 w-4" />
+        <span className="font-medium text-xs">{Math.max(0, votes)}</span>
+      </button>
     </div>
   );
 };
