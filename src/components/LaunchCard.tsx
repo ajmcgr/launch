@@ -196,7 +196,7 @@ export const LaunchCard = ({
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-          {!sponsored && onVote && (
+          {onVote && (
             <Button
               size="sm"
               variant="outline"
