@@ -28,7 +28,7 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
     workflow:
       'Describe the change you want, Codex plans and edits the repo, runs tests, and opens a PR you can review and merge.',
     launchPitch:
-      'Built something with Codex? Launch puts your project in front of 500,000++ founders, makers, and indie hackers who care about AI-built tools.',
+      'Built something with Codex? Launch puts your project in front of 500,000+ founders, makers, and indie hackers who care about AI-built tools.',
   },
   {
     slug: 'claude-code',
@@ -66,7 +66,7 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
     workflow:
       'Open AI Studio, prototype your prompt or app, then export code to ship a Gemini-powered product.',
     launchPitch:
-      'Built something with Google AI Studio? Launch puts your Gemini-powered app in front of 500,000++ founders and AI builders.',
+      'Built something with Google AI Studio? Launch puts your Gemini-powered app in front of 500,000+ founders and AI builders.',
   },
   {
     slug: 'lovable',
@@ -85,7 +85,7 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
     workflow:
       'Describe your app, iterate via chat with a live preview, connect a database, and publish — all in one place.',
     launchPitch:
-      'Built something with Lovable? Launch your project to 500,000++ founders, indie hackers, and AI builders looking for what\'s new.',
+      'Built something with Lovable? Launch your project to 500,000+ founders, indie hackers, and AI builders looking for what\'s new.',
   },
   {
     slug: 'bolt-new',
@@ -161,7 +161,7 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
     workflow:
       'Use Replit Agent to spin up an app from a prompt, edit it live in the cloud IDE, and deploy with one click.',
     launchPitch:
-      'Built something on Replit? Launch gets your project discovered by 500,000++ founders, makers, and indie hackers.',
+      'Built something on Replit? Launch gets your project discovered by 500,000+ founders, makers, and indie hackers.',
   },
   {
     slug: 'v0',
@@ -199,7 +199,7 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
     workflow:
       'Describe your mobile app, preview it instantly on your device, iterate via chat, and publish to the app stores.',
     launchPitch:
-      'Shipped a mobile app with Rork? Launch helps you reach 500,000++ founders and indie makers hunting for the next great app.',
+      'Shipped a mobile app with Rork? Launch helps you reach 500,000+ founders and indie makers hunting for the next great app.',
   },
   {
     slug: 'vibecode',
@@ -237,7 +237,7 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
     workflow:
       'Describe the app, let Shipper scaffold and iterate, then push it live.',
     launchPitch:
-      'Built something with Shipper? Launch your product to 500,000++ founders, makers, and indie hackers ready to try it.',
+      'Built something with Shipper? Launch your product to 500,000+ founders, makers, and indie hackers ready to try it.',
   },
 ];
 
