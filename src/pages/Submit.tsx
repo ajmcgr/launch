@@ -1592,7 +1592,7 @@ const Submit = () => {
             {isRescheduling ? 'Reschedule Launch' : 'Submit'}
           </h1>
           <p className="text-muted-foreground mb-1">
-            {isRescheduling ? 'Pick a new launch date.' : 'Launch your thing to 50,000+ vibe coders.'}
+            {isRescheduling ? 'Pick a new launch date.' : 'Launch your thing to 500,000++ vibe coders.'}
           </p>
           
         </div>
