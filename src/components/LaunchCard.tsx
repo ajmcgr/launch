@@ -35,7 +35,7 @@ interface LaunchCardProps {
   sponsored?: boolean;
   sponsoredPosition?: number;
   submissionType?: 'founder' | 'community' | null;
-  onVote: (productId: string) => void;
+  onVote?: (productId: string) => void;
   showFollowButton?: boolean;
   isFollowing?: boolean;
   onFollow?: (productId: string) => void;
@@ -196,6 +196,7 @@ export const LaunchCard = ({
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
+          {!sponsored && onVote && (
             <Button
               size="sm"
               variant="outline"
@@ -209,6 +210,7 @@ export const LaunchCard = ({
               <ArrowUp className={`h-4 w-4 [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`} strokeWidth={2.5} />
               <span className={`font-bold text-sm [@media(hover:hover)]:group-hover:text-primary-foreground ${userVote === 1 ? 'text-primary' : ''}`}>{Math.max(0, netVotes)}</span>
             </Button>
+          )}
             <div className="flex -space-x-2">
               {makers.filter(m => m && m.username).slice(0, 3).map((maker) => (
                 <Link 
