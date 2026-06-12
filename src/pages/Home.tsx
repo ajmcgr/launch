@@ -642,6 +642,17 @@ const Home = () => {
     };
 
     setProducts(prev => prev.map(p => (p.id === productId ? applyOptimistic(p) : p)));
+    setSponsoredProducts(prev => {
+      let changed = false;
+      const next = new Map(prev);
+      prev.forEach((p, pos) => {
+        if (p.id === productId) {
+          next.set(pos, applyOptimistic(p));
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
 
     try {
       const { data: existingVotes, error: existingVotesError } = await supabase
