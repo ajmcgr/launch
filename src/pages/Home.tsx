@@ -630,19 +630,29 @@ const Home = () => {
     let voteDelta = 0;
     let revertedUserVote: 1 | null = null;
 
-    setProducts(prev => prev.map(p => {
-      if (p.id !== productId) return p;
-
+    const applyOptimistic = (p: Product): Product => {
       const isRemovingVote = p.userVote === 1;
       voteDelta = isRemovingVote ? -1 : 1;
       revertedUserVote = isRemovingVote ? 1 : null;
-
       return {
         ...p,
-        netVotes: p.netVotes + voteDelta,
+        netVotes: Math.max(0, p.netVotes + voteDelta),
         userVote: isRemovingVote ? null : 1,
       };
-    }));
+    };
+
+    setProducts(prev => prev.map(p => (p.id === productId ? applyOptimistic(p) : p)));
+    setSponsoredProducts(prev => {
+      let changed = false;
+      const next = new Map(prev);
+      next.forEach((p, key) => {
+        if (p.id === productId) {
+          next.set(key, applyOptimistic(p));
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
 
     try {
       const { data: existingVotes, error: existingVotesError } = await supabase
@@ -685,15 +695,23 @@ const Home = () => {
       }
     } catch (error) {
       console.error('Error voting:', error);
-      setProducts(prev => prev.map(p => {
-        if (p.id !== productId) return p;
-
-        return {
-          ...p,
-          netVotes: Math.max(0, p.netVotes - voteDelta),
-          userVote: revertedUserVote,
-        };
-      }));
+      const revert = (p: Product): Product => ({
+        ...p,
+        netVotes: Math.max(0, p.netVotes - voteDelta),
+        userVote: revertedUserVote,
+      });
+      setProducts(prev => prev.map(p => (p.id === productId ? revert(p) : p)));
+      setSponsoredProducts(prev => {
+        let changed = false;
+        const next = new Map(prev);
+        next.forEach((p, key) => {
+          if (p.id === productId) {
+            next.set(key, revert(p));
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
       toast.error('Failed to record vote');
     }
   };
