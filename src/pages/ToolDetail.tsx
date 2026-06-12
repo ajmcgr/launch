@@ -147,7 +147,7 @@ const ToolDetail = () => {
               <CardContent className="p-6 text-center space-y-3">
                 <h3 className="text-xl font-semibold">Ready to actually launch?</h3>
                 <p className="text-muted-foreground text-sm">
-                  Submit your product to Launch and get in front of 50,000+ founders, makers, and indie hackers.
+                  Submit your product to Launch and get in front of 500,000++ founders, makers, and indie hackers.
                 </p>
                 <Button asChild>
                   <Link to="/submit">Launch your product free</Link>
