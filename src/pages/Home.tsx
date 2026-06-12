@@ -841,6 +841,7 @@ const Home = () => {
               rank={1}
               sponsored
               sponsoredPosition={0}
+              onVote={handleVote}
             />
           );
         } else {
