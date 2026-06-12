@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { weightedShuffle } from '@/lib/weightedPick';
-import { toast } from 'sonner';
-
-
 
 interface SponsoredItem {
   key: string;
@@ -15,9 +11,6 @@ interface SponsoredItem {
   name: string;
   tagline: string;
   iconUrl?: string;
-  productId?: string;
-  netVotes?: number;
-  userVote?: 1 | null;
 }
 
 const trackAdClick = (item: SponsoredItem) => {
@@ -66,7 +59,7 @@ const SidebarSponsoredAd = () => {
       if (data && data.length > 0) {
         // Weighted shuffle across ALL active ads, then take 2.
         const shuffled = weightedShuffle(data as any[]).slice(0, 2);
-        let items: SponsoredItem[] = shuffled
+        const items: SponsoredItem[] = shuffled
           .map((s: any): SponsoredItem | null => {
             if (s.ad_type === 'custom' && s.custom_target_url) {
               return {
@@ -90,27 +83,9 @@ const SidebarSponsoredAd = () => {
               name: p.name,
               tagline: p.tagline,
               iconUrl: icon,
-              productId: p.id,
             };
           })
           .filter((x: SponsoredItem | null): x is SponsoredItem => x !== null);
-
-        // Fetch vote counts + current user's votes for product-type ads
-        const productIds = items.map((i) => i.productId).filter(Boolean) as string[];
-        if (productIds.length) {
-          const { data: { user } } = await supabase.auth.getUser();
-          const [counts, myVotes] = await Promise.all([
-            supabase.from('product_vote_counts').select('product_id, net_votes').in('product_id', productIds),
-            user
-              ? supabase.from('votes').select('product_id').eq('user_id', user.id).eq('value', 1).in('product_id', productIds)
-              : Promise.resolve({ data: [] as any[] }),
-          ]);
-          const cMap = new Map<string, number>(((counts.data as any[]) || []).map((v) => [v.product_id, v.net_votes || 0]));
-          const vMap = new Set<string>(((myVotes.data as any[]) || []).map((v) => v.product_id));
-          items = items.map((i) => i.productId
-            ? { ...i, netVotes: cMap.get(i.productId) || 0, userVote: vMap.has(i.productId) ? 1 : null }
-            : i);
-        }
 
         setSponsored(items);
       }
@@ -118,44 +93,6 @@ const SidebarSponsoredAd = () => {
 
     fetchSponsored();
   }, []);
-
-  const handleVote = async (item: SponsoredItem, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!item.productId) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast('Sign up to upvote', {
-        action: { label: 'Sign up', onClick: () => { window.location.href = '/auth?signup=true'; } },
-      });
-      return;
-    }
-    const wasVoted = item.userVote === 1;
-    // Optimistic
-    setSponsored((prev) => prev.map((i) => i.key === item.key
-      ? { ...i, userVote: wasVoted ? null : 1, netVotes: Math.max(0, (i.netVotes || 0) + (wasVoted ? -1 : 1)) }
-      : i));
-    try {
-      const { data: existing } = await supabase
-        .from('votes').select('id, value')
-        .eq('product_id', item.productId).eq('user_id', user.id).maybeSingle();
-      if (existing) {
-        if (existing.value === 1) {
-          await supabase.from('votes').delete().eq('id', existing.id);
-        } else {
-          await supabase.from('votes').update({ value: 1 }).eq('id', existing.id);
-        }
-      } else {
-        await supabase.from('votes').insert({ product_id: item.productId, user_id: user.id, value: 1 });
-      }
-    } catch (err) {
-      // Revert
-      setSponsored((prev) => prev.map((i) => i.key === item.key
-        ? { ...i, userVote: wasVoted ? 1 : null, netVotes: Math.max(0, (i.netVotes || 0) + (wasVoted ? 1 : -1)) }
-        : i));
-      toast.error('Failed to vote');
-    }
-  };
 
   if (sponsored.length === 0) return null;
 
@@ -194,21 +131,6 @@ const SidebarSponsoredAd = () => {
                   </p>
                 )}
               </div>
-              {item.adType === 'product' && (
-                <button
-                  type="button"
-                  onClick={(e) => handleVote(item, e)}
-                  className={`flex flex-col items-center justify-center gap-0.5 h-10 w-10 rounded-md border-2 transition-colors flex-shrink-0 ${
-                    item.userVote === 1
-                      ? 'border-primary text-primary'
-                      : 'border-muted-foreground/20 hover:border-primary hover:text-primary'
-                  }`}
-                  aria-label={`Upvote ${item.name}`}
-                >
-                  <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
-                  <span className="text-[11px] font-bold leading-none">{Math.max(0, item.netVotes || 0)}</span>
-                </button>
-              )}
             </>
           );
           const cls = 'flex items-start gap-3 p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors group';
