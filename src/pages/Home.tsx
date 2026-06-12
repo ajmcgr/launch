@@ -949,6 +949,7 @@ const Home = () => {
                     {...sponsor}
                     sponsored
                     sponsoredPosition={sponsorPosition}
+                    onVote={handleVote}
                   />
                 );
               }
