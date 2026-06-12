@@ -820,7 +820,7 @@ const Home = () => {
               votes={featuredBoost.netVotes}
               slug={featuredBoost.slug}
               userVote={featuredBoost.userVote}
-              onVote={() => {}}
+              onVote={() => handleVote(featuredBoost.id)}
               launchDate={featuredBoost.launch_date}
               commentCount={featuredBoost.commentCount}
               makers={featuredBoost.makers}
