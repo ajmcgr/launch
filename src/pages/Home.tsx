@@ -695,15 +695,23 @@ const Home = () => {
       }
     } catch (error) {
       console.error('Error voting:', error);
-      setProducts(prev => prev.map(p => {
-        if (p.id !== productId) return p;
-
-        return {
-          ...p,
-          netVotes: Math.max(0, p.netVotes - voteDelta),
-          userVote: revertedUserVote,
-        };
-      }));
+      const revert = (p: Product): Product => ({
+        ...p,
+        netVotes: Math.max(0, p.netVotes - voteDelta),
+        userVote: revertedUserVote,
+      });
+      setProducts(prev => prev.map(p => (p.id === productId ? revert(p) : p)));
+      setSponsoredProducts(prev => {
+        let changed = false;
+        const next = new Map(prev);
+        next.forEach((p, key) => {
+          if (p.id === productId) {
+            next.set(key, revert(p));
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
       toast.error('Failed to record vote');
     }
   };
