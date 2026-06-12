@@ -701,6 +701,17 @@ const Home = () => {
         userVote: revertedUserVote,
       });
       setProducts(prev => prev.map(p => (p.id === productId ? revert(p) : p)));
+      setSponsoredProducts(prev => {
+        let changed = false;
+        const next = new Map(prev);
+        prev.forEach((p, pos) => {
+          if (p.id === productId) {
+            next.set(pos, revert(p));
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
       toast.error('Failed to record vote');
     }
   };
