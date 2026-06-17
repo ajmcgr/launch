@@ -453,7 +453,7 @@ const ProductAnalytics = () => {
             </CardHeader>
             <CardContent>
               {topTrafficDays.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Traffic data will appear as visitors arrive.</p>
+                <p className="text-sm text-muted-foreground">Traffic data will appear as monthly active users arrive.</p>
               ) : (
                 <ul className="space-y-2">
                   {topTrafficDays.map((d, i) => (
@@ -582,7 +582,7 @@ const ProductAnalytics = () => {
               <Star className="h-5 w-5 text-primary mt-0.5" />
               <div>
                 <p className="font-medium text-sm">Feature on homepage</p>
-                <p className="text-xs text-muted-foreground">Sponsored homepage slot, seen by every visitor.</p>
+                <p className="text-xs text-muted-foreground">Sponsored homepage slot, seen by every monthly active user.</p>
               </div>
             </Link>
             <Link to="/advertise" className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3">

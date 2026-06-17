@@ -824,7 +824,7 @@ const Advertise = () => {
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground mt-3">
-                      Appears at the top of the homepage in a dedicated "Sponsored" section, visible to all visitors.
+                      Appears at the top of the homepage in a dedicated "Sponsored" section, visible to all monthly active users.
                     </p>
                   </CardContent>
                 </Card>

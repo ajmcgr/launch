@@ -375,7 +375,7 @@ const Advertising = () => {
             {[
               {
                 title: 'Homepage Sponsorships',
-                desc: 'Top-of-feed placement seen by every visitor.',
+                desc: 'Top-of-feed placement seen by every monthly active user.',
               },
               {
                 title: 'Category Sponsorships',
