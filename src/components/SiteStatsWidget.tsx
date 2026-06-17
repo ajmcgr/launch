@@ -57,7 +57,7 @@ export const SiteStatsWidget = () => {
             <li className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-3.5 w-3.5" />
-                Visitors
+                Monthly active users
               </span>
               <span className="font-semibold text-foreground">{formatStat(data.visitorsMTD!)}</span>
             </li>
@@ -98,7 +98,7 @@ export const SiteStatsWidget = () => {
       )}
       {!isLoading && hasGAData && (
         <p className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
-          Visitor data via Google Analytics
+          Monthly active user data via Google Analytics
         </p>
       )}
     </div>

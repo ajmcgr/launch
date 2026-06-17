@@ -89,7 +89,7 @@ const MediaKit = () => {
                     {stats?.visitorsMTD ? formatStat(stats.visitorsMTD) : '—'}
                   </p>
                 )}
-                <p className="text-sm text-muted-foreground font-medium mt-1">Visitors (30d)</p>
+                <p className="text-sm text-muted-foreground font-medium mt-1">Monthly active users (30d)</p>
               </div>
               <div className="bg-card rounded-xl p-6 text-center border border-border shadow-sm">
                 {statsLoading ? (
