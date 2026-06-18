@@ -672,7 +672,23 @@ Deno.serve(async (req) => {
         console.log('Processing boost purchase for product:', metadata.product_id);
 
         const now = new Date();
-        const endsAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+        // If the product is scheduled in the future, defer the boost so it
+        // activates at launch time (not immediately on purchase).
+        const { data: boostProduct } = await supabaseClient
+          .from('products')
+          .select('launch_date, status')
+          .eq('id', metadata.product_id)
+          .maybeSingle();
+
+        let startsAt = now;
+        if (boostProduct?.launch_date) {
+          const launchAt = new Date(boostProduct.launch_date);
+          if (launchAt.getTime() > now.getTime()) {
+            startsAt = launchAt;
+          }
+        }
+        const endsAt = new Date(startsAt.getTime() + 24 * 60 * 60 * 1000);
 
         const { error: boostError } = await supabaseClient
           .from('sponsored_products')
@@ -680,18 +696,19 @@ Deno.serve(async (req) => {
             product_id: metadata.product_id,
             position: 0,
             sponsorship_type: 'boost',
-            // Date columns kept for compatibility with other filters;
-            // boost_ends_at is the authoritative 24h expiry.
-            start_date: now.toISOString().split('T')[0],
+            // start_date gates day-level display; boost_ends_at is the
+            // authoritative 24h expiry (measured from launch time when
+            // the product is scheduled for the future).
+            start_date: startsAt.toISOString().split('T')[0],
             end_date: endsAt.toISOString().split('T')[0],
             boost_ends_at: endsAt.toISOString(),
           });
-        
+
         if (boostError) {
           console.error('Error creating boost:', boostError);
           throw boostError;
         }
-        
+
         // Create order record
         await supabaseClient
           .from('orders')
@@ -701,9 +718,9 @@ Deno.serve(async (req) => {
             stripe_session_id: session.id,
             plan: 'boost',
           });
-        
-        console.log('Boost activated for product:', metadata.product_id);
-        
+
+        console.log('Boost scheduled for product:', metadata.product_id, 'starts:', startsAt.toISOString(), 'ends:', endsAt.toISOString());
+
         return new Response(JSON.stringify({ received: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
