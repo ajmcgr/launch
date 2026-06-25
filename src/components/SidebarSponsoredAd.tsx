@@ -57,8 +57,8 @@ const SidebarSponsoredAd = () => {
         .in('sponsorship_type', ['website', 'combined']);
 
       if (data && data.length > 0) {
-        // Weighted shuffle across ALL active ads, then take 2.
-        const shuffled = weightedShuffle(data as any[]).slice(0, 2);
+        // Weighted shuffle across ALL active ads, then take 6.
+        const shuffled = weightedShuffle(data as any[]).slice(0, 6);
         const items: SponsoredItem[] = shuffled
           .map((s: any): SponsoredItem | null => {
             if (s.ad_type === 'custom' && s.custom_target_url) {
