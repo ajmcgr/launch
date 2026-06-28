@@ -23,15 +23,15 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   const [copied, setCopied] = useState<string | null>(null);
   
   const productUrl = `https://trylaunch.ai/launch/${productSlug}`;
-  const ogShareUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${productSlug}`;
+  const ogShareUrl = productUrl;
   
-  const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${ogShareUrl}\n\ncc @trylaunchai`;
+  const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${productUrl}\n\ncc @trylaunchai`;
   
-  const linkedInShareText = `🚀 Excited to announce: I just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nWould love your support - check it out and let me know what you think!\n\n${ogShareUrl}`;
+  const linkedInShareText = `🚀 Excited to announce: I just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nWould love your support - check it out and let me know what you think!\n\n${productUrl}`;
   
   const redditTitle = `🚀 Just launched ${productName}${productTagline ? ` - ${productTagline}` : ''}`;
   
-  const ctaText = `🚀 Check out ${productName} on Launch - ${ogShareUrl}`;
+  const ctaText = `🚀 Check out ${productName} on Launch - ${productUrl}`;
   
 
   const handleXShare = () => {
