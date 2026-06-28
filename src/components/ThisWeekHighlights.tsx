@@ -10,7 +10,7 @@ import defaultProductIcon from '@/assets/default-product-icon.png';
 import { toast } from 'sonner';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { getWeek } from 'date-fns';
-import bioBanner from '@/assets/sponsors/bio-banner.png';
+import HomepageSponsorBanners from '@/components/HomepageSponsorBanners';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
