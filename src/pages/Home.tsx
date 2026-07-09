@@ -163,6 +163,7 @@ const Home = () => {
           product_id,
           sponsorship_type,
           ad_type,
+          weight,
           custom_image_url,
           custom_title,
           custom_description,
