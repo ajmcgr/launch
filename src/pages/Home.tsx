@@ -42,6 +42,7 @@ import { CommunityCallout } from '@/components/CommunityCallout';
 import BuiltWithSection from '@/components/BuiltWithSection';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
+import { weightedPick } from '@/lib/weightedPick';
 
 interface Product {
   id: string;
