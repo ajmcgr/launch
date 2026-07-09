@@ -991,7 +991,7 @@ Deno.serve(async (req) => {
                         <li>You'll receive an email confirmation when it's live</li>
                       </ul>
                       <p style="text-align: center; margin-top: 24px;">
-                        <a href="${productUrl}" class="button">View Your Product</a>
+                        <a href="${productUrl}" class="button" style="background:#2563eb;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:500;display:inline-block;">View Your Product</a>
                       </p>
                     </div>
                     <div class="footer">
