@@ -197,17 +197,22 @@ const Home = () => {
         return s.boost_ends_at && new Date(s.boost_ends_at).toISOString() > nowIso;
       });
 
-      // Group by position and weighted-pick one ad per slot so multiple
-      // active ads at the same position rotate fairly on each page load.
-      const byPosition = new Map<number, any[]>();
-      activeRows.forEach((s) => {
-        const arr = byPosition.get(s.position) || [];
-        arr.push(s);
-        byPosition.set(s.position, arr);
+      // Boost (position 0) is pinned and always keeps its slot.
+      const boostRows = activeRows.filter((s) => s.sponsorship_type === 'boost');
+
+      // All other active website/combined ads are pooled together and
+      // weighted-shuffled across the visible feed slots (1, 2, 3, 4) so
+      // every active ad gets rotation exposure regardless of the position
+      // it was originally booked at.
+      const pool = weightedShuffle(activeRows.filter((s) => s.sponsorship_type !== 'boost'));
+      const slotAssignments: any[] = [];
+      const visibleSlots = [1, 2, 3, 4];
+      visibleSlots.forEach((slot, idx) => {
+        const row = pool[idx];
+        if (row) slotAssignments.push({ ...row, position: slot });
       });
-      const sponsoredRows: any[] = Array.from(byPosition.values())
-        .map((arr) => (arr.length === 1 ? arr[0] : weightedPick(arr)))
-        .filter(Boolean);
+
+      const sponsoredRows: any[] = [...boostRows, ...slotAssignments];
 
       if (sponsoredRows.length > 0) {
         const { data: categories } = await supabase
