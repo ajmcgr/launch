@@ -616,6 +616,9 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
             {sectionIndex === 2 && (
               <HomepageSponsorBanners limit={1} offset={2} fallbackMedia />
             )}
+            {(sectionIndex === 1 || sectionIndex === 3) && (
+              <InlineAdSlot />
+            )}
             <div key={section.title}>
               <h3 className="text-lg font-semibold mb-4">{section.title}</h3>
               {section.isLoading ? (
