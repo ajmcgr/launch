@@ -965,7 +965,7 @@ Deno.serve(async (req) => {
                   .content p { margin: 0 0 16px 0; color: #4b5563; }
                   .highlight { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; border: 1px solid #e5e7eb; }
                   .date { font-size: 18px; font-weight: 600; color: #111; margin: 8px 0 0 0; }
-                  .button { display: inline-block; background: #111; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
+                  .button { display: inline-block; background: #2563eb; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
                   ul { color: #4b5563; padding-left: 20px; }
                   li { margin-bottom: 8px; }
                   .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
@@ -991,7 +991,7 @@ Deno.serve(async (req) => {
                         <li>You'll receive an email confirmation when it's live</li>
                       </ul>
                       <p style="text-align: center; margin-top: 24px;">
-                        <a href="${productUrl}" class="button">View Your Product</a>
+                        <a href="${productUrl}" class="button" style="background:#2563eb;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:500;display:inline-block;">View Your Product</a>
                       </p>
                     </div>
                     <div class="footer">

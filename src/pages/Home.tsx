@@ -42,6 +42,7 @@ import { CommunityCallout } from '@/components/CommunityCallout';
 import BuiltWithSection from '@/components/BuiltWithSection';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
+import { weightedPick } from '@/lib/weightedPick';
 
 interface Product {
   id: string;
@@ -163,6 +164,7 @@ const Home = () => {
           product_id,
           sponsorship_type,
           ad_type,
+          weight,
           custom_image_url,
           custom_title,
           custom_description,
@@ -190,10 +192,22 @@ const Home = () => {
 
       // Boost rows have a precise 24h expiry — enforce it client-side so
       // boosts never overrun their window even if end_date covers the day.
-      const sponsoredRows: any[] = ((sponsoredData as any[]) || []).filter((s) => {
+      const activeRows: any[] = ((sponsoredData as any[]) || []).filter((s) => {
         if (s.sponsorship_type !== 'boost') return true;
         return s.boost_ends_at && new Date(s.boost_ends_at).toISOString() > nowIso;
       });
+
+      // Group by position and weighted-pick one ad per slot so multiple
+      // active ads at the same position rotate fairly on each page load.
+      const byPosition = new Map<number, any[]>();
+      activeRows.forEach((s) => {
+        const arr = byPosition.get(s.position) || [];
+        arr.push(s);
+        byPosition.set(s.position, arr);
+      });
+      const sponsoredRows: any[] = Array.from(byPosition.values())
+        .map((arr) => (arr.length === 1 ? arr[0] : weightedPick(arr)))
+        .filter(Boolean);
 
       if (sponsoredRows.length > 0) {
         const { data: categories } = await supabase

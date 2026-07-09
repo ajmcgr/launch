@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { getWeek } from 'date-fns';
 import HomepageSponsorBanners from '@/components/HomepageSponsorBanners';
+import InlineAdSlot from '@/components/InlineAdSlot';
 import { LaunchListItem } from '@/components/LaunchListItem';
 import { LaunchCard } from '@/components/LaunchCard';
 import { CompactLaunchListItem } from '@/components/CompactLaunchListItem';
@@ -614,6 +615,9 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
             <React.Fragment key={section.title}>
             {sectionIndex === 2 && (
               <HomepageSponsorBanners limit={1} offset={2} fallbackMedia />
+            )}
+            {(sectionIndex === 1 || sectionIndex === 3) && (
+              <InlineAdSlot />
             )}
             <div key={section.title}>
               <h3 className="text-lg font-semibold mb-4">{section.title}</h3>
