@@ -73,6 +73,19 @@ const VibeCodeYourFuture = () => {
                 <strong>Stop applying, and start building. You've got this.</strong>
               </p>
 
+              <p className="text-gray-800">
+                PS - I created a free playbook here to help you get started.{' '}
+                <a
+                  href="https://docs.google.com/presentation/d/19J_RAtPgpW_Xx5Uk5HsJhiHJJ1ajtCB-7AYB_zLT6f4/edit?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  Check it out here
+                </a>
+                .
+              </p>
+
               <div className="mt-12">
                 <div className="flex flex-col items-start">
                   <img
