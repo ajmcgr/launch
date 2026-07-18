@@ -74,16 +74,16 @@ const VibeCodeYourFuture = () => {
               </p>
 
               <p className="text-gray-800">
-                PS - I created a free playbook here to help you get started.{' '}
+                PS - I created a free playbook here ({' '}
                 <a
                   href="https://docs.google.com/presentation/d/19J_RAtPgpW_Xx5Uk5HsJhiHJJ1ajtCB-7AYB_zLT6f4/edit?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  Check it out here
+                  https://docs.google.com/presentation/d/19J_RAtPgpW_Xx5Uk5HsJhiHJJ1ajtCB-7AYB_zLT6f4/edit?usp=sharing
                 </a>
-                .
+                ) to help you get started
               </p>
 
               <div className="mt-12">
