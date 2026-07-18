@@ -83,7 +83,7 @@ const VibeCodeYourFuture = () => {
                 >
                   here
                 </a>{' '}
-                (https://docs.google.com/presentation/d/19J_RAtPgpW_Xx5Uk5HsJhiHJJ1ajtCB-7AYB_zLT6f4/edit?usp=sharing) to help you get started
+                to help you get started
               </p>
 
               <div className="mt-12">
