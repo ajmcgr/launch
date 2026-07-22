@@ -93,7 +93,7 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = 
       {sliced.map(s => (
         <div key={s.id} className="py-6 flex flex-col items-center w-full">
           <a
-            href={s.destination_url}
+            href={resolveHref(s.destination_url)}
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => handleClick(s.id)}
