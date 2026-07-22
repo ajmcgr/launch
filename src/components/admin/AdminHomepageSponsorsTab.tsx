@@ -67,8 +67,11 @@ export const AdminHomepageSponsorsTab = () => {
       toast.error('Sponsor name, banner, and destination URL are required');
       return;
     }
+    const normalizedUrl = /^https?:\/\//i.test(form.destination_url.trim())
+      ? form.destination_url.trim()
+      : `https://${form.destination_url.trim().replace(/^\/+/, '')}`;
     setSaving(true);
-    const { error } = await (supabase as any).from('homepage_sponsors').insert([form]);
+    const { error } = await (supabase as any).from('homepage_sponsors').insert([{ ...form, destination_url: normalizedUrl }]);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     toast.success('Created homepage sponsorship');
