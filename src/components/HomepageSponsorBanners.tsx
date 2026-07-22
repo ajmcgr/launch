@@ -20,6 +20,10 @@ const assetMap: Record<string, string> = {
   '/src/assets/sponsors/roach-banner.png': roachBanner,
 };
 const resolveSrc = (url: string) => assetMap[url] || url;
+const resolveHref = (url: string) => {
+  if (!url) return '#';
+  return /^https?:\/\//i.test(url) ? url : `https://${url.replace(/^\/+/, '')}`;
+};
 
 interface Props {
   /** Optional filter (e.g. only the first banner, or by position range) */
