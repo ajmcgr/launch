@@ -20,6 +20,10 @@ const assetMap: Record<string, string> = {
   '/src/assets/sponsors/roach-banner.png': roachBanner,
 };
 const resolveSrc = (url: string) => assetMap[url] || url;
+const resolveHref = (url: string) => {
+  if (!url) return '#';
+  return /^https?:\/\//i.test(url) ? url : `https://${url.replace(/^\/+/, '')}`;
+};
 
 interface Props {
   /** Optional filter (e.g. only the first banner, or by position range) */
@@ -89,7 +93,7 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = 
       {sliced.map(s => (
         <div key={s.id} className="py-6 flex flex-col items-center w-full">
           <a
-            href={s.destination_url}
+            href={resolveHref(s.destination_url)}
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => handleClick(s.id)}
