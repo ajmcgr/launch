@@ -220,7 +220,7 @@ const Pricing = () => {
               </div>
 
               <Button asChild className="w-full" size="lg">
-                <Link to="/submit">Start Grow</Link>
+                <Link to="/submit">Get Started</Link>
               </Button>
             </CardContent>
           </Card>
