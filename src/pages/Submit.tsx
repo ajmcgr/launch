@@ -142,7 +142,7 @@ const Submit = () => {
       couponCode: '',
       couponDescription: '',
       twitterHandle: '',
-      plan: 'free' as 'free' | 'skip' | 'relaunch',
+      plan: 'free' as 'free' | 'skip' | 'relaunch' | 'grow',
       selectedDate: null as string | null,
       submissionType: null as 'founder' | 'community' | null,
     };
