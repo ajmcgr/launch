@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +12,8 @@ import jakeAvatar from '@/assets/jake-avatar.jpg';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 
 const FEATURE_CONFIG = [
