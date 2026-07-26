@@ -181,7 +181,7 @@ const Pricing = () => {
             <CardContent className="space-y-4">
               <div className="space-y-1">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold">$79</span>
+                  <span className="text-3xl font-bold">$199</span>
                   <span className="text-sm text-muted-foreground">USD</span>
                 </div>
               </div>
