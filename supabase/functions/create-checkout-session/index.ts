@@ -130,8 +130,9 @@ serve(async (req) => {
       let priceId: string;
       
       // Check if we have an existing price for this product
+      const lookupKey = selectedPlan.lookupKey || 'launch_pass_yearly';
       const prices = await stripe.prices.list({
-        lookup_keys: ['launch_pass_yearly'],
+        lookup_keys: [lookupKey],
         limit: 1,
       });
       
@@ -140,8 +141,8 @@ serve(async (req) => {
       } else {
         // Create the product and price if they don't exist
         const product = await stripe.products.create({
-          name: 'Launch Pass',
-          description: 'Unlimited access to all Launch features for one year',
+          name: selectedPlan.productName || 'Launch Pass',
+          description: selectedPlan.productDescription || 'Unlimited access to all Launch features for one year',
         });
         
         const price = await stripe.prices.create({
@@ -149,9 +150,9 @@ serve(async (req) => {
           unit_amount: selectedPlan.amount,
           currency: 'usd',
           recurring: {
-            interval: 'year',
+            interval: selectedPlan.interval || 'year',
           },
-          lookup_key: 'launch_pass_yearly',
+          lookup_key: lookupKey,
         });
         
         priceId = price.id;
