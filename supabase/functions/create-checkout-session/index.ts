@@ -110,14 +110,13 @@ serve(async (req) => {
     
     // Set success/cancel URLs based on plan type
     const isAnnualAccess = plan === 'annual_access';
-    const isGrowth = plan === 'growth';
     const isBoost = plan === 'boost';
-    const successUrl = (isAnnualAccess || isGrowth)
-      ? `${productionUrl}/settings?tab=billing&success=${isGrowth ? 'growth' : 'annual'}`
+    const successUrl = isAnnualAccess
+      ? `${productionUrl}/settings?tab=billing&success=annual`
       : isBoost
         ? `${productionUrl}/my-products?boost=success`
         : `${productionUrl}/my-products?success=true`;
-    const cancelUrl = (isAnnualAccess || isGrowth)
+    const cancelUrl = isAnnualAccess
       ? `${productionUrl}/settings?tab=billing&canceled=true`
       : isBoost
         ? `${productionUrl}/my-products`
