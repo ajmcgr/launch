@@ -25,28 +25,6 @@ const FEATURE_CONFIG = [
 ] as const;
 
 const Pricing = () => {
-  const [growthLoading, setGrowthLoading] = useState(false);
-
-  const handleGrowthCheckout = async () => {
-    setGrowthLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error('Please log in to subscribe');
-        return;
-      }
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { plan: 'growth' },
-      });
-      if (error) throw error;
-      if (data?.url) window.location.href = data.url;
-    } catch (err) {
-      console.error('Growth checkout error:', err);
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setGrowthLoading(false);
-    }
-  };
 
   return (
     <>
