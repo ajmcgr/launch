@@ -2198,7 +2198,7 @@ const Submit = () => {
                   )}
                 
                 {/* Date picker - only for 'skip' plan OR (rescheduling with skip/pass) */}
-                {!isLoadingProduct && (formData.plan === 'skip' || (isRescheduling && (existingPlan === 'skip' || hasActivePass))) && (
+                {!isLoadingProduct && (formData.plan === 'skip' || formData.plan === 'grow' || (isRescheduling && (existingPlan === 'skip' || hasActivePass))) && (
                   <div className="space-y-4 mt-6">
                     {/* Launch Now Option */}
                     <div className="p-4 border rounded-lg bg-primary/5 border-primary/20">
