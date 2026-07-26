@@ -2122,9 +2122,9 @@ const Submit = () => {
                          </div>
                        )}
 
-                       {/* Plan cards grid - 2 columns: Free | Pro */}
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                         {['free', 'skip'].map((planId) => {
+                       {/* Plan cards grid - 3 columns: Free | Pro | Grow */}
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                         {['free', 'skip', 'grow'].map((planId) => {
                            const plan = filteredPlans.find(p => p.id === planId);
                            if (!plan) return null;
                            
