@@ -68,7 +68,7 @@ export const PRICING_PLANS = [
   {
     id: 'grow',
     name: 'Grow',
-    price: 79,
+    price: 199,
     description: 'Pro + directory submissions',
     features: {
       listing: true,
