@@ -1275,7 +1275,7 @@ const Submit = () => {
         
         // Determine launch date
         let launchDate: Date;
-        if (formData.plan === 'skip' && formData.selectedDate) {
+        if ((formData.plan === 'skip' || formData.plan === 'grow') && formData.selectedDate) {
           launchDate = new Date(formData.selectedDate);
         } else if (formData.plan === 'relaunch') {
           launchDate = new Date();
