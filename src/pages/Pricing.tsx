@@ -69,7 +69,7 @@ const Pricing = () => {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {PRICING_PLANS.filter(plan => plan.id !== 'relaunch' && plan.id !== 'join').map((plan) => (
             <Card 
               key={plan.id} 
@@ -166,6 +166,74 @@ const Pricing = () => {
               </CardContent>
             </Card>
           ))}
+
+          {/* Growth Card */}
+          <Card className="relative hover:shadow-lg transition-shadow border-primary shadow-md">
+            <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
+              Most Popular
+            </Badge>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl">Growth</CardTitle>
+              <CardDescription className="text-sm">Pro + directory submissions</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold">$79</span>
+                  <span className="text-sm text-muted-foreground">/ month</span>
+                </div>
+              </div>
+
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span className="font-medium">Everything in Pro, plus:</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Submit your startup to 120+ startup directories</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Manual submission by our team</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>High-quality backlink opportunities</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Increased launch visibility</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Save 20+ hours of manual work</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>One-click submission request</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Progress tracking</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>Confirmation when submissions are complete</span>
+                </li>
+              </ul>
+
+              <div className="pt-2 border-t space-y-1">
+                <p className="text-xs text-muted-foreground">
+                  Includes: <span className="font-medium text-foreground">G2, Product Hunt, There's An AI For That, Hacker News, Peerlist, BetaList, Uneed, Alternative.me, Indie Hackers</span> and 110+ more
+                </p>
+              </div>
+
+              <Button asChild className="w-full" size="lg">
+                <Link to="/submit?plan=growth">Start Growth</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
           {/* Pass Card */}
           <Card className="relative hover:shadow-lg transition-shadow border-primary shadow-md">
