@@ -939,7 +939,7 @@ const Submit = () => {
       }
     }
     
-    if (step === 4 && formData.plan === 'skip' && !formData.selectedDate) {
+    if (step === 4 && (formData.plan === 'skip' || formData.plan === 'grow') && !formData.selectedDate) {
       toast.error('Please select a launch date and time');
       return;
     }
