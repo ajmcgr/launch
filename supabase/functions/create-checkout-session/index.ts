@@ -54,8 +54,8 @@ serve(async (req) => {
       skip: { amount: 3900, name: 'Launch - $39' },
       relaunch: { amount: 1900, name: 'Relaunch - $19' },
       boost: { amount: 1900, name: 'Featured Boost - $19' },
-      annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true, interval: 'year', lookupKey: 'launch_pass_yearly', productName: 'Launch Pass', productDescription: 'Unlimited access to all Launch features for one year' },
-      growth: { amount: 7900, name: 'Growth - $79/month', isSubscription: true, interval: 'month', lookupKey: 'growth_monthly', productName: 'Growth', productDescription: 'Pro + submission to 120+ startup directories' }
+      grow: { amount: 7900, name: 'Grow - $79' },
+      annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true, interval: 'year', lookupKey: 'launch_pass_yearly', productName: 'Launch Pass', productDescription: 'Unlimited access to all Launch features for one year' }
     };
 
     const selectedPlan = planConfig[plan];
