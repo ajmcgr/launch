@@ -833,7 +833,7 @@ Deno.serve(async (req) => {
         });
       }
       
-      if (plan === 'skip') {
+      if (plan === 'skip' || plan === 'grow') {
         // Launch plan: Use the selected date, but validate capacity
         if (metadata.selected_date) {
           const hasCapacity = await checkLaunchPlanCapacity(metadata.selected_date);
@@ -1015,6 +1015,64 @@ Deno.serve(async (req) => {
       } catch (emailError) {
         console.error('Error sending confirmation email:', emailError);
         // Don't fail the webhook if email fails
+      }
+
+      // For Grow plan: send a separate email pointing users to the directory submission form
+      if (metadata.plan === 'grow') {
+        try {
+          const { data: authUser } = await supabaseClient.auth.admin.getUserById(metadata.user_id);
+          const { data: productData } = await supabaseClient
+            .from('products')
+            .select('name')
+            .eq('id', product.id)
+            .single();
+
+          if (authUser?.user?.email) {
+            const formUrl = 'https://forms.gle/zDuW3KeBLRsSq1pV8';
+            const productName = productData?.name || 'your product';
+            const growEmailHtml =
+              '<!DOCTYPE html><html><head><style>' +
+              "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }" +
+              '.container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }' +
+              '.card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }' +
+              '.header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }' +
+              '.logo { height: 32px; }' +
+              '.content { padding: 30px; }' +
+              '.content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }' +
+              '.content p { margin: 0 0 16px 0; color: #4b5563; }' +
+              '.button { display: inline-block; background: #2563eb; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }' +
+              '.footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }' +
+              'ul { color: #4b5563; padding-left: 20px; } li { margin-bottom: 8px; }' +
+              '</style></head><body><div class="container"><div class="card">' +
+              '<div class="header"><img src="' + (Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai') + '/images/email-logo.png" alt="Launch" class="logo" /></div>' +
+              '<div class="content">' +
+              '<h1>Next step: submit your info for directory submissions</h1>' +
+              '<p>Thanks for upgrading <strong>' + productName + '</strong> to the Grow plan!</p>' +
+              "<p>To kick off your submissions to 120+ startup directories, we need a few details from you. Please fill out this short form (opens in a new window):</p>" +
+              '<p style="text-align:center;margin-top:24px;">' +
+              '<a href="' + formUrl + '" class="button" target="_blank" rel="noopener" style="background:#2563eb;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:500;display:inline-block;">Open submission form</a>' +
+              '</p>' +
+              '<p style="font-size:13px;color:#6b7280;">Or copy this link: <a href="' + formUrl + '" target="_blank" rel="noopener">' + formUrl + '</a></p>' +
+              '<p><strong>What happens next:</strong></p><ul>' +
+              '<li>Our team reviews your details</li>' +
+              '<li>We manually submit your product to 120+ directories</li>' +
+              '<li>You get a confirmation email when submissions are complete</li>' +
+              '</ul>' +
+              '<p>Questions? Just reply to this email.</p>' +
+              '</div><div class="footer"><p>Thanks for choosing Grow.</p></div></div></div></body></html>';
+
+            await resend.emails.send({
+              from: 'Launch <notifications@trylaunch.ai>',
+              to: [authUser.user.email],
+              subject: 'Grow: submit your info for directory submissions',
+              html: growEmailHtml,
+            });
+
+            console.log('Grow directory-submission email sent to owner');
+          }
+        } catch (growEmailError) {
+          console.error('Error sending Grow directory-submission email:', growEmailError);
+        }
       }
     }
 

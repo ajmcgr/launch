@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,8 +11,7 @@ import jakeAvatar from '@/assets/jake-avatar.jpg';
 import yogeshAvatar from '@/assets/yogesh-avatar.jpg';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+
 
 
 const FEATURE_CONFIG = [
@@ -25,28 +23,6 @@ const FEATURE_CONFIG = [
 ] as const;
 
 const Pricing = () => {
-  const [growthLoading, setGrowthLoading] = useState(false);
-
-  const handleGrowthCheckout = async () => {
-    setGrowthLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error('Please log in to subscribe');
-        return;
-      }
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { plan: 'growth' },
-      });
-      if (error) throw error;
-      if (data?.url) window.location.href = data.url;
-    } catch (err) {
-      console.error('Growth checkout error:', err);
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setGrowthLoading(false);
-    }
-  };
 
   return (
     <>
@@ -95,8 +71,8 @@ const Pricing = () => {
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {PRICING_PLANS.filter(plan => plan.id !== 'relaunch' && plan.id !== 'join').map((plan) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {PRICING_PLANS.filter(plan => plan.id !== 'relaunch' && plan.id !== 'join' && plan.id !== 'grow').map((plan) => (
             <Card 
               key={plan.id} 
               className={`relative hover:shadow-lg transition-shadow ${
@@ -193,20 +169,20 @@ const Pricing = () => {
             </Card>
           ))}
 
-          {/* Growth Card */}
+          {/* Grow Card */}
           <Card className="relative hover:shadow-lg transition-shadow border-primary shadow-md">
             <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
               Most Popular
             </Badge>
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl">Growth</CardTitle>
+              <CardTitle className="text-xl">Grow</CardTitle>
               <CardDescription className="text-sm">Pro + directory submissions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">$79</span>
-                  <span className="text-sm text-muted-foreground">/ month</span>
+                  <span className="text-sm text-muted-foreground">USD</span>
                 </div>
               </div>
 
@@ -229,23 +205,11 @@ const Pricing = () => {
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Increased launch visibility</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
                   <span>Save 20+ hours of manual work</span>
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>One-click submission request</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Progress tracking</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Confirmation when submissions are complete</span>
+                  <span>Progress tracking + confirmation</span>
                 </li>
               </ul>
 
@@ -255,13 +219,15 @@ const Pricing = () => {
                 </p>
               </div>
 
-              <Button className="w-full" size="lg" onClick={handleGrowthCheckout} disabled={growthLoading}>
-                {growthLoading ? 'Loading...' : 'Start Growth'}
+              <Button asChild className="w-full" size="lg">
+                <Link to="/submit">Start Grow</Link>
               </Button>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Pass Card */}
+        {/* Pass Card - shown below primary plans */}
+        <div className="mt-8 max-w-md mx-auto">
           <Card className="relative hover:shadow-lg transition-shadow border-primary shadow-md">
             <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
               Best Value
@@ -282,43 +248,15 @@ const Pricing = () => {
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Homepage listing</span>
+                  <span>Everything in Pro</span>
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Social media promotion</span>
+                  <span>Unlimited launches & relaunches</span>
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Newsletter feature</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Choose launch date</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Verified badge</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Skip the queue</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Unlimited launches</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>Unlimited relaunches</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>All future features</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>12 months access</span>
+                  <span>All future features · 12 months access</span>
                 </li>
               </ul>
 
@@ -337,6 +275,7 @@ const Pricing = () => {
             </CardContent>
           </Card>
         </div>
+
 
 
 

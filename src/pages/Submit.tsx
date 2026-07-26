@@ -122,7 +122,7 @@ const Submit = () => {
         couponCode: '',
         couponDescription: '',
         twitterHandle: '',
-        plan: 'free' as 'free' | 'skip' | 'relaunch',
+        plan: 'free' as 'free' | 'skip' | 'relaunch' | 'grow',
         selectedDate: null as string | null,
         submissionType: null as 'founder' | 'community' | null,
       };
@@ -142,7 +142,7 @@ const Submit = () => {
       couponCode: '',
       couponDescription: '',
       twitterHandle: '',
-      plan: 'free' as 'free' | 'skip' | 'relaunch',
+      plan: 'free' as 'free' | 'skip' | 'relaunch' | 'grow',
       selectedDate: null as string | null,
       submissionType: null as 'founder' | 'community' | null,
     };
@@ -939,7 +939,7 @@ const Submit = () => {
       }
     }
     
-    if (step === 4 && formData.plan === 'skip' && !formData.selectedDate) {
+    if (step === 4 && (formData.plan === 'skip' || formData.plan === 'grow') && !formData.selectedDate) {
       toast.error('Please select a launch date and time');
       return;
     }
@@ -1275,7 +1275,7 @@ const Submit = () => {
         
         // Determine launch date
         let launchDate: Date;
-        if (formData.plan === 'skip' && formData.selectedDate) {
+        if ((formData.plan === 'skip' || formData.plan === 'grow') && formData.selectedDate) {
           launchDate = new Date(formData.selectedDate);
         } else if (formData.plan === 'relaunch') {
           launchDate = new Date();
@@ -2122,9 +2122,9 @@ const Submit = () => {
                          </div>
                        )}
 
-                       {/* Plan cards grid - 2 columns: Free | Pro */}
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                         {['free', 'skip'].map((planId) => {
+                       {/* Plan cards grid - 3 columns: Free | Pro | Grow */}
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                         {['free', 'skip', 'grow'].map((planId) => {
                            const plan = filteredPlans.find(p => p.id === planId);
                            if (!plan) return null;
                            
@@ -2198,7 +2198,7 @@ const Submit = () => {
                   )}
                 
                 {/* Date picker - only for 'skip' plan OR (rescheduling with skip/pass) */}
-                {!isLoadingProduct && (formData.plan === 'skip' || (isRescheduling && (existingPlan === 'skip' || hasActivePass))) && (
+                {!isLoadingProduct && (formData.plan === 'skip' || formData.plan === 'grow' || (isRescheduling && (existingPlan === 'skip' || hasActivePass))) && (
                   <div className="space-y-4 mt-6">
                     {/* Launch Now Option */}
                     <div className="p-4 border rounded-lg bg-primary/5 border-primary/20">
