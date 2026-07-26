@@ -49,12 +49,13 @@ serve(async (req) => {
     }
 
     // Plan pricing configuration (amounts in cents)
-    const planConfig: Record<string, { amount: number; name: string; isSubscription?: boolean }> = {
+    const planConfig: Record<string, { amount: number; name: string; isSubscription?: boolean; interval?: 'month' | 'year'; lookupKey?: string; productName?: string; productDescription?: string }> = {
       // 'join' (Lite $9) plan removed — users should choose Free or Pro ($39)
       skip: { amount: 3900, name: 'Launch - $39' },
       relaunch: { amount: 1900, name: 'Relaunch - $19' },
       boost: { amount: 1900, name: 'Featured Boost - $19' },
-      annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true }
+      annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true, interval: 'year', lookupKey: 'launch_pass_yearly', productName: 'Launch Pass', productDescription: 'Unlimited access to all Launch features for one year' },
+      growth: { amount: 7900, name: 'Growth - $79/month', isSubscription: true, interval: 'month', lookupKey: 'growth_monthly', productName: 'Growth', productDescription: 'Pro + submission to 120+ startup directories' }
     };
 
     const selectedPlan = planConfig[plan];
@@ -109,13 +110,14 @@ serve(async (req) => {
     
     // Set success/cancel URLs based on plan type
     const isAnnualAccess = plan === 'annual_access';
+    const isGrowth = plan === 'growth';
     const isBoost = plan === 'boost';
-    const successUrl = isAnnualAccess 
-      ? `${productionUrl}/settings?tab=billing&success=annual`
+    const successUrl = (isAnnualAccess || isGrowth)
+      ? `${productionUrl}/settings?tab=billing&success=${isGrowth ? 'growth' : 'annual'}`
       : isBoost
         ? `${productionUrl}/my-products?boost=success`
         : `${productionUrl}/my-products?success=true`;
-    const cancelUrl = isAnnualAccess
+    const cancelUrl = (isAnnualAccess || isGrowth)
       ? `${productionUrl}/settings?tab=billing&canceled=true`
       : isBoost
         ? `${productionUrl}/my-products`
@@ -129,8 +131,9 @@ serve(async (req) => {
       let priceId: string;
       
       // Check if we have an existing price for this product
+      const lookupKey = selectedPlan.lookupKey || 'launch_pass_yearly';
       const prices = await stripe.prices.list({
-        lookup_keys: ['launch_pass_yearly'],
+        lookup_keys: [lookupKey],
         limit: 1,
       });
       
@@ -139,8 +142,8 @@ serve(async (req) => {
       } else {
         // Create the product and price if they don't exist
         const product = await stripe.products.create({
-          name: 'Launch Pass',
-          description: 'Unlimited access to all Launch features for one year',
+          name: selectedPlan.productName || 'Launch Pass',
+          description: selectedPlan.productDescription || 'Unlimited access to all Launch features for one year',
         });
         
         const price = await stripe.prices.create({
@@ -148,9 +151,9 @@ serve(async (req) => {
           unit_amount: selectedPlan.amount,
           currency: 'usd',
           recurring: {
-            interval: 'year',
+            interval: selectedPlan.interval || 'year',
           },
-          lookup_key: 'launch_pass_yearly',
+          lookup_key: lookupKey,
         });
         
         priceId = price.id;
