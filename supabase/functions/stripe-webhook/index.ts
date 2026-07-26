@@ -833,7 +833,7 @@ Deno.serve(async (req) => {
         });
       }
       
-      if (plan === 'skip') {
+      if (plan === 'skip' || plan === 'grow') {
         // Launch plan: Use the selected date, but validate capacity
         if (metadata.selected_date) {
           const hasCapacity = await checkLaunchPlanCapacity(metadata.selected_date);
