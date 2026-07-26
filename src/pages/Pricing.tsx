@@ -172,7 +172,7 @@ const Pricing = () => {
           {/* Grow Card */}
           <Card className="relative hover:shadow-lg transition-shadow border-primary shadow-md">
             <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
-              Most Popular
+              Most Impact
             </Badge>
             <CardHeader className="pb-3">
               <CardTitle className="text-xl">Grow</CardTitle>
