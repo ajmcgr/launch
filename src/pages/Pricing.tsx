@@ -255,8 +255,8 @@ const Pricing = () => {
                 </p>
               </div>
 
-              <Button asChild className="w-full" size="lg">
-                <Link to="/submit?plan=growth">Start Growth</Link>
+              <Button className="w-full" size="lg" onClick={handleGrowthCheckout} disabled={growthLoading}>
+                {growthLoading ? 'Loading...' : 'Start Growth'}
               </Button>
             </CardContent>
           </Card>
