@@ -66,6 +66,21 @@ export const PRICING_PLANS = [
     badge: 'Most Popular',
   },
   {
+    id: 'grow',
+    name: 'Grow',
+    price: 79,
+    description: 'Pro + directory submissions',
+    features: {
+      listing: true,
+      socialPromotion: true,
+      newsletter: true,
+      chooseDate: true,
+      badge: true,
+    },
+    highlight: true,
+    badge: 'Most Popular',
+  },
+  {
     id: 'relaunch',
     name: 'Relaunch',
     price: 19,
