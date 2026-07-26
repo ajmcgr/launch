@@ -78,7 +78,7 @@ export const PRICING_PLANS = [
       badge: true,
     },
     highlight: true,
-    badge: 'Most Popular',
+    badge: 'Most Impact',
   },
   {
     id: 'relaunch',
