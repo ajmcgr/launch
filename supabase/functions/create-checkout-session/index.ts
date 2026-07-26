@@ -49,12 +49,13 @@ serve(async (req) => {
     }
 
     // Plan pricing configuration (amounts in cents)
-    const planConfig: Record<string, { amount: number; name: string; isSubscription?: boolean }> = {
+    const planConfig: Record<string, { amount: number; name: string; isSubscription?: boolean; interval?: 'month' | 'year'; lookupKey?: string; productName?: string; productDescription?: string }> = {
       // 'join' (Lite $9) plan removed — users should choose Free or Pro ($39)
       skip: { amount: 3900, name: 'Launch - $39' },
       relaunch: { amount: 1900, name: 'Relaunch - $19' },
       boost: { amount: 1900, name: 'Featured Boost - $19' },
-      annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true }
+      annual_access: { amount: 9900, name: 'Launch Pass - $99/year', isSubscription: true, interval: 'year', lookupKey: 'launch_pass_yearly', productName: 'Launch Pass', productDescription: 'Unlimited access to all Launch features for one year' },
+      growth: { amount: 7900, name: 'Growth - $79/month', isSubscription: true, interval: 'month', lookupKey: 'growth_monthly', productName: 'Growth', productDescription: 'Pro + submission to 120+ startup directories' }
     };
 
     const selectedPlan = planConfig[plan];
