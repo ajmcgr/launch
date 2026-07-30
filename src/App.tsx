@@ -29,6 +29,8 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
+const BlogCategory = lazy(() => import("./pages/BlogCategory"));
+const BlogAuthor = lazy(() => import("./pages/BlogAuthor"));
 const NewsletterRedirect = lazy(() => import("./pages/NewsletterRedirect"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -459,6 +461,8 @@ const AppContent = () => {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/newsletter" element={<NewsletterRedirect />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/category/:slug" element={<BlogCategory />} />
+            <Route path="/blog/author/:slug" element={<BlogAuthor />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/outreach" element={<Outreach />} />
