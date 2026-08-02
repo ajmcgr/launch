@@ -266,7 +266,7 @@ Return everything via the tool call.`;
         meta_description: article.meta_description,
         excerpt: article.excerpt,
         content_md: article.content_md,
-        cover_image_url: coverImageUrl,
+        cover_image_url: null,
         tags: topic.tags,
         topic_seed: topic.target_keyword,
         ai_generated: true,
@@ -280,11 +280,16 @@ Return everything via the tool call.`;
 
     console.log("Generated blog post:", inserted.slug, status);
 
+    // 5. Generate Gemini artwork (hero / card / og) and attach it to the post.
+    // Never fatal: a failure leaves the branded placeholder in place.
+    const images = await attachImagesToPost(supabase, inserted);
+
     return {
       success: true,
       slug: inserted.slug,
       title: inserted.title,
       status: inserted.status,
+      cover_image_url: images?.hero ?? null,
       url: `https://trylaunch.ai/blog/${inserted.slug}`,
     };
   } catch (err) {
