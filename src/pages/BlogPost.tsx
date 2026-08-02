@@ -20,6 +20,8 @@ import {
   extractHeadings,
   extractKeyTakeaways,
   extractTldr,
+  heroImage,
+  ogImage,
   isUpdated,
   readTime,
   relatedPosts,
@@ -110,7 +112,7 @@ const BlogPostPage = () => {
     '@type': 'Article',
     headline: post.title,
     description: post.meta_description || post.excerpt,
-    image: post.cover_image_url || 'https://trylaunch.ai/social-card.png',
+    image: ogImage(post),
     datePublished: post.published_at,
     dateModified: post.updated_at,
     articleSection: category.name,
@@ -155,7 +157,9 @@ const BlogPostPage = () => {
           <meta property="og:title" content={post.title} />
           <meta property="og:description" content={post.meta_description || post.excerpt || ''} />
           <meta property="og:url" content={url} />
-          {post.cover_image_url && <meta property="og:image" content={post.cover_image_url} />}
+          <meta property="og:image" content={ogImage(post)} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
           {post.published_at && (
             <meta property="article:published_time" content={post.published_at} />
           )}
@@ -165,7 +169,7 @@ const BlogPostPage = () => {
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={post.title} />
           <meta name="twitter:description" content={post.meta_description || post.excerpt || ''} />
-          {post.cover_image_url && <meta name="twitter:image" content={post.cover_image_url} />}
+          <meta name="twitter:image" content={ogImage(post)} />
           <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
           {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
         </Helmet>
@@ -231,9 +235,9 @@ const BlogPostPage = () => {
               )}
             </header>
 
-            {post.cover_image_url && (
+            {(post.cover_image_url || post.card_image_url) && (
               <img
-                src={post.cover_image_url}
+                src={heroImage(post)}
                 alt={post.title}
                 width={1200}
                 height={675}
