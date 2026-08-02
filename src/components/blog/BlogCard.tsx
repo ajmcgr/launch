@@ -7,6 +7,7 @@ import {
   authorOf,
   readTime,
   isUpdated,
+  cardImage,
   type BlogPostRecord,
 } from '@/lib/blog/post';
 
@@ -20,6 +21,7 @@ export const BlogCard = ({ post, variant = 'default' }: Props) => {
   const author = authorOf(post);
   const minutes = readTime(post);
   const updated = isUpdated(post);
+  const image = cardImage(post);
 
   const meta = (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
@@ -63,10 +65,10 @@ export const BlogCard = ({ post, variant = 'default' }: Props) => {
   if (variant === 'compact') {
     return (
       <Link to={`/blog/${post.slug}`} className="group flex gap-4 items-start">
-        {post.cover_image_url && (
+        {image && (
           <div className="hidden sm:block w-24 h-20 shrink-0 overflow-hidden rounded-lg bg-muted">
             <img
-              src={post.cover_image_url}
+              src={image}
               alt={post.title}
               loading="lazy"
               width={192}
@@ -92,10 +94,10 @@ export const BlogCard = ({ post, variant = 'default' }: Props) => {
     return (
       <Link to={`/blog/${post.slug}`} className="group block">
         <article className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
-          {post.cover_image_url && (
+          {image && (
             <div className="md:col-span-7 aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
               <img
-                src={post.cover_image_url}
+                src={image}
                 alt={post.title}
                 loading="eager"
                 fetchPriority="high"
@@ -105,7 +107,7 @@ export const BlogCard = ({ post, variant = 'default' }: Props) => {
               />
             </div>
           )}
-          <div className={post.cover_image_url ? 'md:col-span-5' : 'md:col-span-12'}>
+          <div className={image ? 'md:col-span-5' : 'md:col-span-12'}>
             {badges}
             <h2 className="font-reckless text-3xl md:text-5xl leading-[1.1] tracking-tight mb-5 group-hover:text-primary transition-colors">
               {post.title}
@@ -125,10 +127,10 @@ export const BlogCard = ({ post, variant = 'default' }: Props) => {
   return (
     <Link to={`/blog/${post.slug}`} className="group block">
       <article>
-        {post.cover_image_url && (
+        {image && (
           <div className="aspect-[16/10] overflow-hidden rounded-xl bg-muted mb-5">
             <img
-              src={post.cover_image_url}
+              src={image}
               alt={post.title}
               loading="lazy"
               width={800}

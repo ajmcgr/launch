@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, Sparkles, Eye, Edit, Trash2, Archive, CheckCircle2 } from 'lucide-react';
+import { Loader2, Sparkles, Eye, Edit, Trash2, Archive, CheckCircle2, ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface BlogPost {
@@ -25,12 +25,34 @@ interface BlogPost {
   ai_generated: boolean;
   published_at: string | null;
   created_at: string;
+  cover_image_url?: string | null;
 }
 
 const AdminBlogTab = () => {
   const queryClient = useQueryClient();
   const [generating, setGenerating] = useState(false);
   const [editing, setEditing] = useState<BlogPost | null>(null);
+  const [imaging, setImaging] = useState<string | null>(null);
+
+  const generateImage = async (post?: BlogPost) => {
+    setImaging(post ? post.id : 'backfill');
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-blog-image', {
+        body: post ? { postId: post.id } : { backfill: true, limit: 5 },
+      });
+      if (error) throw error;
+      toast.success(
+        post
+          ? 'Artwork generated'
+          : `Backfilled ${data?.succeeded ?? 0}/${data?.processed ?? 0} articles`,
+      );
+      queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
+    } catch (e: any) {
+      toast.error(e?.message || 'Image generation failed');
+    } finally {
+      setImaging(null);
+    }
+  };
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ['admin-blog-posts'],
@@ -116,11 +138,27 @@ const AdminBlogTab = () => {
             <div>
               <CardTitle>Blog Posts</CardTitle>
               <CardDescription>
-                OpenAI auto-publishes a new article daily at 14:00 UTC. You can also generate a draft
+OpenAI auto-publishes a new article daily at 14:00 UTC and Gemini generates the
+                artwork (hero, card, OG) automatically. You can also generate a draft
                 or publish one on demand.
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-shrink-0">
+              <Button
+                variant="outline"
+                onClick={() => generateImage()}
+                disabled={imaging === 'backfill'}
+              >
+                {imaging === 'backfill' ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Backfilling…
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="h-4 w-4 mr-2" /> Backfill Images
+                  </>
+                )}
+              </Button>
               <Button variant="outline" onClick={() => generateNow('draft')} disabled={generating}>
                 {generating ? (
                   <>
@@ -194,6 +232,19 @@ const AdminBlogTab = () => {
                         onClick={() => window.open(`/blog/${post.slug}`, '_blank')}
                       >
                         <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        title="Generate artwork with Gemini"
+                        disabled={imaging === post.id}
+                        onClick={() => generateImage(post)}
+                      >
+                        {imaging === post.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ImageIcon className="h-4 w-4" />
+                        )}
                       </Button>
                       <Button size="sm" variant="ghost" onClick={() => setEditing(post)}>
                         <Edit className="h-4 w-4" />

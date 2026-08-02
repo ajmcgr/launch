@@ -13,6 +13,8 @@ export interface BlogPostRecord {
   excerpt: string | null;
   content_md?: string | null;
   cover_image_url: string | null;
+  card_image_url?: string | null;
+  og_image_url?: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
   tags: string[] | null;
@@ -27,6 +29,21 @@ export interface BlogPostRecord {
 }
 
 const WORDS_PER_MINUTE = 220;
+
+/** Branded fallback used when an article has no generated artwork yet. */
+export const BLOG_PLACEHOLDER_IMAGE = '/social-card.png';
+
+/** Full-width hero / article header image. */
+export const heroImage = (post: BlogPostRecord): string =>
+  post.cover_image_url || post.card_image_url || BLOG_PLACEHOLDER_IMAGE;
+
+/** Smaller rendition for homepage, category, search and related cards. */
+export const cardImage = (post: BlogPostRecord): string =>
+  post.card_image_url || post.cover_image_url || BLOG_PLACEHOLDER_IMAGE;
+
+/** 1200x630 social preview (X, LinkedIn, Facebook, Discord). */
+export const ogImage = (post: BlogPostRecord): string =>
+  post.og_image_url || post.cover_image_url || 'https://trylaunch.ai/social-card.png';
 
 export const readTime = (post: BlogPostRecord): number => {
   if (post.read_minutes && post.read_minutes > 0) return post.read_minutes;

@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { isCronAuthorized, unauthorizedResponse } from "../_shared/cron-auth.ts";
+import { attachImagesToPost } from "../_shared/blog-image.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -65,7 +66,6 @@ async function generateBlogPost(requestBody: any) {
   try {
     const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
     const status = requestBody?.status === "draft" ? "draft" : "published";
-    const shouldGenerateCover = requestBody?.withCover === true || source !== "cron";
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -250,59 +250,9 @@ Return everything via the tool call.`;
       finalSlug = `${finalSlug}-${Date.now().toString(36)}`;
     }
 
-    // 4. Generate a cover image for manual runs only. Cron skips this slow step
-    // so the autopilot job can complete inside pg_net/Supabase timeouts.
-    let coverImageUrl: string | null = null;
-    if (shouldGenerateCover) {
-      try {
-        const imagePrompt = `Editorial blog cover illustration for an article titled "${article.title}". Topic: ${topic.angle}. Style: modern, minimal, clean tech editorial illustration with bold geometric shapes and a confident color palette. No text, no words, no letters, no logos. Wide 16:9 composition suitable for a blog header.`;
+    // 4. Artwork is generated with Gemini AFTER insert (see below) so a slow or
+    // failing image pipeline can never block publishing.
 
-      const imgResp = await fetch("https://api.openai.com/v1/images/generations", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-image-1",
-          prompt: imagePrompt,
-          size: "1536x1024",
-        }),
-      });
-
-      if (!imgResp.ok) {
-        throw new Error(`Image generation failed: ${imgResp.status} ${await imgResp.text()}`);
-      }
-
-      const imgData = await imgResp.json();
-      const b64: string | undefined = imgData.data?.[0]?.b64_json;
-      if (!b64) {
-        throw new Error("Image generation returned no image data");
-      }
-
-      const mime = "image/png";
-      const ext = "png";
-      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-      const path = `${finalSlug}-${Date.now()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from("blog-images")
-        .upload(path, bytes, { contentType: mime, upsert: true });
-      if (uploadErr) {
-        throw new Error(`Image upload failed: ${uploadErr.message}`);
-      }
-
-      const { data: pub } = supabase.storage.from("blog-images").getPublicUrl(path);
-      coverImageUrl = pub.publicUrl;
-      if (!coverImageUrl) {
-        throw new Error("Image upload completed without a public URL");
-      }
-      } catch (imgErr) {
-        console.error("Cover image generation error (continuing without cover):", imgErr);
-        coverImageUrl = null;
-      }
-    } else {
-      console.log("Skipping cover image for cron blog generation");
-    }
 
     const publishedAt = status === "published" ? new Date().toISOString() : null;
 
@@ -316,7 +266,7 @@ Return everything via the tool call.`;
         meta_description: article.meta_description,
         excerpt: article.excerpt,
         content_md: article.content_md,
-        cover_image_url: coverImageUrl,
+        cover_image_url: null,
         tags: topic.tags,
         topic_seed: topic.target_keyword,
         ai_generated: true,
@@ -330,11 +280,16 @@ Return everything via the tool call.`;
 
     console.log("Generated blog post:", inserted.slug, status);
 
+    // 5. Generate Gemini artwork (hero / card / og) and attach it to the post.
+    // Never fatal: a failure leaves the branded placeholder in place.
+    const images = await attachImagesToPost(supabase, inserted);
+
     return {
       success: true,
       slug: inserted.slug,
       title: inserted.title,
       status: inserted.status,
+      cover_image_url: images?.hero ?? null,
       url: `https://trylaunch.ai/blog/${inserted.slug}`,
     };
   } catch (err) {
