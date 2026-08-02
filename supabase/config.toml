@@ -66,6 +66,11 @@ verify_jwt = false
 [functions.generate-blog-post]
 verify_jwt = false
 
+[functions.generate-blog-image]
+verify_jwt = false
+
+
+
 [functions.outreach-score-leads]
 verify_jwt = true
 
