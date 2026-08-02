@@ -66,7 +66,6 @@ async function generateBlogPost(requestBody: any) {
   try {
     const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
     const status = requestBody?.status === "draft" ? "draft" : "published";
-    const shouldGenerateCover = requestBody?.withCover === true || source !== "cron";
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
