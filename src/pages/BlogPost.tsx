@@ -28,7 +28,7 @@ import {
 } from '@/lib/blog/post';
 
 const LIST_FIELDS =
-  'id, slug, title, excerpt, content_md, cover_image_url, tags, view_count, published_at, updated_at';
+  'id, slug, title, excerpt, content_md, cover_image_url, card_image_url, og_image_url, tags, view_count, published_at, updated_at';
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();

@@ -50,7 +50,7 @@ const Blog = () => {
     const fetchPosts = async () => {
       const { data } = await (supabase as any)
         .from('blog_posts')
-        .select('id, slug, title, excerpt, content_md, cover_image_url, tags, view_count, published_at, updated_at')
+        .select('id, slug, title, excerpt, content_md, cover_image_url, card_image_url, og_image_url, tags, view_count, published_at, updated_at')
         .eq('status', 'published')
         .order('published_at', { ascending: false })
         .limit(60);
