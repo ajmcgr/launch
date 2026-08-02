@@ -13,6 +13,8 @@ export interface BlogPostRecord {
   excerpt: string | null;
   content_md?: string | null;
   cover_image_url: string | null;
+  card_image_url?: string | null;
+  og_image_url?: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
   tags: string[] | null;
