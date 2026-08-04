@@ -102,10 +102,13 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
+  const campaignHost = isCampaignHost();
   const staticPages = ['/about', '/terms', '/privacy'];
   const standalonePages = ['/reserve', '/vibecodeyourfuture'];
-  const isStandalone = standalonePages.includes(location.pathname);
+  const isStandalone = standalonePages.includes(location.pathname)
+    || (campaignHost && location.pathname === '/');
   const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
+
 
   const path = location.pathname;
   const isCollectionsList = path === '/collections' || path === '/my-collections' || path === '/search';
