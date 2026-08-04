@@ -232,7 +232,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    if (body?.backfill) {
+    if (body?.backfill || body?.auto) {
       // Keep batches small: each render takes ~15-30s and the edge runtime caps
       // wall-clock time per invocation.
       const limit = Math.min(Number(body.limit) || 3, 4);
@@ -242,7 +242,10 @@ Deno.serve(async (req) => {
         .select(SELECT)
         .order("published_at", { ascending: false, nullsFirst: false })
         .limit(limit);
-      if (!body.force) query = query.is("cover_image_url", null);
+      // image_prompt is only set by this function, so "no prompt" == "not Gemini
+      // artwork yet" (covers both null covers and the old default cover image).
+      if (!body.force) query = query.is("image_prompt", null);
+
 
       const { data: posts, error } = await query;
       if (error) throw error;
