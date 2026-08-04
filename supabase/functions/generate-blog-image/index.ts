@@ -32,7 +32,10 @@ Deno.serve(async (req) => {
     );
 
     if (body?.backfill) {
-      const limit = Math.min(Number(body.limit) || 5, 15);
+      // Keep batches small: each render takes ~15-30s and the edge runtime
+      // caps wall-clock time per invocation.
+      const limit = Math.min(Number(body.limit) || 3, 4);
+
       let query = supabase.from("blog_posts").select(SELECT).order("published_at", {
         ascending: false,
         nullsFirst: false,
