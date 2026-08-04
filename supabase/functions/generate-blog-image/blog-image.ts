@@ -1,11 +1,11 @@
 // Shared Gemini-powered blog artwork pipeline.
-// Generates one on-brand editorial image per article and derives the
-// hero / card / open-graph renditions from it, then stores them in the
-// `blog-images` Supabase Storage bucket.
+// Generates one on-brand editorial image per article and stores the
+// hero / card / open-graph renditions in the `blog-images` bucket.
 //
 // Provider: Google Gemini ONLY (GEMINI_API_KEY). No other image provider.
-
-import { decode as decodeImage, Image } from "https://deno.land/x/imagescript@1.2.17/mod.ts";
+// NOTE: intentionally dependency-free (no imagescript/WASM) — the edge
+// runtime stalled while fetching the WASM decoder, which silently killed
+// every generation run.
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const TEXT_MODEL = "gemini-2.5-flash";
@@ -40,6 +40,7 @@ function apiKey(): string {
 }
 
 const STYLE_GUIDE = [
+  "Wide 16:9 widescreen editorial cover.",
   "Consistent Launch brand visual identity: premium SaaS, modern, minimal, editorial.",
   "Abstract conceptual composition (never literal), bold geometric forms, soft layered gradients,",
   "high contrast, generous negative space, subtle depth and light, refined professional art direction.",
@@ -48,16 +49,23 @@ const STYLE_GUIDE = [
   "stock-photo people, generic robots, brains, circuit-board cliches, low-quality AI artefacts, random icons.",
 ].join(" ");
 
-async function geminiJson(path: string, body: unknown): Promise<any> {
-  const resp = await fetch(`${GEMINI_BASE}/${path}?key=${apiKey()}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!resp.ok) {
-    throw new Error(`Gemini ${path} ${resp.status}: ${(await resp.text()).slice(0, 400)}`);
+async function geminiJson(path: string, body: unknown, timeoutMs = 60_000): Promise<any> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const resp = await fetch(`${GEMINI_BASE}/${path}?key=${apiKey()}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+    });
+    if (!resp.ok) {
+      throw new Error(`Gemini ${path} ${resp.status}: ${(await resp.text()).slice(0, 400)}`);
+    }
+    return await resp.json();
+  } finally {
+    clearTimeout(timer);
   }
-  return await resp.json();
 }
 
 /** Derive a concise visual prompt from the article itself (not the raw title). */
@@ -78,10 +86,10 @@ Do not mention text, typography, letters or logos. Output the prompt sentence on
   try {
     const json = await geminiJson(`${TEXT_MODEL}:generateContent`, {
       contents: [{ role: "user", parts: [{ text: brief }] }],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 200 },
-    });
-    const text: string = json?.candidates?.[0]?.content?.parts
-      ?.map((p: any) => p?.text || "")
+      generationConfig: { temperature: 0.9, maxOutputTokens: 400 },
+    }, 30_000);
+    const text: string = (json?.candidates?.[0]?.content?.parts || [])
+      .map((p: any) => p?.text || "")
       .join(" ")
       .trim();
     if (text && text.length > 20) return `${text} ${STYLE_GUIDE}`;
@@ -91,35 +99,26 @@ Do not mention text, typography, letters or logos. Output the prompt sentence on
   return `Abstract editorial cover illustration expressing the idea of "${post.title}" for startup founders. ${STYLE_GUIDE}`;
 }
 
-async function generateBaseImage(prompt: string): Promise<Uint8Array> {
-  const json = await geminiJson(`${IMAGE_MODEL}:generateContent`, {
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: {
-      responseModalities: ["IMAGE"],
-      imageConfig: { aspectRatio: "16:9" },
-    },
-  });
-  const parts = json?.candidates?.[0]?.content?.parts || [];
-  const inline = parts.find((p: any) => p?.inlineData?.data)?.inlineData;
-  if (!inline?.data) throw new Error("Gemini returned no image data");
-  const bin = atob(inline.data);
+function b64ToBytes(b64: string): Uint8Array {
+  const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return bytes;
 }
 
-/** Cover-crop + resize to exact dimensions, encoded as compressed JPEG. */
-async function rendition(source: Image, w: number, h: number): Promise<Uint8Array> {
-  const clone = source.clone();
-  const scale = Math.max(w / clone.width, h / clone.height);
-  clone.resize(Math.ceil(clone.width * scale), Math.ceil(clone.height * scale));
-  clone.crop(
-    Math.floor((clone.width - w) / 2),
-    Math.floor((clone.height - h) / 2),
-    w,
-    h,
-  );
-  return await clone.encodeJPEG(82);
+async function generateBaseImage(
+  prompt: string,
+): Promise<{ bytes: Uint8Array; mime: string }> {
+  const json = await geminiJson(`${IMAGE_MODEL}:generateContent`, {
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+  });
+  const parts = json?.candidates?.[0]?.content?.parts || [];
+  const inline = parts.find((p: any) => p?.inlineData?.data)?.inlineData;
+  if (!inline?.data) {
+    throw new Error(`Gemini returned no image data: ${JSON.stringify(json).slice(0, 300)}`);
+  }
+  return { bytes: b64ToBytes(inline.data), mime: inline.mimeType || "image/png" };
 }
 
 /**
@@ -134,46 +133,41 @@ export async function generateAndStoreBlogImages(
   const attempts = opts.attempts ?? 3;
   const prompt = opts.prompt || (await buildImagePrompt(post));
 
-  let raw: Uint8Array | null = null;
+  let image: { bytes: Uint8Array; mime: string } | null = null;
   let lastErr: unknown = null;
   for (let i = 0; i < attempts; i++) {
     try {
-      raw = await generateBaseImage(prompt);
+      image = await generateBaseImage(prompt);
       break;
     } catch (err) {
       lastErr = err;
       console.error(`Gemini image attempt ${i + 1}/${attempts} failed:`, err);
-      await new Promise((r) => setTimeout(r, 1200 * (i + 1)));
+      await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
     }
   }
-  if (!raw) throw new Error(`Gemini image generation failed: ${lastErr}`);
-
-  const decoded = await decodeImage(raw);
-  const base = decoded as Image;
+  if (!image) throw new Error(`Gemini image generation failed: ${lastErr}`);
 
   const when = post.published_at ? new Date(post.published_at) : new Date();
+  const ext = image.mime.includes("jpeg") ? "jpg" : "png";
   const dir = `${when.getUTCFullYear()}/${String(when.getUTCMonth() + 1).padStart(2, "0")}/${post.slug}`;
 
-  const sizes: Array<[string, number, number]> = [
-    ["hero", 1600, 900],
-    ["card", 800, 500],
-    ["og", 1200, 630],
-  ];
-
+  // The Gemini render is already a wide 16:9 editorial cover, so the hero,
+  // card and OG renditions share the same source bytes (browsers/crawlers
+  // crop via CSS + og:image ratios).
   const urls: Record<string, string> = {};
-  for (const [name, w, h] of sizes) {
-    const bytes = await rendition(base, w, h);
-    const path = `${dir}/${name}.jpg`;
+  const version = Date.now().toString(36);
+  for (const name of ["hero", "card", "og"]) {
+    const path = `${dir}/${name}.${ext}`;
     const { error } = await supabase.storage
       .from(BLOG_IMAGE_BUCKET)
-      .upload(path, bytes, {
-        contentType: "image/jpeg",
+      .upload(path, image.bytes, {
+        contentType: image.mime,
         cacheControl: "31536000",
         upsert: true,
       });
     if (error) throw new Error(`Upload failed (${path}): ${error.message}`);
     const { data } = supabase.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(path);
-    urls[name] = `${data.publicUrl}?v=${Date.now().toString(36)}`;
+    urls[name] = `${data.publicUrl}?v=${version}`;
   }
 
   return { hero: urls.hero, card: urls.card, og: urls.og, prompt };
