@@ -38,7 +38,7 @@ const AdminBlogTab = () => {
     setImaging(post ? post.id : 'backfill');
     try {
       const { data, error } = await supabase.functions.invoke('generate-blog-image', {
-        body: post ? { postId: post.id } : { backfill: true, limit: 5 },
+        body: post ? { postId: post.id } : { backfill: true, limit: 3 },
       });
       if (error) throw error;
       toast.success(
