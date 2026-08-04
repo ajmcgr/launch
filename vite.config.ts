@@ -8,7 +8,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Campaign domain served by the same app (hostname-based routing)
+    allowedHosts: ["vibecodeyourfuture.com", "www.vibecodeyourfuture.com", ".lovable.app", "localhost"],
   },
+
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
