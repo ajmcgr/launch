@@ -150,21 +150,7 @@ OpenAI auto-publishes a new article daily at 14:00 UTC and Gemini generates the
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-shrink-0">
-              <Button
-                variant="outline"
-                onClick={() => generateImage()}
-                disabled={imaging === 'backfill'}
-              >
-                {imaging === 'backfill' ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Backfilling…
-                  </>
-                ) : (
-                  <>
-                    <ImageIcon className="h-4 w-4 mr-2" /> Backfill Images
-                  </>
-                )}
-              </Button>
+              
               <Button variant="outline" onClick={() => generateNow('draft')} disabled={generating}>
                 {generating ? (
                   <>
