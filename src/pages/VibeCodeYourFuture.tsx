@@ -2,8 +2,12 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
+import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 
 const VibeCodeYourFuture = () => {
+  // Same component, two homes: canonical/OG follow the hostname it was served from.
+  const pageUrl = isCampaignHost() ? CAMPAIGN_ORIGIN : 'https://trylaunch.ai/vibecodeyourfuture';
+
   return (
     <>
       <Helmet>
@@ -12,13 +16,16 @@ const VibeCodeYourFuture = () => {
           name="description"
           content="Recently laid off? Turn uncertainty into momentum. Reserve your founder handle, launch products, and build your future with Launch."
         />
-        <link rel="canonical" href="https://trylaunch.ai/vibecodeyourfuture" />
+        <link rel="canonical" href={pageUrl} />
         <meta property="og:title" content="Vibe Code Your Future" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:type" content="website" />
         <meta
           property="og:description"
           content="Recently laid off? Turn uncertainty into momentum. Reserve your founder handle and build your next chapter."
         />
       </Helmet>
+
 
       <div className="min-h-screen bg-white py-16">
         <div className="container mx-auto px-4 max-w-3xl">
