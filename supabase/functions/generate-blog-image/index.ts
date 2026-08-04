@@ -221,7 +221,9 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  if (!isCronAuthorized(req)) return json({ error: "Unauthorized" }, 401);
+  if (!isCronAuthorized(req) && !(await isAdminAuthorized(req))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
 
   try {
     const body = await req.json().catch(() => ({} as any));
