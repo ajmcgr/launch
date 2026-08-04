@@ -145,9 +145,10 @@ const AdminBlogTab = () => {
               <CardTitle>Blog Posts</CardTitle>
               <CardDescription>
 OpenAI auto-publishes a new article daily at 14:00 UTC and Gemini generates the
-                artwork (hero, card, OG) automatically. You can also generate a draft
-                or publish one on demand.
+                artwork (hero, card, OG) automatically. Older articles are re-imaged
+                automatically in the background until every post has Gemini artwork.
               </CardDescription>
+
             </div>
             <div className="flex gap-2 flex-shrink-0">
               
