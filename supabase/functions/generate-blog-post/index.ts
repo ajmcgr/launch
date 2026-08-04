@@ -1,11 +1,158 @@
+// SINGLE FILE ON PURPOSE: deployed by pasting index.ts into the Supabase
+// dashboard editor, which does not upload sibling files. Any local import
+// makes the bundle fail to boot and the endpoint hangs. Keep helpers inline.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { isCronAuthorized, unauthorizedResponse } from "./cron-auth.ts";
-import { attachImagesToPost } from "./blog-image.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+// ---------------------------------------------------------------- auth
+function isCronAuthorized(req: Request): boolean {
+  const authHeader = req.headers.get("Authorization") || req.headers.get("authorization") || "";
+  const cronSecretHeader = req.headers.get("x-cron-secret") || req.headers.get("X-Cron-Secret") || "";
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+  const expectedCronSecret = Deno.env.get("CRON_SECRET") || "";
+  if (serviceKey && authHeader === `Bearer ${serviceKey}`) return true;
+  if (expectedCronSecret && cronSecretHeader === expectedCronSecret) return true;
+  return false;
+}
+
+function unauthorizedResponse(headers: Record<string, string> = {}) {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    status: 401,
+    headers: { ...headers, "Content-Type": "application/json" },
+  });
+}
+
+// ------------------------------------------------- gemini blog artwork
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+const TEXT_MODEL = "gemini-2.5-flash";
+const IMAGE_MODEL = "gemini-2.5-flash-image";
+const BLOG_IMAGE_BUCKET = "blog-images";
+
+const STYLE_GUIDE = [
+  "Wide 16:9 widescreen editorial cover.",
+  "Consistent Launch brand visual identity: premium SaaS, modern, minimal, editorial.",
+  "Abstract conceptual composition (never literal), bold geometric forms, soft layered gradients,",
+  "high contrast, generous negative space, subtle depth and light, refined professional art direction.",
+  "Palette: deep near-black and off-white base with a confident accent (electric blue / violet / warm amber).",
+  "Strictly avoid: any text, letters, words, numbers, watermarks, logos, UI screenshots, clipart,",
+  "stock-photo people, generic robots, brains, circuit-board cliches, low-quality AI artefacts, random icons.",
+].join(" ");
+
+async function geminiJson(path: string, body: unknown, timeoutMs = 60_000): Promise<any> {
+  const key = Deno.env.get("GEMINI_API_KEY");
+  if (!key) throw new Error("GEMINI_API_KEY missing");
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const resp = await fetch(`${GEMINI_BASE}/${path}?key=${key}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+    });
+    if (!resp.ok) {
+      throw new Error(`Gemini ${path} ${resp.status}: ${(await resp.text()).slice(0, 400)}`);
+    }
+    return await resp.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function buildImagePrompt(post: any): Promise<string> {
+  const body = (post.content_md || "").replace(/\s+/g, " ").slice(0, 4000);
+  const brief = `You are the art director for Launch, a premium publication for startup founders.
+
+Article title: ${post.title}
+Excerpt: ${post.excerpt || "(none)"}
+Tags: ${(post.tags || []).join(", ") || "(none)"}
+Article body (truncated): ${body}
+
+Write ONE image-generation prompt (max 60 words) for an abstract editorial cover illustration that expresses
+the article's core idea — not its title text. Describe subject matter, composition and mood only.
+Do not mention text, typography, letters or logos. Output the prompt sentence only, no preamble.`;
+  try {
+    const json = await geminiJson(`${TEXT_MODEL}:generateContent`, {
+      contents: [{ role: "user", parts: [{ text: brief }] }],
+      generationConfig: { temperature: 0.9, maxOutputTokens: 400 },
+    }, 30_000);
+    const text: string = (json?.candidates?.[0]?.content?.parts || [])
+      .map((p: any) => p?.text || "")
+      .join(" ")
+      .trim();
+    if (text && text.length > 20) return `${text} ${STYLE_GUIDE}`;
+  } catch (err) {
+    console.error("Prompt generation failed, falling back:", err);
+  }
+  return `Abstract editorial cover illustration expressing the idea of "${post.title}" for startup founders. ${STYLE_GUIDE}`;
+}
+
+async function attachImagesToPost(supabase: any, post: any) {
+  try {
+    const prompt = await buildImagePrompt(post);
+    let image: { bytes: Uint8Array; mime: string } | null = null;
+    let lastErr: unknown = null;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const json = await geminiJson(`${IMAGE_MODEL}:generateContent`, {
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+        });
+        const parts = json?.candidates?.[0]?.content?.parts || [];
+        const inline = parts.find((p: any) => p?.inlineData?.data)?.inlineData;
+        if (!inline?.data) throw new Error("Gemini returned no image data");
+        const bin = atob(inline.data);
+        const bytes = new Uint8Array(bin.length);
+        for (let j = 0; j < bin.length; j++) bytes[j] = bin.charCodeAt(j);
+        image = { bytes, mime: inline.mimeType || "image/png" };
+        break;
+      } catch (err) {
+        lastErr = err;
+        console.error(`Gemini image attempt ${i + 1}/3 failed:`, err);
+        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+    if (!image) throw new Error(`Gemini image generation failed: ${lastErr}`);
+
+    const when = post.published_at ? new Date(post.published_at) : new Date();
+    const ext = image.mime.includes("jpeg") ? "jpg" : "png";
+    const dir = `${when.getUTCFullYear()}/${String(when.getUTCMonth() + 1).padStart(2, "0")}/${post.slug}`;
+    const urls: Record<string, string> = {};
+    const version = Date.now().toString(36);
+    for (const name of ["hero", "card", "og"]) {
+      const path = `${dir}/${name}.${ext}`;
+      const { error } = await supabase.storage.from(BLOG_IMAGE_BUCKET).upload(path, image.bytes, {
+        contentType: image.mime,
+        cacheControl: "31536000",
+        upsert: true,
+      });
+      if (error) throw new Error(`Upload failed (${path}): ${error.message}`);
+      const { data } = supabase.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(path);
+      urls[name] = `${data.publicUrl}?v=${version}`;
+    }
+
+    const { error: updateError } = await supabase
+      .from("blog_posts")
+      .update({
+        cover_image_url: urls.hero,
+        card_image_url: urls.card,
+        og_image_url: urls.og,
+        image_prompt: prompt,
+      })
+      .eq("id", post.id);
+    if (updateError) throw new Error(updateError.message);
+
+    return { hero: urls.hero, card: urls.card, og: urls.og, prompt };
+  } catch (err) {
+    console.error(`Blog artwork failed for ${post.slug}:`, err);
+    return null;
+  }
+}
+
 
 function slugify(text: string): string {
   return text
