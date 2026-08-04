@@ -83,6 +83,8 @@ const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
 const VibeCodeYourFuture = lazy(() => import("./pages/VibeCodeYourFuture"));
+import { isCampaignHost, CAMPAIGN_ORIGIN } from "@/lib/campaignHost";
+
 const Search = lazy(() => import("./pages/Search"));
 const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
