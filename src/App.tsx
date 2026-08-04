@@ -442,7 +442,7 @@ const AppContent = () => {
 
 
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={campaignHost ? <VibeCodeYourFuture /> : <Home />} />
             <Route path="/start" element={<Start />} />
             <Route path="/products" element={<Products />} />
             <Route path="/submit" element={<Submit />} />
