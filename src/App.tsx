@@ -83,6 +83,8 @@ const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
 const VibeCodeYourFuture = lazy(() => import("./pages/VibeCodeYourFuture"));
+import { isCampaignHost } from "@/lib/campaignHost";
+
 const Search = lazy(() => import("./pages/Search"));
 const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
@@ -102,10 +104,13 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
+  const campaignHost = isCampaignHost();
   const staticPages = ['/about', '/terms', '/privacy'];
   const standalonePages = ['/reserve', '/vibecodeyourfuture'];
-  const isStandalone = standalonePages.includes(location.pathname);
+  const isStandalone = standalonePages.includes(location.pathname)
+    || (campaignHost && location.pathname === '/');
   const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
+
 
   const path = location.pathname;
   const isCollectionsList = path === '/collections' || path === '/my-collections' || path === '/search';
@@ -437,7 +442,7 @@ const AppContent = () => {
 
 
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={campaignHost ? <VibeCodeYourFuture /> : <Home />} />
             <Route path="/start" element={<Start />} />
             <Route path="/products" element={<Products />} />
             <Route path="/submit" element={<Submit />} />
