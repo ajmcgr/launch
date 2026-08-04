@@ -27,6 +27,31 @@ function isCronAuthorized(req: Request): boolean {
   return false;
 }
 
+// Allow signed-in admins (the /admin Blog tab) to trigger runs with their JWT.
+async function isAdminAuthorized(req: Request): Promise<boolean> {
+  const authHeader = req.headers.get("Authorization") || req.headers.get("authorization") || "";
+  const token = authHeader.replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  try {
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: userData, error } = await admin.auth.getUser(token);
+    if (error || !userData?.user) return false;
+    const { data: roleData } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userData.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    return !!roleData;
+  } catch {
+    return false;
+  }
+}
+
+
 // ---------------------------------------------------------------- gemini
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const TEXT_MODEL = "gemini-2.5-flash";
@@ -196,7 +221,9 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  if (!isCronAuthorized(req)) return json({ error: "Unauthorized" }, 401);
+  if (!isCronAuthorized(req) && !(await isAdminAuthorized(req))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
 
   try {
     const body = await req.json().catch(() => ({} as any));
