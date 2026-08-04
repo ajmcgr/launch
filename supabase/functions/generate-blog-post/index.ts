@@ -431,6 +431,30 @@ Return everything via the tool call.`;
     // Never fatal: a failure leaves the branded placeholder in place.
     const images = await attachImagesToPost(supabase, inserted);
 
+    // 6. Opportunistic sweep: re-image up to 2 older posts that still have no
+    // Gemini artwork (image_prompt is only ever set by the image pipeline), so
+    // the archive heals itself without any manual backfill button.
+    try {
+      const { data: stale } = await supabase
+        .from("blog_posts")
+        .select("id, slug, title, excerpt, content_md, tags, published_at")
+        .is("image_prompt", null)
+        .neq("id", inserted.id)
+        .order("published_at", { ascending: false, nullsFirst: false })
+        .limit(2);
+      for (const post of stale || []) {
+        try {
+          await attachImagesToPost(supabase, post);
+          console.log("Re-imaged older post:", post.slug);
+        } catch (err) {
+          console.error("Re-image failed for", post.slug, err);
+        }
+      }
+    } catch (err) {
+      console.error("Artwork sweep failed:", err);
+    }
+
+
     return {
       success: true,
       slug: inserted.slug,
