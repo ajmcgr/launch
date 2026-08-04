@@ -41,11 +41,17 @@ const AdminBlogTab = () => {
         body: post ? { postId: post.id } : { backfill: true, limit: 3 },
       });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const failed = (data?.results || []).filter((r: any) => !r.ok);
+      if (failed.length) {
+        toast.error(`${failed[0].slug}: ${failed[0].error}`);
+      }
       toast.success(
         post
           ? 'Artwork generated'
           : `Backfilled ${data?.succeeded ?? 0}/${data?.processed ?? 0} articles`,
       );
+
       queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
     } catch (e: any) {
       toast.error(e?.message || 'Image generation failed');
