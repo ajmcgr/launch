@@ -316,6 +316,8 @@ const VibeCodeYourFuture = () => {
         </div>
       </section>
 
+      <BlogCTA variant="newsletter" />
+
       {/* Campaign success screen */}
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
         <DialogContent className="sm:max-w-md text-center">
