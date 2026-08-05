@@ -137,4 +137,23 @@ body {
   box-shadow: none !important;
 }
 
+/* Builder Wall (Vibe Code Your Future) — continuous upward marquee */
+@keyframes builder-wall-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+.builder-wall-track {
+  animation-name: builder-wall-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .builder-wall-track {
+    animation: none !important;
+  }
+}
+
 
