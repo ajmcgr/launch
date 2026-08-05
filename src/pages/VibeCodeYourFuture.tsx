@@ -105,10 +105,10 @@ const VibeCodeYourFuture = () => {
       {/* Hero */}
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-12 text-center sm:py-16">
-          <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
+          <h1 className="mx-auto max-w-4xl text-4xl font-medium leading-[1.05] sm:text-6xl lg:text-7xl">
             Vibe Code Your Future
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             A movement from{' '}
             <a
               href="https://trylaunch.ai"
@@ -130,7 +130,7 @@ const VibeCodeYourFuture = () => {
               </Button>
               <a
                 href="#letter"
-                className="text-sm font-medium text-primary hover:underline"
+                className="text-base font-medium text-primary hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
                   document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
@@ -154,10 +154,10 @@ const VibeCodeYourFuture = () => {
       <section id="letter" className="border-b">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
-            <h2 className="mb-8 text-center font-reckless text-2xl sm:text-3xl">Why I built this</h2>
+            <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
 
-            <div className="space-y-5 text-base leading-7 text-foreground/90">
-              <p className="text-center text-muted-foreground">
+            <div className="space-y-5 text-lg leading-8 text-foreground/90">
+              <p className="text-center text-base text-muted-foreground">
                 An open letter to anyone who was just laid off.
               </p>
 
@@ -237,13 +237,13 @@ const VibeCodeYourFuture = () => {
                     loading="lazy"
                     className="mb-1 h-10 w-auto"
                   />
-                  <h3 className="text-lg font-bold">Alex MacGregor</h3>
-                  <p className="mb-2 text-base font-bold text-muted-foreground">Founder, Launch</p>
+                  <h3 className="text-xl font-bold">Alex MacGregor</h3>
+                  <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
                   <a
                     href="https://x.com/alexmacgregor__"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline"
+                    className="text-base text-primary hover:underline"
                   >
                     Follow me on X
                   </a>
@@ -257,14 +257,14 @@ const VibeCodeYourFuture = () => {
       {/* FAQ */}
       <section>
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
-          <h2 className="mb-8 text-center font-reckless text-2xl sm:text-3xl">
+          <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">
             Frequently asked questions
           </h2>
           <Accordion type="single" collapsible className="w-full">
             {FAQS.map((faq) => (
               <AccordionItem key={faq.q} value={faq.q}>
-                <AccordionTrigger className="text-left text-sm sm:text-base">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-sm leading-6 text-muted-foreground">
+                <AccordionTrigger className="text-left text-base sm:text-lg">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-base leading-7 text-muted-foreground">
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>
@@ -283,8 +283,8 @@ const VibeCodeYourFuture = () => {
       {/* Campaign success screen */}
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
         <DialogContent className="sm:max-w-md text-center">
-          <h2 className="font-reckless text-2xl">🎉 Welcome to the movement.</h2>
-          <p className="text-muted-foreground">
+          <h2 className="font-reckless text-3xl">🎉 Welcome to the movement.</h2>
+          <p className="text-base text-muted-foreground">
             Your startup is now part of Vibe Code Your Future. It's also live on Launch where
             thousands of builders can discover it.
           </p>
