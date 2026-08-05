@@ -422,7 +422,7 @@ const AppContent = () => {
               {/* Builder Wall */}
               <section>
                 <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {Array.from({ length: 24 }).map((_, i) => (
                       <div key={i} className="rounded-xl border border-border p-3 space-y-3">
                         <div className="flex items-center gap-2">
