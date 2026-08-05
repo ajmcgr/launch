@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Share2 } from 'lucide-react';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { useCampaignProducts, type BuilderWallProduct } from '@/hooks/use-campaign-products';
@@ -50,12 +49,11 @@ interface BuilderCardProps {
 }
 
 const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
-  const navigate = useNavigate();
   const styles = TileSizeClasses[size];
 
   const open = () => {
     trackCampaignEvent('builder_wall_card_clicked', product.id);
-    navigate(`/launch/${product.slug}`);
+    window.open(`/launch/${product.slug}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
