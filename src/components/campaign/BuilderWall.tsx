@@ -56,6 +56,65 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
     window.open(`/launch/${product.slug}`, '_blank', 'noopener,noreferrer');
   };
 
+  if (size === 'row' || size === 'compact') {
+    const dense = size === 'compact';
+    return (
+      <article
+        onClick={open}
+        className={`group/card flex cursor-pointer items-center gap-3 rounded-xl border bg-card transition-shadow hover:shadow-md ${dense ? 'p-3' : 'p-4'}`}
+      >
+        <img
+          src={product.iconUrl || defaultProductIcon}
+          alt={`${product.name} icon`}
+          width={40}
+          height={40}
+          loading="lazy"
+          decoding="async"
+          className={`${dense ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 rounded-lg object-cover bg-background`}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = defaultProductIcon;
+          }}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-base font-semibold leading-tight">{product.name}</h3>
+            {product.isCampaign && <VibeCodeBadge size="sm" />}
+          </div>
+          {!dense && product.tagline && (
+            <p className="truncate text-sm text-muted-foreground">{product.tagline}</p>
+          )}
+        </div>
+        {!dense && product.category && (
+          <span className="hidden flex-shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground sm:inline">
+            {product.category}
+          </span>
+        )}
+        <div
+          className="flex flex-shrink-0 items-center gap-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <SaveToCollectionButton
+            productId={product.id}
+            productName={product.name}
+            variant="bare"
+            className="rounded-md p-1"
+          />
+          <button
+            type="button"
+            aria-label={`Share ${product.name}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare(product);
+            }}
+            className="rounded-md p-1 text-muted-foreground transition-colors hover:text-primary"
+          >
+            <Share2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article
       onClick={open}
