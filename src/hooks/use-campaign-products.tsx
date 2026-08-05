@@ -72,19 +72,28 @@ export const useCampaignProducts = (limit = 32) =>
       const campaignProducts = mapRows(campaignRows, categoryMap, true);
 
       // Every launched product appears on the wall; campaign submissions come first.
-      // Paginate past PostgREST's 1000-row cap so the wall is a full backfill.
-      const PAGE = 1000;
+      // Keyset pagination (cursor on launch_date) — deep OFFSETs with these embedded
+      // joins hit the Postgres statement timeout past ~2000 rows.
+      const PAGE = 500;
       const recentRows: any[] = [];
-      for (let page = 0; page < 10; page++) {
-        const { data, error } = await supabase
+      let cursor: string | null = null;
+      const seenIds = new Set<string>();
+      for (let page = 0; page < 20; page++) {
+        let q = supabase
           .from('products')
           .select(PRODUCT_SELECT)
           .eq('status', 'launched')
           .order('launch_date', { ascending: false })
-          .range(page * PAGE, page * PAGE + PAGE - 1);
+          .limit(PAGE);
+        if (cursor) q = q.lt('launch_date', cursor);
+        const { data, error } = await q;
         if (error || !data?.length) break;
-        recentRows.push(...data);
-        if (data.length < PAGE) break;
+        const fresh = data.filter((r: any) => !seenIds.has(r.id));
+        fresh.forEach((r: any) => seenIds.add(r.id));
+        recentRows.push(...fresh);
+        const nextCursor = (data[data.length - 1] as any).launch_date;
+        if (!nextCursor || nextCursor === cursor || data.length < PAGE) break;
+        cursor = nextCursor;
       }
 
       const seen = new Set(campaignProducts.map((p) => p.id));
