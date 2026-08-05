@@ -49,7 +49,6 @@ interface BuilderCardProps {
 }
 
 const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
-  const navigate = useNavigate();
   const styles = TileSizeClasses[size];
 
   const open = () => {
