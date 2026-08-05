@@ -72,19 +72,28 @@ export const useCampaignProducts = (limit = 32) =>
       const campaignProducts = mapRows(campaignRows, categoryMap, true);
 
       // Every launched product appears on the wall; campaign submissions come first.
-      const { data: recentRows } = await supabase
-        .from('products')
-        .select(PRODUCT_SELECT)
-        .eq('status', 'launched')
-        .order('launch_date', { ascending: false })
-        .limit(limit * 2);
+      // Paginate past PostgREST's 1000-row cap so the wall is a full backfill.
+      const PAGE = 1000;
+      const recentRows: any[] = [];
+      for (let page = 0; page < 10; page++) {
+        const { data, error } = await supabase
+          .from('products')
+          .select(PRODUCT_SELECT)
+          .eq('status', 'launched')
+          .order('launch_date', { ascending: false })
+          .range(page * PAGE, page * PAGE + PAGE - 1);
+        if (error || !data?.length) break;
+        recentRows.push(...data);
+        if (data.length < PAGE) break;
+      }
 
       const seen = new Set(campaignProducts.map((p) => p.id));
-      const filler = mapRows(recentRows || [], categoryMap, false).filter(
+      const filler = mapRows(recentRows, categoryMap, false).filter(
         (p) => !seen.has(p.id)
       );
 
-      return [...campaignProducts, ...filler].slice(0, limit);
+      const all = [...campaignProducts, ...filler];
+      return limit > 0 ? all.slice(0, limit) : all;
     },
     staleTime: 5 * 60 * 1000,
   });
