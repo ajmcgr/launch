@@ -373,7 +373,7 @@ const VibeCodedIt = () => {
 
           <div className="mt-10 text-center">
             <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
-              Add Your App
+              Submit Your App
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
