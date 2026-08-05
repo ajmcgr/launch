@@ -169,6 +169,12 @@ body {
   to { transform: translateY(-50%); }
 }
 
+@media (max-width: 639px) {
+  .builder-wall-track:not(.is-reverse) {
+    animation-direction: reverse;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .builder-wall-track { animation: none; }
 }
