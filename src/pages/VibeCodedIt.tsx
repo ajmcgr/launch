@@ -161,7 +161,7 @@ const VibeCodedIt = () => {
 
       {/* Campaign header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background">
-        <div className="container mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
+        <div className="container mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
           <div className="flex flex-shrink-0 items-center gap-5">
             <Link to="/" aria-label="Launch home">
               <img src={campaignIcon.url} alt="Launch" width={40} height={40} className="h-10 w-10 object-contain" />
