@@ -104,11 +104,11 @@ const VibeCodeYourFuture = () => {
 
       {/* Hero */}
       <section>
-        <div className="container mx-auto max-w-7xl px-4 py-20 text-center sm:py-28">
-          <h1 className="mx-auto max-w-4xl text-4xl font-medium leading-[1.05] sm:text-6xl lg:text-7xl">
+        <div className="container mx-auto max-w-7xl px-4 py-12 text-center sm:py-16">
+          <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
             Vibe Code Your Future
           </h1>
-          <p className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             A movement from{' '}
             <a
               href="https://trylaunch.ai"
@@ -122,7 +122,7 @@ const VibeCodeYourFuture = () => {
             left your job, or simply decided to build, launch your vibe coded startup and join a
             growing community of founders creating the next generation of software.
           </p>
-          <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="mt-8 flex flex-col items-center gap-3">
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
                 Add Your App
