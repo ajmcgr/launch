@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
@@ -51,6 +51,15 @@ const VibeCodeYourFuture = () => {
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      trackCampaignEvent('campaign_search_submitted');
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
 
   useEffect(() => {
     trackCampaignEvent('campaign_page_view');
@@ -138,6 +147,25 @@ const VibeCodeYourFuture = () => {
               >
                 Read the letter
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Search */}
+      <section>
+        <div className="container mx-auto max-w-7xl px-4">
+          <div className="mx-auto max-w-2xl">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="Search launches, founders, categories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                className="h-12 w-full rounded-full border border-border bg-background pl-10 pr-4 text-base text-foreground shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
+              />
             </div>
           </div>
         </div>
