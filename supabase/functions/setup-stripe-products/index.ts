@@ -41,7 +41,7 @@ serve(async (req) => {
       },
       // Advertising products
       {
-        name: 'Website Placement',
+        name: 'Website Ad',
         description: 'Sponsored homepage listing for one month',
         amount: 25000, // $250 in cents
         metadata: { plan_id: 'ad_website' }
