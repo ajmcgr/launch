@@ -117,15 +117,28 @@ interface WallColumnProps {
   items: WallColumnItem[];
   onShare: (p: BuilderWallProduct) => void;
   className?: string;
+  duration: number;
+  reverse?: boolean;
 }
 
-const WallColumn = ({ items, onShare, className = '' }: WallColumnProps) => {
+const WallColumn = ({ items, onShare, className = '', duration, reverse }: WallColumnProps) => {
   if (items.length === 0) return null;
-  return (
-    <div className={`min-w-0 flex-1 flex flex-col gap-4 ${className}`}>
+  const group = (keyPrefix: string) => (
+    <div className="flex flex-col gap-5">
       {items.map((item, i) => (
-        <BuilderCard key={`${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
+        <BuilderCard key={`${keyPrefix}-${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
       ))}
+    </div>
+  );
+  return (
+    <div className={`min-w-0 flex-1 ${className}`}>
+      <div
+        className={`builder-wall-track ${reverse ? 'is-reverse' : ''}`}
+        style={{ ['--wall-duration' as string]: `${duration}s` }}
+      >
+        {group('a')}
+        {group('b')}
+      </div>
     </div>
   );
 };
@@ -136,7 +149,7 @@ export const BuilderWall = () => {
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
   const columns = useMemo(() => {
-    const list = (products || []).slice(0, visibleRows * 4);
+    const list = products || [];
     const cols: WallColumnItem[][] = [[], [], [], []];
     list.forEach((product, i) => {
       const colIndex = i % 4;
@@ -144,19 +157,20 @@ export const BuilderWall = () => {
       cols[colIndex].push({ product, size: getTileSize(rowIndex + colIndex) });
     });
     return cols;
-  }, [products, visibleRows]);
+  }, [products]);
 
-  const hasMore = products && visibleRows * 4 < products.length;
+  const wallHeight = visibleRows * 120 + 160;
+  const hasMore = visibleRows < MAX_ROWS;
 
   const loadMore = () => {
-    setVisibleRows((prev) => prev + LOAD_MORE_ROWS);
+    setVisibleRows((prev) => Math.min(prev + LOAD_MORE_ROWS, MAX_ROWS));
   };
 
   if (isLoading) {
     return (
       <div className="container mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 32 }).map((_, i) => {
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 24 }).map((_, i) => {
             const size = getTileSize(i);
             const height = size === 'tall' ? 'h-56' : size === 'compact' ? 'h-24' : 'h-40';
             return (
@@ -177,11 +191,16 @@ export const BuilderWall = () => {
     <>
       <div className="group/wall">
         <div className="container mx-auto max-w-7xl px-4">
-          <div className="flex gap-4">
-            <WallColumn items={columns[0]} onShare={setSharing} />
-            <WallColumn items={columns[1]} onShare={setSharing} className="hidden sm:block" />
-            <WallColumn items={columns[2]} onShare={setSharing} className="hidden md:block" />
-            <WallColumn items={columns[3]} onShare={setSharing} className="hidden lg:block" />
+          <div
+            className="builder-wall-viewport"
+            style={{ ['--wall-height' as string]: `${wallHeight}px` }}
+          >
+            <div className="flex gap-5">
+              <WallColumn items={columns[0]} onShare={setSharing} duration={64} />
+              <WallColumn items={columns[1]} onShare={setSharing} className="hidden sm:block" duration={78} reverse />
+              <WallColumn items={columns[2]} onShare={setSharing} className="hidden md:block" duration={70} />
+              <WallColumn items={columns[3]} onShare={setSharing} className="hidden lg:block" duration={86} reverse />
+            </div>
           </div>
         </div>
       </div>
@@ -200,3 +219,4 @@ export const BuilderWall = () => {
 };
 
 export default BuilderWall;
+
