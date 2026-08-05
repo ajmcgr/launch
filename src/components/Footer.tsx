@@ -28,7 +28,7 @@ const RedditIcon = ({ className }: { className?: string }) => (
 
 const Copyright = () => (
   <p>
-    Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
+    Built with 🫶🏻 by{' '}
     <a
       href="https://x.com/alexmacgregor__"
       target="_blank"
