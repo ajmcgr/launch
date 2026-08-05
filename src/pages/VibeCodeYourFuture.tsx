@@ -348,7 +348,46 @@ const VibeCodeYourFuture = () => {
         </div>
       </section>
 
-      <BlogCTA variant="newsletter" />
+      {/* Newsletter */}
+      <section className="border-t">
+        <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
+          <div className="mx-auto max-w-xl text-center">
+            <h2 className="font-reckless text-3xl sm:text-4xl">Get the Newsletter</h2>
+            <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+              Subscribe for free. Weekly updates on launches, no filler.
+            </p>
+
+            <form onSubmit={handleSubscribe} className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
+              />
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isSubscribing}
+                className="h-12 w-full sm:w-auto px-8 text-base whitespace-nowrap"
+              >
+                {isSubscribing ? 'Subscribing...' : 'Subscribe'}
+              </Button>
+            </form>
+
+            {subscribeMessage && (
+              <p
+                className={`mt-4 text-sm ${
+                  subscribeError ? 'text-destructive' : 'text-muted-foreground'
+                }`}
+              >
+                {subscribeMessage}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* Campaign success screen */}
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
