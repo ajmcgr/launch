@@ -135,14 +135,8 @@ const VibeCodeYourFuture = () => {
       </section>
 
       {/* Builder Wall */}
-      <section className="border-b">
+      <section>
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
-          <div className="mb-10 text-center">
-            <h2 className="font-reckless text-3xl sm:text-4xl">The Builder Wall</h2>
-            <p className="mt-3 text-muted-foreground">
-              Real people, real products, already shipping.
-            </p>
-          </div>
           <BuilderWall />
         </div>
       </section>
