@@ -152,6 +152,25 @@ const VibeCodeYourFuture = () => {
         </div>
       </section>
 
+      {/* Search */}
+      <section>
+        <div className="container mx-auto max-w-7xl px-4">
+          <div className="mx-auto max-w-2xl">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="Search launches, founders, categories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                className="h-12 w-full rounded-full border border-border bg-background pl-10 pr-4 text-base text-foreground shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Builder Wall */}
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
