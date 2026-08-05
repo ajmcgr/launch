@@ -43,7 +43,7 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
             className="h-9 w-9 object-contain"
           />
         ) : (
-          <span className="text-2xl font-bold text-muted-foreground">{item.name[0]}</span>
+          <span className="text-xl font-bold text-muted-foreground">{item.name[0]}</span>
         )}
       </div>
       <div className="flex items-center gap-1.5">
