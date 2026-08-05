@@ -8,13 +8,11 @@ import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
-const ROW_HEIGHT = 120;
 const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
 const PRODUCTS_LIMIT = 0; // 0 = all launched products
 
-const TILE_SIZE_PATTERN = ['tall', 'standard', 'compact', 'standard', 'standard', 'tall', 'compact', 'standard'] as const;
-type TileSize = (typeof TILE_SIZE_PATTERN)[number];
+type TileSize = 'tall' | 'standard' | 'compact';
 
 const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: string; tagline: string; footer: string }> = {
   tall: {
@@ -25,11 +23,11 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: stri
     footer: 'mt-5',
   },
   standard: {
-    card: 'p-5',
+    card: 'flex h-full flex-col p-5',
     icon: 'h-9 w-9',
     name: 'text-base',
     tagline: 'line-clamp-2',
-    footer: 'mt-4',
+    footer: 'mt-auto pt-4',
   },
   compact: {
     card: 'p-4',
@@ -40,7 +38,6 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: stri
   },
 };
 
-const getTileSize = (index: number): TileSize => TILE_SIZE_PATTERN[index % TILE_SIZE_PATTERN.length];
 
 interface BuilderCardProps {
   product: BuilderWallProduct;
@@ -120,62 +117,18 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
   );
 };
 
-interface WallColumnItem {
-  product: BuilderWallProduct;
-  size: TileSize;
-}
-
-interface WallColumnProps {
-  items: WallColumnItem[];
-  onShare: (p: BuilderWallProduct) => void;
-  className?: string;
-  duration: number;
-  reverse?: boolean;
-}
-
-const WallColumn = ({ items, onShare, className = '', duration, reverse }: WallColumnProps) => {
-  if (items.length === 0) return null;
-  const group = (keyPrefix: string) => (
-    <div className="flex flex-col gap-5">
-      {items.map((item, i) => (
-        <BuilderCard key={`${keyPrefix}-${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
-      ))}
-    </div>
-  );
-  return (
-    <div className={`min-w-0 flex-1 ${className}`}>
-      <div
-        className={`builder-wall-track ${reverse ? 'is-reverse' : ''}`}
-        style={{ ['--wall-duration' as string]: `${duration}s` }}
-      >
-        {group('a')}
-        {group('b')}
-      </div>
-    </div>
-  );
-};
-
 export const BuilderWall = () => {
   const { data: products, isLoading } = useCampaignProducts(PRODUCTS_LIMIT);
   const [sharing, setSharing] = useState<BuilderWallProduct | null>(null);
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
-  const columns = useMemo(() => {
-    const list = (products || []).slice(0, visibleRows * 4);
-    const cols: WallColumnItem[][] = [[], [], [], []];
-    list.forEach((product, i) => {
-      const colIndex = i % 4;
-      const rowIndex = Math.floor(i / 4);
-      cols[colIndex].push({ product, size: getTileSize(rowIndex + colIndex) });
-    });
-    return cols;
-  }, [products, visibleRows]);
+  const visible = useMemo(
+    () => (products || []).slice(0, visibleRows * 4),
+    [products, visibleRows]
+  );
 
   const maxRows = Math.max(INITIAL_ROWS, Math.ceil((products?.length || 0) / 4));
-
-  const wallHeight = visibleRows * ROW_HEIGHT + 160;
-  const hasMore =
-    visibleRows < maxRows && visibleRows * 4 < (products?.length || 0);
+  const hasMore = visibleRows < maxRows && visibleRows * 4 < (products?.length || 0);
 
   const loadMore = () => {
     setVisibleRows((prev) => Math.min(prev + LOAD_MORE_ROWS, maxRows));
@@ -185,16 +138,12 @@ export const BuilderWall = () => {
     return (
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: INITIAL_ROWS * 4 }).map((_, i) => {
-            const size = getTileSize(i);
-            const height = size === 'tall' ? 'h-56' : size === 'compact' ? 'h-24' : 'h-40';
-            return (
-              <div
-                key={i}
-                className={`${height} animate-pulse rounded-xl border border-border bg-muted/40`}
-              />
-            );
-          })}
+          {Array.from({ length: INITIAL_ROWS * 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-40 animate-pulse rounded-xl border border-border bg-muted/40"
+            />
+          ))}
         </div>
       </div>
     );
@@ -204,19 +153,16 @@ export const BuilderWall = () => {
 
   return (
     <>
-      <div className="group/wall">
-        <div className="container mx-auto max-w-7xl px-4">
-          <div
-            className="builder-wall-viewport"
-            style={{ ['--wall-height' as string]: `${wallHeight}px` }}
-          >
-            <div className="flex gap-5">
-              <WallColumn items={columns[0]} onShare={setSharing} duration={64} />
-              <WallColumn items={columns[1]} onShare={setSharing} className="hidden md:block" duration={78} reverse />
-              <WallColumn items={columns[2]} onShare={setSharing} className="hidden lg:block" duration={70} />
-              <WallColumn items={columns[3]} onShare={setSharing} className="hidden xl:block" duration={86} reverse />
-            </div>
-          </div>
+      <div className="container mx-auto max-w-7xl px-4">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {visible.map((product) => (
+            <BuilderCard
+              key={product.id}
+              product={product}
+              size="standard"
+              onShare={setSharing}
+            />
+          ))}
         </div>
       </div>
 
@@ -232,6 +178,7 @@ export const BuilderWall = () => {
     </>
   );
 };
+
 
 export default BuilderWall;
 
