@@ -201,16 +201,16 @@ const VibeCodedIt = () => {
 
       {/* Hero */}
       <section>
-        <div className="container mx-auto max-w-7xl px-4 py-12 text-center sm:py-16">
+        <div className="container mx-auto max-w-7xl px-4 py-8 text-center sm:py-10">
           <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
             Vibe Coded It
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Whether you were laid off, left your job, or simply decided to build,
             launch your vibe coded startup and join a growing community of founders
             creating the next generation of software.
           </p>
-          <div className="mt-8 flex flex-col items-center gap-3">
+          <div className="mt-6 flex flex-col items-center gap-3">
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
                 Add Your App
@@ -231,12 +231,11 @@ const VibeCodedIt = () => {
         </div>
       </section>
 
-
       {/* Builder Wall */}
       <section>
-        <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
+        <div className="container mx-auto max-w-7xl px-4 py-10 sm:py-12">
           {rawCount > 0 && (
-            <p className="mb-8 text-center text-base text-muted-foreground sm:text-lg">
+            <p className="mb-6 text-center text-base text-muted-foreground sm:text-lg">
               Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added
             </p>
           )}

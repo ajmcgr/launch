@@ -8,6 +8,7 @@ export interface BuilderWallProduct {
   tagline: string | null;
   slug: string;
   iconUrl?: string;
+  screenshotUrl?: string;
   category?: string;
   founder?: string;
   isCampaign: boolean;
@@ -29,6 +30,9 @@ const mapRows = (rows: any[], categoryMap: Map<number, string>, isCampaign: bool
       tagline: p.tagline,
       slug: p.slug,
       iconUrl: p.product_media?.find((m: any) => m.type === 'icon')?.url,
+      screenshotUrl:
+        p.product_media?.find((m: any) => m.type === 'screenshot')?.url ||
+        p.product_media?.find((m: any) => m.type === 'thumbnail')?.url,
       category: p.product_category_map
         ?.map((c: any) => categoryMap.get(c.category_id))
         .filter(Boolean)[0],
