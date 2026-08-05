@@ -87,8 +87,8 @@ const PlaceholderTile = () => (
     to="/advertising"
     className="block rounded-xl border border-dashed border-border bg-muted/10 p-3 hover:border-foreground/25 hover:bg-muted/20 transition-all group"
   >
-    <div className="h-20 w-full rounded-lg bg-muted/20 flex items-center justify-center mb-3">
-      <span className="text-2xl font-light text-muted-foreground group-hover:text-foreground transition-colors">
+    <div className="h-14 w-full rounded-lg bg-muted/20 flex items-center justify-center mb-2.5">
+      <span className="text-xl font-light text-muted-foreground group-hover:text-foreground transition-colors">
         +
       </span>
     </div>
