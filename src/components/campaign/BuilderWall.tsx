@@ -150,8 +150,6 @@ export const BuilderWall = () => {
             <WallColumn items={columns[1]} duration={COLUMN_DURATIONS[1]} onShare={setSharing} className="hidden sm:block" />
             <WallColumn items={columns[2]} duration={COLUMN_DURATIONS[2]} onShare={setSharing} className="hidden md:block" />
             <WallColumn items={columns[3]} duration={COLUMN_DURATIONS[3]} onShare={setSharing} className="hidden lg:block" />
-            <WallColumn items={columns[4]} duration={COLUMN_DURATIONS[4]} onShare={setSharing} className="hidden lg:block" />
-            <WallColumn items={columns[5]} duration={COLUMN_DURATIONS[5]} onShare={setSharing} className="hidden lg:block" />
           </div>
         </div>
       </div>
