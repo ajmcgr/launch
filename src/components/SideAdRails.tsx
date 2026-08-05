@@ -58,7 +58,7 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
   );
 
   const cls =
-    'flex flex-col justify-center h-full rounded-xl border border-border bg-card p-2.5 hover:border-foreground/20 hover:shadow-sm transition-all group';
+    'flex flex-col justify-center min-h-[132px] overflow-hidden rounded-xl border border-border bg-card p-2.5 hover:border-foreground/20 hover:shadow-sm transition-all group';
 
   return item.external ? (
     <a
@@ -80,7 +80,7 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
 const PlaceholderTile = () => (
   <Link
     to="/advertise"
-    className="flex flex-col justify-center h-full rounded-xl border border-dashed border-border bg-muted/10 p-2.5 hover:border-foreground/25 hover:bg-muted/20 transition-all group"
+    className="flex flex-col justify-center min-h-[132px] overflow-hidden rounded-xl border border-dashed border-border bg-muted/10 p-2.5 hover:border-foreground/25 hover:bg-muted/20 transition-all group"
   >
     <div className="h-10 w-full rounded-lg bg-muted/20 flex items-center justify-center mb-2 shrink-0">
       <span className="text-lg font-light text-muted-foreground group-hover:text-foreground transition-colors">
@@ -131,7 +131,7 @@ const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
       </h3>
       <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto pb-2 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) => (
-          <div key={ads[i]?.key ?? `ph-${side}-${i}`} className="flex-1 min-h-0">
+          <div key={ads[i]?.key ?? `ph-${side}-${i}`} className="shrink-0">
             {ads[i] ? (
               <AdTile item={ads[i]} placement={`rail_${side}`} />
             ) : (
