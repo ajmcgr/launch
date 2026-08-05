@@ -158,11 +158,34 @@ const VibeCodedIt = () => {
 
       {/* Campaign header */}
       <header>
-        <div className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <Link to="/" aria-label="Launch home">
-            <img src={logo} alt="Launch" width={120} height={40} className="h-10 w-auto object-contain" />
-          </Link>
-          <div className="flex items-center gap-3">
+        <div className="container mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
+          <div className="flex flex-shrink-0 items-center gap-5">
+            <Link to="/" aria-label="Launch home">
+              <img src={campaignIcon.url} alt="Launch" width={32} height={32} className="h-8 w-8 object-contain" />
+            </Link>
+            <Link to="/products" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
+              Products
+            </Link>
+            <Link to="/collections" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
+              Collections
+            </Link>
+          </div>
+
+          <div className="min-w-0 flex-1 px-2">
+            <div className="relative mx-auto w-full max-w-md">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="Search launches, founders, categories..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                className="h-10 w-full rounded-full border border-border bg-background pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-shrink-0 items-center gap-3">
             <Link
               to="/auth"
               className="text-sm font-medium text-nav-text transition-colors hover:text-primary"
@@ -208,24 +231,6 @@ const VibeCodedIt = () => {
         </div>
       </section>
 
-      {/* Search */}
-      <section>
-        <div className="container mx-auto max-w-7xl px-4">
-          <div className="mx-auto max-w-2xl">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search launches, founders, categories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearch}
-                className="h-12 w-full rounded-full border border-border bg-background pl-10 pr-4 text-base text-foreground shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Builder Wall */}
       <section>
