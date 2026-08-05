@@ -96,11 +96,11 @@ const PlaceholderTile = () => (
   </Link>
 );
 
-const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
+const Rail = ({ ads, side, isCampaign }: { ads: RailAd[]; side: 'left' | 'right'; isCampaign?: boolean }) => {
   return (
     <aside
       aria-label={`${side} sponsored`}
-      className={`hidden min-[1700px]:flex flex-col fixed top-28 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+      className={`hidden min-[1700px]:flex flex-col fixed ${isCampaign ? 'top-20' : 'top-28'} bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
     >
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
         Ad
@@ -120,7 +120,7 @@ const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
   );
 };
 
-const SideAdRails = () => {
+const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
   const [ads, setAds] = useState<RailAd[]>([]);
 
   useEffect(() => {
@@ -182,8 +182,8 @@ const SideAdRails = () => {
 
   return (
     <>
-      <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="left" />
-      <Rail ads={ads.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2)} side="right" />
+      <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="left" isCampaign={isCampaignPage} />
+      <Rail ads={ads.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2)} side="right" isCampaign={isCampaignPage} />
     </>
   );
 };
