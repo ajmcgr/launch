@@ -154,10 +154,10 @@ const VibeCodeYourFuture = () => {
       <section id="letter" className="border-b">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
-            <h2 className="mb-8 text-center font-reckless text-2xl sm:text-3xl">Why I built this</h2>
+            <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
 
-            <div className="space-y-5 text-base leading-7 text-foreground/90">
-              <p className="text-center text-muted-foreground">
+            <div className="space-y-5 text-lg leading-8 text-foreground/90">
+              <p className="text-center text-base text-muted-foreground">
                 An open letter to anyone who was just laid off.
               </p>
 
@@ -237,13 +237,13 @@ const VibeCodeYourFuture = () => {
                     loading="lazy"
                     className="mb-1 h-10 w-auto"
                   />
-                  <h3 className="text-lg font-bold">Alex MacGregor</h3>
-                  <p className="mb-2 text-base font-bold text-muted-foreground">Founder, Launch</p>
+                  <h3 className="text-xl font-bold">Alex MacGregor</h3>
+                  <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
                   <a
                     href="https://x.com/alexmacgregor__"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline"
+                    className="text-base text-primary hover:underline"
                   >
                     Follow me on X
                   </a>
