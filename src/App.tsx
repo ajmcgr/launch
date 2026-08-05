@@ -136,10 +136,17 @@ const AppContent = () => {
   const isVibecoders = path === '/vibecoders' || path === '/makers';
   const isStart = path === '/start';
 
+  const showAdRails = !isStandalone
+    && !path.startsWith('/admin')
+    && !path.startsWith('/advertis')
+    && !path.startsWith('/go/');
+
   return (
     <div className="flex flex-col min-h-screen">
       {!isStandalone && <Header />}
+      {showAdRails && <SideAdRails />}
       <main className="flex-1">
+
         <Suspense fallback={
           location.pathname === '/reserve' ? (
             <div className="min-h-screen bg-background flex items-center justify-center" aria-label="Loading" role="status">
