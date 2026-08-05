@@ -8,7 +8,7 @@ import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
 const ROW_HEIGHT = 120;
-const INITIAL_ROWS = 8;
+const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
 const PRODUCTS_LIMIT = 0; // 0 = all launched products
 
