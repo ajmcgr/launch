@@ -67,7 +67,7 @@ const VibeCodeYourFuture = () => {
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       trackCampaignEvent('campaign_search_submitted');
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      window.open(`/search?q=${encodeURIComponent(searchQuery.trim())}`, '_blank');
       setSearchQuery('');
     }
   };
@@ -129,18 +129,9 @@ const VibeCodeYourFuture = () => {
             Vibe Code Your Future
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            A movement from{' '}
-            <a
-              href="https://trylaunch.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Launch
-            </a>{' '}
-            for people building their own future with AI. Whether you were laid off,
-            left your job, or simply decided to build, launch your vibe coded startup and join a
-            growing community of founders creating the next generation of software.
+            Whether you were laid off, left your job, or simply decided to build,
+            launch your vibe coded startup and join a growing community of founders
+            creating the next generation of software.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3">
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -198,7 +189,7 @@ const VibeCodeYourFuture = () => {
       <section id="letter" className="border-b">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
-            <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
+            <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">An Open Letter</h2>
 
             <div className="space-y-5 text-lg leading-8 text-foreground/90">
               <p className="text-center text-base text-muted-foreground">
