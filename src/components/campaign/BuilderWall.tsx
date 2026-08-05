@@ -117,7 +117,7 @@ export const BuilderWall = () => {
     return cols;
   }, [products, visibleRows]);
 
-  const hasMore = products && visibleRows * 6 < products.length;
+  const hasMore = products && visibleRows * 4 < products.length;
 
   const loadMore = () => {
     setVisibleRows((prev) => prev + LOAD_MORE_ROWS);
