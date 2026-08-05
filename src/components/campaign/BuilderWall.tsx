@@ -14,10 +14,11 @@ const PRODUCTS_LIMIT = 0; // 0 = all launched products
 
 type TileSize = 'tall' | 'standard' | 'compact';
 
-const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: string; tagline: string; footer: string }> = {
+const TileSizeClasses: Record<TileSize, { card: string; icon: string; screenshot: string; name: string; tagline: string; footer: string }> = {
   tall: {
     card: 'p-6',
     icon: 'h-11 w-11',
+    screenshot: 'mt-4 aspect-[4/3]',
     name: 'text-lg',
     tagline: 'line-clamp-3',
     footer: 'mt-5',
@@ -25,6 +26,7 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: stri
   standard: {
     card: 'flex h-full flex-col p-5',
     icon: 'h-9 w-9',
+    screenshot: 'mt-3 aspect-video',
     name: 'text-base',
     tagline: 'line-clamp-2',
     footer: 'mt-auto pt-4',
@@ -32,6 +34,7 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: stri
   compact: {
     card: 'p-4',
     icon: 'h-8 w-8',
+    screenshot: 'mt-2 aspect-video',
     name: 'text-base',
     tagline: 'hidden',
     footer: 'mt-3',
@@ -100,6 +103,21 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
         </button>
         </div>
       </div>
+
+      {product.screenshotUrl && (
+        <div className={`relative w-full overflow-hidden rounded-lg bg-muted ${styles.screenshot}`}>
+          <img
+            src={product.screenshotUrl}
+            alt={`${product.name} screenshot`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        </div>
+      )}
 
       {product.tagline && size !== 'compact' && (
         <p className={`mt-2 text-sm text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
