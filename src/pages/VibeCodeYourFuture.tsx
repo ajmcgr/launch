@@ -141,99 +141,101 @@ const VibeCodeYourFuture = () => {
       {/* Alex's Letter */}
       <section className="border-b">
         <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
-          <h2 className="mb-10 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
+          <div className="rounded-lg border border-border bg-card p-8 md:p-12">
+            <h2 className="mb-10 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
 
-          <div className="space-y-6 text-[17px] leading-8 text-foreground/90">
-            <p className="text-center text-muted-foreground">
-              An open letter to anyone who was just laid off.
-            </p>
+            <div className="space-y-6 text-[17px] leading-8 text-foreground/90">
+              <p className="text-center text-muted-foreground">
+                An open letter to anyone who was just laid off.
+              </p>
 
-            <p>
-              <strong>Hey,</strong>
-            </p>
+              <p>
+                <strong>Hey,</strong>
+              </p>
 
-            <p>
-              If you're reading this, there's a good chance you just lost your job. Maybe it was a
-              Slack message. Maybe a calendar invite with no title. Maybe an email at 6am. However
-              it happened, I'm sorry. It hurts, and it's okay that it hurts.
-            </p>
+              <p>
+                If you're reading this, there's a good chance you just lost your job. Maybe it was a
+                Slack message. Maybe a calendar invite with no title. Maybe an email at 6am. However
+                it happened, I'm sorry. It hurts, and it's okay that it hurts.
+              </p>
 
-            <p>
-              I'm not going to tell you that "everything happens for a reason" or that you should be
-              grateful. That's not fair, and it's not the point of this letter.
-            </p>
+              <p>
+                I'm not going to tell you that "everything happens for a reason" or that you should be
+                grateful. That's not fair, and it's not the point of this letter.
+              </p>
 
-            <p>
-              The point is this: a lot of the best founders I know started exactly where you are
-              right now. Not because they planned it. Because the job ended, and they finally had
-              the time, the anger, and the quiet to build the thing they'd been thinking about for
-              years.
-            </p>
+              <p>
+                The point is this: a lot of the best founders I know started exactly where you are
+                right now. Not because they planned it. Because the job ended, and they finally had
+                the time, the anger, and the quiet to build the thing they'd been thinking about for
+                years.
+              </p>
 
-            <p>
-              You don't need permission and you certainly don't need a co-founder or indeed a
-              perfect idea. You need a small, honest first step. Something you can ship this week.
-              Something tiny that proves to yourself that you can still make things.
-            </p>
+              <p>
+                You don't need permission and you certainly don't need a co-founder or indeed a
+                perfect idea. You need a small, honest first step. Something you can ship this week.
+                Something tiny that proves to yourself that you can still make things.
+              </p>
 
-            <p>
-              I did. I built{' '}
-              <a
-                href="https://trylaunch.ai/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Launch
-              </a>{' '}
-              without any coding experience into the largest vibe code community in the world.
-            </p>
-
-            <p>You weren't laid off, you were set free. Take a walk. Drink some water.</p>
-
-            <p>
-              <strong>Stop applying, and start building. You've got this.</strong>
-            </p>
-
-            <p>
-              PS - I created a free playbook{' '}
-              <a
-                href="https://docs.google.com/presentation/d/19J_RAtPgpW_Xx5Uk5HsJhiHJJ1ajtCB-7AYB_zLT6f4/edit?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                here
-              </a>{' '}
-              to help you get started.
-            </p>
-
-            <div className="pt-8">
-              <div className="flex flex-col items-start">
-                <img
-                  src={alexPhoto}
-                  alt="Alex MacGregor"
-                  width={128}
-                  height={128}
-                  loading="lazy"
-                  className="mb-4 h-32 w-32 object-cover"
-                />
-                <img
-                  src={signature}
-                  alt="Alex MacGregor signature"
-                  loading="lazy"
-                  className="mb-1 h-10 w-auto"
-                />
-                <h3 className="text-lg font-bold">Alex MacGregor</h3>
-                <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
+              <p>
+                I did. I built{' '}
                 <a
-                  href="https://x.com/alexmacgregor__"
+                  href="https://trylaunch.ai/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  Follow me on X
-                </a>
+                  Launch
+                </a>{' '}
+                without any coding experience into the largest vibe code community in the world.
+              </p>
+
+              <p>You weren't laid off, you were set free. Take a walk. Drink some water.</p>
+
+              <p>
+                <strong>Stop applying, and start building. You've got this.</strong>
+              </p>
+
+              <p>
+                PS - I created a free playbook{' '}
+                <a
+                  href="https://docs.google.com/presentation/d/19J_RAtPgpW_Xx5Uk5HsJhiHJJ1ajtCB-7AYB_zLT6f4/edit?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  here
+                </a>{' '}
+                to help you get started.
+              </p>
+
+              <div className="pt-8">
+                <div className="flex flex-col items-start">
+                  <img
+                    src={alexPhoto}
+                    alt="Alex MacGregor"
+                    width={128}
+                    height={128}
+                    loading="lazy"
+                    className="mb-4 h-32 w-32 object-cover"
+                  />
+                  <img
+                    src={signature}
+                    alt="Alex MacGregor signature"
+                    loading="lazy"
+                    className="mb-1 h-10 w-auto"
+                  />
+                  <h3 className="text-lg font-bold">Alex MacGregor</h3>
+                  <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
+                  <a
+                    href="https://x.com/alexmacgregor__"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    Follow me on X
+                  </a>
+                </div>
               </div>
             </div>
           </div>
