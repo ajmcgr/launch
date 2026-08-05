@@ -18,6 +18,7 @@ import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
 import { ViewToggle } from '@/components/ViewToggle';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   CAMPAIGN_SLUG,
   setCampaignIntent,
@@ -188,6 +189,7 @@ const VibeCodedIt = () => {
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-3">
+            <ThemeToggle />
             <Link
               to="/auth"
               className="text-sm font-medium text-nav-text transition-colors hover:text-primary"
