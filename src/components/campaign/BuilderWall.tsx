@@ -55,7 +55,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
 
   const open = () => {
     trackCampaignEvent('builder_wall_card_clicked', product.id);
-    navigate(`/launch/${product.slug}`);
+    window.open(`/launch/${product.slug}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
