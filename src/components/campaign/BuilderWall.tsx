@@ -147,12 +147,12 @@ const WallColumn = ({ items, onShare, className = '', duration, reverse }: WallC
 };
 
 export const BuilderWall = () => {
-  const { data: products, isLoading } = useCampaignProducts(64);
+  const { data: products, isLoading } = useCampaignProducts(PRODUCTS_LIMIT);
   const [sharing, setSharing] = useState<BuilderWallProduct | null>(null);
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
   const columns = useMemo(() => {
-    const list = products || [];
+    const list = (products || []).slice(0, visibleRows * 4);
     const cols: WallColumnItem[][] = [[], [], [], []];
     list.forEach((product, i) => {
       const colIndex = i % 4;
@@ -160,10 +160,11 @@ export const BuilderWall = () => {
       cols[colIndex].push({ product, size: getTileSize(rowIndex + colIndex) });
     });
     return cols;
-  }, [products]);
+  }, [products, visibleRows]);
 
-  const wallHeight = visibleRows * 120 + 160;
-  const hasMore = visibleRows < MAX_ROWS;
+  const wallHeight = visibleRows * ROW_HEIGHT + 160;
+  const hasMore =
+    visibleRows < MAX_ROWS && visibleRows * 4 < (products?.length || 0);
 
   const loadMore = () => {
     setVisibleRows((prev) => Math.min(prev + LOAD_MORE_ROWS, MAX_ROWS));
