@@ -8,13 +8,11 @@ import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
-const ROW_HEIGHT = 120;
 const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
 const PRODUCTS_LIMIT = 0; // 0 = all launched products
 
-const TILE_SIZE_PATTERN = ['tall', 'standard', 'compact', 'standard', 'standard', 'tall', 'compact', 'standard'] as const;
-type TileSize = (typeof TILE_SIZE_PATTERN)[number];
+type TileSize = 'tall' | 'standard' | 'compact';
 
 const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: string; tagline: string; footer: string }> = {
   tall: {
@@ -25,7 +23,7 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: stri
     footer: 'mt-5',
   },
   standard: {
-    card: 'p-5',
+    card: 'flex h-full flex-col p-5',
     icon: 'h-9 w-9',
     name: 'text-base',
     tagline: 'line-clamp-2',
@@ -40,7 +38,6 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: stri
   },
 };
 
-const getTileSize = (index: number): TileSize => TILE_SIZE_PATTERN[index % TILE_SIZE_PATTERN.length];
 
 interface BuilderCardProps {
   product: BuilderWallProduct;
