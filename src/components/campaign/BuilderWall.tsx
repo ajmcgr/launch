@@ -104,6 +104,21 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
         </div>
       </div>
 
+      {product.screenshotUrl && (
+        <div className={`relative w-full overflow-hidden rounded-lg bg-muted ${styles.screenshot}`}>
+          <img
+            src={product.screenshotUrl}
+            alt={`${product.name} screenshot`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+
       {product.tagline && size !== 'compact' && (
         <p className={`mt-2 text-sm text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
       )}
