@@ -10,8 +10,7 @@ import { Button } from '@/components/ui/button';
 const ROW_HEIGHT = 120;
 const INITIAL_ROWS = 8;
 const LOAD_MORE_ROWS = 5;
-const MAX_ROWS = 32;
-const PRODUCTS_LIMIT = MAX_ROWS * 4;
+const PRODUCTS_LIMIT = 0; // 0 = all launched products
 
 const TILE_SIZE_PATTERN = ['tall', 'standard', 'compact', 'standard', 'standard', 'tall', 'compact', 'standard'] as const;
 type TileSize = (typeof TILE_SIZE_PATTERN)[number];
@@ -160,12 +159,14 @@ export const BuilderWall = () => {
     return cols;
   }, [products, visibleRows]);
 
+  const maxRows = Math.max(INITIAL_ROWS, Math.ceil((products?.length || 0) / 4));
+
   const wallHeight = visibleRows * ROW_HEIGHT + 160;
   const hasMore =
-    visibleRows < MAX_ROWS && visibleRows * 4 < (products?.length || 0);
+    visibleRows < maxRows && visibleRows * 4 < (products?.length || 0);
 
   const loadMore = () => {
-    setVisibleRows((prev) => Math.min(prev + LOAD_MORE_ROWS, MAX_ROWS));
+    setVisibleRows((prev) => Math.min(prev + LOAD_MORE_ROWS, maxRows));
   };
 
   if (isLoading) {
