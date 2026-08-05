@@ -105,10 +105,10 @@ const VibeCodeYourFuture = () => {
       {/* Hero */}
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-12 text-center sm:py-16">
-          <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
+          <h1 className="mx-auto max-w-4xl text-4xl font-medium leading-[1.05] sm:text-6xl lg:text-7xl">
             Vibe Code Your Future
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             A movement from{' '}
             <a
               href="https://trylaunch.ai"
@@ -130,7 +130,7 @@ const VibeCodeYourFuture = () => {
               </Button>
               <a
                 href="#letter"
-                className="text-sm font-medium text-primary hover:underline"
+                className="text-base font-medium text-primary hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
                   document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
