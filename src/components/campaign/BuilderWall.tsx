@@ -8,8 +8,9 @@ import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
-const INITIAL_ROWS = 8;
-const LOAD_MORE_ROWS = 4;
+const INITIAL_ROWS = 5;
+const LOAD_MORE_ROWS = 3;
+const MAX_ROWS = 20;
 
 const TILE_SIZE_PATTERN = ['tall', 'standard', 'compact', 'standard', 'standard', 'tall', 'compact', 'standard'] as const;
 type TileSize = (typeof TILE_SIZE_PATTERN)[number];
