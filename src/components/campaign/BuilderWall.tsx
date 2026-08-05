@@ -27,7 +27,7 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: stri
     icon: 'h-9 w-9',
     name: 'text-base',
     tagline: 'line-clamp-2',
-    footer: 'mt-4',
+    footer: 'mt-auto pt-4',
   },
   compact: {
     card: 'p-4',
