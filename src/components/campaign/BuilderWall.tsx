@@ -8,7 +8,7 @@ import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
-const COLUMN_DURATIONS = ['48s', '56s', '52s', '60s', '54s', '62s'];
+const COLUMN_DURATIONS = ['48s', '56s', '52s', '60s'];
 const INITIAL_ROWS = 8;
 const LOAD_MORE_ROWS = 4;
 
@@ -29,23 +29,23 @@ const BuilderCard = ({
   return (
     <article
       onClick={open}
-      className="group/card cursor-pointer rounded-xl border bg-card p-5 transition-shadow hover:shadow-md"
+      className="group/card cursor-pointer rounded-xl border bg-card p-4 transition-shadow hover:shadow-md"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5">
         <img
           src={product.iconUrl || defaultProductIcon}
           alt={`${product.name} icon`}
-          width={40}
-          height={40}
+          width={32}
+          height={32}
           loading="lazy"
           decoding="async"
-          className="h-10 w-10 flex-shrink-0 rounded-lg object-cover bg-background"
+          className="h-8 w-8 flex-shrink-0 rounded-lg object-cover bg-background"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src = defaultProductIcon;
           }}
         />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-semibold text-base leading-tight">{product.name}</h3>
+          <h3 className="font-semibold text-sm leading-tight line-clamp-2">{product.name}</h3>
           {product.founder && (
             <p className="truncate text-xs text-muted-foreground">@{product.founder}</p>
           )}
@@ -57,19 +57,19 @@ const BuilderCard = ({
             e.stopPropagation();
             onShare(product);
           }}
-          className="flex-shrink-0 rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:opacity-100"
+          className="flex-shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:opacity-100"
         >
-          <Share2 className="h-4 w-4" />
+          <Share2 className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {product.tagline && (
-        <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{product.tagline}</p>
+        <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{product.tagline}</p>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
         {product.category && (
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
             {product.category}
           </span>
         )}
@@ -111,13 +111,13 @@ export const BuilderWall = () => {
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
   const columns = useMemo(() => {
-    const list = (products || []).slice(0, visibleRows * 6);
-    const cols: BuilderWallProduct[][] = [[], [], [], [], [], []];
-    list.forEach((p, i) => cols[i % 6].push(p));
+    const list = (products || []).slice(0, visibleRows * 4);
+    const cols: BuilderWallProduct[][] = [[], [], [], []];
+    list.forEach((p, i) => cols[i % 4].push(p));
     return cols;
   }, [products, visibleRows]);
 
-  const hasMore = products && visibleRows * 6 < products.length;
+  const hasMore = products && visibleRows * 4 < products.length;
 
   const loadMore = () => {
     setVisibleRows((prev) => prev + LOAD_MORE_ROWS);
@@ -126,9 +126,9 @@ export const BuilderWall = () => {
   if (isLoading) {
     return (
       <div className="h-[900px] overflow-hidden sm:h-[1100px] lg:h-[1300px]">
-        <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-          {Array.from({ length: 48 }).map((_, i) => (
-            <div key={i} className="h-40 animate-pulse rounded-xl border bg-muted/40" />
+        <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 32 }).map((_, i) => (
+            <div key={i} className="h-36 animate-pulse rounded-xl border bg-muted/40" />
           ))}
         </div>
       </div>
@@ -150,8 +150,6 @@ export const BuilderWall = () => {
             <WallColumn items={columns[1]} duration={COLUMN_DURATIONS[1]} onShare={setSharing} className="hidden sm:block" />
             <WallColumn items={columns[2]} duration={COLUMN_DURATIONS[2]} onShare={setSharing} className="hidden md:block" />
             <WallColumn items={columns[3]} duration={COLUMN_DURATIONS[3]} onShare={setSharing} className="hidden lg:block" />
-            <WallColumn items={columns[4]} duration={COLUMN_DURATIONS[4]} onShare={setSharing} className="hidden lg:block" />
-            <WallColumn items={columns[5]} duration={COLUMN_DURATIONS[5]} onShare={setSharing} className="hidden lg:block" />
           </div>
         </div>
       </div>
