@@ -49,7 +49,7 @@ const buildFaqs = (appCount: string) => [
   },
 ];
 
-const VibeCodeYourFuture = () => {
+const VibeCodedIt = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   // Same component, two homes: canonical/OG follow the hostname it was served from.
@@ -411,4 +411,4 @@ const VibeCodeYourFuture = () => {
   );
 };
 
-export default VibeCodeYourFuture;
+export default VibeCodedIt;
