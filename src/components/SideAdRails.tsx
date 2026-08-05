@@ -104,10 +104,10 @@ const PlaceholderTile = () => (
 const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => (
   <aside
     aria-label={`${side} sponsored`}
-    className={`hidden min-[1700px]:block fixed top-24 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+    className={`hidden min-[1700px]:flex flex-col fixed top-24 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
   >
-    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Ad</h3>
-    <div className="space-y-3">
+    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 flex-shrink-0">Ad</h3>
+    <div className="space-y-3 overflow-y-auto pb-4 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) =>
         ads[i] ? (
           <AdTile key={ads[i].key} item={ads[i]} placement={`rail_${side}`} />
