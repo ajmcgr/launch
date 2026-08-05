@@ -29,23 +29,23 @@ const BuilderCard = ({
   return (
     <article
       onClick={open}
-      className="group/card cursor-pointer rounded-xl border bg-card p-5 transition-shadow hover:shadow-md"
+      className="group/card cursor-pointer rounded-xl border bg-card p-4 transition-shadow hover:shadow-md"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5">
         <img
           src={product.iconUrl || defaultProductIcon}
           alt={`${product.name} icon`}
-          width={40}
-          height={40}
+          width={32}
+          height={32}
           loading="lazy"
           decoding="async"
-          className="h-10 w-10 flex-shrink-0 rounded-lg object-cover bg-background"
+          className="h-8 w-8 flex-shrink-0 rounded-lg object-cover bg-background"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src = defaultProductIcon;
           }}
         />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-semibold text-base leading-tight">{product.name}</h3>
+          <h3 className="font-semibold text-sm leading-tight line-clamp-2">{product.name}</h3>
           {product.founder && (
             <p className="truncate text-xs text-muted-foreground">@{product.founder}</p>
           )}
@@ -57,19 +57,19 @@ const BuilderCard = ({
             e.stopPropagation();
             onShare(product);
           }}
-          className="flex-shrink-0 rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:opacity-100"
+          className="flex-shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:opacity-100"
         >
-          <Share2 className="h-4 w-4" />
+          <Share2 className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {product.tagline && (
-        <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{product.tagline}</p>
+        <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{product.tagline}</p>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
         {product.category && (
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
             {product.category}
           </span>
         )}
