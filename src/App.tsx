@@ -11,6 +11,8 @@ import { Footer } from "@/components/Footer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Newsletter } from "@/components/Newsletter";
 import { BookmarkPrompt } from "@/components/BookmarkPrompt";
+import SideAdRails from "@/components/SideAdRails";
+
 import Home from "./pages/Home";
 
 // Lazy-load every other route — keeps initial bundle small.
