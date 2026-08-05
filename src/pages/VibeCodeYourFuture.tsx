@@ -103,7 +103,7 @@ const VibeCodeYourFuture = () => {
       </Helmet>
 
       {/* Hero */}
-      <section className="border-b">
+      <section>
         <div className="container mx-auto max-w-7xl px-4 py-20 text-center sm:py-28">
           <h1 className="mx-auto max-w-4xl text-4xl font-medium leading-[1.05] sm:text-6xl lg:text-7xl">
             Vibe Code Your Future
