@@ -17,25 +17,25 @@ type TileSize = (typeof TILE_SIZE_PATTERN)[number];
 
 const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: string; tagline: string; footer: string }> = {
   tall: {
-    card: 'p-5',
-    icon: 'h-10 w-10',
-    name: 'text-base',
+    card: 'p-6',
+    icon: 'h-11 w-11',
+    name: 'text-lg',
     tagline: 'line-clamp-3',
-    footer: 'mt-4',
+    footer: 'mt-5',
   },
   standard: {
-    card: 'p-4',
-    icon: 'h-8 w-8',
-    name: 'text-sm',
+    card: 'p-5',
+    icon: 'h-9 w-9',
+    name: 'text-base',
     tagline: 'line-clamp-2',
-    footer: 'mt-3',
+    footer: 'mt-4',
   },
   compact: {
-    card: 'p-3',
-    icon: 'h-7 w-7',
-    name: 'text-sm',
+    card: 'p-4',
+    icon: 'h-8 w-8',
+    name: 'text-base',
     tagline: 'hidden',
-    footer: 'mt-2',
+    footer: 'mt-3',
   },
 };
 
