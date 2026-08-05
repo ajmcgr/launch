@@ -12,14 +12,44 @@ const COLUMN_DURATIONS = ['48s', '56s', '52s', '60s'];
 const INITIAL_ROWS = 8;
 const LOAD_MORE_ROWS = 4;
 
-const BuilderCard = ({
-  product,
-  onShare,
-}: {
+const TILE_SIZE_PATTERN = ['tall', 'standard', 'compact', 'standard', 'standard', 'tall', 'compact', 'standard'] as const;
+type TileSize = (typeof TILE_SIZE_PATTERN)[number];
+
+const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: string; tagline: string; footer: string }> = {
+  tall: {
+    card: 'p-5',
+    icon: 'h-10 w-10',
+    name: 'text-base',
+    tagline: 'line-clamp-3',
+    footer: 'mt-4',
+  },
+  standard: {
+    card: 'p-4',
+    icon: 'h-8 w-8',
+    name: 'text-sm',
+    tagline: 'line-clamp-2',
+    footer: 'mt-3',
+  },
+  compact: {
+    card: 'p-3',
+    icon: 'h-7 w-7',
+    name: 'text-sm',
+    tagline: 'hidden',
+    footer: 'mt-2',
+  },
+};
+
+const getTileSize = (index: number): TileSize => TILE_SIZE_PATTERN[index % TILE_SIZE_PATTERN.length];
+
+interface BuilderCardProps {
   product: BuilderWallProduct;
+  size: TileSize;
   onShare: (p: BuilderWallProduct) => void;
-}) => {
+}
+
+const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
   const navigate = useNavigate();
+  const styles = TileSizeClasses[size];
 
   const open = () => {
     trackCampaignEvent('builder_wall_card_clicked', product.id);
@@ -29,23 +59,23 @@ const BuilderCard = ({
   return (
     <article
       onClick={open}
-      className="group/card cursor-pointer rounded-xl border bg-card p-4 transition-shadow hover:shadow-md"
+      className={`group/card cursor-pointer rounded-xl border bg-card ${styles.card} transition-shadow hover:shadow-md`}
     >
       <div className="flex items-start gap-2.5">
         <img
           src={product.iconUrl || defaultProductIcon}
           alt={`${product.name} icon`}
-          width={32}
-          height={32}
+          width={40}
+          height={40}
           loading="lazy"
           decoding="async"
-          className="h-8 w-8 flex-shrink-0 rounded-lg object-cover bg-background"
+          className={`${styles.icon} flex-shrink-0 rounded-lg object-cover bg-background`}
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src = defaultProductIcon;
           }}
         />
         <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-sm leading-tight line-clamp-2">{product.name}</h3>
+          <h3 className={`font-semibold leading-tight line-clamp-2 ${styles.name}`}>{product.name}</h3>
           {product.founder && (
             <p className="truncate text-xs text-muted-foreground">@{product.founder}</p>
           )}
@@ -63,33 +93,35 @@ const BuilderCard = ({
         </button>
       </div>
 
-      {product.tagline && (
-        <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{product.tagline}</p>
+      {product.tagline && size !== 'compact' && (
+        <p className={`mt-2 text-xs text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+      <div className={`flex flex-wrap items-center gap-1.5 ${styles.footer}`}>
         {product.category && (
           <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
             {product.category}
           </span>
         )}
-        {product.isCampaign && <VibeCodeBadge />}
+        {product.isCampaign && <VibeCodeBadge size={size === 'compact' ? 'sm' : 'sm'} />}
       </div>
     </article>
   );
 };
 
-const WallColumn = ({
-  items,
-  duration,
-  onShare,
-  className = '',
-}: {
-  items: BuilderWallProduct[];
+interface WallColumnItem {
+  product: BuilderWallProduct;
+  size: TileSize;
+}
+
+interface WallColumnProps {
+  items: WallColumnItem[];
   duration: string;
   onShare: (p: BuilderWallProduct) => void;
   className?: string;
-}) => {
+}
+
+const WallColumn = ({ items, duration, onShare, className = '' }: WallColumnProps) => {
   if (items.length === 0) return null;
   return (
     <div className={`min-w-0 flex-1 ${className}`}>
@@ -97,8 +129,8 @@ const WallColumn = ({
         className="flex flex-col gap-4 builder-wall-track group-hover/wall:[animation-play-state:paused]"
         style={{ animationDuration: duration }}
       >
-        {[...items, ...items].map((product, i) => (
-          <BuilderCard key={`${product.id}-${i}`} product={product} onShare={onShare} />
+        {[...items, ...items].map((item, i) => (
+          <BuilderCard key={`${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
         ))}
       </div>
     </div>
@@ -112,8 +144,10 @@ export const BuilderWall = () => {
 
   const columns = useMemo(() => {
     const list = (products || []).slice(0, visibleRows * 4);
-    const cols: BuilderWallProduct[][] = [[], [], [], []];
-    list.forEach((p, i) => cols[i % 4].push(p));
+    const cols: WallColumnItem[][] = [[], [], [], []];
+    list.forEach((product, i) => {
+      cols[i % 4].push({ product, size: getTileSize(i) });
+    });
     return cols;
   }, [products, visibleRows]);
 
@@ -127,9 +161,16 @@ export const BuilderWall = () => {
     return (
       <div className="h-[900px] overflow-hidden sm:h-[1100px] lg:h-[1300px]">
         <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 32 }).map((_, i) => (
-            <div key={i} className="h-36 animate-pulse rounded-xl border bg-muted/40" />
-          ))}
+          {Array.from({ length: 32 }).map((_, i) => {
+            const size = getTileSize(i);
+            const height = size === 'tall' ? 'h-56' : size === 'compact' ? 'h-24' : 'h-40';
+            return (
+              <div
+                key={i}
+                className={`${height} animate-pulse rounded-xl border border-border bg-muted/40`}
+              />
+            );
+          })}
         </div>
       </div>
     );
