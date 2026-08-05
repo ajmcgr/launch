@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import logo from '@/assets/logo.png';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
@@ -154,6 +155,26 @@ const VibeCodedIt = () => {
           })}
         </script>
       </Helmet>
+
+      {/* Campaign header */}
+      <header>
+        <div className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+          <Link to="/" aria-label="Launch home">
+            <img src={logo} alt="Launch" width={120} height={40} className="h-10 w-auto object-contain" />
+          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/auth"
+              className="text-sm font-medium text-nav-text transition-colors hover:text-primary"
+            >
+              Login
+            </Link>
+            <Button asChild>
+              <Link to="/auth">Sign Up</Link>
+            </Button>
+          </div>
+        </div>
+      </header>
 
       {/* Hero */}
       <section>
