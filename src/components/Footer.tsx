@@ -58,7 +58,7 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
 
   return (
     <footer>
-      <div className="bg-muted">
+      <div>
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-12 py-8">
           <div>
