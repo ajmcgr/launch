@@ -13,6 +13,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
+import { useCampaignProducts } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
 import {
   CAMPAIGN_SLUG,
@@ -56,6 +57,12 @@ const VibeCodeYourFuture = () => {
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: wallProducts } = useCampaignProducts(0);
+  const rawCount = wallProducts?.length || 0;
+  const roundedCount = rawCount >= 100 ? Math.floor(rawCount / 50) * 50 : rawCount;
+  const appCount = roundedCount.toLocaleString();
+  const faqs = useMemo(() => buildFaqs(appCount), [appCount]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
@@ -106,7 +113,7 @@ const VibeCodeYourFuture = () => {
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            mainEntity: FAQS.map((f) => ({
+            mainEntity: faqs.map((f) => ({
               '@type': 'Question',
               name: f.q,
               acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -178,6 +185,11 @@ const VibeCodeYourFuture = () => {
       {/* Builder Wall */}
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
+          {rawCount > 0 && (
+            <p className="mb-8 text-center text-base text-muted-foreground sm:text-lg">
+              Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added
+            </p>
+          )}
           <BuilderWall />
         </div>
       </section>
@@ -293,7 +305,7 @@ const VibeCodeYourFuture = () => {
             Frequently asked questions
           </h2>
           <Accordion type="single" collapsible className="w-full">
-            {FAQS.map((faq) => (
+            {faqs.map((faq) => (
               <AccordionItem key={faq.q} value={faq.q}>
                 <AccordionTrigger className="text-left text-base sm:text-lg">{faq.q}</AccordionTrigger>
                 <AccordionContent className="text-base leading-7 text-muted-foreground">
