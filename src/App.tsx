@@ -423,19 +423,34 @@ const AppContent = () => {
               <section>
                 <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {Array.from({ length: 16 }).map((_, i) => (
-                      <div key={i} className="rounded-xl border border-border p-3 space-y-3">
-                        <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-lg bg-muted/50 animate-pulse" />
-                          <div className="space-y-1.5 flex-1 min-w-0">
-                            <div className="h-3.5 w-24 rounded bg-muted/60 animate-pulse" />
-                            <div className="h-3 w-16 rounded bg-muted/50 animate-pulse" />
+                    {Array.from({ length: 16 }).map((_, i) => {
+                      const isTall = i % 8 === 0 || i % 8 === 5;
+                      const isCompact = i % 8 === 2 || i % 8 === 6;
+                      return (
+                        <div
+                          key={i}
+                          className={`rounded-xl border border-border p-3 space-y-3 ${
+                            isTall ? 'h-56' : isCompact ? 'h-24' : 'h-40'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-lg bg-muted/50 animate-pulse" />
+                            <div className="space-y-1.5 flex-1 min-w-0">
+                              <div className="h-3.5 w-24 rounded bg-muted/60 animate-pulse" />
+                              {!isCompact && (
+                                <div className="h-3 w-16 rounded bg-muted/50 animate-pulse" />
+                              )}
+                            </div>
                           </div>
+                          {!isCompact && (
+                            <>
+                              <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
+                              {isTall && <div className="h-3 w-4/5 rounded bg-muted/50 animate-pulse" />}
+                            </>
+                          )}
                         </div>
-                        <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
-                        <div className="h-3 w-4/5 rounded bg-muted/50 animate-pulse" />
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </section>
