@@ -104,11 +104,11 @@ const VibeCodeYourFuture = () => {
 
       {/* Hero */}
       <section>
-        <div className="container mx-auto max-w-7xl px-4 py-20 text-center sm:py-28">
-          <h1 className="mx-auto max-w-4xl text-4xl font-medium leading-[1.05] sm:text-6xl lg:text-7xl">
+        <div className="container mx-auto max-w-7xl px-4 py-12 text-center sm:py-16">
+          <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
             Vibe Code Your Future
           </h1>
-          <p className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             A movement from{' '}
             <a
               href="https://trylaunch.ai"
@@ -122,7 +122,7 @@ const VibeCodeYourFuture = () => {
             left your job, or simply decided to build, launch your vibe coded startup and join a
             growing community of founders creating the next generation of software.
           </p>
-          <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="mt-8 flex flex-col items-center gap-3">
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
                 Add Your App
@@ -155,11 +155,11 @@ const VibeCodeYourFuture = () => {
 
       {/* Alex's Letter */}
       <section id="letter" className="border-b">
-        <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
-          <div className="rounded-lg border border-border bg-card p-8 md:p-12">
-            <h2 className="mb-10 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
+        <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
+          <div className="rounded-lg border border-border bg-card p-6 md:p-8">
+            <h2 className="mb-8 text-center font-reckless text-2xl sm:text-3xl">Why I built this</h2>
 
-            <div className="space-y-6 text-[17px] leading-8 text-foreground/90">
+            <div className="space-y-5 text-base leading-7 text-foreground/90">
               <p className="text-center text-muted-foreground">
                 An open letter to anyone who was just laid off.
               </p>
@@ -224,15 +224,15 @@ const VibeCodeYourFuture = () => {
                 to help you get started.
               </p>
 
-              <div className="pt-8">
+              <div className="pt-6">
                 <div className="flex flex-col items-start">
                   <img
                     src={alexPhoto}
                     alt="Alex MacGregor"
-                    width={128}
-                    height={128}
+                    width={112}
+                    height={112}
                     loading="lazy"
-                    className="mb-4 h-32 w-32 object-cover"
+                    className="mb-4 h-28 w-28 object-cover"
                   />
                   <img
                     src={signature}
@@ -241,7 +241,7 @@ const VibeCodeYourFuture = () => {
                     className="mb-1 h-10 w-auto"
                   />
                   <h3 className="text-lg font-bold">Alex MacGregor</h3>
-                  <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
+                  <p className="mb-2 text-base font-bold text-muted-foreground">Founder, Launch</p>
                   <a
                     href="https://x.com/alexmacgregor__"
                     target="_blank"
