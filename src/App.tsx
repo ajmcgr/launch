@@ -84,7 +84,7 @@ const CollectionDetailPage = lazy(() => import("./pages/CollectionDetail"));
 const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
-const VibeCodeYourFuture = lazy(() => import("./pages/VibeCodeYourFuture"));
+const VibeCodedIt = lazy(() => import("./pages/VibeCodedIt"));
 import { isCampaignHost } from "@/lib/campaignHost";
 
 const Search = lazy(() => import("./pages/Search"));
@@ -111,7 +111,7 @@ const AppContent = () => {
   const standalonePages = ['/reserve'];
   // The campaign page drops Launch nav/footer nav but keeps the
   // copyright line. Newsletter signup is also hidden on the campaign page.
-  const isCampaignPage = location.pathname === '/vibecodeyourfuture'
+  const isCampaignPage = location.pathname === '/vibecodedit'
     || (campaignHost && location.pathname === '/');
   const isStandalone = standalonePages.includes(location.pathname) || isCampaignPage;
 
@@ -547,7 +547,7 @@ const AppContent = () => {
 
 
           <Routes>
-            <Route path="/" element={campaignHost ? <VibeCodeYourFuture /> : <Home />} />
+            <Route path="/" element={campaignHost ? <VibeCodedIt /> : <Home />} />
             <Route path="/start" element={<Start />} />
             <Route path="/products" element={<Products />} />
             <Route path="/submit" element={<Submit />} />
@@ -622,7 +622,8 @@ const AppContent = () => {
             <Route path="/c/:slug" element={<PublicCollection />} />
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
-            <Route path="/vibecodeyourfuture" element={<VibeCodeYourFuture />} />
+            <Route path="/vibecodedit" element={<VibeCodedIt />} />
+            <Route path="/vibecodeyourfuture" element={<Navigate to="/vibecodedit" replace />} />
             <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

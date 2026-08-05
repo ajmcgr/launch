@@ -16,7 +16,7 @@ const CAMPAIGN_URL = 'https://vibecodeyourfuture.com';
 function buildWelcomeHtml(productName: string, productSlug: string): string {
   const launchUrl = PRODUCTION_URL + '/launch/' + productSlug;
   const shareText = encodeURIComponent(
-    'I just launched ' + productName + ' as part of Vibe Code Your Future 🚀\n\n' + launchUrl
+    'I just launched ' + productName + ' as part of Vibe Coded It 🚀\n\n' + launchUrl
   );
 
   return '<!DOCTYPE html><html><head><meta charset="utf-8" /></head>' +
@@ -24,14 +24,14 @@ function buildWelcomeHtml(productName: string, productSlug: string): string {
     '<div style="max-width:600px;margin:0 auto;padding:40px 20px;">' +
     '<div style="background:#ffffff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">' +
     '<div style="padding:30px;text-align:center;border-bottom:1px solid #e5e7eb;">' +
-    '<p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#6b7280;">Vibe Code Your Future</p>' +
+    '<p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#6b7280;">Vibe Coded It</p>' +
     '</div>' +
     '<div style="padding:30px;">' +
     '<h1 style="margin:0 0 16px 0;font-size:22px;color:#111;">Welcome to the movement 🎉</h1>' +
     '<p style="margin:0 0 16px 0;color:#4b5563;font-size:15px;">' + productName +
-    ' is now part of Vibe Code Your Future and live on Launch, where hundreds of thousands of monthly active users discover new products.</p>' +
+    ' is now part of Vibe Coded It and live on Launch, where hundreds of thousands of monthly active users discover new products.</p>' +
     '<p style="margin:0 0 24px 0;color:#4b5563;font-size:15px;">Your product carries the ' +
-    '<strong>Built through Vibe Code Your Future</strong> badge and appears on the Builder Wall.</p>' +
+    '<strong>Built through Vibe Coded It</strong> badge and appears on the Builder Wall.</p>' +
     '<p style="margin:0 0 28px 0;">' +
     '<a href="' + launchUrl + '" style="display:inline-block;background:#1e6fd9;color:#ffffff !important;padding:14px 28px;text-decoration:none;border-radius:6px;font-weight:600;font-size:16px;">View your launch</a>' +
     '</p>' +
@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
     const sendResult = await resend.emails.send({
       from: 'Alex from Launch <alex@trylaunch.ai>',
       to: [email],
-      subject: 'Welcome to Vibe Code Your Future 🚀',
+      subject: 'Welcome to Vibe Coded It 🚀',
       html: buildWelcomeHtml(product.name, product.slug),
     });
 

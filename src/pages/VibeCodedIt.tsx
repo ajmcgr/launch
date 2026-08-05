@@ -24,7 +24,7 @@ import {
 
 const buildFaqs = (appCount: string) => [
   {
-    q: 'What is Vibe Code Your Future?',
+    q: 'What is Vibe Coded It?',
     a: 'A movement for people building their own future with AI. Instead of waiting for the next job offer, you build software, launch it publicly, and join a community of founders doing the same. It runs on Launch, the largest vibe coding community in the world.',
   },
   {
@@ -45,15 +45,15 @@ const buildFaqs = (appCount: string) => [
   },
   {
     q: 'How do I get featured?',
-    a: 'Click "Add Your App" and go through the normal Launch submission flow. Products submitted through this page are tagged to the campaign, carry the Vibe Code Your Future badge, and appear on the Builder Wall automatically.',
+    a: 'Click "Add Your App" and go through the normal Launch submission flow. Products submitted through this page are tagged to the campaign, carry the Vibe Coded It badge, and appear on the Builder Wall automatically.',
   },
 ];
 
-const VibeCodeYourFuture = () => {
+const VibeCodedIt = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   // Same component, two homes: canonical/OG follow the hostname it was served from.
-  const pageUrl = isCampaignHost() ? CAMPAIGN_ORIGIN : 'https://trylaunch.ai/vibecodeyourfuture';
+  const pageUrl = isCampaignHost() ? CAMPAIGN_ORIGIN : 'https://trylaunch.ai/vibecodedit';
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
@@ -129,13 +129,13 @@ const VibeCodeYourFuture = () => {
   return (
     <>
       <Helmet>
-        <title>Vibe Code Your Future — Build your own software business with AI</title>
+        <title>Vibe Coded It — Build your own software business with AI</title>
         <meta
           name="description"
           content="A movement for people building their own future with AI. Launch your vibe coded startup, join the Builder Wall, and become part of a growing community of founders."
         />
         <link rel="canonical" href={pageUrl} />
-        <meta property="og:title" content="Vibe Code Your Future" />
+        <meta property="og:title" content="Vibe Coded It" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:type" content="website" />
         <meta
@@ -159,7 +159,7 @@ const VibeCodeYourFuture = () => {
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-12 text-center sm:py-16">
           <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
-            Vibe Code Your Future
+            Vibe Coded It
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Whether you were laid off, left your job, or simply decided to build,
@@ -394,7 +394,7 @@ const VibeCodeYourFuture = () => {
         <DialogContent className="sm:max-w-md text-center">
           <h2 className="font-reckless text-3xl">🎉 Welcome to the movement.</h2>
           <p className="text-base text-muted-foreground">
-            Your startup is now part of Vibe Code Your Future. It's also live on Launch where
+            Your startup is now part of Vibe Coded It. It's also live on Launch where
             thousands of builders can discover it.
           </p>
           <div className="mt-2 flex flex-col gap-2">
@@ -411,4 +411,4 @@ const VibeCodeYourFuture = () => {
   );
 };
 
-export default VibeCodeYourFuture;
+export default VibeCodedIt;
