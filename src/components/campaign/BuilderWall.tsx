@@ -8,7 +8,6 @@ import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
-const COLUMN_DURATIONS = ['48s', '56s', '52s', '60s'];
 const INITIAL_ROWS = 8;
 const LOAD_MORE_ROWS = 4;
 
@@ -116,23 +115,17 @@ interface WallColumnItem {
 
 interface WallColumnProps {
   items: WallColumnItem[];
-  duration: string;
   onShare: (p: BuilderWallProduct) => void;
   className?: string;
 }
 
-const WallColumn = ({ items, duration, onShare, className = '' }: WallColumnProps) => {
+const WallColumn = ({ items, onShare, className = '' }: WallColumnProps) => {
   if (items.length === 0) return null;
   return (
-    <div className={`min-w-0 flex-1 ${className}`}>
-      <div
-        className="flex flex-col gap-4 builder-wall-track group-hover/wall:[animation-play-state:paused]"
-        style={{ animationDuration: duration }}
-      >
-        {[...items, ...items].map((item, i) => (
-          <BuilderCard key={`${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
-        ))}
-      </div>
+    <div className={`min-w-0 flex-1 flex flex-col gap-4 ${className}`}>
+      {items.map((item, i) => (
+        <BuilderCard key={`${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
+      ))}
     </div>
   );
 };
@@ -146,7 +139,9 @@ export const BuilderWall = () => {
     const list = (products || []).slice(0, visibleRows * 4);
     const cols: WallColumnItem[][] = [[], [], [], []];
     list.forEach((product, i) => {
-      cols[i % 4].push({ product, size: getTileSize(i) });
+      const colIndex = i % 4;
+      const rowIndex = Math.floor(i / 4);
+      cols[colIndex].push({ product, size: getTileSize(rowIndex + colIndex) });
     });
     return cols;
   }, [products, visibleRows]);
@@ -159,8 +154,8 @@ export const BuilderWall = () => {
 
   if (isLoading) {
     return (
-      <div className="builder-wall-container overflow-hidden">
-        <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="container mx-auto max-w-7xl px-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 32 }).map((_, i) => {
             const size = getTileSize(i);
             const height = size === 'tall' ? 'h-56' : size === 'compact' ? 'h-24' : 'h-40';
@@ -180,20 +175,13 @@ export const BuilderWall = () => {
 
   return (
     <>
-      <div className="group/wall relative">
-        {/* fade gradients */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-background to-transparent sm:h-24" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-background to-transparent sm:h-24" />
-
-        <div
-          className="builder-wall-container overflow-hidden"
-          style={{ '--extra-rows': Math.max(0, visibleRows - INITIAL_ROWS) } as React.CSSProperties}
-        >
+      <div className="group/wall">
+        <div className="container mx-auto max-w-7xl px-4">
           <div className="flex gap-4">
-            <WallColumn items={columns[0]} duration={COLUMN_DURATIONS[0]} onShare={setSharing} />
-            <WallColumn items={columns[1]} duration={COLUMN_DURATIONS[1]} onShare={setSharing} className="hidden sm:block" />
-            <WallColumn items={columns[2]} duration={COLUMN_DURATIONS[2]} onShare={setSharing} className="hidden md:block" />
-            <WallColumn items={columns[3]} duration={COLUMN_DURATIONS[3]} onShare={setSharing} className="hidden lg:block" />
+            <WallColumn items={columns[0]} onShare={setSharing} />
+            <WallColumn items={columns[1]} onShare={setSharing} className="hidden sm:block" />
+            <WallColumn items={columns[2]} onShare={setSharing} className="hidden md:block" />
+            <WallColumn items={columns[3]} onShare={setSharing} className="hidden lg:block" />
           </div>
         </div>
       </div>
@@ -201,7 +189,7 @@ export const BuilderWall = () => {
       {hasMore && (
         <div className="mt-10 flex justify-center">
           <Button variant="outline" size="lg" onClick={loadMore}>
-            See more
+            See More Apps
           </Button>
         </div>
       )}
