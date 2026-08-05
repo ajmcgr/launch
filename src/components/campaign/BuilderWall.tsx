@@ -8,7 +8,7 @@ import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
-const COLUMN_DURATIONS = ['48s', '56s', '52s', '60s', '54s', '62s'];
+const COLUMN_DURATIONS = ['48s', '56s', '52s', '60s'];
 const INITIAL_ROWS = 8;
 const LOAD_MORE_ROWS = 4;
 
