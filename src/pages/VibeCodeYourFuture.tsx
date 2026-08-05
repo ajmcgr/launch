@@ -105,7 +105,7 @@ const VibeCodeYourFuture = () => {
       {/* Hero */}
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-12 text-center sm:py-16">
-          <h1 className="mx-auto max-w-4xl text-4xl font-medium leading-[1.05] sm:text-6xl lg:text-7xl">
+          <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
             Vibe Code Your Future
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
