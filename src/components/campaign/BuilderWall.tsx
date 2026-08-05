@@ -8,8 +8,8 @@ import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
-const INITIAL_COUNT = 8;
-const LOAD_MORE_COUNT = 8;
+const INITIAL_COUNT = 64;
+const LOAD_MORE_COUNT = 32;
 
 const BuilderCard = ({
   product,
@@ -79,7 +79,7 @@ const BuilderCard = ({
 };
 
 export const BuilderWall = () => {
-  const { data: products, isLoading } = useCampaignProducts(32);
+  const { data: products, isLoading } = useCampaignProducts(64);
   const [sharing, setSharing] = useState<BuilderWallProduct | null>(null);
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
 
