@@ -609,7 +609,7 @@ const AppContent = () => {
         </div>
       )}
       {isCampaignPage ? <Footer minimal /> : !isStandalone && <Footer />}
-      <BookmarkPrompt />
+      {!isCampaignPage && <BookmarkPrompt />}
     </div>
   );
 };
