@@ -174,7 +174,7 @@ export const BuilderWall = () => {
     return (
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 24 }).map((_, i) => {
+          {Array.from({ length: INITIAL_ROWS * 4 }).map((_, i) => {
             const size = getTileSize(i);
             const height = size === 'tall' ? 'h-56' : size === 'compact' ? 'h-24' : 'h-40';
             return (
