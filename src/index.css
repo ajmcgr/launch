@@ -156,4 +156,25 @@ body {
   }
 }
 
+.builder-wall-container {
+  --base-height: 900px;
+  --row-height: 112px;
+  height: calc(var(--base-height) + (var(--extra-rows, 0) * var(--row-height)));
+  transition: height 0.5s ease;
+}
+
+@media (min-width: 640px) {
+  .builder-wall-container {
+    --base-height: 1100px;
+    --row-height: 137px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .builder-wall-container {
+    --base-height: 1300px;
+    --row-height: 162px;
+  }
+}
+
 

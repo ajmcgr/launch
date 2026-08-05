@@ -122,12 +122,24 @@ const VibeCodeYourFuture = () => {
             left your job, or simply decided to build, launch your vibe coded startup and join a
             growing community of founders creating the next generation of software.
           </p>
-          <div className="mt-10">
-            <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
-              Add Your App
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-            <p className="mt-4 text-sm text-muted-foreground">
+          <div className="mt-10 flex flex-col items-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
+                Add Your App
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              <a
+                href="#letter"
+                className="text-sm font-medium text-primary hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Read the letter
+              </a>
+            </div>
+            <p className="text-sm text-muted-foreground">
               Every startup launched on Launch appears on the Builder Wall below.
             </p>
           </div>
@@ -142,7 +154,7 @@ const VibeCodeYourFuture = () => {
       </section>
 
       {/* Alex's Letter */}
-      <section className="border-b">
+      <section id="letter" className="border-b">
         <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
             <h2 className="mb-10 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
