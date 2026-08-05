@@ -58,6 +58,10 @@ const VibeCodeYourFuture = () => {
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
   const [searchQuery, setSearchQuery] = useState('');
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
+  const [subscribeError, setSubscribeError] = useState(false);
 
   const { data: wallProducts } = useCampaignProducts(0);
   const rawCount = wallProducts?.length || 0;
