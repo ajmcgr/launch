@@ -257,14 +257,14 @@ const VibeCodeYourFuture = () => {
       {/* FAQ */}
       <section>
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
-          <h2 className="mb-8 text-center font-reckless text-2xl sm:text-3xl">
+          <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">
             Frequently asked questions
           </h2>
           <Accordion type="single" collapsible className="w-full">
             {FAQS.map((faq) => (
               <AccordionItem key={faq.q} value={faq.q}>
-                <AccordionTrigger className="text-left text-sm sm:text-base">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-sm leading-6 text-muted-foreground">
+                <AccordionTrigger className="text-left text-base sm:text-lg">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-base leading-7 text-muted-foreground">
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>
