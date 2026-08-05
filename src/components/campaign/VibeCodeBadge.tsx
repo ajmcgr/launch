@@ -6,7 +6,7 @@ interface VibeCodeBadgeProps {
   className?: string;
 }
 
-/** "Built through Vibe Code Your Future" campaign badge. */
+/** "Built through Vibe Coded It" campaign badge. */
 export const VibeCodeBadge = ({ size = 'sm', className = '' }: VibeCodeBadgeProps) => (
   <span
     className={`inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary font-medium ${

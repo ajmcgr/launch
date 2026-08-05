@@ -551,7 +551,7 @@ const LaunchDetail = () => {
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-4xl font-bold">{product.name}</h1>
                 {(product as any).campaign === CAMPAIGN_SLUG && (
-                  <Link to="/vibecodeyourfuture">
+                  <Link to="/vibecodedit">
                     <VibeCodeBadge size="md" />
                   </Link>
                 )}

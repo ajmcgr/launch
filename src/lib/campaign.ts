@@ -1,5 +1,5 @@
 /**
- * Vibe Code Your Future campaign plumbing.
+ * Vibe Coded It campaign plumbing.
  *
  * Reuses the existing Launch product/analytics infrastructure — the campaign is
  * just metadata attached to a normal Launch submission. No separate product,
@@ -9,8 +9,8 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export const CAMPAIGN_SLUG = 'vibe_code_your_future';
-export const CAMPAIGN_NAME = 'Vibe Code Your Future';
-export const CAMPAIGN_PATH = '/vibecodeyourfuture';
+export const CAMPAIGN_NAME = 'Vibe Coded It';
+export const CAMPAIGN_PATH = '/vibecodedit';
 
 const STORAGE_KEY = 'launch_campaign_intent';
 

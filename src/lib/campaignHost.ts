@@ -1,5 +1,5 @@
 /**
- * Hostname-based routing for the Vibe Code Your Future campaign domain.
+ * Hostname-based routing for the Vibe Coded It campaign domain.
  * vibecodeyourfuture.com serves the campaign page at "/" while keeping the
  * URL visible (no redirects). trylaunch.ai is unaffected.
  */
