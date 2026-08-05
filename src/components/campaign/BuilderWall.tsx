@@ -186,7 +186,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
         </div>
       )}
 
-      {product.tagline && size !== 'compact' && (
+      {product.tagline && (
         <p className={`mt-2 text-sm text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
       )}
 
@@ -196,7 +196,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
             {product.category}
           </span>
         )}
-        {product.isCampaign && <VibeCodeBadge size={size === 'compact' ? 'sm' : 'sm'} />}
+        {product.isCampaign && <VibeCodeBadge size="sm" />}
       </div>
     </article>
   );
@@ -213,7 +213,7 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
       : view === 'list'
         ? 'flex flex-col gap-3'
         : 'flex flex-col gap-2';
-  const perRow = view === 'grid' ? 4 : 1;
+  const perRow = view === 'grid' ? 4 : 8;
   const tileSize: TileSize = view === 'compact' ? 'compact' : view === 'list' ? 'row' : 'standard';
 
   const visible = useMemo(
