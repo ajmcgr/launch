@@ -463,7 +463,7 @@ const Advertise = () => {
                 onClick={() => setSelectedType('website')}
               >
                 <CardHeader>
-                <CardTitle className="text-xl">Website Placement</CardTitle>
+                <CardTitle className="text-xl">Website Ad</CardTitle>
                 <CardDescription>Sponsored listing on homepage + product pages</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 flex flex-col flex-1">
@@ -748,7 +748,7 @@ const Advertise = () => {
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
                       <Eye className="h-5 w-5 text-primary" />
-                      <CardTitle className="text-lg">Website Placement</CardTitle>
+                      <CardTitle className="text-lg">Website Ad</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -1215,7 +1215,7 @@ const Advertise = () => {
                   <div className="p-6 bg-muted/30 rounded-lg border">
                     <p className="text-sm text-muted-foreground mb-1">Selected package:</p>
                     <p className="text-xl font-semibold mb-4">
-                      {selectedType === 'website' && 'Website Placement'}
+                      {selectedType === 'website' && 'Website Ad'}
                       {selectedType === 'newsletter' && 'Newsletter Sponsorship'}
                       {selectedType === 'combined' && 'Combined Package'}
                     </p>
