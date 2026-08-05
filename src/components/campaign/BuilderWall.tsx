@@ -115,23 +115,17 @@ interface WallColumnItem {
 
 interface WallColumnProps {
   items: WallColumnItem[];
-  duration: string;
   onShare: (p: BuilderWallProduct) => void;
   className?: string;
 }
 
-const WallColumn = ({ items, duration, onShare, className = '' }: WallColumnProps) => {
+const WallColumn = ({ items, onShare, className = '' }: WallColumnProps) => {
   if (items.length === 0) return null;
   return (
-    <div className={`min-w-0 flex-1 ${className}`}>
-      <div
-        className="flex flex-col gap-4 builder-wall-track group-hover/wall:[animation-play-state:paused]"
-        style={{ animationDuration: duration }}
-      >
-        {[...items, ...items].map((item, i) => (
-          <BuilderCard key={`${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
-        ))}
-      </div>
+    <div className={`min-w-0 flex-1 flex flex-col gap-4 ${className}`}>
+      {items.map((item, i) => (
+        <BuilderCard key={`${item.product.id}-${i}`} product={item.product} size={item.size} onShare={onShare} />
+      ))}
     </div>
   );
 };
