@@ -94,7 +94,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
       </div>
 
       {product.tagline && size !== 'compact' && (
-        <p className={`mt-2 text-xs text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
+        <p className={`mt-2 text-sm text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
       )}
 
       <div className={`flex flex-wrap items-center gap-1.5 ${styles.footer}`}>
