@@ -26,6 +26,7 @@ import { useQuery } from '@tanstack/react-query';
 import { PassOption } from '@/components/PassOption';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
+import { captureCampaignFromSearch, getCampaignIntent, clearCampaignIntent, trackCampaignEvent } from '@/lib/campaign';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -65,6 +66,12 @@ const Submit = () => {
   const [submittedProductId, setSubmittedProductId] = useState<string | null>(null);
   const [submittedProductName, setSubmittedProductName] = useState<string>('');
 
+  // Persist campaign attribution (e.g. ?campaign=vibe_code_your_future) for this session.
+  useEffect(() => {
+    const campaign = captureCampaignFromSearch(window.location.search);
+    if (campaign) trackCampaignEvent('campaign_submission_started', null, campaign);
+  }, []);
+
   const handleSubmitSuccess = useCallback((savedId: string, productName: string, successMessage: string) => {
     localStorage.removeItem('submitFormData');
     localStorage.removeItem('submitMedia');
@@ -73,6 +80,16 @@ const Submit = () => {
     setSubmittedProductId(savedId);
     setSubmittedProductName(productName);
     setShowFirstCommentModal(true);
+
+    // Campaign attribution: tag + welcome email, best-effort.
+    const campaign = getCampaignIntent();
+    if (campaign) {
+      trackCampaignEvent('campaign_submission_completed', savedId, campaign);
+      supabase.functions
+        .invoke('send-campaign-welcome', { body: { productId: savedId, campaign } })
+        .catch((err) => console.debug('campaign welcome email skipped', err));
+      clearCampaignIntent();
+    }
   }, []);
 
   const handleFirstCommentClose = useCallback(() => {
@@ -1000,6 +1017,7 @@ const Submit = () => {
             submission_type: submissionType,
             submitted_by_user_id: user.id,
             original_submitter_id: user.id,
+            campaign: getCampaignIntent(),
           } as any)
           .select()
           .single();
