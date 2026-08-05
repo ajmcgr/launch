@@ -191,13 +191,37 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
         <p className={`mt-2 text-sm text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
       )}
 
-      <div className={`flex flex-wrap items-center gap-1.5 ${styles.footer}`}>
-        {product.category && (
-          <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-            {product.category}
-          </span>
-        )}
-        {product.isCampaign && <VibeCodeBadge size="sm" />}
+      <div className={`flex items-center justify-between gap-2 ${styles.footer}`}>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {product.category && (
+            <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+              {product.category}
+            </span>
+          )}
+          {product.isCampaign && <VibeCodeBadge size="sm" />}
+        </div>
+        <div
+          className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:opacity-100"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <SaveToCollectionButton
+            productId={product.id}
+            productName={product.name}
+            variant="bare"
+            className="rounded-md p-1"
+          />
+          <button
+            type="button"
+            aria-label={`Share ${product.name}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare(product);
+            }}
+            className="rounded-md p-1 text-muted-foreground transition-colors hover:text-primary"
+          >
+            <Share2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     </article>
   );
