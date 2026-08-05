@@ -82,3 +82,6 @@ verify_jwt = true
 
 [functions.umami-analytics]
 verify_jwt = false
+
+[functions.send-campaign-welcome]
+verify_jwt = false
