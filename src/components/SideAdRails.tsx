@@ -101,11 +101,12 @@ const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
 
   useEffect(() => {
     const update = () => {
-      const footer = document.querySelector('footer');
-      if (!footer) return setBottom(16);
-      const rect = footer.getBoundingClientRect();
-      const footerVisible = rect.top < window.innerHeight;
-      if (!footerVisible) return setBottom(16);
+      // Stop the rail before any explicit newsletter section, then the footer.
+      const stop = document.getElementById('newsletter') ?? document.querySelector('footer');
+      if (!stop) return setBottom(16);
+      const rect = stop.getBoundingClientRect();
+      const stopVisible = rect.top < window.innerHeight;
+      if (!stopVisible) return setBottom(16);
       setBottom(Math.max(16, window.innerHeight - rect.top + 16));
     };
     update();
