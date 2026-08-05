@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import BlogCTA from '@/components/blog/BlogCTA';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Accordion,
   AccordionContent,
