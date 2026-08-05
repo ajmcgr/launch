@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
+import { CAMPAIGN_SLUG } from '@/lib/campaign';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -548,6 +550,11 @@ const LaunchDetail = () => {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-4xl font-bold">{product.name}</h1>
+                {(product as any).campaign === CAMPAIGN_SLUG && (
+                  <Link to="/vibecodeyourfuture">
+                    <VibeCodeBadge size="md" />
+                  </Link>
+                )}
                 {bestRanking && bestRanking.rank <= 3 && (
                   <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
                     bestRanking.rank === 1 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
