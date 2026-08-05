@@ -173,20 +173,13 @@ export const BuilderWall = () => {
 
   return (
     <>
-      <div className="group/wall relative">
-        {/* fade gradients */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-background to-transparent sm:h-24" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-background to-transparent sm:h-24" />
-
-        <div
-          className="builder-wall-container overflow-hidden"
-          style={{ '--extra-rows': Math.max(0, visibleRows - INITIAL_ROWS) } as React.CSSProperties}
-        >
+      <div className="group/wall">
+        <div className="container mx-auto max-w-7xl px-4">
           <div className="flex gap-4">
-            <WallColumn items={columns[0]} duration={COLUMN_DURATIONS[0]} onShare={setSharing} />
-            <WallColumn items={columns[1]} duration={COLUMN_DURATIONS[1]} onShare={setSharing} className="hidden sm:block" />
-            <WallColumn items={columns[2]} duration={COLUMN_DURATIONS[2]} onShare={setSharing} className="hidden md:block" />
-            <WallColumn items={columns[3]} duration={COLUMN_DURATIONS[3]} onShare={setSharing} className="hidden lg:block" />
+            <WallColumn items={columns[0]} onShare={setSharing} />
+            <WallColumn items={columns[1]} onShare={setSharing} className="hidden sm:block" />
+            <WallColumn items={columns[2]} onShare={setSharing} className="hidden md:block" />
+            <WallColumn items={columns[3]} onShare={setSharing} className="hidden lg:block" />
           </div>
         </div>
       </div>
@@ -194,7 +187,7 @@ export const BuilderWall = () => {
       {hasMore && (
         <div className="mt-10 flex justify-center">
           <Button variant="outline" size="lg" onClick={loadMore}>
-            See more
+            See More Apps
           </Button>
         </div>
       )}
