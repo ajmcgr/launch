@@ -55,7 +55,7 @@ const VibeCodeYourFuture = () => {
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
-      trackCampaignEvent('campaign_cta_clicked');
+      trackCampaignEvent('campaign_search_submitted');
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
     }
