@@ -6,8 +6,10 @@ import { useCampaignProducts, type BuilderWallProduct } from '@/hooks/use-campai
 import { trackCampaignEvent } from '@/lib/campaign';
 import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
+import { Button } from '@/components/ui/button';
 
-const COLUMN_DURATIONS = ['52s', '64s', '58s', '70s'];
+const INITIAL_COUNT = 8;
+const LOAD_MORE_COUNT = 8;
 
 const BuilderCard = ({
   product,
@@ -76,42 +78,20 @@ const BuilderCard = ({
   );
 };
 
-const WallColumn = ({
-  items,
-  duration,
-  onShare,
-  className = '',
-}: {
-  items: BuilderWallProduct[];
-  duration: string;
-  onShare: (p: BuilderWallProduct) => void;
-  className?: string;
-}) => {
-  if (items.length === 0) return null;
-  return (
-    <div className={`min-w-0 flex-1 ${className}`}>
-      <div
-        className="flex flex-col gap-4 builder-wall-track group-hover/wall:[animation-play-state:paused]"
-        style={{ animationDuration: duration }}
-      >
-        {[...items, ...items].map((product, i) => (
-          <BuilderCard key={`${product.id}-${i}`} product={product} onShare={onShare} />
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export const BuilderWall = () => {
   const { data: products, isLoading } = useCampaignProducts(32);
   const [sharing, setSharing] = useState<BuilderWallProduct | null>(null);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
 
-  const columns = useMemo(() => {
-    const list = products || [];
-    const cols: BuilderWallProduct[][] = [[], [], [], []];
-    list.forEach((p, i) => cols[i % 4].push(p));
-    return cols;
-  }, [products]);
+  const visibleProducts = useMemo(() => {
+    return (products || []).slice(0, visibleCount);
+  }, [products, visibleCount]);
+
+  const hasMore = products && visibleCount < products.length;
+
+  const loadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + LOAD_MORE_COUNT, products?.length || prev));
+  };
 
   if (isLoading) {
     return (
@@ -127,20 +107,19 @@ export const BuilderWall = () => {
 
   return (
     <>
-      <div className="group/wall relative">
-        {/* fade gradients */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-background to-transparent sm:h-24" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-background to-transparent sm:h-24" />
-
-        <div className="h-[900px] overflow-hidden sm:h-[1100px] lg:h-[1300px]">
-          <div className="flex gap-4">
-            <WallColumn items={columns[0]} duration={COLUMN_DURATIONS[0]} onShare={setSharing} />
-            <WallColumn items={columns[1]} duration={COLUMN_DURATIONS[1]} onShare={setSharing} className="hidden sm:block" />
-            <WallColumn items={columns[2]} duration={COLUMN_DURATIONS[2]} onShare={setSharing} className="hidden md:block" />
-            <WallColumn items={columns[3]} duration={COLUMN_DURATIONS[3]} onShare={setSharing} className="hidden lg:block" />
-          </div>
-        </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {visibleProducts.map((product) => (
+          <BuilderCard key={product.id} product={product} onShare={setSharing} />
+        ))}
       </div>
+
+      {hasMore && (
+        <div className="mt-10 flex justify-center">
+          <Button variant="outline" size="lg" onClick={loadMore}>
+            See more
+          </Button>
+        </div>
+      )}
 
       <CampaignShareModal product={sharing} onClose={() => setSharing(null)} />
     </>
