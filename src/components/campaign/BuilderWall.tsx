@@ -157,10 +157,21 @@ export const BuilderWall = () => {
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: INITIAL_ROWS * 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-40 animate-pulse rounded-xl border border-border bg-muted/40"
-            />
+            <div key={i} className="rounded-xl border bg-card p-5">
+              <div className="flex items-start gap-2.5">
+                <div className="h-9 w-9 rounded-lg bg-muted/60 animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-muted/60 animate-pulse" />
+                  <div className="h-3 w-1/3 rounded bg-muted/50 animate-pulse" />
+                </div>
+              </div>
+              <div className="mt-3 aspect-video w-full rounded-lg bg-muted/50 animate-pulse" />
+              <div className="mt-2 space-y-2">
+                <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
+                <div className="h-3 w-4/5 rounded bg-muted/50 animate-pulse" />
+              </div>
+              <div className="mt-4 h-6 w-24 rounded-full bg-muted/50 animate-pulse" />
+            </div>
           ))}
         </div>
       </div>
