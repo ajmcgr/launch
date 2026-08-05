@@ -166,10 +166,10 @@ const VibeCodedIt = () => {
             <Link to="/" aria-label="Launch home">
               <img src={campaignIcon.url} alt="Launch" width={40} height={40} className="h-10 w-10 object-contain" />
             </Link>
-            <Link to="/products" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
+            <Link to="/products" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
               Products
             </Link>
-            <Link to="/collections" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
+            <Link to="/collections" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
               Collections
             </Link>
           </div>
@@ -192,12 +192,14 @@ const VibeCodedIt = () => {
             <ThemeToggle />
             <Link
               to="/auth"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm font-medium text-nav-text transition-colors hover:text-primary"
             >
               Login
             </Link>
             <Button asChild>
-              <Link to="/auth">Sign Up</Link>
+              <Link to="/auth" target="_blank" rel="noopener noreferrer">Sign Up</Link>
             </Button>
           </div>
         </div>
