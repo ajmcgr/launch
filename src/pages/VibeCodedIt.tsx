@@ -253,7 +253,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* Alex's Letter */}
-      <section id="letter" className="border-b">
+      <section id="letter">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
             <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">An Open Letter</h2>
@@ -383,7 +383,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* Newsletter */}
-      <section id="newsletter" className="border-t">
+      <section id="newsletter">
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
           <div className="mx-auto max-w-xl text-center">
             <h2 className="font-reckless text-3xl sm:text-4xl">Get the Newsletter</h2>
