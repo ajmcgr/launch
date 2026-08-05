@@ -132,7 +132,7 @@ export const BuilderWall = () => {
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-background to-transparent sm:h-24" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-background to-transparent sm:h-24" />
 
-        <div className="h-[560px] overflow-hidden sm:h-[680px] lg:h-[760px]">
+        <div className="h-[900px] overflow-hidden sm:h-[1100px] lg:h-[1300px]">
           <div className="flex gap-4">
             <WallColumn items={columns[0]} duration={COLUMN_DURATIONS[0]} onShare={setSharing} />
             <WallColumn items={columns[1]} duration={COLUMN_DURATIONS[1]} onShare={setSharing} className="hidden sm:block" />
