@@ -155,11 +155,11 @@ const VibeCodeYourFuture = () => {
 
       {/* Alex's Letter */}
       <section id="letter" className="border-b">
-        <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
-          <div className="rounded-lg border border-border bg-card p-8 md:p-12">
-            <h2 className="mb-10 text-center font-reckless text-3xl sm:text-4xl">Why I built this</h2>
+        <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
+          <div className="rounded-lg border border-border bg-card p-6 md:p-8">
+            <h2 className="mb-8 text-center font-reckless text-2xl sm:text-3xl">Why I built this</h2>
 
-            <div className="space-y-6 text-[17px] leading-8 text-foreground/90">
+            <div className="space-y-5 text-base leading-7 text-foreground/90">
               <p className="text-center text-muted-foreground">
                 An open letter to anyone who was just laid off.
               </p>
