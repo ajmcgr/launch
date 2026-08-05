@@ -139,9 +139,6 @@ const VibeCodeYourFuture = () => {
                 Read the letter
               </a>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Every startup launched on Launch appears on the Builder Wall below.
-            </p>
           </div>
         </div>
       </section>
