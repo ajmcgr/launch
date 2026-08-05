@@ -123,7 +123,7 @@ const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
     <aside
       aria-label={`${side} sponsored`}
       style={{ bottom }}
-      className={`hidden min-[1700px]:flex flex-col fixed top-28 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10 h-[calc(100vh-8rem)]`}
+      className={`hidden min-[1700px]:flex flex-col fixed top-28 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
     >
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
         Ad
