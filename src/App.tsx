@@ -151,7 +151,57 @@ const AppContent = () => {
       <main className="flex-1">
 
         <Suspense fallback={
-          location.pathname === '/reserve' ? (
+          isCampaignPage ? (
+            <div className="min-h-screen bg-background" aria-label="Loading" role="status">
+              {/* header: logo + nav left, search centered, auth right */}
+              <div className="border-b border-border/60">
+                <div className="container mx-auto max-w-7xl px-4 h-16 flex items-center gap-6">
+                  <div className="h-10 w-10 rounded-lg bg-muted/60 animate-pulse" />
+                  <div className="hidden md:flex items-center gap-4">
+                    <div className="h-4 w-20 rounded bg-muted/50 animate-pulse" />
+                    <div className="h-4 w-24 rounded bg-muted/50 animate-pulse" />
+                  </div>
+                  <div className="flex-1 flex justify-center">
+                    <div className="h-9 w-full max-w-md rounded-md bg-muted/50 animate-pulse" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-4 w-12 rounded bg-muted/50 animate-pulse" />
+                    <div className="h-9 w-20 rounded-md bg-muted/60 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+              {/* hero */}
+              <div className="container mx-auto max-w-7xl px-4 pt-10 pb-8 flex flex-col items-center gap-4">
+                <div className="h-12 w-4/5 max-w-2xl rounded-md bg-muted/60 animate-pulse" />
+                <div className="h-5 w-2/3 max-w-xl rounded bg-muted/50 animate-pulse" />
+                <div className="mt-2 h-11 w-44 rounded-md bg-muted/60 animate-pulse" />
+              </div>
+              {/* builder wall grid */}
+              <div className="container mx-auto max-w-7xl px-4 pb-16">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {Array.from({ length: 16 }).map((_, i) => (
+                    <div key={i} className="rounded-xl border bg-card p-5">
+                      <div className="flex items-start gap-2.5">
+                        <div className="h-9 w-9 rounded-lg bg-muted/60 animate-pulse" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 w-3/4 rounded bg-muted/60 animate-pulse" />
+                          <div className="h-3 w-1/3 rounded bg-muted/50 animate-pulse" />
+                        </div>
+                      </div>
+                      <div className="mt-3 aspect-video w-full rounded-lg bg-muted/50 animate-pulse" />
+                      <div className="mt-2 space-y-2">
+                        <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
+                        <div className="h-3 w-4/5 rounded bg-muted/50 animate-pulse" />
+                      </div>
+                      <div className="mt-4 h-6 w-24 rounded-full bg-muted/50 animate-pulse" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <span className="sr-only">Loading</span>
+            </div>
+          ) : location.pathname === '/reserve' ? (
+
             <div className="min-h-screen bg-background flex items-center justify-center" aria-label="Loading" role="status">
               <div className="h-8 w-8 rounded-full border-2 border-muted border-t-foreground animate-spin opacity-60" />
               <span className="sr-only">Loading</span>

@@ -15,7 +15,7 @@ import campaignIcon from '@/assets/li-icon-2.png.asset.json';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
-import { useCampaignProducts } from '@/hooks/use-campaign-products';
+import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
 import {
   CAMPAIGN_SLUG,
@@ -64,8 +64,8 @@ const VibeCodedIt = () => {
   const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
   const [subscribeError, setSubscribeError] = useState(false);
 
-  const { data: wallProducts } = useCampaignProducts(0);
-  const rawCount = wallProducts?.length || 0;
+  const { data: launchedCount } = useLaunchedProductCount();
+  const rawCount = launchedCount || 0;
   const roundedCount = rawCount >= 100 ? Math.floor(rawCount / 50) * 50 : rawCount;
   const appCount = roundedCount.toLocaleString();
   const faqs = useMemo(() => buildFaqs(appCount), [appCount]);
