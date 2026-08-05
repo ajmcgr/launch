@@ -224,15 +224,15 @@ const VibeCodeYourFuture = () => {
                 to help you get started.
               </p>
 
-              <div className="pt-8">
+              <div className="pt-6">
                 <div className="flex flex-col items-start">
                   <img
                     src={alexPhoto}
                     alt="Alex MacGregor"
-                    width={128}
-                    height={128}
+                    width={112}
+                    height={112}
                     loading="lazy"
-                    className="mb-4 h-32 w-32 object-cover"
+                    className="mb-4 h-28 w-28 object-cover"
                   />
                   <img
                     src={signature}
@@ -241,7 +241,7 @@ const VibeCodeYourFuture = () => {
                     className="mb-1 h-10 w-auto"
                   />
                   <h3 className="text-lg font-bold">Alex MacGregor</h3>
-                  <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
+                  <p className="mb-2 text-base font-bold text-muted-foreground">Founder, Launch</p>
                   <a
                     href="https://x.com/alexmacgregor__"
                     target="_blank"
