@@ -97,34 +97,10 @@ const PlaceholderTile = () => (
 );
 
 const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
-  const [bottom, setBottom] = useState(16);
-
-  useEffect(() => {
-    const update = () => {
-      // Stop the rail before any explicit newsletter section, then the footer.
-      const stop = document.getElementById('newsletter') ?? document.querySelector('footer');
-      if (!stop) return setBottom(16);
-      const rect = stop.getBoundingClientRect();
-      const stopVisible = rect.top < window.innerHeight;
-      if (!stopVisible) return setBottom(16);
-      setBottom(Math.max(16, window.innerHeight - rect.top + 16));
-    };
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    const t = window.setInterval(update, 1000);
-    return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
-      window.clearInterval(t);
-    };
-  }, []);
-
   return (
     <aside
       aria-label={`${side} sponsored`}
-      style={{ bottom }}
-      className={`hidden min-[1700px]:flex flex-col fixed top-28 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+      className={`hidden min-[1700px]:flex flex-col fixed top-28 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
     >
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
         Ad
