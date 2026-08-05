@@ -12,7 +12,7 @@ const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
 const PRODUCTS_LIMIT = 120; // fetch a fast first slab; 'See More Apps' pages through it
 
-type TileSize = 'tall' | 'standard' | 'compact';
+type TileSize = 'tall' | 'standard' | 'compact' | 'row';
 
 const TileSizeClasses: Record<TileSize, { card: string; icon: string; screenshot: string; name: string; tagline: string; footer: string }> = {
   tall: {
@@ -30,6 +30,14 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; screenshot
     name: 'text-base',
     tagline: 'line-clamp-2',
     footer: 'mt-auto pt-4',
+  },
+  row: {
+    card: 'p-4',
+    icon: 'h-10 w-10',
+    screenshot: 'hidden',
+    name: 'text-base',
+    tagline: 'truncate',
+    footer: 'mt-2',
   },
   compact: {
     card: 'p-4',
@@ -55,6 +63,65 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
     trackCampaignEvent('builder_wall_card_clicked', product.id);
     window.open(`/launch/${product.slug}`, '_blank', 'noopener,noreferrer');
   };
+
+  if (size === 'row' || size === 'compact') {
+    const dense = size === 'compact';
+    return (
+      <article
+        onClick={open}
+        className={`group/card flex cursor-pointer items-center gap-3 rounded-xl border bg-card transition-shadow hover:shadow-md ${dense ? 'p-3' : 'p-4'}`}
+      >
+        <img
+          src={product.iconUrl || defaultProductIcon}
+          alt={`${product.name} icon`}
+          width={40}
+          height={40}
+          loading="lazy"
+          decoding="async"
+          className={`${dense ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 rounded-lg object-cover bg-background`}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = defaultProductIcon;
+          }}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-base font-semibold leading-tight">{product.name}</h3>
+            {product.isCampaign && <VibeCodeBadge size="sm" />}
+          </div>
+          {!dense && product.tagline && (
+            <p className="truncate text-sm text-muted-foreground">{product.tagline}</p>
+          )}
+        </div>
+        {!dense && product.category && (
+          <span className="hidden flex-shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground sm:inline">
+            {product.category}
+          </span>
+        )}
+        <div
+          className="flex flex-shrink-0 items-center gap-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <SaveToCollectionButton
+            productId={product.id}
+            productName={product.name}
+            variant="bare"
+            className="rounded-md p-1"
+          />
+          <button
+            type="button"
+            aria-label={`Share ${product.name}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare(product);
+            }}
+            className="rounded-md p-1 text-muted-foreground transition-colors hover:text-primary"
+          >
+            <Share2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article
@@ -119,7 +186,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
         </div>
       )}
 
-      {product.tagline && size !== 'compact' && (
+      {product.tagline && (
         <p className={`mt-2 text-sm text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
       )}
 
@@ -129,7 +196,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
             {product.category}
           </span>
         )}
-        {product.isCampaign && <VibeCodeBadge size={size === 'compact' ? 'sm' : 'sm'} />}
+        {product.isCampaign && <VibeCodeBadge size="sm" />}
       </div>
     </article>
   );
@@ -144,10 +211,10 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
     view === 'grid'
       ? 'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
       : view === 'list'
-        ? 'grid grid-cols-1 gap-4 md:grid-cols-2'
-        : 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
-  const perRow = view === 'grid' ? 4 : view === 'list' ? 2 : 4;
-  const tileSize: TileSize = view === 'compact' ? 'compact' : view === 'list' ? 'tall' : 'standard';
+        ? 'flex flex-col gap-3'
+        : 'flex flex-col gap-2';
+  const perRow = view === 'grid' ? 4 : 8;
+  const tileSize: TileSize = view === 'compact' ? 'compact' : view === 'list' ? 'row' : 'standard';
 
   const visible = useMemo(
     () => (products || []).slice(0, visibleRows * perRow),
