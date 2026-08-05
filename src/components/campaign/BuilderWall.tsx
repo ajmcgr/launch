@@ -77,7 +77,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
         <div className="min-w-0 flex-1">
           <h3 className={`font-semibold leading-tight line-clamp-2 ${styles.name}`}>{product.name}</h3>
           {product.founder && (
-            <p className="truncate text-xs text-muted-foreground">@{product.founder}</p>
+            <p className="truncate text-sm text-muted-foreground">@{product.founder}</p>
           )}
         </div>
         <button
