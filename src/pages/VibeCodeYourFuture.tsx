@@ -98,6 +98,34 @@ const VibeCodeYourFuture = () => {
     setSearchParams(next, { replace: true });
   };
 
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || isSubscribing) return;
+
+    setIsSubscribing(true);
+    setSubscribeMessage(null);
+    setSubscribeError(false);
+
+    try {
+      const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
+        body: { email: email.trim() },
+      });
+
+      if (error) throw error;
+
+      trackCampaignEvent('campaign_newsletter_subscribed');
+      setSubscribeMessage('You’re subscribed. Welcome to the movement.');
+      setEmail('');
+    } catch (err) {
+      setSubscribeError(true);
+      setSubscribeMessage(
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+      );
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
   return (
     <>
       <Helmet>
