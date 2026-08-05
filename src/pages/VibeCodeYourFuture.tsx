@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
@@ -13,6 +13,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
+import { useCampaignProducts } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
 import {
   CAMPAIGN_SLUG,
@@ -20,7 +21,7 @@ import {
   trackCampaignEvent,
 } from '@/lib/campaign';
 
-const FAQS = [
+const buildFaqs = (appCount: string) => [
   {
     q: 'What is Vibe Code Your Future?',
     a: 'A movement for people building their own future with AI. Instead of waiting for the next job offer, you build software, launch it publicly, and join a community of founders doing the same. It runs on Launch, the largest vibe coding community in the world.',
@@ -32,6 +33,10 @@ const FAQS = [
   {
     q: 'Do I need to know how to code?',
     a: 'No. Most people on the Builder Wall shipped their first product using AI tools like Lovable, Cursor, Claude Code, Bolt or Replit. Launch itself was built by a founder with no coding experience.',
+  },
+  {
+    q: 'How many apps are on the Builder Wall?',
+    a: `Over ${appCount} vibe coded apps have been added to the Builder Wall, and more are launched every day.`,
   },
   {
     q: 'What is Launch?',
@@ -52,6 +57,12 @@ const VibeCodeYourFuture = () => {
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: wallProducts } = useCampaignProducts(0);
+  const rawCount = wallProducts?.length || 0;
+  const roundedCount = rawCount >= 100 ? Math.floor(rawCount / 50) * 50 : rawCount;
+  const appCount = roundedCount.toLocaleString();
+  const faqs = useMemo(() => buildFaqs(appCount), [appCount]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
@@ -102,7 +113,7 @@ const VibeCodeYourFuture = () => {
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            mainEntity: FAQS.map((f) => ({
+            mainEntity: faqs.map((f) => ({
               '@type': 'Question',
               name: f.q,
               acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -174,6 +185,11 @@ const VibeCodeYourFuture = () => {
       {/* Builder Wall */}
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
+          {rawCount > 0 && (
+            <p className="mb-8 text-center text-base text-muted-foreground sm:text-lg">
+              Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added
+            </p>
+          )}
           <BuilderWall />
         </div>
       </section>
@@ -289,7 +305,7 @@ const VibeCodeYourFuture = () => {
             Frequently asked questions
           </h2>
           <Accordion type="single" collapsible className="w-full">
-            {FAQS.map((faq) => (
+            {faqs.map((faq) => (
               <AccordionItem key={faq.q} value={faq.q}>
                 <AccordionTrigger className="text-left text-base sm:text-lg">{faq.q}</AccordionTrigger>
                 <AccordionContent className="text-base leading-7 text-muted-foreground">
