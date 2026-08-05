@@ -161,7 +161,7 @@ const VibeCodedIt = () => {
         <div className="container mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
           <div className="flex flex-shrink-0 items-center gap-5">
             <Link to="/" aria-label="Launch home">
-              <img src={campaignIcon.url} alt="Launch" width={32} height={32} className="h-8 w-8 object-contain" />
+              <img src={campaignIcon.url} alt="Launch" width={40} height={40} className="h-10 w-10 object-contain" />
             </Link>
             <Link to="/products" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
               Products
