@@ -66,6 +66,12 @@ const Submit = () => {
   const [submittedProductId, setSubmittedProductId] = useState<string | null>(null);
   const [submittedProductName, setSubmittedProductName] = useState<string>('');
 
+  // Persist campaign attribution (e.g. ?campaign=vibe_code_your_future) for this session.
+  useEffect(() => {
+    const campaign = captureCampaignFromSearch(window.location.search);
+    if (campaign) trackCampaignEvent('campaign_submission_started', null, campaign);
+  }, []);
+
   const handleSubmitSuccess = useCallback((savedId: string, productName: string, successMessage: string) => {
     localStorage.removeItem('submitFormData');
     localStorage.removeItem('submitMedia');
