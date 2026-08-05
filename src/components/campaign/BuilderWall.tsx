@@ -139,7 +139,9 @@ export const BuilderWall = () => {
     const list = (products || []).slice(0, visibleRows * 4);
     const cols: WallColumnItem[][] = [[], [], [], []];
     list.forEach((product, i) => {
-      cols[i % 4].push({ product, size: getTileSize(i) });
+      const colIndex = i % 4;
+      const rowIndex = Math.floor(i / 4);
+      cols[colIndex].push({ product, size: getTileSize(rowIndex + colIndex) });
     });
     return cols;
   }, [products, visibleRows]);
