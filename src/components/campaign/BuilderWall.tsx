@@ -17,25 +17,25 @@ type TileSize = (typeof TILE_SIZE_PATTERN)[number];
 
 const TileSizeClasses: Record<TileSize, { card: string; icon: string; name: string; tagline: string; footer: string }> = {
   tall: {
-    card: 'p-5',
-    icon: 'h-10 w-10',
-    name: 'text-base',
+    card: 'p-6',
+    icon: 'h-11 w-11',
+    name: 'text-lg',
     tagline: 'line-clamp-3',
-    footer: 'mt-4',
+    footer: 'mt-5',
   },
   standard: {
-    card: 'p-4',
-    icon: 'h-8 w-8',
-    name: 'text-sm',
+    card: 'p-5',
+    icon: 'h-9 w-9',
+    name: 'text-base',
     tagline: 'line-clamp-2',
-    footer: 'mt-3',
+    footer: 'mt-4',
   },
   compact: {
-    card: 'p-3',
-    icon: 'h-7 w-7',
-    name: 'text-sm',
+    card: 'p-4',
+    icon: 'h-8 w-8',
+    name: 'text-base',
     tagline: 'hidden',
-    footer: 'mt-2',
+    footer: 'mt-3',
   },
 };
 
@@ -77,7 +77,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
         <div className="min-w-0 flex-1">
           <h3 className={`font-semibold leading-tight line-clamp-2 ${styles.name}`}>{product.name}</h3>
           {product.founder && (
-            <p className="truncate text-xs text-muted-foreground">@{product.founder}</p>
+            <p className="truncate text-sm text-muted-foreground">@{product.founder}</p>
           )}
         </div>
         <button
@@ -94,12 +94,12 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
       </div>
 
       {product.tagline && size !== 'compact' && (
-        <p className={`mt-2 text-xs text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
+        <p className={`mt-2 text-sm text-muted-foreground ${styles.tagline}`}>{product.tagline}</p>
       )}
 
       <div className={`flex flex-wrap items-center gap-1.5 ${styles.footer}`}>
         {product.category && (
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+          <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
             {product.category}
           </span>
         )}
