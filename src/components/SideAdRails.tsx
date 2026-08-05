@@ -40,7 +40,7 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
             loading="lazy"
             width={28}
             height={28}
-            className="h-7 w-7 object-contain"
+            className="h-7 w-7 rounded-lg object-cover bg-background"
           />
         ) : (
           <span className="text-lg font-bold text-muted-foreground">{item.name[0]}</span>
