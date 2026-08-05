@@ -107,14 +107,15 @@ const AppContent = () => {
   const campaignHost = isCampaignHost();
   const staticPages = ['/about', '/terms', '/privacy'];
   const standalonePages = ['/reserve'];
-  // The campaign page drops Launch nav/footer nav but keeps the newsletter
-  // signup and the copyright line.
+  // The campaign page drops Launch nav/footer nav but keeps the
+  // copyright line. Newsletter signup is also hidden on the campaign page.
   const isCampaignPage = location.pathname === '/vibecodeyourfuture'
     || (campaignHost && location.pathname === '/');
   const isStandalone = standalonePages.includes(location.pathname) || isCampaignPage;
 
   const showNewsletter = !staticPages.includes(location.pathname)
-    && (!isStandalone || isCampaignPage);
+    && !isStandalone;
+
 
 
 
