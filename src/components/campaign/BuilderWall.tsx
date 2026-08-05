@@ -135,18 +135,27 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
   );
 };
 
-export const BuilderWall = () => {
+export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compact' }) => {
   const { data: products, isLoading } = useCampaignProducts(PRODUCTS_LIMIT);
   const [sharing, setSharing] = useState<BuilderWallProduct | null>(null);
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
+  const gridClass =
+    view === 'grid'
+      ? 'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+      : view === 'list'
+        ? 'grid grid-cols-1 gap-4 md:grid-cols-2'
+        : 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+  const perRow = view === 'grid' ? 4 : view === 'list' ? 2 : 4;
+  const tileSize: TileSize = view === 'compact' ? 'compact' : view === 'list' ? 'tall' : 'standard';
+
   const visible = useMemo(
-    () => (products || []).slice(0, visibleRows * 4),
-    [products, visibleRows]
+    () => (products || []).slice(0, visibleRows * perRow),
+    [products, visibleRows, perRow]
   );
 
-  const maxRows = Math.max(INITIAL_ROWS, Math.ceil((products?.length || 0) / 4));
-  const hasMore = visibleRows < maxRows && visibleRows * 4 < (products?.length || 0);
+  const maxRows = Math.max(INITIAL_ROWS, Math.ceil((products?.length || 0) / perRow));
+  const hasMore = visibleRows < maxRows && visibleRows * perRow < (products?.length || 0);
 
   const loadMore = () => {
     setVisibleRows((prev) => Math.min(prev + LOAD_MORE_ROWS, maxRows));
@@ -183,12 +192,12 @@ export const BuilderWall = () => {
   return (
     <>
       <div className="container mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className={gridClass}>
           {visible.map((product) => (
             <BuilderCard
               key={product.id}
               product={product}
-              size="standard"
+              size={tileSize}
               onShare={setSharing}
             />
           ))}

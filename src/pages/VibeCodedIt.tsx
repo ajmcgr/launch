@@ -17,6 +17,7 @@ import signature from '@/assets/signature.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
+import { ViewToggle } from '@/components/ViewToggle';
 import {
   CAMPAIGN_SLUG,
   setCampaignIntent,
@@ -59,6 +60,7 @@ const VibeCodedIt = () => {
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
   const [searchQuery, setSearchQuery] = useState('');
+  const [wallView, setWallView] = useState<'list' | 'grid' | 'compact'>('grid');
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
@@ -234,12 +236,15 @@ const VibeCodedIt = () => {
       {/* Builder Wall */}
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-10 sm:py-12">
-          {rawCount > 0 && (
-            <p className="mb-6 text-center text-base text-muted-foreground sm:text-lg">
-              Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <p className="text-base text-muted-foreground sm:text-lg">
+              {rawCount > 0 && (
+                <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
+              )}
             </p>
-          )}
-          <BuilderWall />
+            <ViewToggle view={wallView} onViewChange={setWallView} />
+          </div>
+          <BuilderWall view={wallView} />
         </div>
       </section>
 
