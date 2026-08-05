@@ -57,10 +57,8 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
   if (minimal) {
     return (
       <footer>
-        <div className="bg-muted">
-          <div className="container mx-auto px-4 max-w-7xl py-8 text-center text-sm text-muted-foreground">
-            <Copyright />
-          </div>
+        <div className="container mx-auto px-4 max-w-7xl py-8 text-center text-sm text-muted-foreground">
+          <Copyright />
         </div>
       </footer>
     );
