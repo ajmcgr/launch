@@ -141,7 +141,8 @@ const AppContent = () => {
   const showAdRails = !isStandalone
     && !path.startsWith('/admin')
     && !path.startsWith('/advertis')
-    && !path.startsWith('/go/');
+    && !path.startsWith('/go/')
+    || isCampaignPage;
 
   return (
     <div className="flex flex-col min-h-screen">
