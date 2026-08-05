@@ -448,7 +448,7 @@ Deno.serve(async (req) => {
                         <h1>Sponsorship Payment Confirmed</h1>
                         <p>Thank you for your sponsorship purchase!</p>
                         <div class="highlight">
-                          <p><strong>Package:</strong> ${metadata.sponsorship_type === 'combined' ? 'Combined Package' : metadata.sponsorship_type === 'website' ? 'Website Placement' : 'Newsletter Sponsorship'}</p>
+                          <p><strong>Package:</strong> ${metadata.sponsorship_type === 'combined' ? 'Combined Package' : metadata.sponsorship_type === 'website' ? 'Website Ad' : 'Newsletter Sponsorship'}</p>
                           <p><strong>Months:</strong> ${metadata.selected_months || metadata.months + ' month(s)'}</p>
                           ${metadata.launch_url ? `<p><strong>Product:</strong> ${metadata.launch_url}</p>` : ''}
                         </div>

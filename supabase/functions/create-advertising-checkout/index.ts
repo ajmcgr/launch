@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
       description = `Website + Newsletter sponsorship${monthsLabel}`;
     } else if (sponsorshipType === 'website') {
       unitAmount = 9900; // $99 in cents
-      productName = 'Website Placement';
+      productName = 'Website Ad';
       description = `Sponsored homepage listing${monthsLabel}`;
     } else {
       unitAmount = 14900; // $149 in cents
