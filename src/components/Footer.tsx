@@ -26,7 +26,46 @@ const RedditIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const Footer = () => {
+const Copyright = () => (
+  <p>
+    Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
+    <a
+      href="https://x.com/alexmacgregor__"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:text-primary transition-colors"
+    >
+      Alex
+    </a>{' '}and{' '}
+    <a
+      href="https://works.xyz/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:text-primary transition-colors"
+    >
+      Works
+    </a>.
+  </p>
+);
+
+interface FooterProps {
+  /** Renders only the copyright line (used by standalone campaign pages). */
+  minimal?: boolean;
+}
+
+export const Footer = ({ minimal = false }: FooterProps = {}) => {
+  if (minimal) {
+    return (
+      <footer>
+        <div className="bg-muted">
+          <div className="container mx-auto px-4 max-w-7xl py-8 text-center text-sm text-muted-foreground">
+            <Copyright />
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer>
       <div className="bg-muted">
@@ -249,26 +288,7 @@ export const Footer = () => {
           </div>
           </div>
           <div className="pb-8 text-center text-sm text-muted-foreground space-y-2">
-          
-          <p>
-            Copyright © {new Date().getFullYear()} Works App, Inc. Built with 🫶🏻 by{' '}
-            <a 
-              href="https://x.com/alexmacgregor__" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-            >
-              Alex
-            </a>{' '}and{' '}
-            <a 
-              href="https://works.xyz/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-            >
-              Works
-            </a>.
-          </p>
+            <Copyright />
           </div>
         </div>
       </div>
