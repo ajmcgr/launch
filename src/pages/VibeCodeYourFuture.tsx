@@ -259,22 +259,22 @@ const VibeCodeYourFuture = () => {
 
       {/* FAQ */}
       <section>
-        <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
-          <h2 className="mb-10 text-center font-reckless text-3xl sm:text-4xl">
+        <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
+          <h2 className="mb-8 text-center font-reckless text-2xl sm:text-3xl">
             Frequently asked questions
           </h2>
           <Accordion type="single" collapsible className="w-full">
             {FAQS.map((faq) => (
               <AccordionItem key={faq.q} value={faq.q}>
-                <AccordionTrigger className="text-left text-base">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-[15px] leading-7 text-muted-foreground">
+                <AccordionTrigger className="text-left text-sm sm:text-base">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-sm leading-6 text-muted-foreground">
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
 
-          <div className="mt-12 text-center">
+          <div className="mt-10 text-center">
             <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
               Add Your App
               <ArrowRight className="h-4 w-4" />
