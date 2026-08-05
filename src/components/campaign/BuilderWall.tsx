@@ -12,7 +12,7 @@ const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
 const PRODUCTS_LIMIT = 120; // fetch a fast first slab; 'See More Apps' pages through it
 
-type TileSize = 'tall' | 'standard' | 'compact';
+type TileSize = 'tall' | 'standard' | 'compact' | 'row';
 
 const TileSizeClasses: Record<TileSize, { card: string; icon: string; screenshot: string; name: string; tagline: string; footer: string }> = {
   tall: {
@@ -30,6 +30,14 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; screenshot
     name: 'text-base',
     tagline: 'line-clamp-2',
     footer: 'mt-auto pt-4',
+  },
+  row: {
+    card: 'p-4',
+    icon: 'h-10 w-10',
+    screenshot: 'hidden',
+    name: 'text-base',
+    tagline: 'truncate',
+    footer: 'mt-2',
   },
   compact: {
     card: 'p-4',
@@ -203,10 +211,10 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
     view === 'grid'
       ? 'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
       : view === 'list'
-        ? 'grid grid-cols-1 gap-4 md:grid-cols-2'
-        : 'grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
-  const perRow = view === 'grid' ? 4 : view === 'list' ? 2 : 4;
-  const tileSize: TileSize = view === 'compact' ? 'compact' : view === 'list' ? 'tall' : 'standard';
+        ? 'flex flex-col gap-3'
+        : 'flex flex-col gap-2';
+  const perRow = view === 'grid' ? 4 : 1;
+  const tileSize: TileSize = view === 'compact' ? 'compact' : view === 'list' ? 'row' : 'standard';
 
   const visible = useMemo(
     () => (products || []).slice(0, visibleRows * perRow),
