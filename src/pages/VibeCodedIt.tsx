@@ -48,7 +48,7 @@ const buildFaqs = (appCount: string) => [
   },
   {
     q: 'How do I get featured?',
-    a: 'Click "Add Your App" and go through the normal Launch submission flow. Products submitted through this page are tagged to the campaign, carry the Vibe Coded It badge, and appear on the Builder Wall automatically.',
+    a: 'Click "Submit Your App" and go through the normal Launch submission flow. Products submitted through this page are tagged to the campaign, carry the Vibe Coded It badge, and appear on the Builder Wall automatically.',
   },
 ];
 
