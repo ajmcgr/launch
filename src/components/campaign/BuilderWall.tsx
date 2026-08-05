@@ -10,7 +10,7 @@ import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
-const PRODUCTS_LIMIT = 0; // 0 = all launched products
+const PRODUCTS_LIMIT = 120; // fetch a fast first slab; 'See More Apps' pages through it
 
 type TileSize = 'tall' | 'standard' | 'compact';
 
