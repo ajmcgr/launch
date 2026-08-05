@@ -32,18 +32,18 @@ const trackAdClick = (item: RailAd, placement: string) => {
 const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
   const inner = (
     <>
-      <div className="h-20 w-full rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden mb-3">
+      <div className="h-14 w-full rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden mb-2.5">
         {item.iconUrl ? (
           <img
             src={item.iconUrl}
             alt={item.name}
             loading="lazy"
-            width={56}
-            height={56}
-            className="h-14 w-14 object-contain"
+            width={36}
+            height={36}
+            className="h-9 w-9 object-contain"
           />
         ) : (
-          <span className="text-2xl font-bold text-muted-foreground">{item.name[0]}</span>
+          <span className="text-xl font-bold text-muted-foreground">{item.name[0]}</span>
         )}
       </div>
       <div className="flex items-center gap-1.5">
@@ -87,8 +87,8 @@ const PlaceholderTile = () => (
     to="/advertising"
     className="block rounded-xl border border-dashed border-border bg-muted/10 p-3 hover:border-foreground/25 hover:bg-muted/20 transition-all group"
   >
-    <div className="h-20 w-full rounded-lg bg-muted/20 flex items-center justify-center mb-3">
-      <span className="text-2xl font-light text-muted-foreground group-hover:text-foreground transition-colors">
+    <div className="h-14 w-full rounded-lg bg-muted/20 flex items-center justify-center mb-2.5">
+      <span className="text-xl font-light text-muted-foreground group-hover:text-foreground transition-colors">
         +
       </span>
     </div>
@@ -104,10 +104,10 @@ const PlaceholderTile = () => (
 const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => (
   <aside
     aria-label={`${side} sponsored`}
-    className={`hidden min-[1700px]:block fixed top-24 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+    className={`hidden min-[1700px]:flex flex-col fixed top-24 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
   >
-    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Ad</h3>
-    <div className="space-y-3">
+    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 flex-shrink-0">Ad</h3>
+    <div className="space-y-3 overflow-y-auto pb-4 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) =>
         ads[i] ? (
           <AdTile key={ads[i].key} item={ads[i]} placement={`rail_${side}`} />
