@@ -8,9 +8,11 @@ import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
-const INITIAL_ROWS = 5;
-const LOAD_MORE_ROWS = 3;
-const MAX_ROWS = 20;
+const ROW_HEIGHT = 120;
+const INITIAL_ROWS = 8;
+const LOAD_MORE_ROWS = 5;
+const MAX_ROWS = 32;
+const PRODUCTS_LIMIT = MAX_ROWS * 4;
 
 const TILE_SIZE_PATTERN = ['tall', 'standard', 'compact', 'standard', 'standard', 'tall', 'compact', 'standard'] as const;
 type TileSize = (typeof TILE_SIZE_PATTERN)[number];
@@ -145,12 +147,12 @@ const WallColumn = ({ items, onShare, className = '', duration, reverse }: WallC
 };
 
 export const BuilderWall = () => {
-  const { data: products, isLoading } = useCampaignProducts(64);
+  const { data: products, isLoading } = useCampaignProducts(PRODUCTS_LIMIT);
   const [sharing, setSharing] = useState<BuilderWallProduct | null>(null);
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
   const columns = useMemo(() => {
-    const list = products || [];
+    const list = (products || []).slice(0, visibleRows * 4);
     const cols: WallColumnItem[][] = [[], [], [], []];
     list.forEach((product, i) => {
       const colIndex = i % 4;
@@ -158,10 +160,11 @@ export const BuilderWall = () => {
       cols[colIndex].push({ product, size: getTileSize(rowIndex + colIndex) });
     });
     return cols;
-  }, [products]);
+  }, [products, visibleRows]);
 
-  const wallHeight = visibleRows * 120 + 160;
-  const hasMore = visibleRows < MAX_ROWS;
+  const wallHeight = visibleRows * ROW_HEIGHT + 160;
+  const hasMore =
+    visibleRows < MAX_ROWS && visibleRows * 4 < (products?.length || 0);
 
   const loadMore = () => {
     setVisibleRows((prev) => Math.min(prev + LOAD_MORE_ROWS, MAX_ROWS));
@@ -171,7 +174,7 @@ export const BuilderWall = () => {
     return (
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 24 }).map((_, i) => {
+          {Array.from({ length: INITIAL_ROWS * 4 }).map((_, i) => {
             const size = getTileSize(i);
             const height = size === 'tall' ? 'h-56' : size === 'compact' ? 'h-24' : 'h-40';
             return (
