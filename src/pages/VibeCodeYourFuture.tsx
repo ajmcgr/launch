@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import BlogCTA from '@/components/blog/BlogCTA';
 import {
   Accordion,
   AccordionContent,
@@ -314,6 +315,8 @@ const VibeCodeYourFuture = () => {
           </div>
         </div>
       </section>
+
+      <BlogCTA variant="newsletter" />
 
       {/* Campaign success screen */}
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
