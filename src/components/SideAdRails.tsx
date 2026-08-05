@@ -129,7 +129,7 @@ const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
         Ad
       </h3>
-      <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-y-auto pb-2 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex flex-col gap-2 overflow-y-auto pb-2 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) => (
           <div key={ads[i]?.key ?? `ph-${side}-${i}`} className="shrink-0">
             {ads[i] ? (
