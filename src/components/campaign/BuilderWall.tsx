@@ -6,6 +6,7 @@ import { trackCampaignEvent } from '@/lib/campaign';
 import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
+import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 const ROW_HEIGHT = 120;
 const INITIAL_ROWS = 4;
@@ -79,6 +80,16 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
             <p className="truncate text-sm text-muted-foreground">@{product.founder}</p>
           )}
         </div>
+        <div
+          className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:opacity-100"
+          onClick={(e) => e.stopPropagation()}
+        >
+        <SaveToCollectionButton
+          productId={product.id}
+          productName={product.name}
+          variant="bare"
+          className="rounded-md p-1"
+        />
         <button
           type="button"
           aria-label={`Share ${product.name}`}
@@ -86,10 +97,11 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
             e.stopPropagation();
             onShare(product);
           }}
-          className="flex-shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover/card:opacity-100 [@media(hover:none)]:opacity-100"
+          className="rounded-md p-1 text-muted-foreground transition-colors hover:text-primary"
         >
           <Share2 className="h-3.5 w-3.5" />
         </button>
+        </div>
       </div>
 
       {product.tagline && size !== 'compact' && (
