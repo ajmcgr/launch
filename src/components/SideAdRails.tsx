@@ -96,23 +96,48 @@ const PlaceholderTile = () => (
   </Link>
 );
 
-const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => (
-  <aside
-    aria-label={`${side} sponsored`}
-    className={`hidden min-[1700px]:flex flex-col fixed top-24 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
-  >
-    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 flex-shrink-0">Ad</h3>
-    <div className="space-y-3 overflow-y-auto pb-4 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) =>
-        ads[i] ? (
-          <AdTile key={ads[i].key} item={ads[i]} placement={`rail_${side}`} />
-        ) : (
-          <PlaceholderTile key={`ph-${side}-${i}`} />
-        )
-      )}
-    </div>
-  </aside>
-);
+const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
+  const [bottom, setBottom] = useState(16);
+
+  useEffect(() => {
+    const update = () => {
+      const footer = document.querySelector('footer');
+      if (!footer) return setBottom(16);
+      const top = footer.getBoundingClientRect().top;
+      setBottom(Math.max(16, window.innerHeight - top + 16));
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    const t = window.setInterval(update, 1000);
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+      window.clearInterval(t);
+    };
+  }, []);
+
+  return (
+    <aside
+      aria-label={`${side} sponsored`}
+      style={{ bottom }}
+      className={`hidden min-[1700px]:flex flex-col fixed top-28 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+    >
+      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
+        Ad
+      </h3>
+      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto pb-6 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) =>
+          ads[i] ? (
+            <AdTile key={ads[i].key} item={ads[i]} placement={`rail_${side}`} />
+          ) : (
+            <PlaceholderTile key={`ph-${side}-${i}`} />
+          )
+        )}
+      </div>
+    </aside>
+  );
+};
 
 const SideAdRails = () => {
   const [ads, setAds] = useState<RailAd[]>([]);
