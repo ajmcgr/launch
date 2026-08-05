@@ -106,13 +106,16 @@ const AppContent = () => {
   const location = useLocation();
   const campaignHost = isCampaignHost();
   const staticPages = ['/about', '/terms', '/privacy'];
-  // The campaign page keeps Launch navigation ("powered by Launch") on the main
-  // domain, and stays standalone when served from vibecodeyourfuture.com.
   const standalonePages = ['/reserve'];
-  const isStandalone = standalonePages.includes(location.pathname)
+  // The campaign page drops Launch nav/footer nav but keeps the newsletter
+  // signup and the copyright line.
+  const isCampaignPage = location.pathname === '/vibecodeyourfuture'
     || (campaignHost && location.pathname === '/');
+  const isStandalone = standalonePages.includes(location.pathname) || isCampaignPage;
 
-  const showNewsletter = !staticPages.includes(location.pathname) && !isStandalone;
+  const showNewsletter = !staticPages.includes(location.pathname)
+    && (!isStandalone || isCampaignPage);
+
 
 
   const path = location.pathname;
