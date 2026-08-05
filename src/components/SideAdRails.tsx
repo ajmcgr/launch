@@ -104,7 +104,7 @@ const PlaceholderTile = () => (
 const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => (
   <aside
     aria-label={`${side} sponsored`}
-    className={`hidden 2xl:block fixed top-24 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+    className={`hidden min-[1700px]:block fixed top-24 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
   >
     <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Ad</h3>
     <div className="space-y-3">
