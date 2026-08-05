@@ -32,7 +32,7 @@ const trackAdClick = (item: RailAd, placement: string) => {
 const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
   const inner = (
     <>
-      <div className="h-10 w-full rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden mb-2">
+      <div className="h-10 w-full rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden mb-2 shrink-0">
         {item.iconUrl ? (
           <img
             src={item.iconUrl}
@@ -46,11 +46,11 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
           <span className="text-lg font-bold text-muted-foreground">{item.name[0]}</span>
         )}
       </div>
-      <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+      <p className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
         {item.name}
       </p>
       {item.tagline && (
-        <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
+        <p className="text-xs text-muted-foreground line-clamp-3 mt-1 leading-relaxed">
           {item.tagline}
         </p>
       )}
@@ -58,7 +58,7 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
   );
 
   const cls =
-    'block rounded-xl border border-border bg-card p-2.5 hover:border-foreground/20 hover:shadow-sm transition-all group';
+    'flex flex-col justify-center h-full rounded-xl border border-border bg-card p-2.5 hover:border-foreground/20 hover:shadow-sm transition-all group';
 
   return item.external ? (
     <a
