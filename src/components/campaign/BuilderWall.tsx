@@ -101,6 +101,15 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
           className="flex flex-shrink-0 items-center gap-1"
           onClick={(e) => e.stopPropagation()}
         >
+          <a
+            href={`/launch/${product.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Open ${product.name} in new window`}
+            className="rounded-md p-1 text-muted-foreground transition-colors hover:text-primary"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
           <SaveToCollectionButton
             productId={product.id}
             productName={product.name}
