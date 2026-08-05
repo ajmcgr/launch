@@ -8,7 +8,7 @@ import { CampaignShareModal } from '@/components/campaign/CampaignShareModal';
 import { Button } from '@/components/ui/button';
 
 const ROW_HEIGHT = 120;
-const INITIAL_ROWS = 8;
+const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
 const PRODUCTS_LIMIT = 0; // 0 = all launched products
 
@@ -172,7 +172,7 @@ export const BuilderWall = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: INITIAL_ROWS * 4 }).map((_, i) => {
             const size = getTileSize(i);
             const height = size === 'tall' ? 'h-56' : size === 'compact' ? 'h-24' : 'h-40';
@@ -200,9 +200,9 @@ export const BuilderWall = () => {
           >
             <div className="flex gap-5">
               <WallColumn items={columns[0]} onShare={setSharing} duration={64} />
-              <WallColumn items={columns[1]} onShare={setSharing} className="hidden sm:block" duration={78} reverse />
-              <WallColumn items={columns[2]} onShare={setSharing} className="hidden md:block" duration={70} />
-              <WallColumn items={columns[3]} onShare={setSharing} className="hidden lg:block" duration={86} reverse />
+              <WallColumn items={columns[1]} onShare={setSharing} className="hidden md:block" duration={78} reverse />
+              <WallColumn items={columns[2]} onShare={setSharing} className="hidden lg:block" duration={70} />
+              <WallColumn items={columns[3]} onShare={setSharing} className="hidden xl:block" duration={86} reverse />
             </div>
           </div>
         </div>
