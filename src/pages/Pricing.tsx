@@ -359,7 +359,7 @@ const Pricing = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <Card className="hover:shadow-lg transition-shadow flex flex-col">
               <CardHeader>
-                <CardTitle className="text-xl">Website Placement</CardTitle>
+                <CardTitle className="text-xl">Website Ad</CardTitle>
                 <CardDescription>30-day sponsored listing on homepage</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6 flex flex-col flex-1">
