@@ -32,18 +32,18 @@ const trackAdClick = (item: RailAd, placement: string) => {
 const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
   const inner = (
     <>
-      <div className="h-14 w-full rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden mb-2.5">
+      <div className="h-10 w-full rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden mb-2">
         {item.iconUrl ? (
           <img
             src={item.iconUrl}
             alt={item.name}
             loading="lazy"
-            width={36}
-            height={36}
-            className="h-9 w-9 object-contain"
+            width={28}
+            height={28}
+            className="h-7 w-7 object-contain"
           />
         ) : (
-          <span className="text-xl font-bold text-muted-foreground">{item.name[0]}</span>
+          <span className="text-lg font-bold text-muted-foreground">{item.name[0]}</span>
         )}
       </div>
       <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
@@ -58,7 +58,7 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
   );
 
   const cls =
-    'block rounded-xl border border-border bg-card p-3 hover:border-foreground/20 hover:shadow-sm transition-all group';
+    'block rounded-xl border border-border bg-card p-2.5 hover:border-foreground/20 hover:shadow-sm transition-all group';
 
   return item.external ? (
     <a
@@ -80,10 +80,10 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
 const PlaceholderTile = () => (
   <Link
     to="/advertise"
-    className="block rounded-xl border border-dashed border-border bg-muted/10 p-3 hover:border-foreground/25 hover:bg-muted/20 transition-all group"
+    className="block rounded-xl border border-dashed border-border bg-muted/10 p-2.5 hover:border-foreground/25 hover:bg-muted/20 transition-all group"
   >
-    <div className="h-14 w-full rounded-lg bg-muted/20 flex items-center justify-center mb-2.5">
-      <span className="text-xl font-light text-muted-foreground group-hover:text-foreground transition-colors">
+    <div className="h-10 w-full rounded-lg bg-muted/20 flex items-center justify-center mb-2">
+      <span className="text-lg font-light text-muted-foreground group-hover:text-foreground transition-colors">
         +
       </span>
     </div>
@@ -126,7 +126,7 @@ const Rail = ({ ads, side }: { ads: RailAd[]; side: 'left' | 'right' }) => {
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
         Ad
       </h3>
-      <div className="flex-1 min-h-0 space-y-3 overflow-y-auto pb-6 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex-1 min-h-0 space-y-2 overflow-y-auto pb-2 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) =>
           ads[i] ? (
             <AdTile key={ads[i].key} item={ads[i]} placement={`rail_${side}`} />
