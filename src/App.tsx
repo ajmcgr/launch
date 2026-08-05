@@ -401,6 +401,79 @@ const AppContent = () => {
               </div>
               <span className="sr-only">Loading</span>
             </div>
+          ) : isCampaignPage ? (
+            <div aria-label="Loading" role="status">
+              {/* Hero */}
+              <section className="py-16 sm:py-28">
+                <div className="container mx-auto max-w-7xl px-4 text-center">
+                  <div className="mx-auto max-w-4xl h-12 sm:h-16 lg:h-20 rounded-md bg-muted/60 animate-pulse" />
+                  <div className="mx-auto mt-7 max-w-2xl space-y-2">
+                    <div className="h-5 sm:h-6 w-full rounded bg-muted/50 animate-pulse" />
+                    <div className="h-5 sm:h-6 w-5/6 mx-auto rounded bg-muted/50 animate-pulse" />
+                    <div className="h-5 sm:h-6 w-4/6 mx-auto rounded bg-muted/50 animate-pulse" />
+                  </div>
+                  <div className="mt-10 flex flex-col items-center gap-4">
+                    <div className="h-12 w-48 rounded-md bg-muted/60 animate-pulse" />
+                    <div className="h-4 w-96 rounded bg-muted/50 animate-pulse" />
+                  </div>
+                </div>
+              </section>
+              {/* Builder Wall */}
+              <section>
+                <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {Array.from({ length: 24 }).map((_, i) => (
+                      <div key={i} className="rounded-xl border border-border p-3 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="h-10 w-10 rounded-lg bg-muted/50 animate-pulse" />
+                          <div className="space-y-1.5 flex-1 min-w-0">
+                            <div className="h-3.5 w-20 rounded bg-muted/60 animate-pulse" />
+                            <div className="h-3 w-16 rounded bg-muted/50 animate-pulse" />
+                          </div>
+                        </div>
+                        <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
+                        <div className="h-3 w-4/5 rounded bg-muted/50 animate-pulse" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+              {/* Letter */}
+              <section className="border-b">
+                <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
+                  <div className="rounded-lg border border-border bg-card p-8 md:p-12 space-y-6">
+                    <div className="h-10 w-2/3 mx-auto rounded-md bg-muted/60 animate-pulse" />
+                    <div className="h-4 w-1/2 mx-auto rounded bg-muted/50 animate-pulse" />
+                    <div className="space-y-3 pt-6">
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                      ))}
+                    </div>
+                    <div className="pt-8 space-y-3">
+                      <div className="h-32 w-32 rounded bg-muted/50 animate-pulse" />
+                      <div className="h-4 w-40 rounded bg-muted/50 animate-pulse" />
+                      <div className="h-4 w-32 rounded bg-muted/50 animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+              </section>
+              {/* FAQ */}
+              <section>
+                <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
+                  <div className="h-10 w-80 mx-auto rounded-md bg-muted/60 animate-pulse mb-10" />
+                  <div className="space-y-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="border rounded-lg px-6 py-4 space-y-3">
+                        <div className="h-5 w-2/3 rounded bg-muted/60 animate-pulse" />
+                        <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
+                        <div className="h-4 w-4/5 rounded bg-muted/50 animate-pulse" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+              <span className="sr-only">Loading</span>
+            </div>
           ) : isStandalone ? (
             <div className="min-h-screen bg-background py-16" aria-label="Loading" role="status">
               <div className="container mx-auto px-4 max-w-3xl">
@@ -536,7 +609,7 @@ const AppContent = () => {
         </div>
       )}
       {isCampaignPage ? <Footer minimal /> : !isStandalone && <Footer />}
-      <BookmarkPrompt />
+      {!isCampaignPage && <BookmarkPrompt />}
     </div>
   );
 };
