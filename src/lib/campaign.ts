@@ -63,7 +63,8 @@ export type CampaignEvent =
   | 'builder_wall_card_clicked'
   | 'builder_wall_share_clicked'
   | 'campaign_email_sent'
-  | 'campaign_launch_page_view';
+  | 'campaign_launch_page_view'
+  | 'campaign_search_submitted';
 
 /**
  * Fire-and-forget campaign analytics. No personal information is ever sent —
