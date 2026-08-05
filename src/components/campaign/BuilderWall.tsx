@@ -200,9 +200,9 @@ export const BuilderWall = () => {
           >
             <div className="flex gap-5">
               <WallColumn items={columns[0]} onShare={setSharing} duration={64} />
-              <WallColumn items={columns[1]} onShare={setSharing} className="hidden sm:block" duration={78} reverse />
-              <WallColumn items={columns[2]} onShare={setSharing} className="hidden md:block" duration={70} />
-              <WallColumn items={columns[3]} onShare={setSharing} className="hidden lg:block" duration={86} reverse />
+              <WallColumn items={columns[1]} onShare={setSharing} className="hidden md:block" duration={78} reverse />
+              <WallColumn items={columns[2]} onShare={setSharing} className="hidden lg:block" duration={70} />
+              <WallColumn items={columns[3]} onShare={setSharing} className="hidden xl:block" duration={86} reverse />
             </div>
           </div>
         </div>
