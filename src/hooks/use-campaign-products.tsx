@@ -70,8 +70,8 @@ export const useCampaignProducts = (limit = 32) =>
       }
 
       const campaignProducts = mapRows(campaignRows, categoryMap, true);
-      if (campaignProducts.length >= limit) return campaignProducts;
 
+      // Every launched product appears on the wall; campaign submissions come first.
       const { data: recentRows } = await supabase
         .from('products')
         .select(PRODUCT_SELECT)

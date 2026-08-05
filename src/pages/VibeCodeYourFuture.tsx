@@ -128,7 +128,7 @@ const VibeCodeYourFuture = () => {
               <ArrowRight className="h-4 w-4" />
             </Button>
             <p className="mt-4 text-sm text-muted-foreground">
-              Every startup launched on Launch through this campaign appears on the Builder Wall below.
+              Every startup launched on Launch appears on the Builder Wall below.
             </p>
           </div>
         </div>
