@@ -46,14 +46,9 @@ const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
           <span className="text-xl font-bold text-muted-foreground">{item.name[0]}</span>
         )}
       </div>
-      <div className="flex items-center gap-1.5">
-        <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-          {item.name}
-        </p>
-        <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">
-          Ad
-        </span>
-      </div>
+      <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+        {item.name}
+      </p>
       {item.tagline && (
         <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
           {item.tagline}
