@@ -217,7 +217,7 @@ const VibeCodedIt = () => {
           <div className="mt-6 flex flex-col items-center gap-3">
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
-                Add Your App
+                Submit Your App
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <a
