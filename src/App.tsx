@@ -535,7 +535,7 @@ const AppContent = () => {
           <Newsletter />
         </div>
       )}
-      {!isStandalone && <Footer />}
+      {isCampaignPage ? <Footer minimal /> : !isStandalone && <Footer />}
       <BookmarkPrompt />
     </div>
   );
