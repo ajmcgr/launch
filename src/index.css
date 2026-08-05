@@ -140,3 +140,35 @@ body {
 /* Builder Wall (Vibe Code Your Future) — static masonry columns */
 
 
+.builder-wall-viewport {
+  height: var(--wall-height, 720px);
+  overflow: hidden;
+  transition: height 400ms ease;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 56px, #000 calc(100% - 72px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 56px, #000 calc(100% - 72px), transparent 100%);
+}
+
+.builder-wall-track {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  will-change: transform;
+  animation: builder-wall-scroll var(--wall-duration, 60s) linear infinite;
+}
+
+.builder-wall-track.is-reverse {
+  animation-direction: reverse;
+}
+
+.group\/wall:hover .builder-wall-track {
+  animation-play-state: paused;
+}
+
+@keyframes builder-wall-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .builder-wall-track { animation: none; }
+}
