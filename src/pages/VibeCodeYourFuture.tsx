@@ -20,7 +20,7 @@ import {
   trackCampaignEvent,
 } from '@/lib/campaign';
 
-const FAQS = [
+const buildFaqs = (appCount: string) => [
   {
     q: 'What is Vibe Code Your Future?',
     a: 'A movement for people building their own future with AI. Instead of waiting for the next job offer, you build software, launch it publicly, and join a community of founders doing the same. It runs on Launch, the largest vibe coding community in the world.',
@@ -32,6 +32,10 @@ const FAQS = [
   {
     q: 'Do I need to know how to code?',
     a: 'No. Most people on the Builder Wall shipped their first product using AI tools like Lovable, Cursor, Claude Code, Bolt or Replit. Launch itself was built by a founder with no coding experience.',
+  },
+  {
+    q: 'How many apps are on the Builder Wall?',
+    a: `Over ${appCount} vibe coded apps have been added to the Builder Wall, and more are launched every day.`,
   },
   {
     q: 'What is Launch?',
