@@ -111,9 +111,9 @@ export const BuilderWall = () => {
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
 
   const columns = useMemo(() => {
-    const list = (products || []).slice(0, visibleRows * 6);
-    const cols: BuilderWallProduct[][] = [[], [], [], [], [], []];
-    list.forEach((p, i) => cols[i % 6].push(p));
+    const list = (products || []).slice(0, visibleRows * 4);
+    const cols: BuilderWallProduct[][] = [[], [], [], []];
+    list.forEach((p, i) => cols[i % 4].push(p));
     return cols;
   }, [products, visibleRows]);
 
