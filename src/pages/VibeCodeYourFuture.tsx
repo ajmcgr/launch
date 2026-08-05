@@ -109,7 +109,16 @@ const VibeCodeYourFuture = () => {
             Vibe Code Your Future
           </h1>
           <p className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            A movement for people building their own future with AI. Whether you were laid off,
+            A movement from{' '}
+            <a
+              href="https://trylaunch.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Launch
+            </a>{' '}
+            for people building their own future with AI. Whether you were laid off,
             left your job, or simply decided to build, launch your vibe coded startup and join a
             growing community of founders creating the next generation of software.
           </p>
@@ -119,7 +128,7 @@ const VibeCodeYourFuture = () => {
               <ArrowRight className="h-4 w-4" />
             </Button>
             <p className="mt-4 text-sm text-muted-foreground">
-              Every startup launched through this campaign appears on the Builder Wall below.
+              Every startup launched on Launch through this campaign appears on the Builder Wall below.
             </p>
           </div>
         </div>
