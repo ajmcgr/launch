@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import BlogCTA from '@/components/blog/BlogCTA';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Accordion,
   AccordionContent,
@@ -58,6 +58,10 @@ const VibeCodeYourFuture = () => {
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
   const [searchQuery, setSearchQuery] = useState('');
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
+  const [subscribeError, setSubscribeError] = useState(false);
 
   const { data: wallProducts } = useCampaignProducts(0);
   const rawCount = wallProducts?.length || 0;
@@ -92,6 +96,34 @@ const VibeCodeYourFuture = () => {
     const next = new URLSearchParams(searchParams);
     next.delete('welcome');
     setSearchParams(next, { replace: true });
+  };
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || isSubscribing) return;
+
+    setIsSubscribing(true);
+    setSubscribeMessage(null);
+    setSubscribeError(false);
+
+    try {
+      const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
+        body: { email: email.trim() },
+      });
+
+      if (error) throw error;
+
+      trackCampaignEvent('campaign_newsletter_subscribed');
+      setSubscribeMessage('You’re subscribed. Welcome to the movement.');
+      setEmail('');
+    } catch (err) {
+      setSubscribeError(true);
+      setSubscribeMessage(
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+      );
+    } finally {
+      setIsSubscribing(false);
+    }
   };
 
   return (
@@ -316,7 +348,46 @@ const VibeCodeYourFuture = () => {
         </div>
       </section>
 
-      <BlogCTA variant="newsletter" />
+      {/* Newsletter */}
+      <section className="border-t">
+        <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
+          <div className="mx-auto max-w-xl text-center">
+            <h2 className="font-reckless text-3xl sm:text-4xl">Get the Newsletter</h2>
+            <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+              Subscribe for free. Weekly updates on launches, no filler.
+            </p>
+
+            <form onSubmit={handleSubscribe} className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
+              />
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isSubscribing}
+                className="h-12 w-full sm:w-auto px-8 text-base whitespace-nowrap"
+              >
+                {isSubscribing ? 'Subscribing...' : 'Subscribe'}
+              </Button>
+            </form>
+
+            {subscribeMessage && (
+              <p
+                className={`mt-4 text-sm ${
+                  subscribeError ? 'text-destructive' : 'text-muted-foreground'
+                }`}
+              >
+                {subscribeMessage}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* Campaign success screen */}
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
