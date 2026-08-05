@@ -283,8 +283,8 @@ const VibeCodeYourFuture = () => {
       {/* Campaign success screen */}
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
         <DialogContent className="sm:max-w-md text-center">
-          <h2 className="font-reckless text-2xl">🎉 Welcome to the movement.</h2>
-          <p className="text-muted-foreground">
+          <h2 className="font-reckless text-3xl">🎉 Welcome to the movement.</h2>
+          <p className="text-base text-muted-foreground">
             Your startup is now part of Vibe Code Your Future. It's also live on Launch where
             thousands of builders can discover it.
           </p>
