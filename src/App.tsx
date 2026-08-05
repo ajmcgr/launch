@@ -147,7 +147,7 @@ const AppContent = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {!isStandalone && <Header />}
-      {showAdRails && <SideAdRails />}
+      {showAdRails && <SideAdRails isCampaignPage={isCampaignPage} />}
       <main className="flex-1">
 
         <Suspense fallback={
