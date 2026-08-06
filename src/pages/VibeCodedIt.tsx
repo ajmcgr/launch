@@ -175,19 +175,23 @@ const VibeCodedIt = () => {
       <CampaignHeader />
       <CampaignSideNav />
 
-      {/* App count + view toggle */}
+      {/* Apps title + app count + view toggle */}
       <section className="lg:pl-16">
         <div className="container mx-auto max-w-7xl px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
-            <p className="text-sm text-muted-foreground leading-5">
-              {rawCount > 0 && (
-                <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
-              )}
-            </p>
+            <div>
+              <h1 className="font-reckless text-3xl sm:text-4xl">Apps</h1>
+              <p className="mt-2 text-sm text-muted-foreground leading-5">
+                {rawCount > 0 && (
+                  <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
+                )}
+              </p>
+            </div>
             <ViewToggle view={wallView} onViewChange={setWallView} />
           </div>
         </div>
       </section>
+
 
 
       {/* Hero */}
