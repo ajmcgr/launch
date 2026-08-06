@@ -196,7 +196,7 @@ const VibeCodedIt = () => {
             </Button>
 
             <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
-              Build Something Worth Launching
+              Vibe Coded It
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               Whether you were laid off, left your job, or simply decided to build,
