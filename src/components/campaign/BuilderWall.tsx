@@ -235,7 +235,7 @@ const BuilderCard = ({ product, size, onShare }: BuilderCardProps) => {
   );
 };
 
-export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compact' }) => {
+export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compact' | 'semi-compact' }) => {
   const { data: products, isLoading } = useCampaignProducts(PRODUCTS_LIMIT);
   const [sharing, setSharing] = useState<BuilderWallProduct | null>(null);
   const [visibleRows, setVisibleRows] = useState(INITIAL_ROWS);
@@ -243,11 +243,14 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
   const gridClass =
     view === 'grid'
       ? 'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-      : view === 'list'
-        ? 'flex flex-col gap-3'
-        : 'flex flex-col gap-2';
-  const perRow = view === 'grid' ? 4 : 8;
-  const tileSize: TileSize = view === 'compact' ? 'compact' : view === 'list' ? 'row' : 'standard';
+      : view === 'semi-compact'
+        ? 'grid grid-cols-1 sm:grid-cols-2 gap-3'
+        : view === 'list'
+          ? 'flex flex-col gap-3'
+          : 'flex flex-col gap-2';
+  const perRow = view === 'grid' ? 4 : view === 'semi-compact' ? 4 : 8;
+  const tileSize: TileSize =
+    view === 'compact' ? 'compact' : view === 'list' ? 'row' : view === 'semi-compact' ? 'semi-compact' : 'standard';
 
   const visible = useMemo(
     () => (products || []).slice(0, visibleRows * perRow),
