@@ -113,9 +113,6 @@ export const CampaignSideNav = () => {
           Account
         </a>
       </nav>
-
-      {/* Spacer so content clears the mobile bar */}
-      <div className="h-16 lg:hidden" aria-hidden />
     </>
   );
 };
