@@ -1,13 +1,24 @@
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import CampaignHeader from '@/components/campaign/CampaignHeader';
 import CampaignSideNav from '@/components/campaign/CampaignSideNav';
 import CollectionsPreview from '@/components/CollectionsPreview';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
+import { CAMPAIGN_SLUG, setCampaignIntent, trackCampaignEvent } from '@/lib/campaign';
 
 const VibeCodedItCollections = () => {
+  const navigate = useNavigate();
   const pageUrl = isCampaignHost()
     ? `${CAMPAIGN_ORIGIN}/collections`
     : 'https://trylaunch.ai/vibecodedit/collections';
+
+  const handleAddYourApp = () => {
+    setCampaignIntent(CAMPAIGN_SLUG);
+    trackCampaignEvent('campaign_cta_clicked');
+    navigate(`/submit?campaign=${CAMPAIGN_SLUG}`);
+  };
 
   return (
     <>
@@ -35,6 +46,19 @@ const VibeCodedItCollections = () => {
           </div>
         </div>
       </main>
+
+      {/* Floating Submit Your App CTA */}
+      <div className="fixed bottom-6 right-6 z-40 hidden sm:block">
+        <Button
+          size="lg"
+          className="h-12 gap-2 px-6 text-base shadow-lg"
+          onClick={handleAddYourApp}
+        >
+          Submit Your App
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+
       <div className="h-16 lg:hidden" aria-hidden />
     </>
   );
