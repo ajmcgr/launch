@@ -146,7 +146,7 @@ const SuccessStories = () => {
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Hero */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-3 font-['Reckless']">
+          <h1 className="text-4xl font-bold tracking-tight mb-3 font-reckless">
             Success Stories
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -198,7 +198,7 @@ const SuccessStories = () => {
         <div className="mt-16 text-center">
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="py-10">
-              <h2 className="text-2xl font-bold mb-2 font-['Reckless']">Want results like these?</h2>
+              <h2 className="text-2xl font-bold mb-2 font-reckless">Want results like these?</h2>
               <p className="text-muted-foreground mb-6">
                 Launch your product and reach thousands of builders, makers, and early adopters.
               </p>

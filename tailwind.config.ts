@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        'reckless': ['Reckless', 'serif'],
+        'reckless': ['ui-sans-serif', 'system-ui', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
       },
       colors: {
         border: "hsl(var(--border))",
