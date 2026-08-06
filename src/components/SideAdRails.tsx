@@ -193,6 +193,7 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
 
   return (
     <>
+      <MobileAdMarquees ads={ads} isCampaign={isCampaignPage} enabled={showMobileMarquee} />
       <Rail ads={left} side="left" />
       <Rail ads={right} side="right" />
     </>
