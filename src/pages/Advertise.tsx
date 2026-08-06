@@ -464,7 +464,7 @@ const Advertise = () => {
               >
                 <CardHeader>
                 <CardTitle className="text-xl">Website Ad</CardTitle>
-                <CardDescription>Sponsored listing on homepage + product pages</CardDescription>
+                <CardDescription>Sponsored listing on Launch + Vibe Coded It (vibecodedit.com), our sister site</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 flex flex-col flex-1">
                   <div className="text-4xl font-bold">
@@ -477,15 +477,19 @@ const Advertise = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored listing in the homepage feed</span>
+                    <span className="text-sm">Sponsored listing in the Launch homepage feed</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sidebar ad on homepage & product detail pages</span>
+                    <span className="text-sm">Sidebar ad on Launch homepage & product detail pages</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Inline ad above comments on product pages</span>
+                    <span className="text-sm">Inline ad above comments on Launch product pages</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Also rotated across vibecodedit.com, our sister site</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
