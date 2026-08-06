@@ -181,8 +181,15 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
     fetchAds();
   }, []);
 
+  const showMobileMarquee = pathname === '/' || pathname.startsWith('/vibecodedit');
+
   if (isCampaignPage) {
-    return <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />;
+    return (
+      <>
+        <MobileAdMarquees ads={ads} isCampaign enabled={showMobileMarquee} />
+        <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />
+      </>
+    );
   }
 
   // Fill rails left-to-right, top-to-bottom so ads read in order and the
