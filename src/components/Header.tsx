@@ -154,6 +154,9 @@ export const Header = () => {
             <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Advertise
             </Link>
+            <Link to="/vibecodedit" aria-label="Vibe Coded It" className="flex items-center">
+              <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={28} height={28} className="h-7 w-7 rounded-full object-contain" />
+            </Link>
           </nav>
           
           {/* Right: Actions */}
