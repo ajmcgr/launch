@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
 import logoDark from '@/assets/logo-dark.png';
+import vibecodeditIcon from '@/assets/vibecodedit-header-icon.png.asset.json';
 import { NotificationBell } from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useTheme } from 'next-themes';
