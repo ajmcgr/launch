@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -68,6 +68,9 @@ const VibeCodedIt = () => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
   const [subscribeError, setSubscribeError] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [showHero, setShowHero] = useState(true);
+
 
   const { data: launchedCount } = useLaunchedProductCount();
   const rawCount = launchedCount || 0;
@@ -88,8 +91,23 @@ const VibeCodedIt = () => {
   }, []);
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) setShowHero(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) setShowHero(false);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (welcomeSlug) setShowWelcome(true);
   }, [welcomeSlug]);
+
 
   const handleAddYourApp = () => {
     setCampaignIntent(CAMPAIGN_SLUG);
@@ -203,38 +221,49 @@ const VibeCodedIt = () => {
       </header>
 
       {/* Hero */}
-      <section>
-        <div className="container mx-auto max-w-7xl px-4 py-8 text-center sm:py-10">
-          <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
-            Build Something Worth Launching
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Whether you were laid off, left your job, or simply decided to build,
-            launch your vibe coded startup and join a growing community of founders
-            creating the next generation of software.
-          </p>
-          <div className="mt-6 flex flex-col items-center gap-3">
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
-                Submit Your App
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              <a
-                href="#letter"
-                className="text-base font-medium text-primary hover:underline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                Read the letter
-              </a>
+      {showHero && !user && (
+        <section className="relative">
+          <div className="container mx-auto max-w-7xl px-4 py-8 text-center sm:py-10">
+            <button
+              type="button"
+              onClick={() => setShowHero(false)}
+              aria-label="Hide hero"
+              className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:right-6 sm:top-6"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
+              Build Something Worth Launching
+            </h1>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Whether you were laid off, left your job, or simply decided to build,
+              launch your vibe coded startup and join a growing community of founders
+              creating the next generation of software.
+            </p>
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
+                  Submit Your App
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                <a
+                  href="#letter"
+                  className="text-base font-medium text-primary hover:underline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Read the letter
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Builder Wall */}
+
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-10 sm:py-12">
           <div className="mb-6 flex items-center justify-between gap-4">
@@ -420,7 +449,20 @@ const VibeCodedIt = () => {
         </div>
       </section>
 
+      {/* Floating Submit Your App CTA */}
+      <div className="fixed bottom-6 right-6 z-40 hidden sm:block">
+        <Button
+          size="lg"
+          className="h-12 gap-2 px-6 text-base shadow-lg"
+          onClick={handleAddYourApp}
+        >
+          Submit Your App
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+
       {/* Campaign success screen */}
+
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
         <DialogContent className="sm:max-w-md text-center">
           <h2 className="font-reckless text-3xl">🎉 Welcome to the movement.</h2>
