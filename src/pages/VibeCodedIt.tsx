@@ -20,7 +20,8 @@ import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
 import { ViewToggle } from '@/components/ViewToggle';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import CampaignHeader from '@/components/campaign/CampaignHeader';
+import CampaignSideNav from '@/components/campaign/CampaignSideNav';
 import {
   CAMPAIGN_SLUG,
   setCampaignIntent,
@@ -200,7 +201,7 @@ const VibeCodedIt = () => {
 
       {/* Hero */}
       {showHero && !user && (
-        <section className="relative pt-2">
+        <section className="relative pt-2 lg:pl-16">
           <div className="container mx-auto max-w-7xl px-4 pb-8 text-center sm:pb-10">
             <button
               type="button"
@@ -241,14 +242,14 @@ const VibeCodedIt = () => {
       )}
 
       {/* Builder Wall */}
-      <section>
+      <section className="lg:pl-16">
         <div className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
           <BuilderWall view={wallView} />
         </div>
       </section>
 
       {/* Alex's Letter */}
-      <section id="letter">
+      <section id="letter" className="lg:pl-16">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
             <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">An Open Letter</h2>
@@ -352,7 +353,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* FAQ */}
-      <section>
+      <section className="lg:pl-16">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">
             Frequently asked questions
@@ -378,7 +379,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* Newsletter */}
-      <section id="newsletter">
+      <section id="newsletter" className="lg:pl-16">
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
           <div className="mx-auto max-w-xl text-center">
             <h2 className="font-reckless text-3xl sm:text-4xl">Get the Newsletter</h2>
