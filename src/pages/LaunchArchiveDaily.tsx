@@ -463,7 +463,7 @@ const LaunchArchiveDaily = () => {
             </div>
             <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
             <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
-            <ViewToggle view={view} onViewChange={setView} />
+            <ViewToggle view={view} onViewChange={(v) => setView(v as 'list' | 'grid' | 'compact')} />
           </div>
         </div>
 

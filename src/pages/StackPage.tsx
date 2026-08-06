@@ -328,7 +328,7 @@ const StackPage = () => {
 
         <div className="flex items-center justify-between mb-6">
           <SortToggle sort={sortBy} onSortChange={setSortBy} />
-          <ViewToggle view={view} onViewChange={setView} />
+          <ViewToggle view={view} onViewChange={(v) => setView(v as 'list' | 'grid' | 'compact')} />
         </div>
 
         {loading ? (

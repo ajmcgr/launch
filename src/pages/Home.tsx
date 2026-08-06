@@ -1045,7 +1045,7 @@ const Home = () => {
 
               <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
               <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
-              <ViewToggle view={view} onViewChange={handleViewChange} />
+              <ViewToggle view={view} onViewChange={(v) => handleViewChange(v as 'list' | 'grid' | 'compact')} />
             </div>
           </div>
 

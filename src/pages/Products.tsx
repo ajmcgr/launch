@@ -576,7 +576,7 @@ const Products = () => {
                 onPlatformToggle={handlePlatformToggle} 
               />
               <SortToggle sort={sort} onSortChange={setSort} iconOnly={isMobile} showRevenue={true} showMaker={true} />
-              {!isMobile && <ViewToggle view={view} onViewChange={handleViewChange} />}
+              {!isMobile && <ViewToggle view={view} onViewChange={(v) => handleViewChange(v as 'list' | 'grid' | 'compact')} />}
             </div>
           </div>
         </div>

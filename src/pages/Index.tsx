@@ -359,7 +359,7 @@ const Index = () => {
               )} 
             />
             <SortToggle sort={sort} onSortChange={setSort} showRevenue={false} />
-            {!isMobile && <ViewToggle view={view} onViewChange={setView} />}
+            {!isMobile && <ViewToggle view={view} onViewChange={(v) => setView(v as 'list' | 'grid' | 'compact')} />}
           </div>
         </div>
 

@@ -387,7 +387,7 @@ const TagPage = () => {
         <div className="flex items-center justify-between mb-6">
           <SortToggle sort={sort} onSortChange={handleSortChange} />
           {!isMobile && (
-            <ViewToggle view={view} onViewChange={handleViewChange} />
+            <ViewToggle view={view} onViewChange={(v) => handleViewChange(v as 'list' | 'grid')} />
           )}
         </div>
 
