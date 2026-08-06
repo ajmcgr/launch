@@ -180,49 +180,11 @@ const VibeCodedIt = () => {
       </Helmet>
 
       {/* Campaign header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background">
-        <div className="container mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
-          <div className="flex flex-shrink-0 items-center gap-5">
-            <a href={CAMPAIGN_ORIGIN} aria-label="Vibe Coded It" className="flex items-center">
-              <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={40} className="h-10 w-auto object-contain dark:hidden" />
-              <img src={vibeLogoDark.url} alt="Vibe Coded It" width={160} height={40} className="hidden h-10 w-auto object-contain dark:block" />
-            </a>
-          </div>
-
-          <div className="min-w-0 flex-1 px-2">
-            <div className="relative mx-auto w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search launches, founders, categories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearch}
-                className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-shrink-0 items-center gap-3">
-            <ThemeToggle />
-            <Link
-              to="/auth"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-nav-text transition-colors hover:text-primary"
-            >
-              Login
-            </Link>
-            <Button asChild>
-              <Link to="/auth" target="_blank" rel="noopener noreferrer">Sign Up</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
+      <CampaignHeader />
+      <CampaignSideNav />
 
       {/* App count + view toggle */}
-      <section>
+      <section className="lg:pl-16">
         <div className="container mx-auto max-w-7xl px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
             <p className="text-sm text-muted-foreground leading-5">
@@ -234,6 +196,7 @@ const VibeCodedIt = () => {
           </div>
         </div>
       </section>
+
 
       {/* Hero */}
       {showHero && !user && (
