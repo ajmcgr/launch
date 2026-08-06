@@ -46,7 +46,7 @@ const VibeCodedItCollections = () => {
           </p>
 
           <div className="mt-8">
-            <CollectionsPreview limit={60} onCount={setCollectionCount} />
+            <CollectionsPreview limit={60} onCount={setCollectionCount} openInNewWindow />
           </div>
         </div>
       </main>

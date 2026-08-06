@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { FolderOpen, Eye, Heart } from 'lucide-react';
@@ -23,13 +23,14 @@ interface CollectionCard {
 interface Props {
   limit?: number;
   onCount?: (count: number) => void;
+  openInNewWindow?: boolean;
 }
 
 /**
  * Compact homepage preview of top trending collections.
  * Card markup mirrors CollectionsDirectory for visual consistency.
  */
-export default function CollectionsPreview({ limit = 6, onCount }: Props) {
+export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow = false }: Props) {
   const [items, setItems] = useState<CollectionCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [covers, setCovers] = useState<Map<string, string>>(new Map());
@@ -106,14 +107,30 @@ export default function CollectionsPreview({ limit = 6, onCount }: Props) {
 
   if (!items.length) return null;
 
+  const wrapperClass = "group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all";
+
+  const CardWrapper = openInNewWindow
+    ? ({ c, children }: { c: CollectionCard; children: ReactNode }) => (
+        <a
+          key={c.id}
+          href={`/c/${c.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={wrapperClass}
+        >
+          {children}
+        </a>
+      )
+    : ({ c, children }: { c: CollectionCard; children: ReactNode }) => (
+        <Link key={c.id} to={`/c/${c.slug}`} className={wrapperClass}>
+          {children}
+        </Link>
+      );
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {items.map((c) => (
-        <Link
-          key={c.id}
-          to={`/c/${c.slug}`}
-          className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
-        >
+        <CardWrapper c={c}>
           <div className="aspect-[3/1.6] overflow-hidden">
             <CollectionCoverArt
               slug={c.slug}
@@ -136,7 +153,7 @@ export default function CollectionsPreview({ limit = 6, onCount }: Props) {
               {c.creator && <span className="truncate ml-2">@{c.creator.username}</span>}
             </div>
           </div>
-        </Link>
+        </CardWrapper>
       ))}
     </div>
   );
