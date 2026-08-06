@@ -35,7 +35,7 @@ const VibeCodedItCollections = () => {
       <CampaignSideNav />
 
       <main className="lg:pl-16">
-        <div className="container mx-auto max-w-7xl px-4 py-8">
+        <div className="w-full px-4 py-8">
           <h1 className="font-reckless text-3xl sm:text-4xl">Collections</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Curated sets of vibe coded apps from the Launch community.
