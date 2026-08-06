@@ -169,13 +169,6 @@ const VibeCodedIt = () => {
               <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={40} className="h-10 w-auto object-contain dark:hidden" />
               <img src={vibeLogoDark.url} alt="Vibe Coded It" width={160} height={40} className="hidden h-10 w-auto object-contain dark:block" />
             </a>
-
-            <Link to="/products" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
-              Products
-            </Link>
-            <Link to="/collections" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
-              Collections
-            </Link>
           </div>
 
           <div className="min-w-0 flex-1 px-2">
