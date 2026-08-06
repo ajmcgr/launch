@@ -183,10 +183,10 @@ body {
 /* Mobile ad marquees: reserve space so fixed bars never overlap or push content */
 @media (max-width: 1023px) {
   html.has-mobile-marquee body {
-    padding-top: calc(53px + env(safe-area-inset-top));
-    padding-bottom: calc(53px + env(safe-area-inset-bottom));
+    padding-top: calc(54px + env(safe-area-inset-top));
+    padding-bottom: calc(54px + env(safe-area-inset-bottom));
   }
   html.has-mobile-marquee header.sticky {
-    top: calc(53px + env(safe-area-inset-top));
+    top: calc(54px + env(safe-area-inset-top));
   }
 }
