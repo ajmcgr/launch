@@ -1,4 +1,4 @@
-import { LayoutGrid, List, AlignJustify, Rows3 } from 'lucide-react';
+import { LayoutGrid, List, AlignJustify } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 
