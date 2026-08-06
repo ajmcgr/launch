@@ -63,8 +63,12 @@ const VibeCodedIt = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isMobile = useIsMobile();
-  // Same component, two homes: canonical/OG follow the hostname it was served from.
-  const pageUrl = isCampaignHost() ? CAMPAIGN_ORIGIN : 'https://trylaunch.ai/vibecodedit';
+  // Vibe Coded It now lives at its own standalone site (vibecodedit.com).
+  // Canonical/OG/Twitter always point there, regardless of the host serving this
+  // component, so search engines consolidate signals on the preferred URL while
+  // /vibecodedit on trylaunch.ai stays live for backwards compatibility.
+  const pageUrl = CAMPAIGN_ORIGIN;
+
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
