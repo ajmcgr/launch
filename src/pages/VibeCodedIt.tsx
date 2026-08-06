@@ -185,7 +185,7 @@ const VibeCodedIt = () => {
         <section className="relative pt-8 sm:pt-10 lg:pl-20 min-[1700px]:pr-[200px]">
           <div className="w-full px-4">
             <div className="relative w-full px-6 py-8 sm:py-10 text-center bg-muted/50 rounded-2xl">
-            <h1 className="mx-auto max-w-xl text-lg font-semibold">
+            <h1 className="mx-auto max-w-xl text-2xl font-bold tracking-tight">
               Vibe Coded It
             </h1>
             <p className="mx-auto mt-1 max-w-xl text-sm text-muted-foreground">
@@ -220,7 +220,7 @@ const VibeCodedIt = () => {
         <div className="w-full px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Apps</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Apps</h1>
               <p className="mt-2 text-sm text-muted-foreground leading-5">
                 {rawCount > 0 && (
                   <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
