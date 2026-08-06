@@ -74,7 +74,7 @@ export const CampaignSideNav = () => {
       {/* Mobile bottom bar */}
       <nav
         aria-label="Vibe Coded It navigation"
-        className="fixed inset-x-0 bottom-0 z-50 flex border-t border-border bg-background pb-[env(safe-area-inset-bottom)] lg:hidden"
+        className="fixed inset-x-0 bottom-[53px] z-50 flex border-t border-border bg-background lg:hidden"
       >
         <a href={CAMPAIGN_ORIGIN} aria-label="Home" className={mobileItem}>
           <Home className="h-5 w-5" />
