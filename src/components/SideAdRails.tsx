@@ -97,7 +97,19 @@ const PlaceholderTile = () => (
   </Link>
 );
 
-const Rail = ({ ads, side, isCampaign }: { ads: RailAd[]; side: 'left' | 'right'; isCampaign?: boolean }) => {
+const Rail = ({
+  ads,
+  side,
+  isCampaign,
+  reserveLast,
+}: {
+  ads: RailAd[];
+  side: 'left' | 'right';
+  isCampaign?: boolean;
+  reserveLast?: boolean;
+}) => {
+  // The final tile of the last rail always stays empty as an "advertise here" slot.
+  const usable = reserveLast ? SLOTS_PER_SIDE - 1 : SLOTS_PER_SIDE;
   return (
     <aside
       aria-label={`${side} sponsored`}
@@ -109,7 +121,7 @@ const Rail = ({ ads, side, isCampaign }: { ads: RailAd[]; side: 'left' | 'right'
       <div className="flex flex-col gap-2 overflow-y-auto pb-2 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) => (
           <div key={ads[i]?.key ?? `ph-${side}-${i}`} className="shrink-0">
-            {ads[i] ? (
+            {i < usable && ads[i] ? (
               <AdTile item={ads[i]} placement={`rail_${side}`} />
             ) : (
               <PlaceholderTile />
@@ -170,7 +182,9 @@ const MarqueeRow = ({
   placement: string;
 }) => {
   const items = ads.length > 0 ? ads : [];
-  const loop = [...items, ...items, ...items];
+  // Every cycle ends with an empty "Your ad here" tile.
+  const cycle: (RailAd | null)[] = [...items, null];
+  const loop = [...cycle, ...cycle, ...cycle];
   return (
     <div className="overflow-hidden w-full">
       <div
@@ -179,20 +193,24 @@ const MarqueeRow = ({
           animation: `${reverse ? 'rail-marquee-rev' : 'rail-marquee'} 45s linear infinite`,
         }}
       >
-        {loop.map((item, i) => (
-          <MarqueePill key={`${item.key}-${i}`} item={item} placement={placement} />
-        ))}
-        <Link
-          to="/advertise"
-          className="flex items-center gap-2 rounded-xl border border-dashed border-border bg-muted/10 px-3 py-2 shrink-0"
-        >
-          <span className="h-6 w-6 rounded-md bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
-            +
-          </span>
-          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-            Your ad here
-          </span>
-        </Link>
+        {loop.map((item, i) =>
+          item ? (
+            <MarqueePill key={`${item.key}-${i}`} item={item} placement={placement} />
+          ) : (
+            <Link
+              key={`ph-${i}`}
+              to="/advertise"
+              className="flex items-center gap-2 rounded-xl border border-dashed border-border bg-muted/10 px-3 py-2 shrink-0"
+            >
+              <span className="h-6 w-6 rounded-md bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
+                +
+              </span>
+              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                Your ad here
+              </span>
+            </Link>
+          )
+        )}
       </div>
     </div>
   );
@@ -314,22 +332,23 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
     return (
       <>
         <MobileAdMarquees ads={ads} isCampaign enabled={showMobileMarquee} />
-        <Rail ads={rotated.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />
+        <Rail ads={rotated.slice(0, SLOTS_PER_SIDE - 1)} side="right" isCampaign reserveLast />
       </>
     );
   }
 
   // Fill rails left-to-right, top-to-bottom so ads read in order and the
   // right rail only gets an ad once the left rail is fully occupied.
+  // The final slot of the right rail is always reserved as an empty ad slot.
   const left = rotated.slice(0, SLOTS_PER_SIDE);
-  const right = rotated.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
+  const right = rotated.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2 - 1);
 
 
   return (
     <>
       <MobileAdMarquees ads={ads} isCampaign={isCampaignPage} enabled={showMobileMarquee} />
       <Rail ads={left} side="left" />
-      <Rail ads={right} side="right" />
+      <Rail ads={right} side="right" reserveLast />
     </>
   );
 };
