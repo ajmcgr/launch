@@ -32,20 +32,21 @@ const trackAdClick = (item: RailAd, placement: string) => {
 const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
   const inner = (
     <>
-      <div className="h-10 w-full rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden mb-2 shrink-0">
+      <div className="h-10 w-full flex items-center justify-center overflow-hidden mb-2 shrink-0">
         {item.iconUrl ? (
           <img
             src={item.iconUrl}
             alt={item.name}
             loading="lazy"
-            width={28}
-            height={28}
-            className="h-7 w-7 rounded-lg object-cover bg-background"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-lg object-cover"
           />
         ) : (
           <span className="text-lg font-bold text-muted-foreground">{item.name[0]}</span>
         )}
       </div>
+
       <p className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
         {item.name}
       </p>

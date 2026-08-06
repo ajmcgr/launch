@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/accordion';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import campaignIcon from '@/assets/li-icon-2.png.asset.json';
+import vibeLogo from '@/assets/vibecodedit-logo.png.asset.json';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
@@ -133,7 +134,7 @@ const VibeCodedIt = () => {
   return (
     <>
       <Helmet>
-        <title>Vibe Coded It — Build your own software business with AI</title>
+        <title>Vibe Coded It — Build Something Worth Launching</title>
         <meta
           name="description"
           content="A movement for people building their own future with AI. Launch your vibe coded startup, join the Builder Wall, and become part of a growing community of founders."
@@ -163,9 +164,11 @@ const VibeCodedIt = () => {
       <header className="sticky top-0 z-50 border-b border-border bg-background">
         <div className="container mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
           <div className="flex flex-shrink-0 items-center gap-5">
-            <Link to="/" aria-label="Launch home">
-              <img src={campaignIcon.url} alt="Launch" width={40} height={40} className="h-10 w-10 object-contain" />
+            <Link to="/vibecodedit" aria-label="Vibe Coded It" className="flex items-center gap-2">
+              <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={19} className="h-5 w-auto object-contain dark:invert" />
+              <span className="text-sm font-semibold text-foreground whitespace-nowrap">Vibe Coded It</span>
             </Link>
+
             <Link to="/products" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
               Products
             </Link>
@@ -209,7 +212,7 @@ const VibeCodedIt = () => {
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-8 text-center sm:py-10">
           <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
-            Vibe Coded It
+            Build Something Worth Launching
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Whether you were laid off, left your job, or simply decided to build,
@@ -241,7 +244,7 @@ const VibeCodedIt = () => {
       <section>
         <div className="container mx-auto max-w-7xl px-4 py-10 sm:py-12">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <p className="text-base text-muted-foreground sm:text-lg">
+            <p className="text-sm text-muted-foreground">
               {rawCount > 0 && (
                 <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
               )}
