@@ -97,7 +97,19 @@ const PlaceholderTile = () => (
   </Link>
 );
 
-const Rail = ({ ads, side, isCampaign }: { ads: RailAd[]; side: 'left' | 'right'; isCampaign?: boolean }) => {
+const Rail = ({
+  ads,
+  side,
+  isCampaign,
+  reserveLast,
+}: {
+  ads: RailAd[];
+  side: 'left' | 'right';
+  isCampaign?: boolean;
+  reserveLast?: boolean;
+}) => {
+  // The final tile of the last rail always stays empty as an "advertise here" slot.
+  const usable = reserveLast ? SLOTS_PER_SIDE - 1 : SLOTS_PER_SIDE;
   return (
     <aside
       aria-label={`${side} sponsored`}
@@ -109,7 +121,7 @@ const Rail = ({ ads, side, isCampaign }: { ads: RailAd[]; side: 'left' | 'right'
       <div className="flex flex-col gap-2 overflow-y-auto pb-2 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {Array.from({ length: SLOTS_PER_SIDE }).map((_, i) => (
           <div key={ads[i]?.key ?? `ph-${side}-${i}`} className="shrink-0">
-            {ads[i] ? (
+            {i < usable && ads[i] ? (
               <AdTile item={ads[i]} placement={`rail_${side}`} />
             ) : (
               <PlaceholderTile />
