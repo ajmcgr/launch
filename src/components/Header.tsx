@@ -329,14 +329,16 @@ export const Header = () => {
                   >
                     Advertise
                   </Link>
-                  <Link 
-                    to="/vibecodedit" 
+                  <a
+                    href="https://vibecodedit.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={24} height={24} className="h-6 w-6 rounded-full object-contain" />
                     Vibe Coded It
-                  </Link>
+                  </a>
                   
                   {user ? (
                     <>
