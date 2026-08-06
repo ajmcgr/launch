@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Linkedin, Mail, Copy, Check, X } from 'lucide-react';
 import { CAMPAIGN_NAME, trackCampaignEvent } from '@/lib/campaign';
+import { CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import type { BuilderWallProduct } from '@/hooks/use-campaign-products';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 
-const CAMPAIGN_URL = 'https://vibecodeyourfuture.com';
+const CAMPAIGN_URL = CAMPAIGN_ORIGIN;
 
 interface CampaignShareModalProps {
   product: BuilderWallProduct | null;
@@ -60,7 +61,7 @@ export const CampaignShareModal = ({ product, onClose }: CampaignShareModalProps
           </div>
           <div className="border-t px-5 py-3 flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
             <span>{CAMPAIGN_NAME}</span>
-            <span>Launch · vibecodeyourfuture.com</span>
+            <span>Launch · vibecodedit.com</span>
           </div>
         </div>
 
