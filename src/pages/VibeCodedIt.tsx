@@ -340,7 +340,7 @@ const VibeCodedIt = () => {
                     className="mb-1 h-10 w-auto dark:hidden"
                   />
                   <img
-                    src={signatureDark.url}
+                    src={signatureDark}
                     alt="Alex MacGregor signature"
                     loading="lazy"
                     className="mb-1 hidden h-10 w-auto dark:block"
