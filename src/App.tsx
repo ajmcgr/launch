@@ -712,6 +712,22 @@ const AppContent = () => {
             <Route path="/c/:slug" element={<PublicCollection />} />
             <Route path="/collections" element={campaignHost ? <VibeCodedItCollections /> : <CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
+            {/*
+              Vibe Coded It has moved to its own standalone site: https://vibecodedit.com
+              These routes stay live TEMPORARILY for backwards compatibility (existing
+              backlinks, shared links, emails and in-flight campaign traffic). Pages are
+              served normally — no client-side redirect — while canonical/og:url/twitter:url
+              point at vibecodedit.com so search engines treat that as the preferred URL.
+
+              TODO: Once vibecodedit.com has fully launched and all backlinks/emails/social
+              profiles are updated, replace these routes with a permanent 301 redirect at the
+              edge/hosting layer (not a client-side <Navigate>, which is a 302-equivalent and
+              passes no link equity). The redirect MUST preserve:
+                - the full query string (source, utm_source, utm_medium, utm_campaign,
+                  utm_content, utm_term) so attribution is not lost
+                - the Referer header (use a 301 so the browser forwards it)
+              e.g. /vibecodedit(/*)?  ->  https://vibecodedit.com$1?$query  [301]
+            */}
             <Route path="/vibecodedit" element={<VibeCodedIt />} />
             <Route path="/vibecodedit/collections" element={<VibeCodedItCollections />} />
             <Route path="/vibecodeyourfuture" element={<Navigate to="/vibecodedit" replace />} />
