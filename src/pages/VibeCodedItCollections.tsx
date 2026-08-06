@@ -12,9 +12,10 @@ import { CAMPAIGN_SLUG, setCampaignIntent, trackCampaignEvent, withCampaignParam
 const VibeCodedItCollections = () => {
   const navigate = useNavigate();
   const [collectionCount, setCollectionCount] = useState(0);
-  const pageUrl = isCampaignHost()
-    ? `${CAMPAIGN_ORIGIN}/collections`
-    : 'https://trylaunch.ai/vibecodedit/collections';
+  // Canonical always points at the standalone site (vibecodedit.com) — the
+  // trylaunch.ai path stays live temporarily for backwards compatibility.
+  const pageUrl = `${CAMPAIGN_ORIGIN}/collections`;
+
 
   const handleAddYourApp = () => {
     setCampaignIntent(CAMPAIGN_SLUG);
