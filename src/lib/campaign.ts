@@ -31,7 +31,7 @@ const STORAGE_KEY = 'launch_campaign_intent';
 /** Remember that the current submission started from the campaign page. */
 export const setCampaignIntent = (campaign: string = CAMPAIGN_SLUG) => {
   try {
-    sessionStorage.setItem(STORAGE_KEY, campaign);
+    sessionStorage.setItem(STORAGE_KEY, normalizeCampaign(campaign) as string);
   } catch {
     /* storage unavailable — campaign tagging is best-effort */
   }
@@ -40,7 +40,7 @@ export const setCampaignIntent = (campaign: string = CAMPAIGN_SLUG) => {
 /** Read the pending campaign for this submission session. */
 export const getCampaignIntent = (): string | null => {
   try {
-    return sessionStorage.getItem(STORAGE_KEY);
+    return normalizeCampaign(sessionStorage.getItem(STORAGE_KEY));
   } catch {
     return null;
   }
@@ -56,12 +56,14 @@ export const clearCampaignIntent = () => {
 
 /**
  * Pick up ?campaign= / ?source= / ?utm_campaign= from the URL so links into the
- * submission flow from anywhere keep their attribution.
+ * submission flow from anywhere keep their attribution. Other UTM params
+ * (utm_source / utm_medium / utm_content / utm_term) are left untouched.
  */
 export const captureCampaignFromSearch = (search: string): string | null => {
   const params = new URLSearchParams(search);
-  const value =
-    params.get('campaign') || params.get('source') || params.get('utm_campaign');
+  const value = normalizeCampaign(
+    params.get('campaign') || params.get('source') || params.get('utm_campaign')
+  );
   if (value) {
     setCampaignIntent(value);
     return value;
