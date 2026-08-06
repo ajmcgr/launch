@@ -111,8 +111,8 @@ const AppContent = () => {
   const standalonePages = ['/reserve'];
   // The campaign page drops Launch nav/footer nav but keeps the
   // copyright line. Newsletter signup is also hidden on the campaign page.
-  const isCampaignPage = location.pathname === '/vibecodedit'
-    || (campaignHost && location.pathname === '/');
+  const isCampaignPage = location.pathname.startsWith('/vibecodedit')
+    || (campaignHost && (location.pathname === '/' || location.pathname === '/collections'));
   const isStandalone = standalonePages.includes(location.pathname) || isCampaignPage;
 
   const showNewsletter = !staticPages.includes(location.pathname)
@@ -673,6 +673,7 @@ const AppContent = () => {
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
             <Route path="/vibecodedit" element={<VibeCodedIt />} />
+            <Route path="/vibecodedit/collections" element={<VibeCodedItCollections />} />
             <Route path="/vibecodeyourfuture" element={<Navigate to="/vibecodedit" replace />} />
             <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

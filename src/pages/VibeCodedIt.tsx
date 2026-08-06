@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRight, Search, X } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -63,7 +63,6 @@ const VibeCodedIt = () => {
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
-  const [searchQuery, setSearchQuery] = useState('');
   const [wallView, setWallView] = useState<'list' | 'grid' | 'compact'>('grid');
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -78,14 +77,6 @@ const VibeCodedIt = () => {
   const roundedCount = rawCount >= 100 ? Math.floor(rawCount / 50) * 50 : rawCount;
   const appCount = roundedCount.toLocaleString();
   const faqs = useMemo(() => buildFaqs(appCount), [appCount]);
-
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      trackCampaignEvent('campaign_search_submitted');
-      window.open(`/search?q=${encodeURIComponent(searchQuery.trim())}`, '_blank');
-      setSearchQuery('');
-    }
-  };
 
   useEffect(() => {
     trackCampaignEvent('campaign_page_view');
