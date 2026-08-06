@@ -17,7 +17,7 @@ import vibeLogo from '@/assets/vibecodedit-logo.png.asset.json';
 import vibeLogoDark from '@/assets/vibecodedit-logo-dark.png.asset.json';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
-import signatureDark from '@/assets/am-t.png.asset.json';
+import signatureDark from '@/assets/am-t.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
