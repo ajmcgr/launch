@@ -175,25 +175,6 @@ const VibeCodedIt = () => {
       <CampaignHeader />
       <CampaignSideNav />
 
-      {/* Apps title + app count + view toggle */}
-      <section className="lg:pl-16 min-[1700px]:pr-[200px]">
-        <div className="w-full px-4 pt-4">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="font-reckless text-3xl sm:text-4xl">Apps</h1>
-              <p className="mt-2 text-sm text-muted-foreground leading-5">
-                {rawCount > 0 && (
-                  <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
-                )}
-              </p>
-            </div>
-            <ViewToggle view={wallView} onViewChange={setWallView} />
-          </div>
-        </div>
-      </section>
-
-
-
       {/* Hero */}
       {showHero && !user && (
         <section className="relative pt-2 lg:pl-16">
@@ -235,6 +216,24 @@ const VibeCodedIt = () => {
           </div>
         </section>
       )}
+
+      {/* Apps title + app count + view toggle */}
+      <section className="lg:pl-16 min-[1700px]:pr-[200px]">
+        <div className="w-full px-4 pt-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="font-reckless text-3xl sm:text-4xl">Apps</h1>
+              <p className="mt-2 text-sm text-muted-foreground leading-5">
+                {rawCount > 0 && (
+                  <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
+                )}
+              </p>
+            </div>
+            <ViewToggle view={wallView} onViewChange={setWallView} />
+          </div>
+        </div>
+      </section>
+
 
       {/* Builder Wall */}
       <section className="lg:pl-16 min-[1700px]:pr-[200px]">
