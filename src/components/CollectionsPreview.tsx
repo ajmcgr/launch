@@ -20,13 +20,14 @@ interface CollectionCard {
 
 interface Props {
   limit?: number;
+  onCount?: (count: number) => void;
 }
 
 /**
  * Compact homepage preview of top trending collections.
  * Card markup mirrors CollectionsDirectory for visual consistency.
  */
-export default function CollectionsPreview({ limit = 6 }: Props) {
+export default function CollectionsPreview({ limit = 6, onCount }: Props) {
   const [items, setItems] = useState<CollectionCard[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +40,7 @@ export default function CollectionsPreview({ limit = 6 }: Props) {
         .eq('is_public', true)
         .order('view_count', { ascending: false, nullsFirst: false })
         .limit(60);
-      if (!cols?.length) { if (!cancelled) { setItems([]); setLoading(false); } return; }
+      if (!cols?.length) { if (!cancelled) { setItems([]); setLoading(false); onCount?.(0); } return; }
 
       const ids = cols.map((c: any) => c.id);
       const userIds = Array.from(new Set(cols.map((c: any) => c.user_id)));
@@ -74,6 +75,7 @@ export default function CollectionsPreview({ limit = 6 }: Props) {
       if (!cancelled) {
         setItems(enriched.slice(0, limit));
         setLoading(false);
+        onCount?.(Math.min(enriched.length, limit));
       }
     })();
     return () => { cancelled = true; };

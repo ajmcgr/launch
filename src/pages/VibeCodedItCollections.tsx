@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -10,6 +11,7 @@ import { CAMPAIGN_SLUG, setCampaignIntent, trackCampaignEvent } from '@/lib/camp
 
 const VibeCodedItCollections = () => {
   const navigate = useNavigate();
+  const [collectionCount, setCollectionCount] = useState(0);
   const pageUrl = isCampaignHost()
     ? `${CAMPAIGN_ORIGIN}/collections`
     : 'https://trylaunch.ai/vibecodedit/collections';
@@ -35,14 +37,16 @@ const VibeCodedItCollections = () => {
       <CampaignSideNav />
 
       <main className="lg:pl-16 min-[1700px]:pr-[200px]">
-        <div className="w-full px-4 py-8">
+        <div className="w-full px-4 pt-4 pb-8">
           <h1 className="font-reckless text-3xl sm:text-4xl">Collections</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Curated sets of vibe coded apps from the Launch community.
+          <p className="mt-2 text-sm text-muted-foreground leading-5">
+            {collectionCount > 0 && (
+              <><span className="font-semibold text-foreground">{collectionCount.toLocaleString()}</span> curated sets of vibe coded apps from the Launch community</>
+            )}
           </p>
 
           <div className="mt-8">
-            <CollectionsPreview limit={60} />
+            <CollectionsPreview limit={60} onCount={setCollectionCount} />
           </div>
         </div>
       </main>
