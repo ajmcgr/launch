@@ -12,9 +12,10 @@ import { CAMPAIGN_SLUG, setCampaignIntent, trackCampaignEvent, withCampaignParam
 const VibeCodedItCollections = () => {
   const navigate = useNavigate();
   const [collectionCount, setCollectionCount] = useState(0);
-  const pageUrl = isCampaignHost()
-    ? `${CAMPAIGN_ORIGIN}/collections`
-    : 'https://trylaunch.ai/vibecodedit/collections';
+  // Canonical always points at the standalone site (vibecodedit.com) — the
+  // trylaunch.ai path stays live temporarily for backwards compatibility.
+  const pageUrl = `${CAMPAIGN_ORIGIN}/collections`;
+
 
   const handleAddYourApp = () => {
     setCampaignIntent(CAMPAIGN_SLUG);
@@ -34,6 +35,12 @@ const VibeCodedItCollections = () => {
           content="Browse curated collections of vibe coded apps and startups, hand-picked by the Launch community."
         />
         <link rel="canonical" href={pageUrl} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Collections — Vibe Coded It" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content="Collections — Vibe Coded It" />
         <link rel="icon" href="/favicon-vibecodedit.png" type="image/png" />
       </Helmet>
 

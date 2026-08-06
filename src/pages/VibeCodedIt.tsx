@@ -63,8 +63,12 @@ const VibeCodedIt = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isMobile = useIsMobile();
-  // Same component, two homes: canonical/OG follow the hostname it was served from.
-  const pageUrl = isCampaignHost() ? CAMPAIGN_ORIGIN : 'https://trylaunch.ai/vibecodedit';
+  // Vibe Coded It now lives at its own standalone site (vibecodedit.com).
+  // Canonical/OG/Twitter always point there, regardless of the host serving this
+  // component, so search engines consolidate signals on the preferred URL while
+  // /vibecodedit on trylaunch.ai stays live for backwards compatibility.
+  const pageUrl = CAMPAIGN_ORIGIN;
+
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
@@ -189,6 +193,14 @@ const VibeCodedIt = () => {
           property="og:description"
           content="A movement for people building their own future with AI. Launch your startup and join the Builder Wall."
         />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content="Vibe Coded It" />
+        <meta
+          name="twitter:description"
+          content="A movement for people building their own future with AI. Launch your startup and join the Builder Wall."
+        />
+
         <script type="application/ld+json">
           {JSON.stringify({
             '@context': 'https://schema.org',
