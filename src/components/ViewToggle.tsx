@@ -1,6 +1,5 @@
 import { LayoutGrid, List, AlignJustify } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 export type ViewMode = 'list' | 'grid' | 'compact' | 'semi-compact';
 
@@ -15,8 +14,6 @@ export function ViewToggle({
   onViewChange,
   allowSemiCompact = false,
 }: ViewToggleProps) {
-  const isMobile = useIsMobile();
-
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
       <Toggle
@@ -28,7 +25,15 @@ export function ViewToggle({
       >
         <AlignJustify className="h-3.5 w-3.5" />
       </Toggle>
-      {/* Icons stay in place; the views they select are swapped */}
+      <Toggle
+        pressed={view === (allowSemiCompact ? 'semi-compact' : 'list')}
+        onPressedChange={() => onViewChange(allowSemiCompact ? 'semi-compact' : 'list')}
+        aria-label={allowSemiCompact ? 'Semi-compact view' : 'List view'}
+        size="sm"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+      >
+        <List className="h-3.5 w-3.5" />
+      </Toggle>
       <Toggle
         pressed={view === 'grid'}
         onPressedChange={() => onViewChange('grid')}
@@ -36,20 +41,9 @@ export function ViewToggle({
         size="sm"
         className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
       >
-        <List className="h-3.5 w-3.5" />
+        <LayoutGrid className="h-3.5 w-3.5" />
       </Toggle>
-      {!isMobile && (
-        <Toggle
-          pressed={view === (allowSemiCompact ? 'semi-compact' : 'list')}
-          onPressedChange={() => onViewChange(allowSemiCompact ? 'semi-compact' : 'list')}
-          aria-label={allowSemiCompact ? 'Semi-compact view' : 'List view'}
-          size="sm"
-          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
-        >
-          <LayoutGrid className="h-3.5 w-3.5" />
-        </Toggle>
-      )}
-
     </div>
   );
 }
+

@@ -72,7 +72,7 @@ const VibeCodedIt = () => {
     if (stored === 'grid' || stored === 'compact' || stored === 'semi-compact' || stored === 'list') {
       return stored;
     }
-    return isMobile ? 'semi-compact' : 'grid';
+    return 'grid';
   });
 
   const changeWallView = (v: 'list' | 'grid' | 'compact' | 'semi-compact') => {
