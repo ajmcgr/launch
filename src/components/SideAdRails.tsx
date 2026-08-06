@@ -222,7 +222,7 @@ const MobileAdMarquees = ({
       </div>
 
 
-      <div className="lg:hidden fixed left-0 right-0 bottom-0 z-40 flex h-[calc(53px+env(safe-area-inset-bottom))] items-start bg-background/95 pt-1.5 backdrop-blur border-t border-border/60">
+      <div className="lg:hidden fixed left-0 right-0 bottom-0 z-[100] flex h-[calc(53px+env(safe-area-inset-bottom))] items-start bg-background/95 pt-1.5 backdrop-blur border-t border-border/60">
         <MarqueeRow ads={ads} reverse placement="marquee_bottom" />
       </div>
 
