@@ -229,6 +229,8 @@ const MobileAdMarquees = ({
       >
         <MarqueeRow ads={ads} reverse placement="marquee_bottom" />
       </div>
+      {/* spacers so fixed marquees never cover page content on mobile */}
+      <div aria-hidden className="lg:hidden h-[52px] shrink-0" />
     </>
   );
 };
