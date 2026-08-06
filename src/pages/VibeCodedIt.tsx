@@ -29,6 +29,7 @@ import {
   CAMPAIGN_SLUG,
   setCampaignIntent,
   trackCampaignEvent,
+  withCampaignParams,
 } from '@/lib/campaign';
 
 const buildFaqs = (appCount: string) => [
