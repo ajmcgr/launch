@@ -8,7 +8,21 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export const CAMPAIGN_SLUG = 'vibe_code_your_future';
+export const CAMPAIGN_SLUG = 'vibecodedit';
+/** Slug used before the rebrand — still stored on older products. */
+export const LEGACY_CAMPAIGN_SLUG = 'vibe_code_your_future';
+/** Every slug that counts as this campaign (for queries / attribution checks). */
+export const CAMPAIGN_SLUGS = [CAMPAIGN_SLUG, LEGACY_CAMPAIGN_SLUG];
+
+/** Normalise any legacy campaign value onto the current slug. */
+export const normalizeCampaign = (value: string | null): string | null => {
+  if (!value) return null;
+  const v = value.trim().toLowerCase();
+  if (v === LEGACY_CAMPAIGN_SLUG || v === 'vibecodeyourfuture' || v === 'vibe code your future') {
+    return CAMPAIGN_SLUG;
+  }
+  return value;
+};
 export const CAMPAIGN_NAME = 'Vibe Coded It';
 export const CAMPAIGN_PATH = '/vibecodedit';
 
