@@ -35,6 +35,7 @@ const VibeCodedItCollections = () => {
           </div>
         </div>
       </main>
+      <div className="h-16 lg:hidden" aria-hidden />
     </>
   );
 };

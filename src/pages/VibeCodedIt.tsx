@@ -441,6 +441,7 @@ const VibeCodedIt = () => {
           </div>
         </DialogContent>
       </Dialog>
+      <div className="h-16 lg:hidden" aria-hidden />
     </>
   );
 };
