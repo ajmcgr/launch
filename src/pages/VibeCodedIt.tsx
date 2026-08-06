@@ -177,8 +177,8 @@ const VibeCodedIt = () => {
 
       {/* Hero */}
       {showHero && !user && (
-        <section className="relative pt-8 sm:pt-10 lg:pl-16 min-[1700px]:pr-[200px]">
-          <div className="relative container mx-auto max-w-7xl px-4 py-8 sm:py-10 text-center bg-muted/50 rounded-2xl">
+        <section className="relative pt-8 sm:pt-10 lg:pl-20 min-[1700px]:pr-[200px]">
+          <div className="relative w-full px-4 py-8 sm:py-10 text-center bg-muted/50 rounded-2xl">
             <Button
               type="button"
               variant="ghost"
