@@ -220,15 +220,30 @@ const VibeCodedIt = () => {
         </div>
       </header>
 
+
+      {/* App count + view toggle */}
+      <section>
+        <div className="container mx-auto max-w-7xl px-4 pt-4">
+          <div className="flex items-start justify-between gap-4">
+            <p className="text-sm text-muted-foreground leading-5">
+              {rawCount > 0 && (
+                <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
+              )}
+            </p>
+            <ViewToggle view={wallView} onViewChange={setWallView} />
+          </div>
+        </div>
+      </section>
+
       {/* Hero */}
       {showHero && !user && (
-        <section className="relative">
-          <div className="container mx-auto max-w-7xl px-4 py-8 text-center sm:py-10">
+        <section className="relative pt-2">
+          <div className="container mx-auto max-w-7xl px-4 pb-8 text-center sm:pb-10">
             <button
               type="button"
               onClick={() => setShowHero(false)}
               aria-label="Hide hero"
-              className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:right-6 sm:top-6"
+              className="absolute right-4 top-0 rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:right-6"
             >
               <X className="h-4 w-4" />
             </button>
@@ -263,17 +278,8 @@ const VibeCodedIt = () => {
       )}
 
       {/* Builder Wall */}
-
       <section>
-        <div className="container mx-auto max-w-7xl px-4 py-10 sm:py-12">
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              {rawCount > 0 && (
-                <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
-              )}
-            </p>
-            <ViewToggle view={wallView} onViewChange={setWallView} />
-          </div>
+        <div className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
           <BuilderWall view={wallView} />
         </div>
       </section>
