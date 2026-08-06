@@ -23,6 +23,7 @@ interface CollectionCard {
 interface Props {
   limit?: number;
   onCount?: (count: number) => void;
+  openInNewWindow?: boolean;
 }
 
 /**
