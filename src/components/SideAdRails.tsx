@@ -234,6 +234,7 @@ const MobileAdMarquees = ({
 const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
   const { pathname } = useLocation();
   const [ads, setAds] = useState<RailAd[]>([]);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     const fetchAds = async () => {
