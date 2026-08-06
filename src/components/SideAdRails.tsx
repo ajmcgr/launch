@@ -283,8 +283,7 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
             iconUrl: icon,
           };
         })
-        .filter((x: RailAd | null): x is RailAd => x !== null)
-        .slice(0, SLOTS_PER_SIDE * 2);
+        .filter((x: RailAd | null): x is RailAd => x !== null);
 
       setAds(items);
     };
@@ -292,21 +291,34 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
     fetchAds();
   }, []);
 
+  // Rotate through the FULL inventory so every purchased ad gets rail exposure,
+  // not just the first 10.
+  useEffect(() => {
+    if (ads.length <= SLOTS_PER_SIDE) return;
+    const id = setInterval(() => setOffset((o) => (o + 1) % ads.length), 12000);
+    return () => clearInterval(id);
+  }, [ads.length]);
+
+  const rotated =
+    ads.length > 0
+      ? Array.from({ length: ads.length }, (_, i) => ads[(i + offset) % ads.length])
+      : [];
+
   const showMobileMarquee = pathname === '/' || pathname.startsWith('/vibecodedit');
 
   if (isCampaignPage) {
     return (
       <>
         <MobileAdMarquees ads={ads} isCampaign enabled={showMobileMarquee} />
-        <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />
+        <Rail ads={rotated.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />
       </>
     );
   }
 
   // Fill rails left-to-right, top-to-bottom so ads read in order and the
   // right rail only gets an ad once the left rail is fully occupied.
-  const left = ads.slice(0, SLOTS_PER_SIDE);
-  const right = ads.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
+  const left = rotated.slice(0, SLOTS_PER_SIDE);
+  const right = rotated.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
 
 
   return (
