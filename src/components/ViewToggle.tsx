@@ -28,38 +28,28 @@ export function ViewToggle({
       >
         <AlignJustify className="h-3.5 w-3.5" />
       </Toggle>
-      {allowSemiCompact ? (
-        <Toggle
-          pressed={view === 'semi-compact'}
-          onPressedChange={() => onViewChange('semi-compact')}
-          aria-label="Semi-compact view"
-          size="sm"
-          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
-        >
-          <List className="h-3.5 w-3.5" />
-        </Toggle>
-      ) : (
-        <Toggle
-          pressed={view === 'list'}
-          onPressedChange={() => onViewChange('list')}
-          aria-label="List view"
-          size="sm"
-          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
-        >
-          <List className="h-3.5 w-3.5" />
-        </Toggle>
-      )}
+      {/* Icons stay in place; the views they select are swapped */}
+      <Toggle
+        pressed={view === 'grid'}
+        onPressedChange={() => onViewChange('grid')}
+        aria-label="Card view"
+        size="sm"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+      >
+        <List className="h-3.5 w-3.5" />
+      </Toggle>
       {!isMobile && (
         <Toggle
-          pressed={view === 'grid'}
-          onPressedChange={() => onViewChange('grid')}
-          aria-label="Card view"
+          pressed={view === (allowSemiCompact ? 'semi-compact' : 'list')}
+          onPressedChange={() => onViewChange(allowSemiCompact ? 'semi-compact' : 'list')}
+          aria-label={allowSemiCompact ? 'Semi-compact view' : 'List view'}
           size="sm"
           className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
         >
           <LayoutGrid className="h-3.5 w-3.5" />
         </Toggle>
       )}
+
     </div>
   );
 }
