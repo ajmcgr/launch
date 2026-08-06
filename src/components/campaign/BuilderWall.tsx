@@ -255,7 +255,7 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
 
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="w-full">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: INITIAL_ROWS * 4 }).map((_, i) => (
             <div key={i} className="rounded-xl border bg-card p-5">
@@ -283,7 +283,7 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
 
   return (
     <>
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="w-full">
         <div className={gridClass}>
           {visible.map((product) => (
             <BuilderCard
