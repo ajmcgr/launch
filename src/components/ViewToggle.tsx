@@ -2,45 +2,46 @@ import { LayoutGrid, List, AlignJustify, Rows3 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-type ViewMode = 'list' | 'grid' | 'compact' | 'semi-compact';
-type ClassicView = 'list' | 'grid' | 'compact';
+export type ViewMode = 'list' | 'grid' | 'compact' | 'semi-compact';
 
-interface ViewToggleProps<T extends ViewMode = ClassicView> {
-  view: T;
-  onViewChange: (view: T) => void;
+interface ViewToggleProps {
+  view: ViewMode;
+  onViewChange: (view: ViewMode) => void;
+  allowSemiCompact?: boolean;
 }
 
-export function ViewToggle<T extends ViewMode = ClassicView>({
+export function ViewToggle({
   view,
   onViewChange,
-}: ViewToggleProps<T>) {
+  allowSemiCompact = false,
+}: ViewToggleProps) {
   const isMobile = useIsMobile();
-
-  const setView = (v: ViewMode) => onViewChange(v as T);
 
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
       <Toggle
         pressed={view === 'compact'}
-        onPressedChange={() => setView('compact')}
+        onPressedChange={() => onViewChange('compact')}
         aria-label="Compact view"
         size="sm"
         className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
       >
         <AlignJustify className="h-3.5 w-3.5" />
       </Toggle>
-      <Toggle
-        pressed={view === 'semi-compact'}
-        onPressedChange={() => setView('semi-compact')}
-        aria-label="Semi-compact view"
-        size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
-      >
-        <Rows3 className="h-3.5 w-3.5" />
-      </Toggle>
+      {allowSemiCompact && (
+        <Toggle
+          pressed={view === 'semi-compact'}
+          onPressedChange={() => onViewChange('semi-compact')}
+          aria-label="Semi-compact view"
+          size="sm"
+          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+        >
+          <Rows3 className="h-3.5 w-3.5" />
+        </Toggle>
+      )}
       <Toggle
         pressed={view === 'list'}
-        onPressedChange={() => setView('list')}
+        onPressedChange={() => onViewChange('list')}
         aria-label="List view"
         size="sm"
         className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
@@ -50,7 +51,7 @@ export function ViewToggle<T extends ViewMode = ClassicView>({
       {!isMobile && (
         <Toggle
           pressed={view === 'grid'}
-          onPressedChange={() => setView('grid')}
+          onPressedChange={() => onViewChange('grid')}
           aria-label="Card view"
           size="sm"
           className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
