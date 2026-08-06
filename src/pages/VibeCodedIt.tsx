@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, X } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -16,6 +17,7 @@ import vibeLogo from '@/assets/vibecodedit-logo.png.asset.json';
 import vibeLogoDark from '@/assets/vibecodedit-logo-dark.png.asset.json';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
+import signatureDark from '@/assets/am-t.png.asset.json';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
