@@ -131,8 +131,8 @@ const VibeCodedIt = () => {
     setCampaignIntent(CAMPAIGN_SLUG);
     trackCampaignEvent('campaign_cta_clicked');
     const url = isCampaignHost()
-      ? `https://trylaunch.ai/submit?campaign=${CAMPAIGN_SLUG}`
-      : `/submit?campaign=${CAMPAIGN_SLUG}`;
+      ? withCampaignParams('https://trylaunch.ai/submit')
+      : withCampaignParams('/submit');
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
