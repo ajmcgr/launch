@@ -121,7 +121,116 @@ const Rail = ({ ads, side, isCampaign }: { ads: RailAd[]; side: 'left' | 'right'
   );
 };
 
+const MarqueePill = ({ item, placement }: { item: RailAd; placement: string }) => {
+  const inner = (
+    <>
+      {item.iconUrl ? (
+        <img
+          src={item.iconUrl}
+          alt={item.name}
+          loading="lazy"
+          width={24}
+          height={24}
+          className="h-6 w-6 rounded-md object-cover shrink-0"
+        />
+      ) : (
+        <span className="h-6 w-6 rounded-md bg-muted flex items-center justify-center text-[11px] font-bold text-muted-foreground shrink-0">
+          {item.name[0]}
+        </span>
+      )}
+      <span className="text-sm font-medium text-foreground whitespace-nowrap">{item.name}</span>
+    </>
+  );
+  const cls =
+    'flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 shrink-0';
+  return item.external ? (
+    <a
+      href={item.href}
+      target="_blank"
+      rel="noopener noreferrer sponsored nofollow"
+      onClick={() => trackAdClick(item, placement)}
+      className={cls}
+    >
+      {inner}
+    </a>
+  ) : (
+    <Link to={item.href} onClick={() => trackAdClick(item, placement)} className={cls}>
+      {inner}
+    </Link>
+  );
+};
+
+const MarqueeRow = ({
+  ads,
+  reverse,
+  placement,
+}: {
+  ads: RailAd[];
+  reverse?: boolean;
+  placement: string;
+}) => {
+  const items = ads.length > 0 ? ads : [];
+  const loop = [...items, ...items, ...items];
+  return (
+    <div className="overflow-hidden w-full">
+      <div
+        className="flex items-center gap-2 w-max"
+        style={{
+          animation: `${reverse ? 'rail-marquee-rev' : 'rail-marquee'} 45s linear infinite`,
+        }}
+      >
+        {loop.map((item, i) => (
+          <MarqueePill key={`${item.key}-${i}`} item={item} placement={placement} />
+        ))}
+        <Link
+          to="/advertise"
+          className="flex items-center gap-2 rounded-xl border border-dashed border-border bg-muted/10 px-3 py-2 shrink-0"
+        >
+          <span className="h-6 w-6 rounded-md bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
+            +
+          </span>
+          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+            Your ad here
+          </span>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+const MobileAdMarquees = ({
+  ads,
+  isCampaign,
+  enabled,
+}: {
+  ads: RailAd[];
+  isCampaign?: boolean;
+  enabled?: boolean;
+}) => {
+  if (!enabled) return null;
+
+  return (
+    <>
+      <style>{`
+        @keyframes rail-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+        @keyframes rail-marquee-rev { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
+      `}</style>
+      <div className="min-[1700px]:hidden fixed top-0 left-0 right-0 z-30 bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
+        <MarqueeRow ads={ads} placement="marquee_top" />
+      </div>
+      <div
+        className={`min-[1700px]:hidden fixed left-0 right-0 z-30 bg-background/95 backdrop-blur border-t border-border/60 py-1.5 ${
+          isCampaign ? 'bottom-16 lg:bottom-0' : 'bottom-0'
+        }`}
+      >
+        <MarqueeRow ads={ads} reverse placement="marquee_bottom" />
+      </div>
+    </>
+  );
+};
+
 const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
+  const { pathname } = useLocation();
   const [ads, setAds] = useState<RailAd[]>([]);
 
   useEffect(() => {
