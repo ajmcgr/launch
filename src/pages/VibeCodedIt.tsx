@@ -449,7 +449,20 @@ const VibeCodedIt = () => {
         </div>
       </section>
 
+      {/* Floating Submit Your App CTA */}
+      <div className="fixed bottom-6 right-6 z-40 hidden sm:block">
+        <Button
+          size="lg"
+          className="h-12 gap-2 px-6 text-base shadow-lg"
+          onClick={handleAddYourApp}
+        >
+          Submit Your App
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+
       {/* Campaign success screen */}
+
       <Dialog open={showWelcome} onOpenChange={(open) => !open && closeWelcome()}>
         <DialogContent className="sm:max-w-md text-center">
           <h2 className="font-reckless text-3xl">🎉 Welcome to the movement.</h2>
