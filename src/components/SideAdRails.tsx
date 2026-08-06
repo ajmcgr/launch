@@ -100,12 +100,10 @@ const PlaceholderTile = () => (
 const Rail = ({
   ads,
   side,
-  isCampaign,
   reserveLast,
 }: {
   ads: RailAd[];
   side: 'left' | 'right';
-  isCampaign?: boolean;
   reserveLast?: boolean;
 }) => {
   // The final tile of the last rail always stays empty as an "advertise here" slot.
@@ -113,7 +111,7 @@ const Rail = ({
   return (
     <aside
       aria-label={`${side} sponsored`}
-      className={`hidden min-[1700px]:flex flex-col fixed ${isCampaign ? 'top-20' : 'top-28'} bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+      className={`hidden min-[1700px]:flex flex-col fixed top-28 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
     >
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
         Ad
@@ -218,11 +216,9 @@ const MarqueeRow = ({
 
 const MobileAdMarquees = ({
   ads,
-  isCampaign,
   enabled,
 }: {
   ads: RailAd[];
-  isCampaign?: boolean;
   enabled?: boolean;
 }) => {
   useEffect(() => {
@@ -252,7 +248,7 @@ const MobileAdMarquees = ({
 };
 
 
-const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
+const SideAdRails = () => {
   const { pathname } = useLocation();
   const [ads, setAds] = useState<RailAd[]>([]);
   const [offset, setOffset] = useState(0);
@@ -326,16 +322,7 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
       ? Array.from({ length: ads.length }, (_, i) => ads[(i + offset) % ads.length])
       : [];
 
-  const showMobileMarquee = pathname === '/' || pathname.startsWith('/vibecodedit');
-
-  if (isCampaignPage) {
-    return (
-      <>
-        <MobileAdMarquees ads={ads} isCampaign enabled={showMobileMarquee} />
-        <Rail ads={rotated.slice(0, SLOTS_PER_SIDE - 1)} side="right" isCampaign reserveLast />
-      </>
-    );
-  }
+  const showMobileMarquee = pathname === '/';
 
   // Fill rails left-to-right, top-to-bottom so ads read in order and the
   // right rail only gets an ad once the left rail is fully occupied.
@@ -346,7 +333,7 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
 
   return (
     <>
-      <MobileAdMarquees ads={ads} isCampaign={isCampaignPage} enabled={showMobileMarquee} />
+      <MobileAdMarquees ads={ads} enabled={showMobileMarquee} />
       <Rail ads={left} side="left" />
       <Rail ads={right} side="right" reserveLast />
     </>
