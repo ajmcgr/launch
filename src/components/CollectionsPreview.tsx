@@ -54,6 +54,10 @@ export default function CollectionsPreview({ limit = 6, onCount }: Props) {
         sb.from('users').select('id, username').in('id', userIds),
       ]);
 
+      fetchLatestProductCovers((itemRows ?? []) as any)
+        .then((m) => { if (!cancelled) setCovers(m); })
+        .catch(() => {});
+
       const itemCounts = new Map<string, number>();
       (itemRows ?? []).forEach((r: any) => itemCounts.set(r.collection_id, (itemCounts.get(r.collection_id) ?? 0) + 1));
       const followCounts = new Map<string, number>();
