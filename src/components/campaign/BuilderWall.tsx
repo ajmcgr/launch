@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ExternalLink, Share2 } from 'lucide-react';
+import { ExternalLink, Share2, ChevronDown } from 'lucide-react';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { useCampaignProducts, type BuilderWallProduct } from '@/hooks/use-campaign-products';
 import { trackCampaignEvent } from '@/lib/campaign';

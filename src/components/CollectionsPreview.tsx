@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { FolderOpen, Eye, Heart } from 'lucide-react';
+import { FolderOpen, Eye, Heart, ChevronDown } from 'lucide-react';
 import { gradientFor } from '@/lib/gradients';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
 import { fetchLatestProductCovers } from '@/lib/collectionCovers';
