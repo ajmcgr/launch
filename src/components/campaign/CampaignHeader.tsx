@@ -53,9 +53,33 @@ export const CampaignHeader = () => {
           </div>
         </div>
 
-        <div className="flex flex-shrink-0 items-center">
+        <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
           <ThemeToggle />
+          {user ? (
+            <Button asChild variant="ghost" size="sm">
+              <a href="https://trylaunch.ai/settings" target="_blank" rel="noopener noreferrer">
+                Account
+              </a>
+            </Button>
+          ) : (
+            <>
+              <a
+                href="https://trylaunch.ai/auth"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-primary sm:inline"
+              >
+                Login
+              </a>
+              <Button asChild size="sm">
+                <a href="https://trylaunch.ai/auth" target="_blank" rel="noopener noreferrer">
+                  Sign Up
+                </a>
+              </Button>
+            </>
+          )}
         </div>
+
       </div>
     </header>
   );
