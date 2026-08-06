@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { FolderOpen, Eye, Heart } from 'lucide-react';
 import { gradientFor } from '@/lib/gradients';
+import CollectionCoverArt from '@/components/CollectionCoverArt';
+import { fetchLatestProductCovers } from '@/lib/collectionCovers';
 
 const sb: any = supabase;
 
@@ -30,6 +32,7 @@ interface Props {
 export default function CollectionsPreview({ limit = 6, onCount }: Props) {
   const [items, setItems] = useState<CollectionCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [covers, setCovers] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
@@ -46,7 +49,7 @@ export default function CollectionsPreview({ limit = 6, onCount }: Props) {
       const userIds = Array.from(new Set(cols.map((c: any) => c.user_id)));
 
       const [{ data: itemRows }, { data: followRows }, { data: users }] = await Promise.all([
-        sb.from('user_collection_items').select('collection_id').in('collection_id', ids),
+        sb.from('user_collection_items').select('collection_id, product_id, added_at').in('collection_id', ids).range(0, 9999),
         sb.from('collection_follows').select('collection_id').in('collection_id', ids),
         sb.from('users').select('id, username').in('id', userIds),
       ]);
@@ -107,20 +110,13 @@ export default function CollectionsPreview({ limit = 6, onCount }: Props) {
           to={`/c/${c.slug}`}
           className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
         >
-          <div
-            className="aspect-[3/1.6] overflow-hidden"
-            style={!c.cover_image_url ? { backgroundImage: gradientFor(c.id || c.slug || c.name) } : undefined}
-          >
-            {c.cover_image_url && (
-              <img
-                src={c.cover_image_url}
-                alt={c.name}
-                className="w-full h-full object-cover"
-                width={400}
-                height={213}
-                loading="lazy"
-              />
-            )}
+          <div className="aspect-[3/1.6] overflow-hidden">
+            <CollectionCoverArt
+              slug={c.slug}
+              name={c.name}
+              coverImageUrl={c.cover_image_url}
+              fallbackImageUrl={covers.get(c.id)}
+            />
           </div>
           <div className="p-4 flex-1 flex flex-col">
             <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">{c.name}</h3>
