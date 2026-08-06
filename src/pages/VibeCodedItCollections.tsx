@@ -35,6 +35,12 @@ const VibeCodedItCollections = () => {
           content="Browse curated collections of vibe coded apps and startups, hand-picked by the Launch community."
         />
         <link rel="canonical" href={pageUrl} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Collections — Vibe Coded It" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content="Collections — Vibe Coded It" />
         <link rel="icon" href="/favicon-vibecodedit.png" type="image/png" />
       </Helmet>
 
