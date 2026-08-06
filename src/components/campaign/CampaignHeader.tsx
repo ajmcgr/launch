@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import vibeLogo from '@/assets/vibecodedit-logo-3.png.asset.json';
-import vibeLogoDark from '@/assets/vibecodedit-logo-dark-3.png.asset.json';
+import vibeLogo from '@/assets/vibecodedit-logo-4.png.asset.json';
+import vibeLogoDark from '@/assets/vibecodedit-logo-dark-4.png.asset.json';
 import { CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { trackCampaignEvent } from '@/lib/campaign';
@@ -20,10 +20,10 @@ export const CampaignHeader = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background">
-      <div className="flex h-16 w-full items-center gap-4 px-4 lg:pl-20">
+      <div className="flex h-20 w-full items-center gap-4 px-4 lg:pl-20">
         <a href={CAMPAIGN_ORIGIN} aria-label="Vibe Coded It" className="flex flex-shrink-0 items-center">
-          <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={40} className="h-10 w-auto object-contain dark:hidden" />
-          <img src={vibeLogoDark.url} alt="Vibe Coded It" width={160} height={40} className="hidden h-10 w-auto object-contain dark:block" />
+          <img src={vibeLogo.url} alt="Vibe Coded It" width={240} height={60} className="h-[60px] w-auto object-contain dark:hidden" />
+          <img src={vibeLogoDark.url} alt="Vibe Coded It" width={240} height={60} className="hidden h-[60px] w-auto object-contain dark:block" />
         </a>
 
         <div className="min-w-0 flex-1">
