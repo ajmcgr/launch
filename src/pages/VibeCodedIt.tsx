@@ -13,6 +13,7 @@ import {
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import campaignIcon from '@/assets/li-icon-2.png.asset.json';
 import vibeLogo from '@/assets/vibecodedit-logo.png.asset.json';
+import vibeLogoDark from '@/assets/vibecodedit-logo-dark.png.asset.json';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
@@ -165,7 +166,8 @@ const VibeCodedIt = () => {
         <div className="container mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
           <div className="flex flex-shrink-0 items-center gap-5">
             <a href={CAMPAIGN_ORIGIN} aria-label="Vibe Coded It" className="flex items-center">
-              <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={40} className="h-10 w-auto object-contain" />
+              <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={40} className="h-10 w-auto object-contain dark:hidden" />
+              <img src={vibeLogoDark.url} alt="Vibe Coded It" width={160} height={40} className="hidden h-10 w-auto object-contain dark:block" />
             </a>
 
             <Link to="/products" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
