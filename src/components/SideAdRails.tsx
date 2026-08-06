@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { weightedShuffle } from '@/lib/weightedPick';
 
@@ -215,11 +215,11 @@ const MobileAdMarquees = ({
         @keyframes rail-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
         @keyframes rail-marquee-rev { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
       `}</style>
-      <div className="min-[1700px]:hidden fixed top-0 left-0 right-0 z-30 bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
         <MarqueeRow ads={ads} placement="marquee_top" />
       </div>
       <div
-        className={`min-[1700px]:hidden fixed left-0 right-0 z-30 bg-background/95 backdrop-blur border-t border-border/60 py-1.5 ${
+        className={`lg:hidden fixed left-0 right-0 z-30 bg-background/95 backdrop-blur border-t border-border/60 py-1.5 ${
           isCampaign ? 'bottom-16 lg:bottom-0' : 'bottom-0'
         }`}
       >
