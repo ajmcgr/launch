@@ -155,7 +155,7 @@ export const Header = () => {
               Advertise
             </Link>
             <Link to="/vibecodedit" aria-label="Vibe Coded It" className="flex items-center">
-              <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={28} height={28} className="h-7 w-7 rounded-full object-contain" />
+              <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={16} height={16} className="h-4 w-4 rounded-full object-contain" />
             </Link>
           </nav>
           
