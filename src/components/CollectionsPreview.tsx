@@ -53,10 +53,23 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
       const ids = cols.map((c: any) => c.id);
       const userIds = Array.from(new Set(cols.map((c: any) => c.user_id)));
 
-      const [{ data: itemRows }, { data: followRows }, { data: users }] = await Promise.all([
-        sb.from('user_collection_items').select('collection_id, product_id, added_at').in('collection_id', ids).range(0, 9999),
-        sb.from('collection_follows').select('collection_id').in('collection_id', ids),
-        sb.from('users').select('id, username').in('id', userIds),
+      // Batch `.in()` filters — >~200 UUIDs blows the PostgREST URL length limit (400).
+      const chunk = <T,>(arr: T[], size: number) =>
+        Array.from({ length: Math.ceil(arr.length / size) }, (_, i) => arr.slice(i * size, i * size + size));
+
+      const fetchIn = async (table: string, select: string, col: string, values: string[]) => {
+        const results = await Promise.all(
+          chunk(values, 150).map((batch) =>
+            sb.from(table).select(select).in(col, batch).range(0, 9999)
+          )
+        );
+        return results.flatMap((r: any) => r.data ?? []);
+      };
+
+      const [itemRows, followRows, users] = await Promise.all([
+        fetchIn('user_collection_items', 'collection_id, product_id, added_at', 'collection_id', ids),
+        fetchIn('collection_follows', 'collection_id', 'collection_id', ids),
+        fetchIn('users', 'id, username', 'id', userIds as string[]),
       ]);
 
       fetchLatestProductCovers((itemRows ?? []) as any)
