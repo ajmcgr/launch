@@ -185,10 +185,11 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
     return <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />;
   }
 
-  const left = ads.slice(0, SLOTS_PER_SIDE);
-  const right = ads.length > SLOTS_PER_SIDE
-    ? ads.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2)
-    : ads.slice(0, SLOTS_PER_SIDE);
+  // Never duplicate an ad across rails: alternate real ads between left/right,
+  // any remaining slots fall back to "Your ad here" placeholders.
+  const left = ads.filter((_, i) => i % 2 === 0).slice(0, SLOTS_PER_SIDE);
+  const right = ads.filter((_, i) => i % 2 === 1).slice(0, SLOTS_PER_SIDE);
+
 
   return (
     <>
