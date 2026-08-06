@@ -176,7 +176,7 @@ const VibeCodedIt = () => {
       <CampaignSideNav />
 
       {/* Apps title + app count + view toggle */}
-      <section className="lg:pl-16">
+      <section className="lg:pl-16 min-[1700px]:pr-[200px]">
         <div className="w-full px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -237,8 +237,8 @@ const VibeCodedIt = () => {
       )}
 
       {/* Builder Wall */}
-      <section className="lg:pl-16">
-        <div className="w-full px-4 py-6 sm:py-8">
+      <section className="lg:pl-16 min-[1700px]:pr-[200px]">
+        <div className="w-full px-4 pb-8 pt-4 sm:pb-8 sm:pt-6">
           <BuilderWall view={wallView} />
         </div>
       </section>
