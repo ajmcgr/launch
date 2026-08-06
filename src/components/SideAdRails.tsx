@@ -215,11 +215,13 @@ const MobileAdMarquees = ({
         @keyframes rail-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
         @keyframes rail-marquee-rev { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
       `}</style>
-      <div className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-[100] bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
         <MarqueeRow ads={ads} placement="marquee_top" />
       </div>
+      {/* spacer so page content isn't hidden under the fixed top marquee */}
+      <div className="lg:hidden h-[53px]" aria-hidden="true" />
       <div
-        className={`lg:hidden fixed left-0 right-0 z-30 bg-background/95 backdrop-blur border-t border-border/60 py-1.5 ${
+        className={`lg:hidden fixed left-0 right-0 z-[100] bg-background/95 backdrop-blur border-t border-border/60 py-1.5 ${
           isCampaign ? 'bottom-16 lg:bottom-0' : 'bottom-0'
         }`}
       >
@@ -232,6 +234,7 @@ const MobileAdMarquees = ({
 const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
   const { pathname } = useLocation();
   const [ads, setAds] = useState<RailAd[]>([]);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -281,8 +284,7 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
             iconUrl: icon,
           };
         })
-        .filter((x: RailAd | null): x is RailAd => x !== null)
-        .slice(0, SLOTS_PER_SIDE * 2);
+        .filter((x: RailAd | null): x is RailAd => x !== null);
 
       setAds(items);
     };
@@ -290,21 +292,34 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
     fetchAds();
   }, []);
 
+  // Rotate through the FULL inventory so every purchased ad gets rail exposure,
+  // not just the first 10.
+  useEffect(() => {
+    if (ads.length <= SLOTS_PER_SIDE) return;
+    const id = setInterval(() => setOffset((o) => (o + 1) % ads.length), 12000);
+    return () => clearInterval(id);
+  }, [ads.length]);
+
+  const rotated =
+    ads.length > 0
+      ? Array.from({ length: ads.length }, (_, i) => ads[(i + offset) % ads.length])
+      : [];
+
   const showMobileMarquee = pathname === '/' || pathname.startsWith('/vibecodedit');
 
   if (isCampaignPage) {
     return (
       <>
         <MobileAdMarquees ads={ads} isCampaign enabled={showMobileMarquee} />
-        <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />
+        <Rail ads={rotated.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />
       </>
     );
   }
 
   // Fill rails left-to-right, top-to-bottom so ads read in order and the
   // right rail only gets an ad once the left rail is fully occupied.
-  const left = ads.slice(0, SLOTS_PER_SIDE);
-  const right = ads.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
+  const left = rotated.slice(0, SLOTS_PER_SIDE);
+  const right = rotated.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
 
 
   return (
