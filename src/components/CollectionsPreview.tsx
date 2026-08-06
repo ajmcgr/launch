@@ -30,7 +30,7 @@ interface Props {
  * Compact homepage preview of top trending collections.
  * Card markup mirrors CollectionsDirectory for visual consistency.
  */
-export default function CollectionsPreview({ limit = 6, onCount }: Props) {
+export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow = false }: Props) {
   const [items, setItems] = useState<CollectionCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [covers, setCovers] = useState<Map<string, string>>(new Map());
