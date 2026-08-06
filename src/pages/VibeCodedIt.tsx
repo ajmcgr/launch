@@ -91,8 +91,23 @@ const VibeCodedIt = () => {
   }, []);
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) setShowHero(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) setShowHero(false);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (welcomeSlug) setShowWelcome(true);
   }, [welcomeSlug]);
+
 
   const handleAddYourApp = () => {
     setCampaignIntent(CAMPAIGN_SLUG);
