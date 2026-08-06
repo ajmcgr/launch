@@ -220,7 +220,7 @@ const MobileAdMarquees = ({
       </div>
       {/* spacer so page content isn't hidden under the fixed top marquee */}
       <div className="lg:hidden h-[53px]" aria-hidden="true" />
-      <div className="lg:hidden fixed left-0 right-0 bottom-0 z-40 bg-background/95 backdrop-blur border-t border-border/60 py-1.5 pb-[env(safe-area-inset-bottom)]">
+      <div className="lg:hidden fixed left-0 right-0 bottom-0 z-40 flex h-[calc(53px+env(safe-area-inset-bottom))] items-start bg-background/95 pt-1.5 backdrop-blur border-t border-border/60">
         <MarqueeRow ads={ads} reverse placement="marquee_bottom" />
       </div>
 
