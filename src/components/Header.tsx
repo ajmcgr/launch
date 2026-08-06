@@ -154,10 +154,27 @@ export const Header = () => {
             <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Advertise
             </Link>
-            <Link to="/vibecodedit" aria-label="Vibe Coded It" className="flex items-center">
+            <a
+              href="https://vibecodedit.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Vibe Coded It"
+              className="hidden md:flex items-center"
+            >
               <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={16} height={16} className="h-4 w-4 rounded-full object-contain" />
-            </Link>
+            </a>
           </nav>
+
+          {/* Mobile header 8-ball link */}
+          <a
+            href="https://vibecodedit.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Vibe Coded It"
+            className="md:hidden flex items-center"
+          >
+            <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={16} height={16} className="h-4 w-4 rounded-full object-contain" />
+          </a>
           
           {/* Right: Actions */}
           <div className="flex items-center gap-4 ml-2 flex-shrink-0">
