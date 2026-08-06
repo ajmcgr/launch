@@ -193,6 +193,14 @@ const VibeCodedIt = () => {
           property="og:description"
           content="A movement for people building their own future with AI. Launch your startup and join the Builder Wall."
         />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content="Vibe Coded It" />
+        <meta
+          name="twitter:description"
+          content="A movement for people building their own future with AI. Launch your startup and join the Builder Wall."
+        />
+
         <script type="application/ld+json">
           {JSON.stringify({
             '@context': 'https://schema.org',
