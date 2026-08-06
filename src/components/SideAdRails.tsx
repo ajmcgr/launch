@@ -181,7 +181,21 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
     fetchAds();
   }, []);
 
-  return <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign={isCampaignPage} />;
+  if (isCampaignPage) {
+    return <Rail ads={ads.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />;
+  }
+
+  const left = ads.slice(0, SLOTS_PER_SIDE);
+  const right = ads.length > SLOTS_PER_SIDE
+    ? ads.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2)
+    : ads.slice(0, SLOTS_PER_SIDE);
+
+  return (
+    <>
+      <Rail ads={left} side="left" />
+      <Rail ads={right} side="right" />
+    </>
+  );
 };
 
 export default SideAdRails;
