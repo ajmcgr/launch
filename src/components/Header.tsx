@@ -138,6 +138,9 @@ export const Header = () => {
             <Link to="/products" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Products
             </Link>
+            <Link to="/collections" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
+              Collections
+            </Link>
             <a href="https://newsletter.trylaunch.ai/" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Newsletter
             </a>
