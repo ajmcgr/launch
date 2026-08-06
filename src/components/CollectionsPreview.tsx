@@ -183,7 +183,7 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
           className="border-2 border-muted-foreground/20"
           onClick={() => setVisible((v) => v + limit)}
         >
-          See More Collections →
+          See More Collections <ChevronDown className="h-4 w-4 ml-1" />
         </Button>
       </div>
     )}

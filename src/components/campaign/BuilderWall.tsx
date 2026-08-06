@@ -299,7 +299,7 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
       {hasMore && (
         <div className="text-center mt-8">
           <Button variant="outline" className="border-2 border-muted-foreground/20" onClick={loadMore}>
-            See More Apps →
+            See More Apps <ChevronDown className="h-4 w-4 ml-1" />
           </Button>
         </div>
       )}
