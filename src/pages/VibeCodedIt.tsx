@@ -67,9 +67,22 @@ const VibeCodedIt = () => {
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
-  const [wallView, setWallView] = useState<'list' | 'grid' | 'compact' | 'semi-compact'>(
-    isMobile ? 'semi-compact' : 'grid'
-  );
+  const [wallView, setWallView] = useState<'list' | 'grid' | 'compact' | 'semi-compact'>(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('vibecodedit:view') : null;
+    if (stored === 'grid' || stored === 'compact' || stored === 'semi-compact' || stored === 'list') {
+      return stored;
+    }
+    return isMobile ? 'semi-compact' : 'grid';
+  });
+
+  const changeWallView = (v: 'list' | 'grid' | 'compact' | 'semi-compact') => {
+    setWallView(v);
+    try {
+      localStorage.setItem('vibecodedit:view', v);
+    } catch {
+      /* ignore */
+    }
+  };
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
@@ -104,6 +117,14 @@ const VibeCodedIt = () => {
   useEffect(() => {
     if (welcomeSlug) setShowWelcome(true);
   }, [welcomeSlug]);
+
+  // Mobile detection resolves after first paint: fall back to semi-compact
+  // for phones that have no saved preference yet.
+  useEffect(() => {
+    if (isMobile && !localStorage.getItem('vibecodedit:view')) {
+      setWallView('semi-compact');
+    }
+  }, [isMobile]);
 
 
   const handleAddYourApp = () => {
@@ -233,7 +254,7 @@ const VibeCodedIt = () => {
             </div>
             <ViewToggle
               view={wallView}
-              onViewChange={setWallView}
+              onViewChange={changeWallView}
               allowSemiCompact
             />
           </div>

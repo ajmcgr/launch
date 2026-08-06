@@ -39,15 +39,17 @@ export function ViewToggle({
           <Rows3 className="h-3.5 w-3.5" />
         </Toggle>
       )}
-      <Toggle
-        pressed={view === 'list'}
-        onPressedChange={() => onViewChange('list')}
-        aria-label="List view"
-        size="sm"
-        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
-      >
-        <List className="h-3.5 w-3.5" />
-      </Toggle>
+      {!allowSemiCompact && (
+        <Toggle
+          pressed={view === 'list'}
+          onPressedChange={() => onViewChange('list')}
+          aria-label="List view"
+          size="sm"
+          className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+        >
+          <List className="h-3.5 w-3.5" />
+        </Toggle>
+      )}
       {!isMobile && (
         <Toggle
           pressed={view === 'grid'}
