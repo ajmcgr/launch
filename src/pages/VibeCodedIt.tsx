@@ -220,47 +220,6 @@ const VibeCodedIt = () => {
         </div>
       </header>
 
-      {/* Hero */}
-      {showHero && !user && (
-        <section className="relative">
-          <div className="container mx-auto max-w-7xl px-4 py-8 text-center sm:py-10">
-            <button
-              type="button"
-              onClick={() => setShowHero(false)}
-              aria-label="Hide hero"
-              className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:right-6 sm:top-6"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
-              Build Something Worth Launching
-            </h1>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Whether you were laid off, left your job, or simply decided to build,
-              launch your vibe coded startup and join a growing community of founders
-              creating the next generation of software.
-            </p>
-            <div className="mt-6 flex flex-col items-center gap-3">
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
-                  Submit Your App
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-                <a
-                  href="#letter"
-                  className="text-base font-medium text-primary hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  Read the letter
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* App count + view toggle */}
       <section>
