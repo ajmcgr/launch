@@ -177,16 +177,20 @@ const VibeCodedIt = () => {
 
       {/* Hero */}
       {showHero && !user && (
-        <section className="relative pt-2 lg:pl-16">
+        <section className="relative pt-8 sm:pt-10 lg:pl-16 min-[1700px]:pr-[200px]">
           <div className="container mx-auto max-w-7xl px-4 pb-8 text-center sm:pb-10">
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => setShowHero(false)}
               aria-label="Hide hero"
-              className="absolute right-4 top-0 rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:right-6"
+              className="absolute right-4 top-3 sm:right-6 sm:top-5 gap-1 text-xs"
             >
-              <X className="h-4 w-4" />
-            </button>
+              Hide
+              <X className="h-3 w-3" />
+            </Button>
+
             <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
               Build Something Worth Launching
             </h1>
