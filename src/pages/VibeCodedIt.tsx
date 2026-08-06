@@ -118,6 +118,14 @@ const VibeCodedIt = () => {
     if (welcomeSlug) setShowWelcome(true);
   }, [welcomeSlug]);
 
+  // Mobile detection resolves after first paint: fall back to semi-compact
+  // for phones that have no saved preference yet.
+  useEffect(() => {
+    if (isMobile && !localStorage.getItem('vibecodedit:view')) {
+      setWallView('semi-compact');
+    }
+  }, [isMobile]);
+
 
   const handleAddYourApp = () => {
     setCampaignIntent(CAMPAIGN_SLUG);
