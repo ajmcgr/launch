@@ -24,7 +24,8 @@ export const normalizeCampaign = (value: string | null): string | null => {
   return value;
 };
 export const CAMPAIGN_NAME = 'Vibe Coded It';
-export const CAMPAIGN_PATH = '/vibecodedit';
+/** Campaign now lives on its own standalone site. */
+export const CAMPAIGN_URL = 'https://vibecodedit.com';
 
 const STORAGE_KEY = 'launch_campaign_intent';
 
