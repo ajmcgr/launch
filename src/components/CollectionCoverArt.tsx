@@ -1,5 +1,4 @@
 import { builtWithBySlug } from '@/lib/builtWithPlatforms';
-import { gradientFor } from '@/lib/gradients';
 
 interface Props {
   slug?: string | null;
@@ -14,7 +13,7 @@ interface Props {
  * Renders the cover art for a collection.
  * - Built With {platform} collections (slug `built-with-*`) render the platform logo plate.
  * - Otherwise renders the uploaded cover image, then the latest product screenshot,
- *   falling back to a deterministic gradient.
+ *   falling back to a neutral placeholder.
  */
 export default function CollectionCoverArt({ slug, name, coverImageUrl, fallbackImageUrl, className = '' }: Props) {
   const platformSlug = slug?.startsWith('built-with-') ? slug.slice('built-with-'.length) : null;
@@ -45,10 +44,5 @@ export default function CollectionCoverArt({ slug, name, coverImageUrl, fallback
     );
   }
 
-  return (
-    <div
-      className={`w-full h-full ${className}`}
-      style={{ backgroundImage: gradientFor(slug || name) }}
-    />
-  );
+  return <div className={`w-full h-full bg-muted animate-pulse ${className}`} />;
 }
