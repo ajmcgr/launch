@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import logo from '@/assets/logo.png';
 import logoDark from '@/assets/logo-dark.png';
+import vibecodeditIcon from '@/assets/vibecodedit-header-icon.png.asset.json';
 import { NotificationBell } from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useTheme } from 'next-themes';
@@ -152,6 +153,9 @@ export const Header = () => {
             </Link>
             <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Advertise
+            </Link>
+            <Link to="/vibecodedit" aria-label="Vibe Coded It" className="flex items-center">
+              <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={28} height={28} className="h-7 w-7 rounded-full object-contain" />
             </Link>
           </nav>
           
@@ -307,6 +311,14 @@ export const Header = () => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Advertise
+                  </Link>
+                  <Link 
+                    to="/vibecodedit" 
+                    className="flex items-center gap-2 text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={24} height={24} className="h-6 w-6 rounded-full object-contain" />
+                    Vibe Coded It
                   </Link>
                   
                   {user ? (
