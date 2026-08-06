@@ -8,6 +8,7 @@ import { gradientFor } from '@/lib/gradients';
 import BuiltWithSection from '@/components/BuiltWithSection';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
 import { CollectionCardSkeleton } from '@/components/CollectionCardSkeleton';
+import { fetchLatestProductCovers } from '@/lib/collectionCovers';
 
 const sb: any = supabase;
 
@@ -36,6 +37,7 @@ export default function CollectionsDirectory() {
   const [tab, setTab] = useState<Tab>('trending');
   const [items, setItems] = useState<CollectionCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [covers, setCovers] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
@@ -67,10 +69,14 @@ export default function CollectionsDirectory() {
       const userIds = Array.from(new Set(cols.map((c: any) => c.user_id)));
 
       const [{ data: itemRows }, { data: followRows }, { data: users }] = await Promise.all([
-        sb.from('user_collection_items').select('collection_id').in('collection_id', ids),
+        sb.from('user_collection_items').select('collection_id, product_id, added_at').in('collection_id', ids).range(0, 9999),
         sb.from('collection_follows').select('collection_id').in('collection_id', ids),
         sb.from('users').select('id, username, avatar_url').in('id', userIds),
       ]);
+
+      fetchLatestProductCovers((itemRows ?? []) as any)
+        .then((m) => { if (!cancelled) setCovers(m); })
+        .catch(() => {});
 
       const itemCounts = new Map<string, number>();
       (itemRows ?? []).forEach((r: any) => itemCounts.set(r.collection_id, (itemCounts.get(r.collection_id) ?? 0) + 1));
@@ -189,7 +195,7 @@ export default function CollectionsDirectory() {
               className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
             >
               <div className="aspect-[3/1.6] overflow-hidden">
-                <CollectionCoverArt slug={c.slug} name={c.name} coverImageUrl={c.cover_image_url} />
+                <CollectionCoverArt slug={c.slug} name={c.name} coverImageUrl={c.cover_image_url} fallbackImageUrl={covers.get(c.id)} />
               </div>
               <div className="p-4 flex-1 flex flex-col">
                 <h3 className="font-semibold text-base group-hover:text-primary transition-colors line-clamp-1">{c.name}</h3>
