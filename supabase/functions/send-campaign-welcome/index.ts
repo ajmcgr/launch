@@ -9,7 +9,7 @@ const corsHeaders = {
 };
 
 const PRODUCTION_URL = Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
-const CAMPAIGN_URL = 'https://vibecodeyourfuture.com';
+const CAMPAIGN_URL = 'https://vibecodedit.com';
 
 // NOTE: HTML is built with string concatenation on purpose (multi-line template
 // literals break the edge bundler on this project).
@@ -43,7 +43,7 @@ function buildWelcomeHtml(productName: string, productSlug: string): string {
     '<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px 20px;margin:24px 0;">' +
     '<p style="margin:0;font-size:14px;color:#0c4a6e;">Next step: post your first comment on your launch page telling people why you built it. Launches with a founder comment get far more feedback.</p>' +
     '</div>' +
-    '<p style="margin:0;color:#4b5563;font-size:14px;">See everyone else building at <a href="' + CAMPAIGN_URL + '" style="color:#1e6fd9;">vibecodeyourfuture.com</a>.</p>' +
+    '<p style="margin:0;color:#4b5563;font-size:14px;">See everyone else building at <a href="' + CAMPAIGN_URL + '" style="color:#1e6fd9;">vibecodedit.com</a>.</p>' +
     '</div>' +
     '<div style="padding:20px 30px;text-align:center;color:#9ca3af;font-size:12px;border-top:1px solid #e5e7eb;">' +
     'Launch · Works App, Inc. · <a href="' + PRODUCTION_URL + '" style="color:#9ca3af;">trylaunch.ai</a>' +
