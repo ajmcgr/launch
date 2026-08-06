@@ -12,7 +12,7 @@ const INITIAL_ROWS = 4;
 const LOAD_MORE_ROWS = 5;
 const PRODUCTS_LIMIT = 120; // fetch a fast first slab; 'See More Apps' pages through it
 
-type TileSize = 'tall' | 'standard' | 'compact' | 'row';
+type TileSize = 'tall' | 'standard' | 'compact' | 'row' | 'semi-compact';
 
 const TileSizeClasses: Record<TileSize, { card: string; icon: string; screenshot: string; name: string; tagline: string; footer: string }> = {
   tall: {
@@ -42,10 +42,18 @@ const TileSizeClasses: Record<TileSize, { card: string; icon: string; screenshot
   compact: {
     card: 'p-4',
     icon: 'h-8 w-8',
-    screenshot: 'mt-2 aspect-video',
+    screenshot: 'hidden',
     name: 'text-base',
     tagline: 'hidden',
     footer: 'mt-3',
+  },
+  'semi-compact': {
+    card: 'p-3',
+    icon: 'h-9 w-9',
+    screenshot: 'mt-2 aspect-video',
+    name: 'text-base',
+    tagline: 'line-clamp-1',
+    footer: 'mt-2',
   },
 };
 
