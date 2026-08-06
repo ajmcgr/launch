@@ -1,15 +1,15 @@
-import { LayoutGrid, List, AlignJustify } from 'lucide-react';
+import { LayoutGrid, List, AlignJustify, Rows3 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ViewToggleProps {
-  view: 'list' | 'grid' | 'compact';
-  onViewChange: (view: 'list' | 'grid' | 'compact') => void;
+  view: 'list' | 'grid' | 'compact' | 'semi-compact';
+  onViewChange: (view: 'list' | 'grid' | 'compact' | 'semi-compact') => void;
 }
 
 export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
   const isMobile = useIsMobile();
-  
+
   return (
     <div className="flex items-center gap-1 border rounded-md p-1 h-9">
       <Toggle
@@ -20,6 +20,15 @@ export const ViewToggle = ({ view, onViewChange }: ViewToggleProps) => {
         className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
       >
         <AlignJustify className="h-3.5 w-3.5" />
+      </Toggle>
+      <Toggle
+        pressed={view === 'semi-compact'}
+        onPressedChange={() => onViewChange('semi-compact')}
+        aria-label="Semi-compact view"
+        size="sm"
+        className="data-[state=on]:bg-muted data-[state=on]:text-foreground h-7 px-2"
+      >
+        <Rows3 className="h-3.5 w-3.5" />
       </Toggle>
       <Toggle
         pressed={view === 'list'}
