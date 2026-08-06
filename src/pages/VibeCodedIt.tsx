@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRight, Search, X } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -20,7 +20,8 @@ import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
 import { ViewToggle } from '@/components/ViewToggle';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import CampaignHeader from '@/components/campaign/CampaignHeader';
+import CampaignSideNav from '@/components/campaign/CampaignSideNav';
 import {
   CAMPAIGN_SLUG,
   setCampaignIntent,
@@ -62,7 +63,6 @@ const VibeCodedIt = () => {
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
-  const [searchQuery, setSearchQuery] = useState('');
   const [wallView, setWallView] = useState<'list' | 'grid' | 'compact'>('grid');
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -77,14 +77,6 @@ const VibeCodedIt = () => {
   const roundedCount = rawCount >= 100 ? Math.floor(rawCount / 50) * 50 : rawCount;
   const appCount = roundedCount.toLocaleString();
   const faqs = useMemo(() => buildFaqs(appCount), [appCount]);
-
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      trackCampaignEvent('campaign_search_submitted');
-      window.open(`/search?q=${encodeURIComponent(searchQuery.trim())}`, '_blank');
-      setSearchQuery('');
-    }
-  };
 
   useEffect(() => {
     trackCampaignEvent('campaign_page_view');
@@ -180,49 +172,11 @@ const VibeCodedIt = () => {
       </Helmet>
 
       {/* Campaign header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background">
-        <div className="container mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
-          <div className="flex flex-shrink-0 items-center gap-5">
-            <a href={CAMPAIGN_ORIGIN} aria-label="Vibe Coded It" className="flex items-center">
-              <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={40} className="h-10 w-auto object-contain dark:hidden" />
-              <img src={vibeLogoDark.url} alt="Vibe Coded It" width={160} height={40} className="hidden h-10 w-auto object-contain dark:block" />
-            </a>
-          </div>
-
-          <div className="min-w-0 flex-1 px-2">
-            <div className="relative mx-auto w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search launches, founders, categories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearch}
-                className="h-10 w-full rounded-lg border border-border bg-background pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-shrink-0 items-center gap-3">
-            <ThemeToggle />
-            <Link
-              to="/auth"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-nav-text transition-colors hover:text-primary"
-            >
-              Login
-            </Link>
-            <Button asChild>
-              <Link to="/auth" target="_blank" rel="noopener noreferrer">Sign Up</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
+      <CampaignHeader />
+      <CampaignSideNav />
 
       {/* App count + view toggle */}
-      <section>
+      <section className="lg:pl-16">
         <div className="container mx-auto max-w-7xl px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
             <p className="text-sm text-muted-foreground leading-5">
@@ -235,9 +189,10 @@ const VibeCodedIt = () => {
         </div>
       </section>
 
+
       {/* Hero */}
       {showHero && !user && (
-        <section className="relative pt-2">
+        <section className="relative pt-2 lg:pl-16">
           <div className="container mx-auto max-w-7xl px-4 pb-8 text-center sm:pb-10">
             <button
               type="button"
@@ -278,14 +233,14 @@ const VibeCodedIt = () => {
       )}
 
       {/* Builder Wall */}
-      <section>
+      <section className="lg:pl-16">
         <div className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
           <BuilderWall view={wallView} />
         </div>
       </section>
 
       {/* Alex's Letter */}
-      <section id="letter">
+      <section id="letter" className="lg:pl-16">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
             <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">An Open Letter</h2>
@@ -389,7 +344,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* FAQ */}
-      <section>
+      <section className="lg:pl-16">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">
             Frequently asked questions
@@ -415,7 +370,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* Newsletter */}
-      <section id="newsletter">
+      <section id="newsletter" className="lg:pl-16">
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
           <div className="mx-auto max-w-xl text-center">
             <h2 className="font-reckless text-3xl sm:text-4xl">Get the Newsletter</h2>

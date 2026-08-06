@@ -85,6 +85,7 @@ const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
 const VibeCodedIt = lazy(() => import("./pages/VibeCodedIt"));
+const VibeCodedItCollections = lazy(() => import("./pages/VibeCodedItCollections"));
 import { isCampaignHost } from "@/lib/campaignHost";
 
 const Search = lazy(() => import("./pages/Search"));
@@ -111,8 +112,8 @@ const AppContent = () => {
   const standalonePages = ['/reserve'];
   // The campaign page drops Launch nav/footer nav but keeps the
   // copyright line. Newsletter signup is also hidden on the campaign page.
-  const isCampaignPage = location.pathname === '/vibecodedit'
-    || (campaignHost && location.pathname === '/');
+  const isCampaignPage = location.pathname.startsWith('/vibecodedit')
+    || (campaignHost && (location.pathname === '/' || location.pathname === '/collections'));
   const isStandalone = standalonePages.includes(location.pathname) || isCampaignPage;
 
   const showNewsletter = !staticPages.includes(location.pathname)
@@ -670,9 +671,10 @@ const AppContent = () => {
             <Route path="/my-collections" element={<Collections />} />
             <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/c/:slug" element={<PublicCollection />} />
-            <Route path="/collections" element={<CollectionsDirectory />} />
+            <Route path="/collections" element={campaignHost ? <VibeCodedItCollections /> : <CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
             <Route path="/vibecodedit" element={<VibeCodedIt />} />
+            <Route path="/vibecodedit/collections" element={<VibeCodedItCollections />} />
             <Route path="/vibecodeyourfuture" element={<Navigate to="/vibecodedit" replace />} />
             <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
