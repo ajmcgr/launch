@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, X } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -16,6 +17,7 @@ import vibeLogo from '@/assets/vibecodedit-logo.png.asset.json';
 import vibeLogoDark from '@/assets/vibecodedit-logo-dark.png.asset.json';
 import alexPhoto from '@/assets/alex-vcyf.png';
 import signature from '@/assets/signature.png';
+import signatureDark from '@/assets/am-t.png';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { useLaunchedProductCount } from '@/hooks/use-campaign-products';
 import { BuilderWall } from '@/components/campaign/BuilderWall';
@@ -70,7 +72,6 @@ const VibeCodedIt = () => {
   const [subscribeError, setSubscribeError] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [showHero, setShowHero] = useState(true);
-
 
   const { data: launchedCount } = useLaunchedProductCount();
   const rawCount = launchedCount || 0;
@@ -336,7 +337,13 @@ const VibeCodedIt = () => {
                     src={signature}
                     alt="Alex MacGregor signature"
                     loading="lazy"
-                    className="mb-1 h-10 w-auto"
+                    className="mb-1 h-10 w-auto dark:hidden"
+                  />
+                  <img
+                    src={signatureDark}
+                    alt="Alex MacGregor signature"
+                    loading="lazy"
+                    className="mb-1 hidden h-10 w-auto dark:block"
                   />
                   <h3 className="text-xl font-bold">Alex MacGregor</h3>
                   <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
