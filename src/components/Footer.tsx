@@ -28,7 +28,7 @@ const RedditIcon = ({ className }: { className?: string }) => (
 
 const Copyright = () => (
   <p>
-    Built with 🫶🏻 by{' '}
+    Copyright © 2026 Works App, Inc. Built with 🫶🏻 by{' '}
     <a
       href="https://x.com/alexmacgregor__"
       target="_blank"
@@ -39,6 +39,7 @@ const Copyright = () => (
     </a>.
   </p>
 );
+
 
 interface FooterProps {
   /** Renders only the copyright line (used by standalone campaign pages). */
