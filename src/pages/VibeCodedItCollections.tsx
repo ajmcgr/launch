@@ -34,6 +34,7 @@ const VibeCodedItCollections = () => {
           content="Browse curated collections of vibe coded apps and startups, hand-picked by the Launch community."
         />
         <link rel="canonical" href={pageUrl} />
+        <link rel="icon" href="/favicon-vibecodedit.png" type="image/png" />
       </Helmet>
 
       <CampaignHeader />
