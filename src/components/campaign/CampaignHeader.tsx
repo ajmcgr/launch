@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import vibeLogo from '@/assets/vibecodedit-logo-3.png.asset.json';
-import vibeLogoDark from '@/assets/vibecodedit-logo-dark-3.png.asset.json';
+import vibeLogo from '@/assets/vibecodedit-logo-4.png.asset.json';
+import vibeLogoDark from '@/assets/vibecodedit-logo-dark-4.png.asset.json';
 import { CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { trackCampaignEvent } from '@/lib/campaign';
