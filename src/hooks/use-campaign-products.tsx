@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CAMPAIGN_SLUG } from '@/lib/campaign';
+import { CAMPAIGN_SLUGS } from '@/lib/campaign';
 
 export interface BuilderWallProduct {
   id: string;
@@ -60,7 +60,7 @@ export const useCampaignProducts = (limit = 32) =>
         .from('products')
         .select(PRODUCT_SELECT)
         .eq('status', 'launched')
-        .eq('campaign', CAMPAIGN_SLUG)
+        .in('campaign', CAMPAIGN_SLUGS)
         .order('launch_date', { ascending: false })
         .limit(PAGE);
 

@@ -8,7 +8,21 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export const CAMPAIGN_SLUG = 'vibe_code_your_future';
+export const CAMPAIGN_SLUG = 'vibecodedit';
+/** Slug used before the rebrand — still stored on older products. */
+export const LEGACY_CAMPAIGN_SLUG = 'vibe_code_your_future';
+/** Every slug that counts as this campaign (for queries / attribution checks). */
+export const CAMPAIGN_SLUGS = [CAMPAIGN_SLUG, LEGACY_CAMPAIGN_SLUG];
+
+/** Normalise any legacy campaign value onto the current slug. */
+export const normalizeCampaign = (value: string | null): string | null => {
+  if (!value) return null;
+  const v = value.trim().toLowerCase();
+  if (v === LEGACY_CAMPAIGN_SLUG || v === 'vibecodeyourfuture' || v === 'vibe code your future') {
+    return CAMPAIGN_SLUG;
+  }
+  return value;
+};
 export const CAMPAIGN_NAME = 'Vibe Coded It';
 export const CAMPAIGN_PATH = '/vibecodedit';
 
@@ -17,7 +31,7 @@ const STORAGE_KEY = 'launch_campaign_intent';
 /** Remember that the current submission started from the campaign page. */
 export const setCampaignIntent = (campaign: string = CAMPAIGN_SLUG) => {
   try {
-    sessionStorage.setItem(STORAGE_KEY, campaign);
+    sessionStorage.setItem(STORAGE_KEY, normalizeCampaign(campaign) as string);
   } catch {
     /* storage unavailable — campaign tagging is best-effort */
   }
@@ -26,7 +40,7 @@ export const setCampaignIntent = (campaign: string = CAMPAIGN_SLUG) => {
 /** Read the pending campaign for this submission session. */
 export const getCampaignIntent = (): string | null => {
   try {
-    return sessionStorage.getItem(STORAGE_KEY);
+    return normalizeCampaign(sessionStorage.getItem(STORAGE_KEY));
   } catch {
     return null;
   }
@@ -42,18 +56,43 @@ export const clearCampaignIntent = () => {
 
 /**
  * Pick up ?campaign= / ?source= / ?utm_campaign= from the URL so links into the
- * submission flow from anywhere keep their attribution.
+ * submission flow from anywhere keep their attribution. Other UTM params
+ * (utm_source / utm_medium / utm_content / utm_term) are left untouched.
  */
 export const captureCampaignFromSearch = (search: string): string | null => {
   const params = new URLSearchParams(search);
-  const value =
-    params.get('campaign') || params.get('source') || params.get('utm_campaign');
+  const value = normalizeCampaign(
+    params.get('campaign') || params.get('source') || params.get('utm_campaign')
+  );
   if (value) {
     setCampaignIntent(value);
     return value;
   }
   return getCampaignIntent();
 };
+
+/**
+ * Append campaign attribution to any internal/cross-domain URL.
+ * Only campaign attribution is set — existing utm_source / utm_medium /
+ * utm_content / utm_term values on the URL are preserved as-is.
+ */
+export const withCampaignParams = (
+  url: string,
+  campaign: string = CAMPAIGN_SLUG
+): string => {
+  const slug = normalizeCampaign(campaign) || CAMPAIGN_SLUG;
+  const isAbsolute = /^https?:\/\//i.test(url);
+  const base = isAbsolute ? undefined : 'https://trylaunch.ai';
+  const u = new URL(url, base);
+  u.searchParams.set('campaign', slug);
+  u.searchParams.set('source', slug);
+  u.searchParams.set('utm_campaign', slug);
+  if (!u.searchParams.has('utm_source')) u.searchParams.set('utm_source', slug);
+  if (!u.searchParams.has('utm_medium')) u.searchParams.set('utm_medium', 'referral');
+  return isAbsolute ? u.toString() : `${u.pathname}${u.search}${u.hash}`;
+};
+
+
 
 export type CampaignEvent =
   | 'campaign_page_view'

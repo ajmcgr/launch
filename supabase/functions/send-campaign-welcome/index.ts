@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
     }
 
     await supabase.from('campaign_events').insert({
-      campaign: campaign || 'vibe_code_your_future',
+      campaign: campaign || 'vibecodedit',
       event_type: 'campaign_email_sent',
       product_id: productId,
     });

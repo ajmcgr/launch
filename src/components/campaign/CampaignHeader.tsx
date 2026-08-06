@@ -57,14 +57,14 @@ export const CampaignHeader = () => {
           <ThemeToggle />
           {user ? (
             <Button asChild variant="ghost" size="sm">
-              <a href="https://trylaunch.ai/settings" target="_blank" rel="noopener noreferrer">
+              <a href="https://trylaunch.ai/settings?campaign=vibecodedit&source=vibecodedit&utm_source=vibecodedit&utm_medium=referral&utm_campaign=vibecodedit" target="_blank" rel="noopener noreferrer">
                 Account
               </a>
             </Button>
           ) : (
             <>
               <a
-                href="https://trylaunch.ai/auth"
+                href="https://trylaunch.ai/auth?campaign=vibecodedit&source=vibecodedit&utm_source=vibecodedit&utm_medium=referral&utm_campaign=vibecodedit"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-primary sm:inline"
@@ -72,7 +72,7 @@ export const CampaignHeader = () => {
                 Login
               </a>
               <Button asChild size="sm">
-                <a href="https://trylaunch.ai/auth" target="_blank" rel="noopener noreferrer">
+                <a href="https://trylaunch.ai/auth?campaign=vibecodedit&source=vibecodedit&utm_source=vibecodedit&utm_medium=referral&utm_campaign=vibecodedit" target="_blank" rel="noopener noreferrer">
                   Sign Up
                 </a>
               </Button>

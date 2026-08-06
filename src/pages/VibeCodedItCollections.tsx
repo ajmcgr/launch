@@ -7,7 +7,7 @@ import CampaignHeader from '@/components/campaign/CampaignHeader';
 import CampaignSideNav from '@/components/campaign/CampaignSideNav';
 import CollectionsPreview from '@/components/CollectionsPreview';
 import { isCampaignHost, CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
-import { CAMPAIGN_SLUG, setCampaignIntent, trackCampaignEvent } from '@/lib/campaign';
+import { CAMPAIGN_SLUG, setCampaignIntent, trackCampaignEvent, withCampaignParams } from '@/lib/campaign';
 
 const VibeCodedItCollections = () => {
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ const VibeCodedItCollections = () => {
     setCampaignIntent(CAMPAIGN_SLUG);
     trackCampaignEvent('campaign_cta_clicked');
     const url = isCampaignHost()
-      ? `https://trylaunch.ai/submit?campaign=${CAMPAIGN_SLUG}`
-      : `/submit?campaign=${CAMPAIGN_SLUG}`;
+      ? withCampaignParams('https://trylaunch.ai/submit')
+      : withCampaignParams('/submit');
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
