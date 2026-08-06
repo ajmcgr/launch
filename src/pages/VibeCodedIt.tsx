@@ -265,9 +265,9 @@ const VibeCodedIt = () => {
       {/* Builder Wall */}
 
       <section>
-        <div className="container mx-auto max-w-7xl px-4 py-10 sm:py-12">
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
+        <div className="container mx-auto max-w-7xl px-4 pt-4 pb-10 sm:pt-4 sm:pb-12">
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <p className="text-sm text-muted-foreground leading-5">
               {rawCount > 0 && (
                 <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
               )}
