@@ -222,7 +222,7 @@ const VibeCodedIt = () => {
         <div className="w-full px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="font-reckless text-3xl sm:text-4xl">Apps</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Apps</h1>
               <p className="mt-2 text-sm text-muted-foreground leading-5">
                 {rawCount > 0 && (
                   <>Over <span className="font-semibold text-foreground">{appCount}</span> vibe coded apps added</>
