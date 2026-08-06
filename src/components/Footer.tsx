@@ -123,8 +123,8 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
                 </Link>
                </li>
               <li>
-                <Link to="/awards" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Vibe Coder Awards
+                <Link to="/vibecoders" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Top Vibe Coders
                 </Link>
               </li>
               <li>

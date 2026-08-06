@@ -155,6 +155,7 @@ const VibeCodedIt = () => {
           content="A movement for people building their own future with AI. Launch your vibe coded startup, join the Builder Wall, and become part of a growing community of founders."
         />
         <link rel="canonical" href={pageUrl} />
+        <link rel="icon" href="/favicon-vibecodedit.png" type="image/png" />
         <meta property="og:title" content="Vibe Coded It" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:type" content="website" />
