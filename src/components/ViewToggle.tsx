@@ -3,16 +3,17 @@ import { Toggle } from '@/components/ui/toggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type ViewMode = 'list' | 'grid' | 'compact' | 'semi-compact';
+type ClassicView = 'list' | 'grid' | 'compact';
 
-interface ViewToggleProps<T extends ViewMode = ViewMode> {
+interface ViewToggleProps<T extends ViewMode = ClassicView> {
   view: T;
   onViewChange: (view: T) => void;
 }
 
-export const ViewToggle = <T extends ViewMode = ViewMode>({
+export function ViewToggle<T extends ViewMode = ClassicView>({
   view,
   onViewChange,
-}: ViewToggleProps<T>) => {
+}: ViewToggleProps<T>) {
   const isMobile = useIsMobile();
 
   const setView = (v: ViewMode) => onViewChange(v as T);
@@ -59,4 +60,4 @@ export const ViewToggle = <T extends ViewMode = ViewMode>({
       )}
     </div>
   );
-};
+}
