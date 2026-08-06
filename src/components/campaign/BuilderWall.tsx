@@ -297,9 +297,9 @@ export const BuilderWall = ({ view = 'grid' }: { view?: 'list' | 'grid' | 'compa
       </div>
 
       {hasMore && (
-        <div className="mt-10 flex justify-center">
-          <Button variant="outline" size="lg" onClick={loadMore}>
-            See More Apps
+        <div className="text-center mt-8">
+          <Button variant="outline" className="border-2 border-muted-foreground/20" onClick={loadMore}>
+            See More Apps →
           </Button>
         </div>
       )}
