@@ -67,7 +67,7 @@ const VibeCodedItCollections = () => {
         </Button>
       </div>
 
-      <div className="h-16 lg:hidden" aria-hidden />
+      <div className="h-[117px] lg:hidden" aria-hidden />
     </>
   );
 };
