@@ -344,7 +344,7 @@ const CollectionPage = () => {
 
         <div className="flex items-center justify-end mb-6">
           {!isMobile && (
-            <ViewToggle view={view} onViewChange={(v) => handleViewChange(v as 'list' | 'grid' | 'compact')} />
+            <ViewToggle view={view} onViewChange={(v) => handleViewChange(v as 'list' | 'grid')} />
           )}
         </div>
 
