@@ -269,6 +269,13 @@ export const Header = () => {
                   >
                     Products
                   </Link>
+                  <Link 
+                    to="/collections" 
+                    className="text-lg font-medium text-nav-text hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Collections
+                  </Link>
                   <a 
                     href="https://newsletter.trylaunch.ai/" 
                     target="_blank" 
