@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRight, X } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -184,49 +184,36 @@ const VibeCodedIt = () => {
       {showHero && !user && (
         <section className="relative pt-8 sm:pt-10 lg:pl-20 min-[1700px]:pr-[200px]">
           <div className="w-full px-4">
-            <div className="relative w-full px-4 py-8 sm:py-10 text-center bg-muted/50 rounded-2xl">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowHero(false)}
-              aria-label="Hide hero"
-              className="absolute right-4 top-3 sm:right-6 sm:top-5 gap-1 text-xs"
-            >
-              Hide
-              <X className="h-3 w-3" />
-            </Button>
-
-            <h1 className="mx-auto max-w-4xl text-3xl font-medium leading-[1.05] sm:text-5xl lg:text-6xl">
+            <div className="relative w-full px-6 py-8 sm:py-10 text-center bg-muted/50 rounded-2xl">
+            <h1 className="mx-auto max-w-xl text-lg font-semibold">
               Vibe Coded It
             </h1>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mx-auto mt-1 max-w-xl text-sm text-muted-foreground">
               Whether you were laid off, left your job, or simply decided to build,
               launch your vibe coded startup and join a growing community of founders
               creating the next generation of software.
             </p>
-            <div className="mt-6 flex flex-col items-center gap-3">
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <Button size="lg" className="h-12 gap-2 px-8 text-base" onClick={handleAddYourApp}>
-                  Submit Your App
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-                <a
-                  href="#letter"
-                  className="text-base font-medium text-primary hover:underline"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  Read the letter
-                </a>
-              </div>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
+              <Button className="gap-2" onClick={handleAddYourApp}>
+                Submit Your App
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              <a
+                href="#letter"
+                className="text-sm font-medium text-primary hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('letter')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Read the letter
+              </a>
               </div>
             </div>
           </div>
         </section>
       )}
+
 
       {/* Apps title + app count + view toggle */}
       <section className="lg:pl-20 min-[1700px]:pr-[200px]">
