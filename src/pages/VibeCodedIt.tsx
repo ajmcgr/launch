@@ -209,7 +209,7 @@ const VibeCodedIt = () => {
       {showHero && !user && (
         <section className="relative pt-8 sm:pt-10 lg:pl-20 min-[1700px]:pr-[200px]">
           <div className="w-full px-4">
-            <div className="relative w-full px-6 py-8 sm:py-10 text-center bg-[#e6e6e6] rounded-2xl">
+            <div className="relative w-full px-6 py-8 sm:py-10 text-center bg-[#fcfcfc] rounded-2xl">
             <h1 className="mx-auto max-w-xl text-5xl sm:text-6xl font-semibold tracking-tight">
               Vibe Coded It
             </h1>
