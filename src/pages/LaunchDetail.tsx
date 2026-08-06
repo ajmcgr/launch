@@ -551,9 +551,9 @@ const LaunchDetail = () => {
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-4xl font-bold">{product.name}</h1>
                 {(product as any).campaign === CAMPAIGN_SLUG && (
-                  <Link to="/vibecodedit">
+                  <a href="https://vibecodedit.com" target="_blank" rel="noopener noreferrer">
                     <VibeCodeBadge size="md" />
-                  </Link>
+                  </a>
                 )}
                 {bestRanking && bestRanking.rank <= 3 && (
                   <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
