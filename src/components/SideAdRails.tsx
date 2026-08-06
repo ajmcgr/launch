@@ -215,11 +215,7 @@ const MobileAdMarquees = ({
         @keyframes rail-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
         @keyframes rail-marquee-rev { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
       `}</style>
-      <div
-        className={`lg:hidden fixed left-0 right-0 z-30 bg-background/95 backdrop-blur border-b border-border/60 py-1.5 ${
-          isCampaign ? 'top-20' : 'top-16'
-        }`}
-      >
+      <div className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
         <MarqueeRow ads={ads} placement="marquee_top" />
       </div>
       <div
