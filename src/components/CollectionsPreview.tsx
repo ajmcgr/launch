@@ -107,14 +107,30 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
 
   if (!items.length) return null;
 
+  const wrapperClass = "group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all";
+
+  const CardWrapper = openInNewWindow
+    ? ({ c, children }: { c: CollectionCard; children: ReactNode }) => (
+        <a
+          key={c.id}
+          href={`/c/${c.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={wrapperClass}
+        >
+          {children}
+        </a>
+      )
+    : ({ c, children }: { c: CollectionCard; children: ReactNode }) => (
+        <Link key={c.id} to={`/c/${c.slug}`} className={wrapperClass}>
+          {children}
+        </Link>
+      );
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {items.map((c) => (
-        <Link
-          key={c.id}
-          to={`/c/${c.slug}`}
-          className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
-        >
+        <CardWrapper c={c}>
           <div className="aspect-[3/1.6] overflow-hidden">
             <CollectionCoverArt
               slug={c.slug}
@@ -137,7 +153,7 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
               {c.creator && <span className="truncate ml-2">@{c.creator.username}</span>}
             </div>
           </div>
-        </Link>
+        </CardWrapper>
       ))}
     </div>
   );
