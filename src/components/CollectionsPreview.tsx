@@ -5,6 +5,7 @@ import { FolderOpen, Eye, Heart } from 'lucide-react';
 import { gradientFor } from '@/lib/gradients';
 import CollectionCoverArt from '@/components/CollectionCoverArt';
 import { fetchLatestProductCovers } from '@/lib/collectionCovers';
+import { Button } from '@/components/ui/button';
 
 const sb: any = supabase;
 
@@ -24,14 +25,17 @@ interface Props {
   limit?: number;
   onCount?: (count: number) => void;
   openInNewWindow?: boolean;
+  /** Render a "See More Collections" button that reveals another page of results. */
+  showMore?: boolean;
 }
 
 /**
  * Compact homepage preview of top trending collections.
  * Card markup mirrors CollectionsDirectory for visual consistency.
  */
-export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow = false }: Props) {
+export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow = false, showMore = false }: Props) {
   const [items, setItems] = useState<CollectionCard[]>([]);
+  const [visible, setVisible] = useState(limit);
   const [loading, setLoading] = useState(true);
   const [covers, setCovers] = useState<Map<string, string>>(new Map());
 
@@ -43,7 +47,7 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
         .select('id, slug, name, description, cover_image_url, view_count, user_id')
         .eq('is_public', true)
         .order('view_count', { ascending: false, nullsFirst: false })
-        .limit(60);
+        .limit(showMore ? 1000 : Math.max(limit, 60));
       if (!cols?.length) { if (!cancelled) { setItems([]); setLoading(false); onCount?.(0); } return; }
 
       const ids = cols.map((c: any) => c.id);
@@ -81,13 +85,13 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
         (b.view_count + b.followerCount * 5) - (a.view_count + a.followerCount * 5));
 
       if (!cancelled) {
-        setItems(enriched.slice(0, limit));
+        setItems(showMore ? enriched : enriched.slice(0, limit));
         setLoading(false);
-        onCount?.(Math.min(enriched.length, limit));
+        onCount?.(showMore ? enriched.length : Math.min(enriched.length, limit));
       }
     })();
     return () => { cancelled = true; };
-  }, [limit]);
+  }, [limit, showMore]);
 
   if (loading) {
     return (
@@ -127,9 +131,12 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
         </Link>
       );
 
+  const shown = showMore ? items.slice(0, visible) : items;
+
   return (
+    <>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {items.map((c) => (
+      {shown.map((c) => (
         <CardWrapper c={c}>
           <div className="aspect-[3/1.6] overflow-hidden">
             <CollectionCoverArt
@@ -156,5 +163,17 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
         </CardWrapper>
       ))}
     </div>
+    {showMore && visible < items.length && (
+      <div className="text-center mt-8">
+        <Button
+          variant="outline"
+          className="border-2 border-muted-foreground/20"
+          onClick={() => setVisible((v) => v + limit)}
+        >
+          See More Collections →
+        </Button>
+      </div>
+    )}
+    </>
   );
 }
