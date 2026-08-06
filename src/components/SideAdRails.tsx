@@ -182,7 +182,9 @@ const MarqueeRow = ({
   placement: string;
 }) => {
   const items = ads.length > 0 ? ads : [];
-  const loop = [...items, ...items, ...items];
+  // Every cycle ends with an empty "Your ad here" tile.
+  const cycle: (RailAd | null)[] = [...items, null];
+  const loop = [...cycle, ...cycle, ...cycle];
   return (
     <div className="overflow-hidden w-full">
       <div
@@ -191,20 +193,24 @@ const MarqueeRow = ({
           animation: `${reverse ? 'rail-marquee-rev' : 'rail-marquee'} 45s linear infinite`,
         }}
       >
-        {loop.map((item, i) => (
-          <MarqueePill key={`${item.key}-${i}`} item={item} placement={placement} />
-        ))}
-        <Link
-          to="/advertise"
-          className="flex items-center gap-2 rounded-xl border border-dashed border-border bg-muted/10 px-3 py-2 shrink-0"
-        >
-          <span className="h-6 w-6 rounded-md bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
-            +
-          </span>
-          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-            Your ad here
-          </span>
-        </Link>
+        {loop.map((item, i) =>
+          item ? (
+            <MarqueePill key={`${item.key}-${i}`} item={item} placement={placement} />
+          ) : (
+            <Link
+              key={`ph-${i}`}
+              to="/advertise"
+              className="flex items-center gap-2 rounded-xl border border-dashed border-border bg-muted/10 px-3 py-2 shrink-0"
+            >
+              <span className="h-6 w-6 rounded-md bg-muted/30 flex items-center justify-center text-sm text-muted-foreground">
+                +
+              </span>
+              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                Your ad here
+              </span>
+            </Link>
+          )
+        )}
       </div>
     </div>
   );
