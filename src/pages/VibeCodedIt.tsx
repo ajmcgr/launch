@@ -177,7 +177,7 @@ const VibeCodedIt = () => {
 
       {/* Apps title + app count + view toggle */}
       <section className="lg:pl-16">
-        <div className="container mx-auto max-w-7xl px-4 pt-4">
+        <div className="w-full px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="font-reckless text-3xl sm:text-4xl">Apps</h1>
