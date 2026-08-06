@@ -71,6 +71,29 @@ export const captureCampaignFromSearch = (search: string): string | null => {
   return getCampaignIntent();
 };
 
+/**
+ * Append campaign attribution to any internal/cross-domain URL.
+ * Only campaign attribution is set — existing utm_source / utm_medium /
+ * utm_content / utm_term values on the URL are preserved as-is.
+ */
+export const withCampaignParams = (
+  url: string,
+  campaign: string = CAMPAIGN_SLUG
+): string => {
+  const slug = normalizeCampaign(campaign) || CAMPAIGN_SLUG;
+  const isAbsolute = /^https?:\/\//i.test(url);
+  const base = isAbsolute ? undefined : 'https://trylaunch.ai';
+  const u = new URL(url, base);
+  u.searchParams.set('campaign', slug);
+  u.searchParams.set('source', slug);
+  u.searchParams.set('utm_campaign', slug);
+  if (!u.searchParams.has('utm_source')) u.searchParams.set('utm_source', slug);
+  if (!u.searchParams.has('utm_medium')) u.searchParams.set('utm_medium', 'referral');
+  return isAbsolute ? u.toString() : `${u.pathname}${u.search}${u.hash}`;
+};
+
+
+
 export type CampaignEvent =
   | 'campaign_page_view'
   | 'campaign_cta_clicked'
