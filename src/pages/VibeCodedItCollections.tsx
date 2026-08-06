@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -10,6 +11,7 @@ import { CAMPAIGN_SLUG, setCampaignIntent, trackCampaignEvent } from '@/lib/camp
 
 const VibeCodedItCollections = () => {
   const navigate = useNavigate();
+  const [collectionCount, setCollectionCount] = useState(0);
   const pageUrl = isCampaignHost()
     ? `${CAMPAIGN_ORIGIN}/collections`
     : 'https://trylaunch.ai/vibecodedit/collections';
