@@ -113,10 +113,11 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 
-  h1 {
-    @apply font-reckless;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-reckless font-bold;
   }
 }
+
 
 /* Hide Google Translate UI chrome (banner, tooltip, body offset) */
 .goog-te-banner-frame,
