@@ -338,7 +338,13 @@ const VibeCodedIt = () => {
                     src={signature}
                     alt="Alex MacGregor signature"
                     loading="lazy"
-                    className="mb-1 h-10 w-auto"
+                    className="mb-1 h-10 w-auto dark:hidden"
+                  />
+                  <img
+                    src={signatureDark.url}
+                    alt="Alex MacGregor signature"
+                    loading="lazy"
+                    className="mb-1 hidden h-10 w-auto dark:block"
                   />
                   <h3 className="text-xl font-bold">Alex MacGregor</h3>
                   <p className="mb-2 text-lg font-bold text-muted-foreground">Founder, Launch</p>
