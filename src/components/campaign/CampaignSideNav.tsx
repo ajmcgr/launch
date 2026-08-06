@@ -60,7 +60,7 @@ export const CampaignSideNav = () => {
         </div>
 
         <a
-          href="https://trylaunch.ai/auth"
+          href="https://trylaunch.ai/auth?campaign=vibecodedit&source=vibecodedit&utm_source=vibecodedit&utm_medium=referral&utm_campaign=vibecodedit"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Account settings"
@@ -103,7 +103,7 @@ export const CampaignSideNav = () => {
           Advertise
         </a>
         <a
-          href="https://trylaunch.ai/auth"
+          href="https://trylaunch.ai/auth?campaign=vibecodedit&source=vibecodedit&utm_source=vibecodedit&utm_medium=referral&utm_campaign=vibecodedit"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Account settings"
