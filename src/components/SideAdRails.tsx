@@ -111,9 +111,9 @@ const Rail = ({
   return (
     <aside
       aria-label={`${side} sponsored`}
-      className={`hidden min-[1700px]:flex flex-col fixed top-28 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
+      className={`hidden min-[1700px]:flex flex-col fixed top-32 bottom-4 ${side === 'left' ? 'left-4' : 'right-4'} w-[180px] z-10`}
     >
-      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-5 flex-shrink-0">
+      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 leading-none flex-shrink-0">
         Ad
       </h3>
       <div className="flex flex-col gap-2 overflow-y-auto pb-2 pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
