@@ -222,7 +222,7 @@ const VibeCodedIt = () => {
       )}
 
       {/* Apps title + app count + view toggle */}
-      <section className="lg:pl-16 min-[1700px]:pr-[200px]">
+      <section className="lg:pl-20 min-[1700px]:pr-[200px]">
         <div className="w-full px-4 pt-4">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -240,14 +240,14 @@ const VibeCodedIt = () => {
 
 
       {/* Builder Wall */}
-      <section className="lg:pl-16 min-[1700px]:pr-[200px]">
+      <section className="lg:pl-20 min-[1700px]:pr-[200px]">
         <div className="w-full px-4 pb-8 pt-4 sm:pb-8 sm:pt-6">
           <BuilderWall view={wallView} />
         </div>
       </section>
 
       {/* Alex's Letter */}
-      <section id="letter" className="lg:pl-16">
+      <section id="letter" className="lg:pl-20">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <div className="rounded-lg border border-border bg-card p-8 md:p-12">
             <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">An Open Letter</h2>
@@ -351,7 +351,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* FAQ */}
-      <section className="lg:pl-16">
+      <section className="lg:pl-20">
         <div className="container mx-auto max-w-2xl px-4 py-16 sm:py-20">
           <h2 className="mb-8 text-center font-reckless text-3xl sm:text-4xl">
             Frequently asked questions
@@ -377,7 +377,7 @@ const VibeCodedIt = () => {
       </section>
 
       {/* Newsletter */}
-      <section id="newsletter" className="lg:pl-16">
+      <section id="newsletter" className="lg:pl-20">
         <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
           <div className="mx-auto max-w-xl text-center">
             <h2 className="font-reckless text-3xl sm:text-4xl">Get the Newsletter</h2>
