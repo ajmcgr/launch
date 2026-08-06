@@ -85,6 +85,7 @@ const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
 const VibeCodedIt = lazy(() => import("./pages/VibeCodedIt"));
+const VibeCodedItCollections = lazy(() => import("./pages/VibeCodedItCollections"));
 import { isCampaignHost } from "@/lib/campaignHost";
 
 const Search = lazy(() => import("./pages/Search"));
@@ -670,7 +671,7 @@ const AppContent = () => {
             <Route path="/my-collections" element={<Collections />} />
             <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/c/:slug" element={<PublicCollection />} />
-            <Route path="/collections" element={<CollectionsDirectory />} />
+            <Route path="/collections" element={campaignHost ? <VibeCodedItCollections /> : <CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
             <Route path="/vibecodedit" element={<VibeCodedIt />} />
             <Route path="/vibecodedit/collections" element={<VibeCodedItCollections />} />
