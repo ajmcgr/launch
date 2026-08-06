@@ -96,7 +96,7 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {Array.from({ length: limit }).map((_, i) => (
+        {Array.from({ length: Math.min(limit, 9) }).map((_, i) => (
           <div key={i} className="rounded-xl border bg-card overflow-hidden">
             <div className="aspect-[3/1.6] bg-muted animate-pulse" />
             <div className="p-4 space-y-2">
