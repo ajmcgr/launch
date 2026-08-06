@@ -61,12 +61,15 @@ const buildFaqs = (appCount: string) => [
 const VibeCodedIt = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const isMobile = useIsMobile();
   // Same component, two homes: canonical/OG follow the hostname it was served from.
   const pageUrl = isCampaignHost() ? CAMPAIGN_ORIGIN : 'https://trylaunch.ai/vibecodedit';
 
   const welcomeSlug = searchParams.get('welcome');
   const [showWelcome, setShowWelcome] = useState(!!welcomeSlug);
-  const [wallView, setWallView] = useState<'list' | 'grid' | 'compact'>('grid');
+  const [wallView, setWallView] = useState<'list' | 'grid' | 'compact' | 'semi-compact'>(
+    isMobile ? 'semi-compact' : 'grid'
+  );
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
