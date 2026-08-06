@@ -165,7 +165,7 @@ const VibeCodedIt = () => {
         <div className="container mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
           <div className="flex flex-shrink-0 items-center gap-5">
             <Link to="/vibecodedit" aria-label="Vibe Coded It" className="flex items-center">
-              <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={19} className="h-5 w-auto object-contain dark:invert" />
+              <img src={vibeLogo.url} alt="Vibe Coded It" width={160} height={19} className="h-5 w-auto object-contain" />
             </Link>
 
             <Link to="/products" target="_blank" rel="noopener noreferrer" className="hidden text-sm font-medium text-nav-text transition-colors hover:text-primary sm:block">
