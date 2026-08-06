@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import vibeLogo from '@/assets/vibecodedit-logo-6.png.asset.json';
 import vibeLogoDark from '@/assets/vibecodedit-logo-dark-6.png.asset.json';
 import { CAMPAIGN_ORIGIN } from '@/lib/campaignHost';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { trackCampaignEvent } from '@/lib/campaign';
 
-/** Shared campaign header: logo, full-width search, theme toggle. */
+/** Shared campaign header: logo, full-width search, theme toggle, auth. */
 export const CampaignHeader = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null);
+    });
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
+
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
@@ -40,9 +53,33 @@ export const CampaignHeader = () => {
           </div>
         </div>
 
-        <div className="flex flex-shrink-0 items-center">
+        <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
           <ThemeToggle />
+          {user ? (
+            <Button asChild variant="ghost" size="sm">
+              <a href="https://trylaunch.ai/settings" target="_blank" rel="noopener noreferrer">
+                Account
+              </a>
+            </Button>
+          ) : (
+            <>
+              <a
+                href="https://trylaunch.ai/auth"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-primary sm:inline"
+              >
+                Login
+              </a>
+              <Button asChild size="sm">
+                <a href="https://trylaunch.ai/auth" target="_blank" rel="noopener noreferrer">
+                  Sign Up
+                </a>
+              </Button>
+            </>
+          )}
         </div>
+
       </div>
     </header>
   );
