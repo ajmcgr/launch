@@ -332,22 +332,23 @@ const SideAdRails = ({ isCampaignPage }: { isCampaignPage?: boolean }) => {
     return (
       <>
         <MobileAdMarquees ads={ads} isCampaign enabled={showMobileMarquee} />
-        <Rail ads={rotated.slice(0, SLOTS_PER_SIDE)} side="right" isCampaign />
+        <Rail ads={rotated.slice(0, SLOTS_PER_SIDE - 1)} side="right" isCampaign reserveLast />
       </>
     );
   }
 
   // Fill rails left-to-right, top-to-bottom so ads read in order and the
   // right rail only gets an ad once the left rail is fully occupied.
+  // The final slot of the right rail is always reserved as an empty ad slot.
   const left = rotated.slice(0, SLOTS_PER_SIDE);
-  const right = rotated.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
+  const right = rotated.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2 - 1);
 
 
   return (
     <>
       <MobileAdMarquees ads={ads} isCampaign={isCampaignPage} enabled={showMobileMarquee} />
       <Rail ads={left} side="left" />
-      <Rail ads={right} side="right" />
+      <Rail ads={right} side="right" reserveLast />
     </>
   );
 };
