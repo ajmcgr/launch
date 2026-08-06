@@ -238,7 +238,7 @@ const VibeCodedIt = () => {
 
       {/* Builder Wall */}
       <section className="lg:pl-16">
-        <div className="container mx-auto max-w-7xl px-4 py-6 sm:py-8">
+        <div className="w-full px-4 py-6 sm:py-8">
           <BuilderWall view={wallView} />
         </div>
       </section>
