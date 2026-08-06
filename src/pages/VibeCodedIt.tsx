@@ -246,7 +246,7 @@ const VibeCodedIt = () => {
             </div>
             <ViewToggle
               view={wallView}
-              onViewChange={setWallView}
+              onViewChange={changeWallView}
               allowSemiCompact
             />
           </div>
