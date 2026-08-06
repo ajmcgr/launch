@@ -72,7 +72,6 @@ const VibeCodedIt = () => {
   const [subscribeError, setSubscribeError] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [showHero, setShowHero] = useState(true);
-  const { resolvedTheme } = useTheme();
 
   const { data: launchedCount } = useLaunchedProductCount();
   const rawCount = launchedCount || 0;
