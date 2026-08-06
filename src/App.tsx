@@ -84,9 +84,7 @@ const CollectionDetailPage = lazy(() => import("./pages/CollectionDetail"));
 const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
-const VibeCodedIt = lazy(() => import("./pages/VibeCodedIt"));
-const VibeCodedItCollections = lazy(() => import("./pages/VibeCodedItCollections"));
-import { isCampaignHost } from "@/lib/campaignHost";
+import ExternalRedirect from "@/components/ExternalRedirect";
 
 const Search = lazy(() => import("./pages/Search"));
 const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
@@ -107,16 +105,9 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const campaignHost = isCampaignHost();
   const staticPages = ['/about', '/terms', '/privacy'];
   const standalonePages = ['/reserve'];
-  // The campaign page drops Launch nav/footer nav but keeps the
-  // copyright line. Newsletter signup is also hidden on the campaign page.
-  const isCampaignPage = location.pathname.startsWith('/vibecodedit')
-    || (campaignHost && (location.pathname === '/' || location.pathname === '/collections'));
-  const isStandalone = standalonePages.includes(location.pathname) || isCampaignPage;
-  const isCampaignCollections = location.pathname === '/vibecodedit/collections'
-    || (campaignHost && location.pathname === '/collections');
+  const isStandalone = standalonePages.includes(location.pathname);
 
   const showNewsletter = !staticPages.includes(location.pathname)
     && !isStandalone;
@@ -144,103 +135,16 @@ const AppContent = () => {
   const showAdRails = !isStandalone
     && !path.startsWith('/admin')
     && !path.startsWith('/advertis')
-    && !path.startsWith('/go/')
-    || isCampaignPage;
+    && !path.startsWith('/go/');
 
   return (
     <div className="flex flex-col min-h-screen">
       {!isStandalone && <Header />}
-      {showAdRails && <SideAdRails isCampaignPage={isCampaignPage} />}
+      {showAdRails && <SideAdRails />}
       <main className="flex-1">
 
         <Suspense fallback={
-          isCampaignCollections ? (
-            <div className="min-h-screen bg-background" aria-label="Loading" role="status">
-              {/* campaign header */}
-              <div className="border-b border-border/60">
-                <div className="lg:pl-20 px-4 h-16 flex items-center gap-6">
-                  <div className="h-10 w-10 rounded-lg bg-muted/60 animate-pulse lg:hidden" />
-                  <div className="flex-1">
-                    <div className="h-9 w-full rounded-md bg-muted/50 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-              {/* left nav rail */}
-              <div className="hidden lg:flex fixed left-0 top-0 bottom-0 w-20 flex-col items-center gap-6 border-r border-border/60 pt-5">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-10 w-10 rounded-xl bg-muted/50 animate-pulse" />
-                ))}
-              </div>
-              <div className="lg:pl-20 min-[1700px]:pr-[200px]">
-                <div className="w-full px-4 pt-4 pb-8">
-                  <div className="h-8 w-48 rounded-md bg-muted/60 animate-pulse" />
-                  <div className="mt-3 h-4 w-80 max-w-full rounded bg-muted/50 animate-pulse" />
-                  <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {Array.from({ length: 9 }).map((_, i) => (
-                      <div key={i} className="flex flex-col rounded-xl overflow-hidden border bg-card">
-                        <div className="aspect-[3/1.6] w-full bg-muted/50 animate-pulse" />
-                        <div className="p-4 space-y-2">
-                          <div className="h-5 w-2/3 rounded bg-muted/60 animate-pulse" />
-                          <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
-                          <div className="h-4 w-4/5 rounded bg-muted/50 animate-pulse" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <span className="sr-only">Loading</span>
-            </div>
-          ) : isCampaignPage ? (
-            <div className="min-h-screen bg-background" aria-label="Loading" role="status">
-              {/* header: logo + nav left, search centered, auth right */}
-              <div className="border-b border-border/60">
-                <div className="container mx-auto max-w-7xl px-4 h-16 flex items-center gap-6">
-                  <div className="h-10 w-10 rounded-lg bg-muted/60 animate-pulse" />
-                  <div className="hidden md:flex items-center gap-4">
-                    <div className="h-4 w-20 rounded bg-muted/50 animate-pulse" />
-                    <div className="h-4 w-24 rounded bg-muted/50 animate-pulse" />
-                  </div>
-                  <div className="flex-1 flex justify-center">
-                    <div className="h-9 w-full max-w-md rounded-md bg-muted/50 animate-pulse" />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="h-4 w-12 rounded bg-muted/50 animate-pulse" />
-                    <div className="h-9 w-20 rounded-md bg-muted/60 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-              {/* hero */}
-              <div className="container mx-auto max-w-7xl px-4 pt-10 pb-8 flex flex-col items-center gap-4">
-                <div className="h-12 w-4/5 max-w-2xl rounded-md bg-muted/60 animate-pulse" />
-                <div className="h-5 w-2/3 max-w-xl rounded bg-muted/50 animate-pulse" />
-                <div className="mt-2 h-11 w-44 rounded-md bg-muted/60 animate-pulse" />
-              </div>
-              {/* builder wall grid */}
-              <div className="container mx-auto max-w-7xl px-4 pb-16">
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {Array.from({ length: 16 }).map((_, i) => (
-                    <div key={i} className="rounded-xl border bg-card p-5">
-                      <div className="flex items-start gap-2.5">
-                        <div className="h-9 w-9 rounded-lg bg-muted/60 animate-pulse" />
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 w-3/4 rounded bg-muted/60 animate-pulse" />
-                          <div className="h-3 w-1/3 rounded bg-muted/50 animate-pulse" />
-                        </div>
-                      </div>
-                      <div className="mt-3 aspect-video w-full rounded-lg bg-muted/50 animate-pulse" />
-                      <div className="mt-2 space-y-2">
-                        <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
-                        <div className="h-3 w-4/5 rounded bg-muted/50 animate-pulse" />
-                      </div>
-                      <div className="mt-4 h-6 w-24 rounded-full bg-muted/50 animate-pulse" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <span className="sr-only">Loading</span>
-            </div>
-          ) : location.pathname === '/reserve' ? (
+          location.pathname === '/reserve' ? (
 
             <div className="min-h-screen bg-background flex items-center justify-center" aria-label="Loading" role="status">
               <div className="h-8 w-8 rounded-full border-2 border-muted border-t-foreground animate-spin opacity-60" />
@@ -502,94 +406,6 @@ const AppContent = () => {
               </div>
               <span className="sr-only">Loading</span>
             </div>
-          ) : isCampaignPage ? (
-            <div aria-label="Loading" role="status">
-              {/* Hero */}
-              <section className="py-16 sm:py-28">
-                <div className="container mx-auto max-w-7xl px-4 text-center">
-                  <div className="mx-auto max-w-4xl h-12 sm:h-16 lg:h-20 rounded-md bg-muted/60 animate-pulse" />
-                  <div className="mx-auto mt-7 max-w-2xl space-y-2">
-                    <div className="h-5 sm:h-6 w-full rounded bg-muted/50 animate-pulse" />
-                    <div className="h-5 sm:h-6 w-5/6 mx-auto rounded bg-muted/50 animate-pulse" />
-                    <div className="h-5 sm:h-6 w-4/6 mx-auto rounded bg-muted/50 animate-pulse" />
-                  </div>
-                  <div className="mt-10 flex flex-col items-center gap-4">
-                    <div className="h-12 w-48 rounded-md bg-muted/60 animate-pulse" />
-                    <div className="h-4 w-96 rounded bg-muted/50 animate-pulse" />
-                  </div>
-                </div>
-              </section>
-              {/* Builder Wall */}
-              <section>
-                <div className="container mx-auto max-w-7xl px-4 py-16 sm:py-20">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {Array.from({ length: 16 }).map((_, i) => {
-                      const isTall = i % 8 === 0 || i % 8 === 5;
-                      const isCompact = i % 8 === 2 || i % 8 === 6;
-                      return (
-                        <div
-                          key={i}
-                          className={`rounded-xl border border-border p-3 space-y-3 ${
-                            isTall ? 'h-56' : isCompact ? 'h-24' : 'h-40'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-lg bg-muted/50 animate-pulse" />
-                            <div className="space-y-1.5 flex-1 min-w-0">
-                              <div className="h-3.5 w-24 rounded bg-muted/60 animate-pulse" />
-                              {!isCompact && (
-                                <div className="h-3 w-16 rounded bg-muted/50 animate-pulse" />
-                              )}
-                            </div>
-                          </div>
-                          {!isCompact && (
-                            <>
-                              <div className="h-3 w-full rounded bg-muted/50 animate-pulse" />
-                              {isTall && <div className="h-3 w-4/5 rounded bg-muted/50 animate-pulse" />}
-                            </>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </section>
-              {/* Letter */}
-              <section className="border-b">
-                <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
-                  <div className="rounded-lg border border-border bg-card p-8 md:p-12 space-y-6">
-                    <div className="h-10 w-2/3 mx-auto rounded-md bg-muted/60 animate-pulse" />
-                    <div className="h-4 w-1/2 mx-auto rounded bg-muted/50 animate-pulse" />
-                    <div className="space-y-3 pt-6">
-                      {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="h-4 w-full rounded bg-muted/50 animate-pulse" />
-                      ))}
-                    </div>
-                    <div className="pt-8 space-y-3">
-                      <div className="h-32 w-32 rounded bg-muted/50 animate-pulse" />
-                      <div className="h-4 w-40 rounded bg-muted/50 animate-pulse" />
-                      <div className="h-4 w-32 rounded bg-muted/50 animate-pulse" />
-                    </div>
-                  </div>
-                </div>
-              </section>
-              {/* FAQ */}
-              <section>
-                <div className="container mx-auto max-w-3xl px-4 py-20 sm:py-24">
-                  <div className="h-10 w-80 mx-auto rounded-md bg-muted/60 animate-pulse mb-10" />
-                  <div className="space-y-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="border rounded-lg px-6 py-4 space-y-3">
-                        <div className="h-5 w-2/3 rounded bg-muted/60 animate-pulse" />
-                        <div className="h-4 w-full rounded bg-muted/50 animate-pulse" />
-                        <div className="h-4 w-4/5 rounded bg-muted/50 animate-pulse" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-              <span className="sr-only">Loading</span>
-            </div>
           ) : isStandalone ? (
             <div className="min-h-screen bg-background py-16" aria-label="Loading" role="status">
               <div className="container mx-auto px-4 max-w-3xl">
@@ -637,7 +453,7 @@ const AppContent = () => {
 
 
           <Routes>
-            <Route path="/" element={campaignHost ? <VibeCodedIt /> : <Home />} />
+            <Route path="/" element={<Home />} />
             <Route path="/start" element={<Start />} />
             <Route path="/products" element={<Products />} />
             <Route path="/submit" element={<Submit />} />
@@ -710,27 +526,11 @@ const AppContent = () => {
             <Route path="/my-collections" element={<Collections />} />
             <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
             <Route path="/c/:slug" element={<PublicCollection />} />
-            <Route path="/collections" element={campaignHost ? <VibeCodedItCollections /> : <CollectionsDirectory />} />
+            <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
-            {/*
-              Vibe Coded It has moved to its own standalone site: https://vibecodedit.com
-              These routes stay live TEMPORARILY for backwards compatibility (existing
-              backlinks, shared links, emails and in-flight campaign traffic). Pages are
-              served normally — no client-side redirect — while canonical/og:url/twitter:url
-              point at vibecodedit.com so search engines treat that as the preferred URL.
-
-              TODO: Once vibecodedit.com has fully launched and all backlinks/emails/social
-              profiles are updated, replace these routes with a permanent 301 redirect at the
-              edge/hosting layer (not a client-side <Navigate>, which is a 302-equivalent and
-              passes no link equity). The redirect MUST preserve:
-                - the full query string (source, utm_source, utm_medium, utm_campaign,
-                  utm_content, utm_term) so attribution is not lost
-                - the Referer header (use a 301 so the browser forwards it)
-              e.g. /vibecodedit(/*)?  ->  https://vibecodedit.com$1?$query  [301]
-            */}
-            <Route path="/vibecodedit" element={<VibeCodedIt />} />
-            <Route path="/vibecodedit/collections" element={<VibeCodedItCollections />} />
-            <Route path="/vibecodeyourfuture" element={<Navigate to="/vibecodedit" replace />} />
+            {/* Vibe Coded It moved to its own site — permanent redirect (query string preserved). */}
+            <Route path="/vibecodedit/*" element={<ExternalRedirect to="https://vibecodedit.com" stripPrefix="/vibecodedit" />} />
+            <Route path="/vibecodeyourfuture" element={<ExternalRedirect to="https://vibecodedit.com" />} />
             <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
@@ -742,8 +542,8 @@ const AppContent = () => {
           <Newsletter />
         </div>
       )}
-      {isCampaignPage ? <Footer minimal /> : !isStandalone && <Footer />}
-      {!isCampaignPage && <BookmarkPrompt />}
+      {!isStandalone && <Footer />}
+      <BookmarkPrompt />
     </div>
   );
 };
