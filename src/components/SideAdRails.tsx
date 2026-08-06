@@ -215,12 +215,12 @@ const MobileAdMarquees = ({
         @keyframes rail-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
         @keyframes rail-marquee-rev { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
       `}</style>
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-[100] bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur border-b border-border/60 py-1.5">
         <MarqueeRow ads={ads} placement="marquee_top" />
       </div>
       {/* spacer so page content isn't hidden under the fixed top marquee */}
       <div className="lg:hidden h-[53px]" aria-hidden="true" />
-      <div className="lg:hidden fixed left-0 right-0 bottom-0 z-[100] bg-background/95 backdrop-blur border-t border-border/60 py-1.5 pb-[env(safe-area-inset-bottom)]">
+      <div className="lg:hidden fixed left-0 right-0 bottom-0 z-40 bg-background/95 backdrop-blur border-t border-border/60 py-1.5 pb-[env(safe-area-inset-bottom)]">
         <MarqueeRow ads={ads} reverse placement="marquee_bottom" />
       </div>
 
