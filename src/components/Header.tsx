@@ -251,11 +251,11 @@ export const Header = () => {
               </div>
             )}
 
-            {/* Mobile Theme Toggle + Translate */}
-            <div className="md:hidden flex items-center gap-2">
-              <GoogleTranslate />
+            {/* Mobile Theme Toggle */}
+            <div className="md:hidden flex items-center">
               <ThemeToggle />
             </div>
+
 
             {/* Mobile Hamburger Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
