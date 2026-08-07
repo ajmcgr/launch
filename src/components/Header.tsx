@@ -121,7 +121,7 @@ export const Header = () => {
             <Link to="/" className="flex items-center">
               <img src={resolvedTheme === 'dark' ? logoDark : logo} alt="Launch" className="h-10 w-auto object-contain" width={120} height={40} />
             </Link>
-            <div className="hidden md:flex items-center relative w-40 h-9 border rounded-md bg-background">
+            <div className="flex items-center relative w-32 md:w-40 h-9 border rounded-md bg-background">
               <Search className="absolute left-2 text-muted-foreground h-3.5 w-3.5 pointer-events-none" />
               <Input
                 type="search"
@@ -154,27 +154,8 @@ export const Header = () => {
             <Link to="/advertise" className="text-sm font-medium text-nav-text hover:text-primary transition-colors">
               Advertise
             </Link>
-            <a
-              href="https://vibecodedit.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Vibe Coded It"
-              className="hidden md:flex items-center"
-            >
-              <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={16} height={16} className="h-4 w-4 rounded-full object-contain" />
-            </a>
           </nav>
 
-          {/* Mobile header 8-ball link */}
-          <a
-            href="https://vibecodedit.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Vibe Coded It"
-            className="md:hidden flex items-center"
-          >
-            <img src={vibecodeditIcon.url} alt="Vibe Coded It" width={16} height={16} className="h-4 w-4 rounded-full object-contain" />
-          </a>
           
           {/* Right: Actions */}
           <div className="flex items-center gap-4 ml-2 flex-shrink-0">
@@ -251,11 +232,11 @@ export const Header = () => {
               </div>
             )}
 
-            {/* Mobile Theme Toggle + Translate */}
-            <div className="md:hidden flex items-center gap-2">
-              <GoogleTranslate />
+            {/* Mobile Theme Toggle */}
+            <div className="md:hidden flex items-center">
               <ThemeToggle />
             </div>
+
 
             {/* Mobile Hamburger Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
