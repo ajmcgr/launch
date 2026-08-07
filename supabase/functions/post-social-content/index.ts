@@ -234,12 +234,11 @@ function formatTopKarmaTweet(makers: any[]): string {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders }
+    return new Response(null, { headers: corsHeaders });
+  }
 
   if (!isCronAuthorized(req)) {
     return unauthorizedResponse(corsHeaders);
-  }
-);
   }
 
   try {
