@@ -84,7 +84,6 @@ const CollectionDetailPage = lazy(() => import("./pages/CollectionDetail"));
 const PublicCollection = lazy(() => import("./pages/PublicCollection"));
 const CollectionsDirectory = lazy(() => import("./pages/CollectionsDirectory"));
 const Reserve = lazy(() => import("./pages/Reserve"));
-import ExternalRedirect from "@/components/ExternalRedirect";
 
 const Search = lazy(() => import("./pages/Search"));
 const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
@@ -528,9 +527,8 @@ const AppContent = () => {
             <Route path="/c/:slug" element={<PublicCollection />} />
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
-            {/* Vibe Coded It moved to its own site — permanent redirect (query string preserved). */}
-            <Route path="/vibecodedit/*" element={<ExternalRedirect to="https://vibecodedit.com" stripPrefix="/vibecodedit" />} />
-            <Route path="/vibecodeyourfuture" element={<ExternalRedirect to="https://vibecodedit.com" />} />
+            {/* Vibe Coded It lives at vibecodedit.com — no in-app route. */}
+
             <Route path="/search" element={<Search />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
