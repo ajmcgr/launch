@@ -121,10 +121,8 @@ const SidebarSponsoredAd = () => {
                   <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
                     {item.name}
                   </p>
-                  <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">
-                    Ad
-                  </span>
                 </div>
+
                 {item.tagline && (
                   <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 leading-relaxed">
                     {item.tagline}
