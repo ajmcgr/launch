@@ -133,7 +133,6 @@ const AppContent = () => {
 
   const showAdRails = !isStandalone
     && !path.startsWith('/admin')
-    && !path.startsWith('/advertis')
     && !path.startsWith('/go/');
 
   return (
