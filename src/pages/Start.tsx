@@ -69,6 +69,15 @@ const sections: Section[] = [
       'You can launch for free. Upgrade only if you want speed, scheduling, and extra promotion.',
   },
   {
+    id: 'advertising',
+    label: 'Advertising',
+    eyebrow: 'Advertising',
+    eyebrowIcon: Megaphone,
+    title: 'Get in front of Vibe Coders',
+    description:
+      'Reach thousands of builders, founders, and AI early adopters with sponsored placements on Launch and Vibe Coded It.',
+  },
+  {
     id: 'community',
     label: 'Community',
     eyebrow: 'Community',
@@ -85,6 +94,7 @@ const sections: Section[] = [
     title: 'Quick answers',
     description: 'The basics — answered in one line each.',
   },
+
 ];
 
 const overviewCards = [
