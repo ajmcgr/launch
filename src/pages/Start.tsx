@@ -124,7 +124,7 @@ const makerSteps = [
   {
     icon: Calendar,
     title: 'Pick a launch date',
-    description: 'Free launches are queued 7+ days out. Pro and Pass let you choose any date.',
+    description: 'Free launches join the standard queue (~3 days). Pro, Grow, and Pass let you choose any date.',
   },
   {
     icon: Share2,
