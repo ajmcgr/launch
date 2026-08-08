@@ -562,12 +562,12 @@ const Start = () => {
               </section>
 
               {/* Community */}
-              <section id={sections[4].id} className="scroll-mt-24">
+              <section id={sections[5].id} className="scroll-mt-24">
                 <SectionHeader
-                  eyebrow={sections[4].eyebrow}
-                  EyebrowIcon={sections[4].eyebrowIcon}
-                  title={sections[4].title}
-                  description={sections[4].description}
+                  eyebrow={sections[5].eyebrow}
+                  EyebrowIcon={sections[5].eyebrowIcon}
+                  title={sections[5].title}
+                  description={sections[5].description}
                 />
                 <div className="grid sm:grid-cols-2 gap-4">
                   {communityCards.map((c) => (
