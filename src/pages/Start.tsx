@@ -200,6 +200,49 @@ const pricingPlans = [
   },
 ];
 
+const advertisingPlans = [
+  {
+    name: 'Website Ad',
+    price: '$99',
+    suffix: '/ month',
+    description: 'Sponsored listing on Launch + Vibe Coded It (vibecodedit.com).',
+    features: [
+      'Homepage feed, sidebar & product-page inline placement',
+      'Rotated across Launch and vibecodedit.com',
+      '~30,000–150,000 monthly impressions',
+    ],
+    cta: 'Advertise',
+    href: '/advertise',
+  },
+  {
+    name: 'Newsletter Sponsorship',
+    price: '$149',
+    suffix: '/ issue',
+    description: 'Featured sponsor in our weekly newsletter.',
+    features: [
+      'Sent to ~2,000 founders, makers & early-stage teams',
+      '25% email open rate',
+      'Several thousand targeted readers',
+    ],
+    cta: 'Sponsor',
+    href: '/advertise',
+  },
+  {
+    name: 'Combined Package',
+    price: '$199',
+    suffix: '/ month',
+    description: 'Full month of website placement + one newsletter issue.',
+    features: [
+      'Homepage feed + sidebar + inline product ads',
+      '1 newsletter sponsorship issue',
+      'Save $49 vs buying separately',
+    ],
+    cta: 'Get started',
+    href: '/advertise',
+    highlight: true,
+  },
+];
+
 const communityCards = [
   {
     icon: MessageCircle,
