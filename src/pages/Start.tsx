@@ -521,6 +521,46 @@ const Start = () => {
                 </div>
               </section>
 
+              {/* Advertising */}
+              <section id={sections[4].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[4].eyebrow}
+                  EyebrowIcon={sections[4].eyebrowIcon}
+                  title={sections[4].title}
+                  description={sections[4].description}
+                />
+                <div className="grid sm:grid-cols-3 gap-4 mb-6">
+                  {advertisingPlans.map((plan) => (
+                    <Card key={plan.name} className={plan.highlight ? 'border-primary' : ''}>
+                      <CardContent className="p-6">
+                        <p className={`text-sm font-medium mb-1 ${plan.highlight ? 'text-primary' : 'text-muted-foreground'}`}>
+                          {plan.name}
+                        </p>
+                        <p className="text-3xl font-bold mb-3">
+                          {plan.price}
+                          <span className="text-base font-normal text-muted-foreground">{plan.suffix}</span>
+                        </p>
+                        <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
+                        <ul className="space-y-2 mb-6">
+                          {plan.features.map((feature) => (
+                            <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
+                              <CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <Button asChild variant={plan.highlight ? 'default' : 'outline'} className="w-full">
+                          <Link to={plan.href}>{plan.cta}</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                <Button asChild variant="outline">
+                  <Link to="/advertising">View advertiser dashboard</Link>
+                </Button>
+              </section>
+
               {/* Community */}
               <section id={sections[4].id} className="scroll-mt-24">
                 <SectionHeader
