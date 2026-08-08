@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, Lock, Rocket, RefreshCw, Zap, Calendar, TrendingUp, Mail, Award } from 'lucide-react';
+import { Check, X, Lock, Rocket, RefreshCw, Zap, Calendar, TrendingUp, Mail, Award, Eye } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
 import stripeLogo from '@/assets/stripe-logo.png';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -360,26 +360,34 @@ const Pricing = () => {
             <Card className="hover:shadow-lg transition-shadow flex flex-col">
               <CardHeader>
                 <CardTitle className="text-xl">Website Ad</CardTitle>
-                <CardDescription>30-day sponsored listing on homepage</CardDescription>
+                <CardDescription>Sponsored listing on Launch + Vibe Coded It (vibecodedit.com), our sister site</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6 flex flex-col flex-1">
                 <div className="text-4xl font-bold">
-                  $99<span className="text-base font-normal text-muted-foreground"> / listing</span>
+                  $99<span className="text-base font-normal text-muted-foreground"> / month</span>
                 </div>
                 <ul className="space-y-3 flex-1">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sponsored listing on Launch homepage</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Visible to thousands of founders & builders</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Clearly labelled. No impact on rankings.</span>
-                  </li>
+                  {[
+                    'Runs for a full calendar month (pick any month)',
+                    'Sponsored listing in the Launch homepage feed',
+                    'Sidebar ad on Launch homepage & product detail pages',
+                    'Inline ad above comments on Launch product pages',
+                    'Also rotated across vibecodedit.com, our sister site',
+                    'Visible to thousands of founders & builders',
+                    'Clearly labelled. No impact on rankings.',
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{f}</span>
+                    </li>
+                  ))}
                 </ul>
+                <div className="pt-2 pb-1 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                    ~30,000–150,000 monthly impressions
+                  </p>
+                </div>
                 <Button asChild className="w-full" size="lg">
                   <Link to="/advertise">Get Started</Link>
                 </Button>
@@ -396,19 +404,23 @@ const Pricing = () => {
                   $149<span className="text-base font-normal text-muted-foreground"> / issue</span>
                 </div>
                 <ul className="space-y-3 flex-1">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Featured sponsor section in one weekly newsletter</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sent to ~2,000 founders, makers & early-stage teams</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">25% email open rate</span>
-                  </li>
+                  {[
+                    'Featured sponsor section in one weekly newsletter',
+                    'Sent to ~2,000 founders, makers & early-stage teams',
+                    '25% email open rate',
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{f}</span>
+                    </li>
+                  ))}
                 </ul>
+                <div className="pt-2 pb-1 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                    Several thousand targeted readers
+                  </p>
+                </div>
                 <Button asChild className="w-full" size="lg">
                   <Link to="/advertise">Get Started</Link>
                 </Button>
@@ -425,28 +437,37 @@ const Pricing = () => {
               </CardHeader>
               <CardContent className="space-y-6 flex flex-col flex-1">
                 <div className="text-4xl font-bold">
-                  $199<span className="text-base font-normal text-muted-foreground"> / bundle</span>
+                  $199<span className="text-base font-normal text-muted-foreground"> / month</span>
                 </div>
                 <ul className="space-y-3 flex-1">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">30-day homepage sponsorship</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">One newsletter sponsorship</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Save $49 with bundle</span>
-                  </li>
+                  {[
+                    'Full month of website placement + one newsletter issue',
+                    'Homepage feed + sidebar sponsorship',
+                    'Sidebar ad on product detail pages',
+                    'Inline ad above comments on product pages',
+                    '1 newsletter sponsorship (one issue)',
+                    'Limited availability',
+                    'Save $49 vs. buying separately',
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{f}</span>
+                    </li>
+                  ))}
                 </ul>
+                <div className="pt-2 pb-1 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground">
+                    <Eye className="h-3 w-3 inline mr-1 -mt-0.5" />
+                    ~30,000–150,000 impressions + newsletter readers
+                  </p>
+                </div>
                 <Button asChild className="w-full" size="lg">
                   <Link to="/advertise">Get Started</Link>
                 </Button>
               </CardContent>
             </Card>
           </div>
+
         </div>
 
         {/* Custom Package Card */}
