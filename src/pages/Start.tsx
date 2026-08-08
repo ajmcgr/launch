@@ -669,7 +669,7 @@ const Start = () => {
           <div className="container mx-auto px-4 max-w-3xl text-center">
             <h2 className="font-reckless text-4xl font-bold mb-4">Ready to dive in?</h2>
             <p className="text-muted-foreground mb-8">
-              Pick your path — submit a product or start discovering what's new today.
+              Pick your path — submit a product, discover what's new, or promote your launch to thousands.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild size="lg">
@@ -680,6 +680,9 @@ const Start = () => {
               </Button>
               <Button asChild variant="outline" size="lg">
                 <Link to="/">Discover products</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/advertise">Advertise</Link>
               </Button>
             </div>
           </div>
