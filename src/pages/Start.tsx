@@ -266,7 +266,7 @@ const faqs = [
   {
     icon: HelpCircle,
     title: 'Is launching really free?',
-    description: 'Yes. Free launches enter a queue 7+ days out. Pro ($39) lets you pick any date and adds promotion.',
+    description: 'Yes. Free launches join the standard queue (~3 days). Pro ($39) and Grow ($199) let you pick any date and add promotion.',
   },
   {
     icon: HelpCircle,
@@ -277,6 +277,11 @@ const faqs = [
     icon: HelpCircle,
     title: 'How do I win an award?',
     description: 'Daily, weekly, and monthly winners are based on upvotes during the launch window. Rally your network in the first 24 hours.',
+  },
+  {
+    icon: HelpCircle,
+    title: 'Can I advertise without launching?',
+    description: 'You need a launched product on Launch to advertise. Visit /advertise to choose a Website Ad, Newsletter Sponsorship, or Combined Package.',
   },
   {
     icon: HelpCircle,
