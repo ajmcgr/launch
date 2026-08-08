@@ -587,12 +587,12 @@ const Start = () => {
               </section>
 
               {/* FAQ */}
-              <section id={sections[5].id} className="scroll-mt-24">
+              <section id={sections[6].id} className="scroll-mt-24">
                 <SectionHeader
-                  eyebrow={sections[5].eyebrow}
-                  EyebrowIcon={sections[5].eyebrowIcon}
-                  title={sections[5].title}
-                  description={sections[5].description}
+                  eyebrow={sections[6].eyebrow}
+                  EyebrowIcon={sections[6].eyebrowIcon}
+                  title={sections[6].title}
+                  description={sections[6].description}
                 />
                 <div className="grid sm:grid-cols-2 gap-4 mb-6">
                   {faqs.map((f) => (
