@@ -69,6 +69,15 @@ const sections: Section[] = [
       'You can launch for free. Upgrade only if you want speed, scheduling, and extra promotion.',
   },
   {
+    id: 'advertising',
+    label: 'Advertising',
+    eyebrow: 'Advertising',
+    eyebrowIcon: Megaphone,
+    title: 'Get in front of Vibe Coders',
+    description:
+      'Reach thousands of builders, founders, and AI early adopters with sponsored placements on Launch and Vibe Coded It.',
+  },
+  {
     id: 'community',
     label: 'Community',
     eyebrow: 'Community',
@@ -85,6 +94,7 @@ const sections: Section[] = [
     title: 'Quick answers',
     description: 'The basics — answered in one line each.',
   },
+
 ];
 
 const overviewCards = [
@@ -114,7 +124,7 @@ const makerSteps = [
   {
     icon: Calendar,
     title: 'Pick a launch date',
-    description: 'Free launches are queued 7+ days out. Pro and Pass let you choose any date.',
+    description: 'Free launches join the standard queue (~3 days). Pro, Grow, and Pass let you choose any date.',
   },
   {
     icon: Share2,
@@ -156,7 +166,7 @@ const pricingPlans = [
     name: 'Free',
     price: '$0',
     suffix: '',
-    description: 'Basic listing in our launch queue (7+ days out).',
+    description: 'Basic listing in the standard launch queue (~3 days out).',
     cta: 'Start free',
     href: '/submit',
     highlight: false,
@@ -165,10 +175,19 @@ const pricingPlans = [
     name: 'Pro · Most popular',
     price: '$39',
     suffix: '',
-    description: 'Choose your date, newsletter feature, social promotion, badges.',
+    description: 'Choose your date, newsletter feature, social promotion, verified badge.',
     cta: 'See Pro',
     href: '/pricing',
     highlight: true,
+  },
+  {
+    name: 'Grow',
+    price: '$199',
+    suffix: '',
+    description: 'Everything in Pro + manual submissions to 120+ startup directories.',
+    cta: 'Start Growth',
+    href: '/submit',
+    highlight: false,
   },
   {
     name: 'Pass',
@@ -178,6 +197,49 @@ const pricingPlans = [
     cta: 'Get the Pass',
     href: '/pass',
     highlight: false,
+  },
+];
+
+const advertisingPlans = [
+  {
+    name: 'Website Ad',
+    price: '$99',
+    suffix: '/ month',
+    description: 'Sponsored listing on Launch + Vibe Coded It (vibecodedit.com).',
+    features: [
+      'Homepage feed, sidebar & product-page inline placement',
+      'Rotated across Launch and vibecodedit.com',
+      '~30,000–150,000 monthly impressions',
+    ],
+    cta: 'Advertise',
+    href: '/advertise',
+  },
+  {
+    name: 'Newsletter Sponsorship',
+    price: '$149',
+    suffix: '/ issue',
+    description: 'Featured sponsor in our weekly newsletter.',
+    features: [
+      'Sent to ~2,000 founders, makers & early-stage teams',
+      '25% email open rate',
+      'Several thousand targeted readers',
+    ],
+    cta: 'Sponsor',
+    href: '/advertise',
+  },
+  {
+    name: 'Combined Package',
+    price: '$199',
+    suffix: '/ month',
+    description: 'Full month of website placement + one newsletter issue.',
+    features: [
+      'Homepage feed + sidebar + inline product ads',
+      '1 newsletter sponsorship issue',
+      'Save $49 vs buying separately',
+    ],
+    cta: 'Get started',
+    href: '/advertise',
+    highlight: true,
   },
 ];
 
@@ -204,7 +266,7 @@ const faqs = [
   {
     icon: HelpCircle,
     title: 'Is launching really free?',
-    description: 'Yes. Free launches enter a queue 7+ days out. Pro ($39) lets you pick any date and adds promotion.',
+    description: 'Yes. Free launches join the standard queue (~3 days). Pro ($39) and Grow ($199) let you pick any date and add promotion.',
   },
   {
     icon: HelpCircle,
@@ -215,6 +277,11 @@ const faqs = [
     icon: HelpCircle,
     title: 'How do I win an award?',
     description: 'Daily, weekly, and monthly winners are based on upvotes during the launch window. Rally your network in the first 24 hours.',
+  },
+  {
+    icon: HelpCircle,
+    title: 'Can I advertise without launching?',
+    description: 'You need a launched product on Launch to advertise. Visit /advertise to choose a Website Ad, Newsletter Sponsorship, or Combined Package.',
   },
   {
     icon: HelpCircle,
@@ -431,7 +498,7 @@ const Start = () => {
                   title={sections[3].title}
                   description={sections[3].description}
                 />
-                <div className="grid sm:grid-cols-3 gap-4">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {pricingPlans.map((plan) => (
                     <Card key={plan.name} className={plan.highlight ? 'border-primary' : ''}>
                       <CardContent className="p-6">
@@ -454,13 +521,53 @@ const Start = () => {
                 </div>
               </section>
 
-              {/* Community */}
+              {/* Advertising */}
               <section id={sections[4].id} className="scroll-mt-24">
                 <SectionHeader
                   eyebrow={sections[4].eyebrow}
                   EyebrowIcon={sections[4].eyebrowIcon}
                   title={sections[4].title}
                   description={sections[4].description}
+                />
+                <div className="grid sm:grid-cols-3 gap-4 mb-6">
+                  {advertisingPlans.map((plan) => (
+                    <Card key={plan.name} className={plan.highlight ? 'border-primary' : ''}>
+                      <CardContent className="p-6">
+                        <p className={`text-sm font-medium mb-1 ${plan.highlight ? 'text-primary' : 'text-muted-foreground'}`}>
+                          {plan.name}
+                        </p>
+                        <p className="text-3xl font-bold mb-3">
+                          {plan.price}
+                          <span className="text-base font-normal text-muted-foreground">{plan.suffix}</span>
+                        </p>
+                        <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
+                        <ul className="space-y-2 mb-6">
+                          {plan.features.map((feature) => (
+                            <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
+                              <CheckCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <Button asChild variant={plan.highlight ? 'default' : 'outline'} className="w-full">
+                          <Link to={plan.href}>{plan.cta}</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                <Button asChild variant="outline">
+                  <Link to="/advertising">View advertiser dashboard</Link>
+                </Button>
+              </section>
+
+              {/* Community */}
+              <section id={sections[5].id} className="scroll-mt-24">
+                <SectionHeader
+                  eyebrow={sections[5].eyebrow}
+                  EyebrowIcon={sections[5].eyebrowIcon}
+                  title={sections[5].title}
+                  description={sections[5].description}
                 />
                 <div className="grid sm:grid-cols-2 gap-4">
                   {communityCards.map((c) => (
@@ -480,12 +587,12 @@ const Start = () => {
               </section>
 
               {/* FAQ */}
-              <section id={sections[5].id} className="scroll-mt-24">
+              <section id={sections[6].id} className="scroll-mt-24">
                 <SectionHeader
-                  eyebrow={sections[5].eyebrow}
-                  EyebrowIcon={sections[5].eyebrowIcon}
-                  title={sections[5].title}
-                  description={sections[5].description}
+                  eyebrow={sections[6].eyebrow}
+                  EyebrowIcon={sections[6].eyebrowIcon}
+                  title={sections[6].title}
+                  description={sections[6].description}
                 />
                 <div className="grid sm:grid-cols-2 gap-4 mb-6">
                   {faqs.map((f) => (
@@ -562,7 +669,7 @@ const Start = () => {
           <div className="container mx-auto px-4 max-w-3xl text-center">
             <h2 className="font-reckless text-4xl font-bold mb-4">Ready to dive in?</h2>
             <p className="text-muted-foreground mb-8">
-              Pick your path — submit a product or start discovering what's new today.
+              Pick your path — submit a product, discover what's new, or promote your launch to thousands.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild size="lg">
@@ -573,6 +680,9 @@ const Start = () => {
               </Button>
               <Button asChild variant="outline" size="lg">
                 <Link to="/">Discover products</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/advertise">Advertise</Link>
               </Button>
             </div>
           </div>
