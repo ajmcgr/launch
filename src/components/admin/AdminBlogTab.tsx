@@ -88,13 +88,21 @@ const AdminBlogTab = () => {
   /**
    * Loop until every article has Gemini artwork. One post per call keeps each
    * invocation well inside the edge runtime's wall-clock budget.
+   *
+   * `force` rewrites artwork that already exists (the old off-brand covers), so
+   * it has to paginate with an offset — otherwise every round would re-render
+   * the same newest post forever.
    */
-  const backfillAllImages = async () => {
-    setImaging('backfill');
+  const backfillAllImages = async (force = false) => {
+    setImaging(force ? 'regenerate' : 'backfill');
     let done = 0;
     try {
       for (let round = 0; round < 60; round++) {
-        const data = await invokeImageFn({ backfill: true, limit: 1 });
+        const data = await invokeImageFn(
+          force
+            ? { backfill: true, limit: 1, force: true, offset: round }
+            : { backfill: true, limit: 1 },
+        );
         const processed = data?.processed ?? 0;
         if (processed === 0) break;
         const firstFail = (data?.results || []).find((r: any) => !r.ok);
@@ -103,7 +111,9 @@ const AdminBlogTab = () => {
         queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
         toast.message(`Artwork generated for ${done} article${done === 1 ? '' : 's'}…`);
       }
-      toast.success(`Backfill complete — ${done} article${done === 1 ? '' : 's'}`);
+      toast.success(
+        `${force ? 'Regenerated' : 'Backfill complete'} — ${done} article${done === 1 ? '' : 's'}`,
+      );
     } catch (e: any) {
       toast.error(e?.message || 'Backfill failed', { duration: 12000 });
     } finally {
@@ -111,6 +121,7 @@ const AdminBlogTab = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
     }
   };
+
 
 
 
