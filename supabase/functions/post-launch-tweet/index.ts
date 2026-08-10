@@ -11,12 +11,13 @@ function isCronAuthorized(req: Request): boolean {
   return false;
 }
 
-function unauthorizedResponse(headers: Record<string, string> = {}) {
-  return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+function unauthorizedResponse(headers: Record<string, string> = {}, reason: string = '') {
+  return new Response(JSON.stringify({ error: 'Unauthorized', reason }), {
     status: 401,
     headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -232,9 +233,24 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (!isCronAuthorized(req)) {
-    return unauthorizedResponse(corsHeaders);
+  const authHeader = req.headers.get('Authorization') || req.headers.get('authorization') || '';
+  const cronSecretHeader = req.headers.get('x-cron-secret') || req.headers.get('X-Cron-Secret') || '';
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
+
+  if (!serviceKey) {
+    return unauthorizedResponse(corsHeaders, 'SUPABASE_SERVICE_ROLE_KEY not set in function env');
   }
+  if (!expectedCronSecret) {
+    return unauthorizedResponse(corsHeaders, 'CRON_SECRET not set in function env');
+  }
+  if (!authHeader && !cronSecretHeader) {
+    return unauthorizedResponse(corsHeaders, 'No Authorization or x-cron-secret header received');
+  }
+  if (!isCronAuthorized(req)) {
+    return unauthorizedResponse(corsHeaders, 'Header values do not match configured secrets');
+  }
+
 
   try {
     const { productId, force } = await req.json().catch(() => ({}));
