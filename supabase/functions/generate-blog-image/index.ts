@@ -241,12 +241,15 @@ Deno.serve(async (req) => {
       // Keep batches small: each render takes ~15-30s and the edge runtime caps
       // wall-clock time per invocation.
       const limit = Math.min(Number(body.limit) || 3, 4);
+      // force mode rewrites posts that already have artwork, so the caller must
+      // paginate — otherwise every round would re-render the same newest post.
+      const offset = Math.max(Number(body.offset) || 0, 0);
 
       let query = supabase
         .from("blog_posts")
         .select(SELECT)
         .order("published_at", { ascending: false, nullsFirst: false })
-        .limit(limit);
+        .range(offset, offset + limit - 1);
       // image_prompt is only set by this function, so "no prompt" == "not Gemini
       // artwork yet" (covers both null covers and the old default cover image).
       if (!body.force) query = query.is("image_prompt", null);
@@ -254,6 +257,7 @@ Deno.serve(async (req) => {
 
       const { data: posts, error } = await query;
       if (error) throw error;
+
 
       const results: Array<{ slug: string; ok: boolean; error?: string }> = [];
       for (const post of posts || []) {
