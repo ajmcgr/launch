@@ -216,7 +216,11 @@ OpenAI auto-publishes a new article daily at 14:00 UTC and Gemini generates the
 
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={backfillAllImages} disabled={imaging === 'backfill'}>
+              <Button
+                variant="outline"
+                onClick={() => backfillAllImages(false)}
+                disabled={imaging === 'backfill' || imaging === 'regenerate'}
+              >
                 {imaging === 'backfill' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Backfilling artwork…
@@ -227,6 +231,22 @@ OpenAI auto-publishes a new article daily at 14:00 UTC and Gemini generates the
                   </>
                 )}
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => backfillAllImages(true)}
+                disabled={imaging === 'backfill' || imaging === 'regenerate'}
+              >
+                {imaging === 'regenerate' ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Regenerating artwork…
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="h-4 w-4 mr-2" /> Regenerate All Artwork
+                  </>
+                )}
+              </Button>
+
               <Button variant="outline" onClick={() => generateNow('draft')} disabled={generating}>
 
                 {generating ? (
