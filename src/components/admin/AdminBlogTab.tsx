@@ -194,7 +194,7 @@ const AdminBlogTab = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <CardTitle>Blog Posts</CardTitle>
               <CardDescription>
@@ -204,7 +204,7 @@ OpenAI auto-publishes a new article daily at 14:00 UTC and Gemini generates the
               </CardDescription>
 
             </div>
-            <div className="flex gap-2 flex-shrink-0">
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={backfillAllImages} disabled={imaging === 'backfill'}>
                 {imaging === 'backfill' ? (
                   <>
