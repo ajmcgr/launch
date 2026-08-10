@@ -797,8 +797,7 @@ const LaunchDetail = () => {
                   variant="outline"
                   className="w-full h-11 border-2 border-muted-foreground/20"
                   onClick={() => {
-                    const ogUrl = `https://gzpypxgdkxdynovploxn.supabase.co/functions/v1/og-share?slug=${product.slug}`;
-                    navigator.clipboard.writeText(ogUrl);
+                    navigator.clipboard.writeText(`https://trylaunch.ai/launch/${product.slug}`);
                     toast.success('Link copied to clipboard!');
                   }}
                 >
