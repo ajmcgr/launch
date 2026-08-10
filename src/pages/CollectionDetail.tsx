@@ -15,7 +15,7 @@ import { LaunchCard } from '@/components/LaunchCard';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { CollectionHero } from '@/components/CollectionHero';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Globe, Lock, Share2, Trash2, Download, ArrowLeft, FolderPlus, LayoutGrid, List as ListIcon } from 'lucide-react';
+import { Globe, Lock, Share2, Trash2, ArrowLeft, FolderPlus, LayoutGrid, List as ListIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { removeLaunchFromCollection, saveLaunchToCollections } from '@/hooks/use-collections';
 
@@ -228,22 +228,6 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     toast.success('Moved');
   };
 
-  const handleExportCsv = () => {
-    if (!collection) return;
-    const header = 'name,tagline,url,added_at,note\n';
-    const rows = sorted.map(i => [
-      JSON.stringify(i.product.name),
-      JSON.stringify(i.product.tagline ?? ''),
-      JSON.stringify(`${window.location.origin}/launch/${i.product.slug}`),
-      i.added_at,
-      JSON.stringify(i.note ?? ''),
-    ].join(',')).join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${collection.slug}.csv`; a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const handleShare = () => {
     if (!collection) return;
@@ -315,14 +299,6 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
       {(isOwner || canContribute) && (
         <div className="flex flex-wrap items-center gap-2 mb-6 -mt-2">
-          {isOwner && (
-            <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
-          )}
-          {canContribute && (
-            <Button variant="outline" size="sm" onClick={() => navigate('/products')}>
-              <FolderPlus className="h-4 w-4 mr-1" /> Add launches
-            </Button>
-          )}
           {isCollaborator && !isOwner && (
             <span className="text-xs text-muted-foreground">You're a collaborator on this collection</span>
           )}
