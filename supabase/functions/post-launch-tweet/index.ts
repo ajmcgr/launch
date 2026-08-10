@@ -339,10 +339,7 @@ Deno.serve(async (req) => {
       via = 'typefully';
     }
 
-    } catch (xError) {
-      console.error('Direct X post failed, falling back to Typefully:', xError);
-      via = 'typefully';
-    }
+
 
     if (via === 'typefully') {
       const typefullyApiKey = Deno.env.get('TYPEFULLY_API_KEY');
