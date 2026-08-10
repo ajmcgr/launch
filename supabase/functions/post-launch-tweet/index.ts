@@ -1,11 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 // --- inlined from _shared/cron-auth.ts (kept inline so manual dashboard deploys work) ---
 function isCronAuthorized(req: Request): boolean {
-  const authHeader = req.headers.get('Authorization') || req.headers.get('authorization') || '';
-  const cronSecretHeader = req.headers.get('x-cron-secret') || req.headers.get('X-Cron-Secret') || '';
-  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-  const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
-  const testSecret = Deno.env.get('TWEET_TEST_SECRET') || '';
+  const authHeader = (req.headers.get('Authorization') || req.headers.get('authorization') || '').trim();
+  const cronSecretHeader = (req.headers.get('x-cron-secret') || req.headers.get('X-Cron-Secret') || '').trim();
+  const serviceKey = (Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
+  const expectedCronSecret = (Deno.env.get('CRON_SECRET') || '').trim();
+  const testSecret = (Deno.env.get('TWEET_TEST_SECRET') || '').trim();
   if (serviceKey && authHeader === `Bearer ${serviceKey}`) return true;
   if (expectedCronSecret && cronSecretHeader === expectedCronSecret) return true;
   if (expectedCronSecret && authHeader === `Bearer ${expectedCronSecret}`) return true;
