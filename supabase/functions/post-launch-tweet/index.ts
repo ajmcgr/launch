@@ -23,12 +23,13 @@ const corsHeaders = {
 };
 
 const TYPEFULLY_API_URL = 'https://api.typefully.com/v2';
+const X_API_URL = 'https://api.x.com/2';
+const TWEET_EVENT = 'launch_tweet_posted';
 
 function normalizeHandle(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const trimmed = raw.trim().replace(/^@+/, '').replace(/\s+/g, '');
   if (!trimmed) return null;
-  // strip URL prefixes like twitter.com/, x.com/
   const m = trimmed.match(/(?:twitter\.com\/|x\.com\/)?([A-Za-z0-9_]{1,15})/);
   return m ? m[1] : null;
 }
@@ -37,6 +38,102 @@ function truncateToOneSentence(text: string): string {
   if (!text) return '';
   const match = text.match(/^[^.!?]*[.!?]/);
   return match ? match[0] : text;
+}
+
+// ---------- OAuth 1.0a (HMAC-SHA1) signing for X API v2 ----------
+function pctEncode(str: string): string {
+  return encodeURIComponent(str).replace(
+    /[!*'()]/g,
+    (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase(),
+  );
+}
+
+async function hmacSha1Base64(key: string, message: string): Promise<string> {
+  const enc = new TextEncoder();
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(key),
+    { name: 'HMAC', hash: 'SHA-1' },
+    false,
+    ['sign'],
+  );
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(message));
+  return btoa(String.fromCharCode(...new Uint8Array(sig)));
+}
+
+async function oauth1Header(
+  method: string,
+  url: string,
+  creds: {
+    consumerKey: string;
+    consumerSecret: string;
+    accessToken: string;
+    accessTokenSecret: string;
+  },
+): Promise<string> {
+  // NOTE: JSON body params are NOT part of the OAuth signature base string.
+  const params: Record<string, string> = {
+    oauth_consumer_key: creds.consumerKey,
+    oauth_nonce: crypto.randomUUID().replace(/-/g, ''),
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+    oauth_token: creds.accessToken,
+    oauth_version: '1.0',
+  };
+
+  const paramString = Object.keys(params)
+    .sort()
+    .map((k) => `${pctEncode(k)}=${pctEncode(params[k])}`)
+    .join('&');
+
+  const baseString = [method.toUpperCase(), pctEncode(url), pctEncode(paramString)].join('&');
+  const signingKey = `${pctEncode(creds.consumerSecret)}&${pctEncode(creds.accessTokenSecret)}`;
+  const signature = await hmacSha1Base64(signingKey, baseString);
+
+  const headerParams = { ...params, oauth_signature: signature };
+  return (
+    'OAuth ' +
+    Object.keys(headerParams)
+      .sort()
+      .map((k) => `${pctEncode(k)}="${pctEncode(headerParams[k])}"`)
+      .join(', ')
+  );
+}
+
+async function postToX(text: string) {
+  const consumerKey = Deno.env.get('TWITTER_CONSUMER_KEY');
+  const consumerSecret = Deno.env.get('TWITTER_CONSUMER_SECRET');
+  const accessToken = Deno.env.get('TWITTER_ACCESS_TOKEN');
+  const accessTokenSecret = Deno.env.get('TWITTER_ACCESS_TOKEN_SECRET');
+
+  if (!consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) return null;
+
+  const url = `${X_API_URL}/tweets`;
+  const authHeader = await oauth1Header('POST', url, {
+    consumerKey,
+    consumerSecret,
+    accessToken,
+    accessTokenSecret,
+  });
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: authHeader,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  const body = await res.text();
+  if (!res.ok) {
+    throw new Error(`X API error [${res.status}]: ${body}`);
+  }
+  try {
+    return JSON.parse(body);
+  } catch {
+    return { raw: body };
+  }
 }
 
 async function getSocialSetId(apiKey: string): Promise<string> {
@@ -52,13 +149,7 @@ async function getSocialSetId(apiKey: string): Promise<string> {
 
 async function createTypefullyDraft(apiKey: string, socialSetId: string, text: string) {
   const body = {
-    platforms: {
-      x: {
-        enabled: true,
-        posts: [{ text }],
-      },
-    },
-    // Auto-publish immediately — these are time-sensitive launch announcements
+    platforms: { x: { enabled: true, posts: [{ text }] } },
     'schedule-date': 'next-free-slot',
     'auto_retweet_enabled': false,
   };
@@ -90,23 +181,19 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const typefullyApiKey = Deno.env.get('TYPEFULLY_API_KEY');
-    if (!typefullyApiKey) throw new Error('TYPEFULLY_API_KEY is not configured');
-
-    const { productId } = await req.json().catch(() => ({}));
+    const { productId, force } = await req.json().catch(() => ({}));
     if (!productId || typeof productId !== 'string') {
       return new Response(
         JSON.stringify({ error: 'productId is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    // Fetch product
     const { data: product, error: productErr } = await supabase
       .from('products')
       .select('id, name, slug, tagline, status, owner_id, twitter_handle')
@@ -117,14 +204,32 @@ Deno.serve(async (req) => {
     if (!product) {
       return new Response(
         JSON.stringify({ error: 'Product not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
     if (product.status !== 'launched') {
       return new Response(
         JSON.stringify({ message: 'Product not launched, skipping', status: product.status }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
+    }
+
+    // Dedupe: never tweet the same product twice
+    if (!force) {
+      const { data: alreadyPosted } = await supabase
+        .from('product_analytics')
+        .select('id')
+        .eq('product_id', product.id)
+        .eq('event_type', TWEET_EVENT)
+        .limit(1)
+        .maybeSingle();
+
+      if (alreadyPosted) {
+        return new Response(
+          JSON.stringify({ message: 'Already tweeted, skipping', productId: product.id }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
     }
 
     // Resolve handle: per-product override → owner profile twitter
@@ -150,19 +255,45 @@ Deno.serve(async (req) => {
 
     console.log(`Posting launch tweet for ${product.id} (handle=${handle ?? 'none'}):\n${text}`);
 
-    const socialSetId = await getSocialSetId(typefullyApiKey);
-    const draft = await createTypefullyDraft(typefullyApiKey, socialSetId, text);
+    let via = 'x';
+    let result: unknown = null;
+
+    try {
+      result = await postToX(text);
+      if (result === null) {
+        // X credentials missing — fall back to Typefully
+        via = 'typefully';
+      }
+    } catch (xError) {
+      console.error('Direct X post failed, falling back to Typefully:', xError);
+      via = 'typefully';
+    }
+
+    if (via === 'typefully') {
+      const typefullyApiKey = Deno.env.get('TYPEFULLY_API_KEY');
+      if (!typefullyApiKey) {
+        throw new Error('X credentials failed and TYPEFULLY_API_KEY is not configured');
+      }
+      const socialSetId = await getSocialSetId(typefullyApiKey);
+      result = await createTypefullyDraft(typefullyApiKey, socialSetId, text);
+    }
+
+    // Record so we never double-post
+    const { error: logError } = await supabase
+      .from('product_analytics')
+      .insert({ product_id: product.id, event_type: TWEET_EVENT, visitor_id: null });
+    if (logError) console.error('Failed to log launch tweet event:', logError);
 
     return new Response(
-      JSON.stringify({ success: true, draft_id: draft.id, handle, text_length: text.length }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      JSON.stringify({ success: true, via, result, handle, text_length: text.length }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
     );
   } catch (error) {
     console.error('post-launch-tweet error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   }
 });
