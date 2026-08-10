@@ -90,7 +90,7 @@ async function oauth1Header(
   const signingKey = `${pctEncode(creds.consumerSecret)}&${pctEncode(creds.accessTokenSecret)}`;
   const signature = await hmacSha1Base64(signingKey, baseString);
 
-  const headerParams = { ...params, oauth_signature: signature };
+  const headerParams: Record<string, string> = { ...params, oauth_signature: signature };
   return (
     'OAuth ' +
     Object.keys(headerParams)
