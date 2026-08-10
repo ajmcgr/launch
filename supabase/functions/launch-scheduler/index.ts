@@ -336,18 +336,22 @@ Deno.serve(async (req) => {
       // Auto-post a friendly comment from @alex
       await postAlexComment(supabaseAdmin, product.id);
 
-      // Auto-post launch announcement to X via Typefully (tags maker if handle available)
-      try {
-        const tweetRes = await supabaseAdmin.functions.invoke('post-launch-tweet', {
-          body: { productId: product.id },
-        });
-        if (tweetRes.error) {
-          console.error(`post-launch-tweet failed for ${product.id}:`, tweetRes.error);
-        } else {
-          console.log(`Launch tweet drafted for ${product.id}:`, tweetRes.data);
+      // Auto-post launch announcement to BOTH X accounts:
+      // - post-launch-tweet        -> Vibe Coded It account (TWITTER_*)
+      // - post-launch-tweet-launch -> @trylaunchai account (LAUNCH_TWITTER_*)
+      for (const fn of ['post-launch-tweet', 'post-launch-tweet-launch']) {
+        try {
+          const tweetRes = await supabaseAdmin.functions.invoke(fn, {
+            body: { productId: product.id },
+          });
+          if (tweetRes.error) {
+            console.error(`${fn} failed for ${product.id}:`, tweetRes.error);
+          } else {
+            console.log(`${fn} posted for ${product.id}:`, tweetRes.data);
+          }
+        } catch (tweetErr) {
+          console.error(`Error invoking ${fn} for ${product.id}:`, tweetErr);
         }
-      } catch (tweetErr) {
-        console.error(`Error invoking post-launch-tweet for ${product.id}:`, tweetErr);
       }
 
       results.push({ id: product.id, name: product.name, success: true });
