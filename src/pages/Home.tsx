@@ -40,7 +40,6 @@ import { SiteStatsWidget } from '@/components/SiteStatsWidget';
 import { CommunityCallout } from '@/components/CommunityCallout';
 
 import BuiltWithSection from '@/components/BuiltWithSection';
-import AdvertiseCTA from '@/components/AdvertiseCTA';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 import { weightedPick, weightedShuffle } from '@/lib/weightedPick';
 
@@ -1194,7 +1193,6 @@ const Home = () => {
             {/* Right sidebar (hidden on mobile) */}
             <div className="hidden lg:block w-72 flex-shrink-0 space-y-6">
               <SiteStatsWidget />
-              <AdvertiseCTA compact />
               <SidebarSponsoredAd />
               <div>
                 <ForumActivityWidget />
