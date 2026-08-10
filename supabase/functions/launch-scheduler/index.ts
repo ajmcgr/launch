@@ -214,6 +214,7 @@ async function tweetRecentLaunches(supabaseAdmin: any) {
 
   const ids = (recent || []).map((p: { id: string }) => p.id);
   const paid = await paidProductIds(supabaseAdmin, ids);
+  console.log(`Tweet catch-up: ${ids.length} recent launches, ${paid.size} paid`);
 
   let tweeted = 0;
   for (const product of recent || []) {
@@ -221,7 +222,7 @@ async function tweetRecentLaunches(supabaseAdmin: any) {
     await tweetLaunch(supabaseAdmin, product.id, true);
     tweeted++;
   }
-  return tweeted;
+  return { recent: ids.length, paid: paid.size, tweeted };
 }
 
 
