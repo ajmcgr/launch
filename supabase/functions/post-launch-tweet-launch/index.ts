@@ -368,6 +368,11 @@ Deno.serve(async (req) => {
 
 
     if (via === 'typefully') {
+      const missing = ['LAUNCH_TWITTER_CONSUMER_KEY','LAUNCH_TWITTER_CONSUMER_SECRET','LAUNCH_TWITTER_ACCESS_TOKEN','LAUNCH_TWITTER_ACCESS_TOKEN_SECRET']
+        .filter((k) => !(Deno.env.get(k) || '').trim());
+      if (missing.length) {
+        throw new Error(`Missing X credentials for @trylaunchai: ${missing.join(', ')}`);
+      }
       const typefullyApiKey = Deno.env.get('LAUNCH_TYPEFULLY_API_KEY');
       if (!typefullyApiKey) {
         throw new Error('LAUNCH_TWITTER_* credentials missing/failed and LAUNCH_TYPEFULLY_API_KEY is not configured');
