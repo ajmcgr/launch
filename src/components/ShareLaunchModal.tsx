@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { X, Linkedin, Copy, Check, ExternalLink } from 'lucide-react';
+import { getProductUrl, getProductShareUrl } from '@/lib/ogShare';
 
 const RedditIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
