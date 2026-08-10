@@ -35,6 +35,13 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState('');
 
+  const handleHeaderSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && headerSearch.trim()) {
+      navigate(`/search?q=${encodeURIComponent(headerSearch.trim())}`);
+      setHeaderSearch('');
+    }
+  };
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
