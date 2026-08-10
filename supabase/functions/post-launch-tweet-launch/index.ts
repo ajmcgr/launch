@@ -350,6 +350,20 @@ Deno.serve(async (req) => {
     let via = 'x';
     let result: unknown = null;
     let mediaId: string | null = null;
+    let xError: string | null = null;
+
+    const missingCreds = [
+      'LAUNCH_TWITTER_CONSUMER_KEY',
+      'LAUNCH_TWITTER_CONSUMER_SECRET',
+      'LAUNCH_TWITTER_ACCESS_TOKEN',
+      'LAUNCH_TWITTER_ACCESS_TOKEN_SECRET',
+    ].filter((k) => !(Deno.env.get(k) || '').trim());
+    if (missingCreds.length) {
+      return new Response(
+        JSON.stringify({ version: 'v2', error: 'Missing @trylaunchai X credentials', missing: missingCreds }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
 
     try {
       if (imageUrl) {
@@ -360,9 +374,13 @@ Deno.serve(async (req) => {
         // X credentials missing — fall back to Typefully
         via = 'typefully';
       }
-    } catch (xError) {
-      console.error('Direct X post failed, falling back to Typefully:', xError);
-      via = 'typefully';
+    } catch (err) {
+      xError = err instanceof Error ? err.message : String(err);
+      console.error('Direct X post failed:', xError);
+      return new Response(
+        JSON.stringify({ version: 'v2', error: 'X post failed', detail: xError }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
     }
 
 
@@ -388,7 +406,7 @@ Deno.serve(async (req) => {
     if (logError) console.error('Failed to log launch tweet event:', logError);
 
     return new Response(
-      JSON.stringify({ success: true, via, result, handle, text_length: text.length }),
+      JSON.stringify({ version: 'v2', success: true, via, result, handle, text_length: text.length }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
     );
   } catch (error) {
