@@ -210,11 +210,13 @@ Deno.serve(async (req) => {
     console.log(`Found ${productsToLaunch?.length || 0} products to launch`);
 
     if (!productsToLaunch || productsToLaunch.length === 0) {
+      const swept = await tweetRecentLaunches(supabaseAdmin);
       return new Response(
-        JSON.stringify({ message: 'No products to launch', count: 0 }),
+        JSON.stringify({ message: 'No products to launch', count: 0, tweet_catchup_checked: swept }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
+
 
     const results = [];
 
