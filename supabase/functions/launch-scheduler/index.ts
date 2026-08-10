@@ -137,7 +137,30 @@ const PST_TIMEZONE = 'America/Los_Angeles';
 
 const TWEET_FUNCTIONS = ['post-launch-tweet', 'post-launch-tweet-launch'];
 
-async function tweetLaunch(supabaseAdmin: any, productId: string) {
+// Only paid launches get auto-tweeted. Free launches ('free' or no plan) are skipped.
+const FREE_PLANS = ['free', '', null, undefined];
+
+function isPaidPlan(plan: unknown): boolean {
+  if (!plan || typeof plan !== 'string') return false;
+  return !FREE_PLANS.includes(plan.trim().toLowerCase());
+}
+
+async function tweetLaunch(supabaseAdmin: any, productId: string, plan?: unknown) {
+  let productPlan = plan;
+  if (productPlan === undefined) {
+    const { data: prod } = await supabaseAdmin
+      .from('products')
+      .select('plan')
+      .eq('id', productId)
+      .maybeSingle();
+    productPlan = prod?.plan ?? null;
+  }
+
+  if (!isPaidPlan(productPlan)) {
+    console.log(`Skipping tweet for ${productId} — free plan (${productPlan ?? 'none'})`);
+    return;
+  }
+
   for (const fn of TWEET_FUNCTIONS) {
     try {
       const tweetRes = await supabaseAdmin.functions.invoke(fn, { body: { productId } });
@@ -159,7 +182,7 @@ async function tweetRecentLaunches(supabaseAdmin: any) {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data: recent, error } = await supabaseAdmin
     .from('products')
-    .select('id, name, launch_date')
+    .select('id, name, launch_date, plan')
     .eq('status', 'launched')
     .gte('launch_date', since)
     .order('launch_date', { ascending: false })
@@ -170,10 +193,13 @@ async function tweetRecentLaunches(supabaseAdmin: any) {
     return 0;
   }
 
+  let tweeted = 0;
   for (const product of recent || []) {
-    await tweetLaunch(supabaseAdmin, product.id);
+    if (!isPaidPlan(product.plan)) continue;
+    await tweetLaunch(supabaseAdmin, product.id, product.plan);
+    tweeted++;
   }
-  return recent?.length || 0;
+  return tweeted;
 }
 
 
