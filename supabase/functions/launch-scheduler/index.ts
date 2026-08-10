@@ -137,27 +137,46 @@ const PST_TIMEZONE = 'America/Los_Angeles';
 
 const TWEET_FUNCTIONS = ['post-launch-tweet', 'post-launch-tweet-launch'];
 
-// Only paid launches get auto-tweeted. Free launches ('free' or no plan) are skipped.
-const FREE_PLANS = ['free', '', null, undefined];
+// Only paid launches get auto-tweeted. Plans live in the `orders` table
+// (products has no `plan` column), so a product is "paid" when it has any
+// non-free order attached to it.
+const FREE_PLANS = ['free', ''];
 
 function isPaidPlan(plan: unknown): boolean {
   if (!plan || typeof plan !== 'string') return false;
   return !FREE_PLANS.includes(plan.trim().toLowerCase());
 }
 
-async function tweetLaunch(supabaseAdmin: any, productId: string, plan?: unknown) {
-  let productPlan = plan;
-  if (productPlan === undefined) {
-    const { data: prod } = await supabaseAdmin
-      .from('products')
-      .select('plan')
-      .eq('id', productId)
-      .maybeSingle();
-    productPlan = prod?.plan ?? null;
+// Returns a Set of product IDs (from the given list) that have a paid order.
+async function paidProductIds(supabaseAdmin: any, productIds: string[]): Promise<Set<string>> {
+  const paid = new Set<string>();
+  if (productIds.length === 0) return paid;
+
+  const { data: orders, error } = await supabaseAdmin
+    .from('orders')
+    .select('product_id, plan')
+    .in('product_id', productIds);
+
+  if (error) {
+    console.error('Paid-plan lookup failed:', error);
+    return paid;
   }
 
-  if (!isPaidPlan(productPlan)) {
-    console.log(`Skipping tweet for ${productId} — free plan (${productPlan ?? 'none'})`);
+  for (const order of orders || []) {
+    if (order.product_id && isPaidPlan(order.plan)) paid.add(order.product_id);
+  }
+  return paid;
+}
+
+async function tweetLaunch(supabaseAdmin: any, productId: string, isPaid?: boolean) {
+  let paid = isPaid;
+  if (paid === undefined) {
+    const set = await paidProductIds(supabaseAdmin, [productId]);
+    paid = set.has(productId);
+  }
+
+  if (!paid) {
+    console.log(`Skipping tweet for ${productId} — no paid order`);
     return;
   }
 
@@ -182,7 +201,7 @@ async function tweetRecentLaunches(supabaseAdmin: any) {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data: recent, error } = await supabaseAdmin
     .from('products')
-    .select('id, name, launch_date, plan')
+    .select('id, name, launch_date')
     .eq('status', 'launched')
     .gte('launch_date', since)
     .order('launch_date', { ascending: false })
@@ -193,14 +212,18 @@ async function tweetRecentLaunches(supabaseAdmin: any) {
     return 0;
   }
 
+  const ids = (recent || []).map((p: { id: string }) => p.id);
+  const paid = await paidProductIds(supabaseAdmin, ids);
+
   let tweeted = 0;
   for (const product of recent || []) {
-    if (!isPaidPlan(product.plan)) continue;
-    await tweetLaunch(supabaseAdmin, product.id, product.plan);
+    if (!paid.has(product.id)) continue;
+    await tweetLaunch(supabaseAdmin, product.id, true);
     tweeted++;
   }
   return tweeted;
 }
+
 
 
 Deno.serve(async (req) => {
