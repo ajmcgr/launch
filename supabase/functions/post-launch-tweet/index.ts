@@ -252,7 +252,10 @@ Deno.serve(async (req) => {
     return unauthorizedResponse(corsHeaders, 'No Authorization or x-cron-secret header received');
   }
   if (!isCronAuthorized(req)) {
-    return unauthorizedResponse(corsHeaders, 'Header values do not match configured secrets');
+    return unauthorizedResponse(
+      corsHeaders,
+      `Header values do not match configured secrets (headerLen=${cronSecretHeader.trim().length}, cronLen=${expectedCronSecret.trim().length}, testLen=${testSecret.trim().length})`,
+    );
   }
 
 
