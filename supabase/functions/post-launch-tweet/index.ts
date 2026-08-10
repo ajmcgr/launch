@@ -90,7 +90,7 @@ async function oauth1Header(
   const signingKey = `${pctEncode(creds.consumerSecret)}&${pctEncode(creds.accessTokenSecret)}`;
   const signature = await hmacSha1Base64(signingKey, baseString);
 
-  const headerParams = { ...params, oauth_signature: signature };
+  const headerParams: Record<string, string> = { ...params, oauth_signature: signature };
   return (
     'OAuth ' +
     Object.keys(headerParams)
@@ -100,21 +100,75 @@ async function oauth1Header(
   );
 }
 
-async function postToX(text: string) {
+function xCreds() {
   const consumerKey = Deno.env.get('TWITTER_CONSUMER_KEY');
   const consumerSecret = Deno.env.get('TWITTER_CONSUMER_SECRET');
   const accessToken = Deno.env.get('TWITTER_ACCESS_TOKEN');
   const accessTokenSecret = Deno.env.get('TWITTER_ACCESS_TOKEN_SECRET');
-
   if (!consumerKey || !consumerSecret || !accessToken || !accessTokenSecret) return null;
+  return { consumerKey, consumerSecret, accessToken, accessTokenSecret };
+}
+
+// Upload an image (product screenshot) to X so the tweet shows it instead of
+// the site-wide OG social card.
+async function uploadMediaToX(imageUrl: string): Promise<string | null> {
+  const creds = xCreds();
+  if (!creds) return null;
+
+  try {
+    const imgRes = await fetch(imageUrl);
+    if (!imgRes.ok) {
+      console.error(`Failed to fetch screenshot ${imageUrl}: ${imgRes.status}`);
+      return null;
+    }
+    const contentType = imgRes.headers.get('content-type') || 'image/png';
+    if (!contentType.startsWith('image/')) {
+      console.error(`Screenshot is not an image (${contentType}), skipping media upload`);
+      return null;
+    }
+    const bytes = new Uint8Array(await imgRes.arrayBuffer());
+    // X image limit is 5MB
+    if (bytes.byteLength > 5 * 1024 * 1024) {
+      console.error(`Screenshot too large (${bytes.byteLength} bytes), skipping media upload`);
+      return null;
+    }
+
+    const uploadUrl = 'https://upload.x.com/1.1/media/upload.json';
+    // multipart bodies are not part of the OAuth 1.0a signature base string
+    const authHeader = await oauth1Header('POST', uploadUrl, creds);
+
+    const ext = contentType.split('/')[1]?.split(';')[0] || 'png';
+    const form = new FormData();
+    form.append('media', new Blob([bytes], { type: contentType }), `screenshot.${ext}`);
+
+    const res = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: { Authorization: authHeader },
+      body: form,
+    });
+
+    const body = await res.text();
+    if (!res.ok) {
+      console.error(`X media upload failed [${res.status}]: ${body}`);
+      return null;
+    }
+    const parsed = JSON.parse(body);
+    return parsed.media_id_string ?? null;
+  } catch (err) {
+    console.error('X media upload error:', err);
+    return null;
+  }
+}
+
+async function postToX(text: string, mediaIds: string[] = []) {
+  const creds = xCreds();
+  if (!creds) return null;
 
   const url = `${X_API_URL}/tweets`;
-  const authHeader = await oauth1Header('POST', url, {
-    consumerKey,
-    consumerSecret,
-    accessToken,
-    accessTokenSecret,
-  });
+  const authHeader = await oauth1Header('POST', url, creds);
+
+  const payload: Record<string, unknown> = { text };
+  if (mediaIds.length > 0) payload.media = { media_ids: mediaIds };
 
   const res = await fetch(url, {
     method: 'POST',
@@ -122,7 +176,7 @@ async function postToX(text: string) {
       Authorization: authHeader,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify(payload),
   });
 
   const body = await res.text();
@@ -135,6 +189,7 @@ async function postToX(text: string) {
     return { raw: body };
   }
 }
+
 
 async function getSocialSetId(apiKey: string): Promise<string> {
   const res = await fetch(`${TYPEFULLY_API_URL}/social-sets`, {
@@ -253,13 +308,28 @@ Deno.serve(async (req) => {
       mentionLine +
       `\n\n${productUrl}`;
 
-    console.log(`Posting launch tweet for ${product.id} (handle=${handle ?? 'none'}):\n${text}`);
+    // Attach the product's own screenshot (fallback: thumbnail, then icon) so
+    // the tweet shows the app image instead of the default Launch social card.
+    const { data: media } = await supabase
+      .from('product_media')
+      .select('type, url')
+      .eq('product_id', product.id);
+
+    const pickMedia = (type: string) =>
+      media?.find((m: { type: string; url: string }) => m.type === type && m.url)?.url ?? null;
+    const imageUrl = pickMedia('screenshot') || pickMedia('thumbnail') || pickMedia('icon');
+
+    console.log(`Posting launch tweet for ${product.id} (handle=${handle ?? 'none'}, image=${imageUrl ?? 'none'}):\n${text}`);
 
     let via = 'x';
     let result: unknown = null;
+    let mediaId: string | null = null;
 
     try {
-      result = await postToX(text);
+      if (imageUrl) {
+        mediaId = await uploadMediaToX(imageUrl);
+      }
+      result = await postToX(text, mediaId ? [mediaId] : []);
       if (result === null) {
         // X credentials missing — fall back to Typefully
         via = 'typefully';
@@ -268,6 +338,8 @@ Deno.serve(async (req) => {
       console.error('Direct X post failed, falling back to Typefully:', xError);
       via = 'typefully';
     }
+
+
 
     if (via === 'typefully') {
       const typefullyApiKey = Deno.env.get('TYPEFULLY_API_KEY');
