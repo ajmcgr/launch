@@ -132,6 +132,48 @@ const corsHeaders = {
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
+const TWEET_FUNCTIONS = ['post-launch-tweet', 'post-launch-tweet-launch'];
+
+async function tweetLaunch(supabaseAdmin: any, productId: string) {
+  for (const fn of TWEET_FUNCTIONS) {
+    try {
+      const tweetRes = await supabaseAdmin.functions.invoke(fn, { body: { productId } });
+      if (tweetRes.error) {
+        console.error(`${fn} failed for ${productId}:`, tweetRes.error);
+      } else {
+        console.log(`${fn} posted for ${productId}:`, tweetRes.data);
+      }
+    } catch (tweetErr) {
+      console.error(`Error invoking ${fn} for ${productId}:`, tweetErr);
+    }
+  }
+}
+
+// Products can go live without passing through the scheduler (e.g. "launch now"
+// submissions or Stripe-driven instant launches). Sweep recent launches and let
+// the tweet functions dedupe internally so nothing is missed.
+async function tweetRecentLaunches(supabaseAdmin: any) {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: recent, error } = await supabaseAdmin
+    .from('products')
+    .select('id, name, launch_date')
+    .eq('status', 'launched')
+    .gte('launch_date', since)
+    .order('launch_date', { ascending: false })
+    .limit(50);
+
+  if (error) {
+    console.error('Tweet catch-up fetch failed:', error);
+    return 0;
+  }
+
+  for (const product of recent || []) {
+    await tweetLaunch(supabaseAdmin, product.id);
+  }
+  return recent?.length || 0;
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -168,11 +210,13 @@ Deno.serve(async (req) => {
     console.log(`Found ${productsToLaunch?.length || 0} products to launch`);
 
     if (!productsToLaunch || productsToLaunch.length === 0) {
+      const swept = await tweetRecentLaunches(supabaseAdmin);
       return new Response(
-        JSON.stringify({ message: 'No products to launch', count: 0 }),
+        JSON.stringify({ message: 'No products to launch', count: 0, tweet_catchup_checked: swept }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
+
 
     const results = [];
 
@@ -339,23 +383,14 @@ Deno.serve(async (req) => {
       // Auto-post launch announcement to BOTH X accounts:
       // - post-launch-tweet        -> Vibe Coded It account (TWITTER_*)
       // - post-launch-tweet-launch -> @trylaunchai account (LAUNCH_TWITTER_*)
-      for (const fn of ['post-launch-tweet', 'post-launch-tweet-launch']) {
-        try {
-          const tweetRes = await supabaseAdmin.functions.invoke(fn, {
-            body: { productId: product.id },
-          });
-          if (tweetRes.error) {
-            console.error(`${fn} failed for ${product.id}:`, tweetRes.error);
-          } else {
-            console.log(`${fn} posted for ${product.id}:`, tweetRes.data);
-          }
-        } catch (tweetErr) {
-          console.error(`Error invoking ${fn} for ${product.id}:`, tweetErr);
-        }
-      }
+      await tweetLaunch(supabaseAdmin, product.id);
 
       results.push({ id: product.id, name: product.name, success: true });
     }
+
+    // Catch-up sweep for products that went live without the scheduler
+    await tweetRecentLaunches(supabaseAdmin);
+
 
     // Check for products launching tomorrow (24h reminder)
     const tomorrow = new Date();
