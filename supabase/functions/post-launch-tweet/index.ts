@@ -11,12 +11,13 @@ function isCronAuthorized(req: Request): boolean {
   return false;
 }
 
-function unauthorizedResponse(headers: Record<string, string> = {}) {
-  return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+function unauthorizedResponse(headers: Record<string, string> = {}, reason: string = '') {
+  return new Response(JSON.stringify({ error: 'Unauthorized', reason }), {
     status: 401,
     headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
