@@ -228,22 +228,6 @@ export default function CollectionDetail({ publicMode = false }: Props) {
     toast.success('Moved');
   };
 
-  const handleExportCsv = () => {
-    if (!collection) return;
-    const header = 'name,tagline,url,added_at,note\n';
-    const rows = sorted.map(i => [
-      JSON.stringify(i.product.name),
-      JSON.stringify(i.product.tagline ?? ''),
-      JSON.stringify(`${window.location.origin}/launch/${i.product.slug}`),
-      i.added_at,
-      JSON.stringify(i.note ?? ''),
-    ].join(',')).join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${collection.slug}.csv`; a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const handleShare = () => {
     if (!collection) return;
