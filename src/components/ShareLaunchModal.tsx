@@ -22,8 +22,9 @@ interface ShareLaunchModalProps {
 const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagline }: ShareLaunchModalProps) => {
   const [copied, setCopied] = useState<string | null>(null);
   
-  const productUrl = `https://trylaunch.ai/launch/${productSlug}`;
-  const ogShareUrl = productUrl;
+  const productUrl = getProductUrl(productSlug);
+  // Crawler-facing URL so LinkedIn/Reddit render the product's own screenshot card
+  const ogShareUrl = getProductShareUrl(productSlug);
   
   const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${productUrl}\n\ncc @trylaunchai`;
   
