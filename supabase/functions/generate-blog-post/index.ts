@@ -16,6 +16,7 @@ function isCronAuthorized(req: Request): boolean {
   const expectedCronSecret = Deno.env.get("CRON_SECRET") || "";
   if (serviceKey && authHeader === `Bearer ${serviceKey}`) return true;
   if (expectedCronSecret && cronSecretHeader === expectedCronSecret) return true;
+  if (expectedCronSecret && authHeader === `Bearer ${expectedCronSecret}`) return true;
   return false;
 }
 
