@@ -5,9 +5,11 @@ function isCronAuthorized(req: Request): boolean {
   const cronSecretHeader = req.headers.get('x-cron-secret') || req.headers.get('X-Cron-Secret') || '';
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
   const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
+  const testSecret = Deno.env.get('TWEET_TEST_SECRET') || '';
   if (serviceKey && authHeader === `Bearer ${serviceKey}`) return true;
   if (expectedCronSecret && cronSecretHeader === expectedCronSecret) return true;
   if (expectedCronSecret && authHeader === `Bearer ${expectedCronSecret}`) return true;
+  if (testSecret && (cronSecretHeader === testSecret || authHeader === `Bearer ${testSecret}`)) return true;
   return false;
 }
 
@@ -238,10 +240,12 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
   const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
 
+  const testSecret = Deno.env.get('TWEET_TEST_SECRET') || '';
+
   if (!serviceKey) {
     return unauthorizedResponse(corsHeaders, 'SUPABASE_SERVICE_ROLE_KEY not set in function env');
   }
-  if (!expectedCronSecret) {
+  if (!expectedCronSecret && !testSecret) {
     return unauthorizedResponse(corsHeaders, 'CRON_SECRET not set in function env');
   }
   if (!authHeader && !cronSecretHeader) {
