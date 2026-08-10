@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
     // Fetch product details
     const { data: product, error } = await supabase
       .from("products")
-      .select("id, name, tagline, slug, description, thumbnail_url")
+      .select("id, name, tagline, slug, description")
       .eq("slug", slug)
       .eq("status", "launched")
       .single();
@@ -54,7 +54,6 @@ Deno.serve(async (req) => {
     // Priority: first screenshot -> thumbnail -> icon -> default Launch card
     const rawImage =
       screenshot?.url ||
-      (product as any).thumbnail_url ||
       icon?.url ||
       "https://trylaunch.ai/social-card.png";
 
