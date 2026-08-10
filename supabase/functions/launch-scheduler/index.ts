@@ -383,23 +383,14 @@ Deno.serve(async (req) => {
       // Auto-post launch announcement to BOTH X accounts:
       // - post-launch-tweet        -> Vibe Coded It account (TWITTER_*)
       // - post-launch-tweet-launch -> @trylaunchai account (LAUNCH_TWITTER_*)
-      for (const fn of ['post-launch-tweet', 'post-launch-tweet-launch']) {
-        try {
-          const tweetRes = await supabaseAdmin.functions.invoke(fn, {
-            body: { productId: product.id },
-          });
-          if (tweetRes.error) {
-            console.error(`${fn} failed for ${product.id}:`, tweetRes.error);
-          } else {
-            console.log(`${fn} posted for ${product.id}:`, tweetRes.data);
-          }
-        } catch (tweetErr) {
-          console.error(`Error invoking ${fn} for ${product.id}:`, tweetErr);
-        }
-      }
+      await tweetLaunch(supabaseAdmin, product.id);
 
       results.push({ id: product.id, name: product.name, success: true });
     }
+
+    // Catch-up sweep for products that went live without the scheduler
+    await tweetRecentLaunches(supabaseAdmin);
+
 
     // Check for products launching tomorrow (24h reminder)
     const tomorrow = new Date();
