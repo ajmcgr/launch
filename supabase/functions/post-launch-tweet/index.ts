@@ -308,17 +308,37 @@ Deno.serve(async (req) => {
       mentionLine +
       `\n\n${productUrl}`;
 
-    console.log(`Posting launch tweet for ${product.id} (handle=${handle ?? 'none'}):\n${text}`);
+    // Attach the product's own screenshot (fallback: thumbnail, then icon) so
+    // the tweet shows the app image instead of the default Launch social card.
+    const { data: media } = await supabase
+      .from('product_media')
+      .select('type, url')
+      .eq('product_id', product.id);
+
+    const pickMedia = (type: string) =>
+      media?.find((m: { type: string; url: string }) => m.type === type && m.url)?.url ?? null;
+    const imageUrl = pickMedia('screenshot') || pickMedia('thumbnail') || pickMedia('icon');
+
+    console.log(`Posting launch tweet for ${product.id} (handle=${handle ?? 'none'}, image=${imageUrl ?? 'none'}):\n${text}`);
 
     let via = 'x';
     let result: unknown = null;
+    let mediaId: string | null = null;
 
     try {
-      result = await postToX(text);
+      if (imageUrl) {
+        mediaId = await uploadMediaToX(imageUrl);
+      }
+      result = await postToX(text, mediaId ? [mediaId] : []);
       if (result === null) {
         // X credentials missing — fall back to Typefully
         via = 'typefully';
       }
+    } catch (xError) {
+      console.error('Direct X post failed, falling back to Typefully:', xError);
+      via = 'typefully';
+    }
+
     } catch (xError) {
       console.error('Direct X post failed, falling back to Typefully:', xError);
       via = 'typefully';
