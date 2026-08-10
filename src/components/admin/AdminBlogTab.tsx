@@ -60,6 +60,39 @@ const AdminBlogTab = () => {
     }
   };
 
+  /** Loop small batches until every article has Gemini artwork. */
+  const backfillAllImages = async () => {
+    setImaging('backfill');
+    let done = 0;
+    let failures = 0;
+    try {
+      for (let round = 0; round < 40; round++) {
+        const { data, error } = await supabase.functions.invoke('generate-blog-image', {
+          body: { backfill: true, limit: 3 },
+        });
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+        const processed = data?.processed ?? 0;
+        done += data?.succeeded ?? 0;
+        failures += processed - (data?.succeeded ?? 0);
+        queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
+        if (processed === 0) break;
+        const firstFail = (data?.results || []).find((r: any) => !r.ok);
+        if (firstFail) {
+          toast.error(`${firstFail.slug}: ${firstFail.error}`);
+          break;
+        }
+        toast.message(`Artwork generated for ${done} articles…`);
+      }
+      toast.success(`Backfill complete — ${done} articles${failures ? `, ${failures} failed` : ''}`);
+    } catch (e: any) {
+      toast.error(e?.message || 'Backfill failed');
+    } finally {
+      setImaging(null);
+    }
+  };
+
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ['admin-blog-posts'],
     queryFn: async () => {
@@ -151,8 +184,19 @@ OpenAI auto-publishes a new article daily at 14:00 UTC and Gemini generates the
 
             </div>
             <div className="flex gap-2 flex-shrink-0">
-              
+              <Button variant="outline" onClick={backfillAllImages} disabled={imaging === 'backfill'}>
+                {imaging === 'backfill' ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Backfilling artwork…
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="h-4 w-4 mr-2" /> Backfill Artwork
+                  </>
+                )}
+              </Button>
               <Button variant="outline" onClick={() => generateNow('draft')} disabled={generating}>
+
                 {generating ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating…
