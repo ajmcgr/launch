@@ -40,7 +40,6 @@ import { SiteStatsWidget } from '@/components/SiteStatsWidget';
 import { CommunityCallout } from '@/components/CommunityCallout';
 
 import BuiltWithSection from '@/components/BuiltWithSection';
-import { Newsletter } from '@/components/Newsletter';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 import { weightedPick, weightedShuffle } from '@/lib/weightedPick';
 
