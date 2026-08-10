@@ -109,10 +109,13 @@ function isCronAuthorized(req: Request): boolean {
   const authHeader = req.headers.get('Authorization') || req.headers.get('authorization') || '';
   const cronSecretHeader = req.headers.get('x-cron-secret') || req.headers.get('X-Cron-Secret') || '';
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-  const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
+  const expectedCronSecret = (Deno.env.get('CRON_SECRET') || '').trim();
+  const testSecret = (Deno.env.get('TWEET_TEST_SECRET') || '').trim();
+  const cronHeader = cronSecretHeader.trim();
   if (serviceKey && authHeader === `Bearer ${serviceKey}`) return true;
-  if (expectedCronSecret && cronSecretHeader === expectedCronSecret) return true;
-  if (expectedCronSecret && authHeader === `Bearer ${expectedCronSecret}`) return true;
+  if (expectedCronSecret && cronHeader === expectedCronSecret) return true;
+  if (expectedCronSecret && authHeader.trim() === `Bearer ${expectedCronSecret}`) return true;
+  if (testSecret && cronHeader === testSecret) return true;
   return false;
 }
 
