@@ -25,7 +25,6 @@ import vibecodeditIcon from '@/assets/vibecodedit-header-icon.png.asset.json';
 import { NotificationBell } from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useTheme } from 'next-themes';
-import { useMemberCount } from '@/hooks/use-member-count';
 import { GoogleTranslate } from '@/components/GoogleTranslate';
 
 export const Header = () => {
@@ -35,7 +34,6 @@ export const Header = () => {
   const [profile, setProfile] = useState<any>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState('');
-  const { formattedMemberCount } = useMemberCount();
 
   const handleHeaderSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && headerSearch.trim()) {
@@ -43,9 +41,6 @@ export const Header = () => {
       setHeaderSearch('');
     }
   };
-
-  // Check if we should show the Launch Pass promo (after Jan 26, 2026)
-  const showLaunchPassPromo = new Date() >= new Date('2026-01-26T00:00:00');
 
   useEffect(() => {
     // Get initial session
@@ -92,27 +87,7 @@ export const Header = () => {
   };
 
   return (
-    <>
-      {/* Promotional Banner — rendered ABOVE the sticky header (non-sticky).
-          It scrolls away naturally with the page, so the sticky nav below
-          never changes height. This prevents the layout-shift / wobble glitch
-          that occurred when toggling the banner based on scrollY. */}
-      <Link
-        to={showLaunchPassPromo ? "/pass" : "/pricing"}
-        className="block py-2 hover:opacity-90 transition-opacity bg-muted dark:bg-[#333333] text-foreground"
-        data-testid="promo-banner"
-      >
-        <div className="container mx-auto px-4 max-w-7xl">
-          <p className="text-center text-sm font-medium">
-            {showLaunchPassPromo
-              ? `Join ${formattedMemberCount} vibe coders → Get Launch Pass`
-              : <>Save 20% when you ship. Use code <span className="font-bold">LAUNCH20</span></>
-            }
-          </p>
-        </div>
-      </Link>
-
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex h-14 md:h-16 items-center justify-between">
@@ -422,6 +397,5 @@ export const Header = () => {
         </div>
       </div>
     </header>
-    </>
   );
 };
