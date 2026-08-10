@@ -264,6 +264,7 @@ Deno.serve(async (req) => {
       }
       return json({
         success: true,
+        version: "v3",
         processed: results.length,
         succeeded: results.filter((r) => r.ok).length,
         results,
@@ -280,7 +281,7 @@ Deno.serve(async (req) => {
     if (!data) return json({ error: "Post not found" }, 404);
 
     const set = await attachImagesToPost(supabase, data as any);
-    return json({ success: true, slug: (data as any).slug, ...set });
+    return json({ success: true, version: "v3", slug: (data as any).slug, ...set });
   } catch (err) {
     console.error("generate-blog-image error:", err);
     return json({ error: err instanceof Error ? err.message : "Unknown error" }, 500);
