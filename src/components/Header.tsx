@@ -25,7 +25,6 @@ import vibecodeditIcon from '@/assets/vibecodedit-header-icon.png.asset.json';
 import { NotificationBell } from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useTheme } from 'next-themes';
-import { useMemberCount } from '@/hooks/use-member-count';
 import { GoogleTranslate } from '@/components/GoogleTranslate';
 
 export const Header = () => {
