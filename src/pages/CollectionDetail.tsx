@@ -315,14 +315,6 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
       {(isOwner || canContribute) && (
         <div className="flex flex-wrap items-center gap-2 mb-6 -mt-2">
-          {isOwner && (
-            <Button variant="outline" size="sm" onClick={handleExportCsv}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
-          )}
-          {canContribute && (
-            <Button variant="outline" size="sm" onClick={() => navigate('/products')}>
-              <FolderPlus className="h-4 w-4 mr-1" /> Add launches
-            </Button>
-          )}
           {isCollaborator && !isOwner && (
             <span className="text-xs text-muted-foreground">You're a collaborator on this collection</span>
           )}
