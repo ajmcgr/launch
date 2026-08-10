@@ -38,24 +38,34 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fetch product media - first screenshot, then icon as fallback
+    // Fetch product media — oldest first so "first screenshot" is stable
     const { data: media } = await supabase
       .from("product_media")
-      .select("url, type")
+      .select("url, type, created_at")
       .eq("product_id", product.id)
       .in("type", ["screenshot", "icon"])
       .not("url", "is", null)
-      .order("type", { ascending: false }) // screenshot before icon alphabetically reversed
-      .limit(10);
+      .order("created_at", { ascending: true })
+      .limit(20);
 
-    // Prefer screenshot, fall back to icon, then default
-    const screenshot = media?.find((m: any) => m.type === "screenshot");
-    const icon = media?.find((m: any) => m.type === "icon");
-    const ogImage = screenshot?.url || icon?.url || "https://trylaunch.ai/social-card.png";
+    const screenshot = media?.find((m: any) => m.type === "screenshot" && m.url);
+    const icon = media?.find((m: any) => m.type === "icon" && m.url);
+
+    // Priority: first screenshot -> thumbnail -> icon -> default Launch card
+    const rawImage =
+      screenshot?.url ||
+      icon?.url ||
+      "https://trylaunch.ai/social-card.png";
+
+    // Crawlers require absolute URLs
+    const ogImage = /^https?:\/\//i.test(rawImage)
+      ? rawImage
+      : `https://trylaunch.ai${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
 
     const canonicalUrl = `https://trylaunch.ai/launch/${product.slug}`;
     const title = `${product.name} - Launch AI`;
     const description = product.tagline || product.description?.substring(0, 160) || "Discover this product on Launch";
+
 
     // Serve HTML with correct OG tags + immediate redirect for humans
     const html = `<!DOCTYPE html>
