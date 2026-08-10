@@ -40,10 +40,14 @@ function apiKey(): string {
 }
 
 const STYLE_GUIDE = [
-  "Consistent Launch brand visual identity: premium SaaS, modern, minimal, editorial.",
-  "Abstract conceptual composition (never literal), bold geometric forms, soft layered gradients,",
-  "high contrast, generous negative space, subtle depth and light, refined professional art direction.",
-  "Palette: deep near-black and off-white base with a confident accent (electric blue / violet / warm amber).",
+  "Launch brand identity: light, clean, calm, Swiss-minimal editorial design.",
+  "Flat vector illustration on a plain white or very light off-white (#F7F7F8) background.",
+  "Simple abstract geometric shapes only — circles, rounded rectangles, arcs, thin lines, soft grids.",
+  "Restrained palette: white, light grays (#E5E7EB, #9CA3AF), charcoal (#111827) and ONE single muted",
+  "accent (soft blue #3B82F6) used sparingly. Mostly monochrome and quiet.",
+  "Flat 2D, no heavy gradients or glow, no 3D renders, no neon, no dark backgrounds, no glossy metallics,",
+  "no dramatic lighting, no particles or sparks, no isometric tech scenes.",
+  "Generous negative space, balanced composition, subtle soft shadow at most.",
   "Strictly avoid: any text, letters, words, numbers, watermarks, logos, UI screenshots, clipart,",
   "stock-photo people, generic robots, brains, circuit-board cliches, low-quality AI artefacts, random icons.",
 ].join(" ");
