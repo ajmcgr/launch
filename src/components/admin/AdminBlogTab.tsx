@@ -34,24 +34,49 @@ const AdminBlogTab = () => {
   const [editing, setEditing] = useState<BlogPost | null>(null);
   const [imaging, setImaging] = useState<string | null>(null);
 
+  /**
+   * supabase.functions.invoke swallows the response body on non-2xx and reports
+   * a generic "non-2xx status code". Read the real payload so the toast shows
+   * the actual reason (missing GEMINI_API_KEY, storage bucket, quota, etc.).
+   */
+  const invokeImageFn = async (body: Record<string, unknown>) => {
+    const { data, error } = await supabase.functions.invoke('generate-blog-image', { body });
+    if (error) {
+      let detail = '';
+      try {
+        const res = (error as any)?.context;
+        if (res && typeof res.text === 'function') {
+          const text = await res.text();
+          try {
+            const parsed = JSON.parse(text);
+            detail = parsed?.error || parsed?.message || text;
+          } catch {
+            detail = text;
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+      throw new Error(detail ? `${detail}` : error.message || 'Image generation failed');
+    }
+    if (data?.error) throw new Error(data.error);
+    return data;
+  };
+
   const generateImage = async (post?: BlogPost) => {
     setImaging(post ? post.id : 'backfill');
     try {
-      const { data, error } = await supabase.functions.invoke('generate-blog-image', {
-        body: post ? { postId: post.id } : { backfill: true, limit: 3 },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      const data = await invokeImageFn(post ? { postId: post.id } : { backfill: true, limit: 1 });
       const failed = (data?.results || []).filter((r: any) => !r.ok);
       if (failed.length) {
         toast.error(`${failed[0].slug}: ${failed[0].error}`);
+      } else {
+        toast.success(
+          post
+            ? 'Artwork generated'
+            : `Backfilled ${data?.succeeded ?? 0}/${data?.processed ?? 0} articles`,
+        );
       }
-      toast.success(
-        post
-          ? 'Artwork generated'
-          : `Backfilled ${data?.succeeded ?? 0}/${data?.processed ?? 0} articles`,
-      );
-
       queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
     } catch (e: any) {
       toast.error(e?.message || 'Image generation failed');
@@ -60,37 +85,33 @@ const AdminBlogTab = () => {
     }
   };
 
-  /** Loop small batches until every article has Gemini artwork. */
+  /**
+   * Loop until every article has Gemini artwork. One post per call keeps each
+   * invocation well inside the edge runtime's wall-clock budget.
+   */
   const backfillAllImages = async () => {
     setImaging('backfill');
     let done = 0;
-    let failures = 0;
     try {
-      for (let round = 0; round < 40; round++) {
-        const { data, error } = await supabase.functions.invoke('generate-blog-image', {
-          body: { backfill: true, limit: 3 },
-        });
-        if (error) throw error;
-        if (data?.error) throw new Error(data.error);
+      for (let round = 0; round < 60; round++) {
+        const data = await invokeImageFn({ backfill: true, limit: 1 });
         const processed = data?.processed ?? 0;
-        done += data?.succeeded ?? 0;
-        failures += processed - (data?.succeeded ?? 0);
-        queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
         if (processed === 0) break;
         const firstFail = (data?.results || []).find((r: any) => !r.ok);
-        if (firstFail) {
-          toast.error(`${firstFail.slug}: ${firstFail.error}`);
-          break;
-        }
-        toast.message(`Artwork generated for ${done} articles…`);
+        if (firstFail) throw new Error(`${firstFail.slug}: ${firstFail.error}`);
+        done += data?.succeeded ?? 0;
+        queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
+        toast.message(`Artwork generated for ${done} article${done === 1 ? '' : 's'}…`);
       }
-      toast.success(`Backfill complete — ${done} articles${failures ? `, ${failures} failed` : ''}`);
+      toast.success(`Backfill complete — ${done} article${done === 1 ? '' : 's'}`);
     } catch (e: any) {
-      toast.error(e?.message || 'Backfill failed');
+      toast.error(e?.message || 'Backfill failed', { duration: 12000 });
     } finally {
       setImaging(null);
+      queryClient.invalidateQueries({ queryKey: ['admin-blog-posts'] });
     }
   };
+
 
 
   const { data: posts, isLoading } = useQuery({
