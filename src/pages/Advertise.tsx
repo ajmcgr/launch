@@ -536,15 +536,31 @@ const Advertise = () => {
                 <ul className="space-y-3 flex-1">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Featured sponsor section in one weekly newsletter</span>
+                    <span className="text-sm">Featured sponsor section at the top of one weekly newsletter</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Sent to ~2,000 founders, makers & early-stage teams</span>
+                    <span className="text-sm">Sent to ~2,000 founders, vibe coders & early-stage teams</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">25% email open rate</span>
+                    <span className="text-sm">25% email open rate, ~55% desktop / ~45% mobile readers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Large hero logo + headline + dedicated CTA link</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Click-through tracking with live engagement metrics</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Permanently archived in the newsletter back-issues page</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Issue date confirmed before publish; you approve the final copy</span>
                   </li>
                 </ul>
                 <div className="pt-2 pb-1 border-t border-border/50">
