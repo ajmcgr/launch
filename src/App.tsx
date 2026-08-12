@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { Header } from "@/components/Header";
@@ -50,6 +50,11 @@ const Tags = lazy(() => import("./pages/Tags"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const Categories = lazy(() => import("./pages/Categories"));
 const CollectionPage = lazy(() => import("./pages/CollectionPage"));
+
+const LegacyCollectionRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/collections/${slug}`} replace />;
+};
 const Pass = lazy(() => import("./pages/Pass"));
 const PassGraphic = lazy(() => import("./pages/PassGraphic"));
 const ProductHuntAlternative = lazy(() => import("./pages/ProductHuntAlternative"));
@@ -523,7 +528,7 @@ const AppContent = () => {
             <Route path="/alternatives/:slug" element={<AlternativesPage />} />
             <Route path="/my-collections" element={<Collections />} />
             <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
-            <Route path="/c/:slug" element={<PublicCollection />} />
+            <Route path="/c/:slug" element={<LegacyCollectionRedirect />} />
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
             {/* Vibe Coded It lives at vibecodedit.com — no in-app route. */}

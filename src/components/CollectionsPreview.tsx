@@ -130,7 +130,7 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
     ? ({ c, children }: { c: CollectionCard; children: ReactNode }) => (
         <a
           key={c.id}
-          href={`/c/${c.slug}`}
+          href={`/collections/${c.slug}`}
           target="_blank"
           rel="noopener noreferrer"
           className={wrapperClass}
@@ -139,7 +139,7 @@ export default function CollectionsPreview({ limit = 6, onCount, openInNewWindow
         </a>
       )
     : ({ c, children }: { c: CollectionCard; children: ReactNode }) => (
-        <Link key={c.id} to={`/c/${c.slug}`} className={wrapperClass}>
+        <Link key={c.id} to={`/collections/${c.slug}`} className={wrapperClass}>
           {children}
         </Link>
       );

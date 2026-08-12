@@ -70,7 +70,7 @@ export const CollectionHero = ({ collection, productCount }: Props) => {
     });
   }, [collection.id]);
 
-  const publicUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/c/${collection.slug}`;
+  const publicUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/collections/${collection.slug}`;
 
   const handleFollow = async () => {
     if (!currentUserId) {

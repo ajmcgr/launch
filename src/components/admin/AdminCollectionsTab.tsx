@@ -115,7 +115,7 @@ export const AdminCollectionsTab = () => {
                     @{r.username ?? '?'} · {r.itemCount} items · {r.followerCount} followers · {r.view_count} views
                   </p>
                 </div>
-                <Link to={`/c/${r.slug}`} target="_blank" className="text-muted-foreground hover:text-foreground">
+                <Link to={`/collections/${r.slug}`} target="_blank" className="text-muted-foreground hover:text-foreground">
                   <ExternalLink className="h-4 w-4" />
                 </Link>
                 <Switch checked={r.is_featured} onCheckedChange={(v) => toggleFeatured(r.id, v)} />
