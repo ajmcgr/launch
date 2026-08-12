@@ -193,12 +193,14 @@ const ProductAnalytics = () => {
   const ctr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : '0';
 
   const handleShare = (platform: string) => {
-    const url = `https://trylaunch.ai/launch/${product?.slug}`;
+    const url = getProductUrl(product?.slug || '');
+    // Crawler-facing URL so X/LinkedIn render the product's own screenshot card
+    const shareUrl = getProductShareUrl(product?.slug || '');
     const text = `Check out ${product?.name} on Launch AI! 🚀`;
     if (platform === 'x') {
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
     } else if (platform === 'linkedin') {
-      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
     } else {
       navigator.clipboard.writeText(url);
       toast.success('Link copied!');
