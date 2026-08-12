@@ -12,7 +12,9 @@ Deno.serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get("slug");
+    // Tolerate pasted variants: trailing slashes, full URLs, stray whitespace
+    const rawSlug = url.searchParams.get("slug") || "";
+    const slug = rawSlug.trim().replace(/^.*\/launch\//, "").replace(/[/?#].*$/, "");
 
     if (!slug) {
       return new Response("Missing slug", { status: 400 });
