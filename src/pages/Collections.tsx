@@ -54,7 +54,7 @@ export default function Collections() {
   };
 
   const handleShare = (c: Collection) => {
-    const url = `${window.location.origin}/c/${c.slug}`;
+    const url = `${window.location.origin}/collections/${c.slug}`;
     navigator.clipboard.writeText(url);
     toast.success(c.is_public ? 'Public link copied' : 'Link copied (make collection public to share)');
   };

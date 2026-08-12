@@ -291,7 +291,7 @@ Deno.serve(async (req) => {
         const lastmod = collection.updated_at;
         xml += `
   <url>
-    <loc>${SITE_URL}/c/${collection.slug}</loc>
+    <loc>${SITE_URL}/collections/${collection.slug}</loc>
     ${lastmod ? `<lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>` : ''}
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

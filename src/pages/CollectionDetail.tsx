@@ -231,7 +231,7 @@ export default function CollectionDetail({ publicMode = false }: Props) {
 
   const handleShare = () => {
     if (!collection) return;
-    const url = `${window.location.origin}/c/${collection.slug}`;
+    const url = `${window.location.origin}/collections/${collection.slug}`;
     navigator.clipboard.writeText(url);
     toast.success(collection.is_public ? 'Public link copied' : 'Link copied (make public to share)');
   };

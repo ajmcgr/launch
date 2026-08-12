@@ -172,7 +172,7 @@ export default function Search() {
                 {collections.map((c) => (
                   <Link
                     key={c.id}
-                    to={`/c/${c.slug}`}
+                    to={`/collections/${c.slug}`}
                     className="group flex flex-col rounded-xl overflow-hidden border bg-card hover:shadow-md transition-all"
                   >
                     <div className="aspect-[3/1.6] overflow-hidden">

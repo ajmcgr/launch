@@ -221,12 +221,12 @@ function CollectionsPanel({ profile }: { profile: any }) {
         {items.map((c: any) => (
           <Card key={c.id} className="overflow-hidden hover:border-primary/50 transition-colors group">
             {c.cover_image_url && (
-              <Link to={`/c/${c.slug}`} className="block aspect-[16/9] bg-muted overflow-hidden">
+              <Link to={`/collections/${c.slug}`} className="block aspect-[16/9] bg-muted overflow-hidden">
                 <img src={c.cover_image_url} alt={c.name} loading="lazy" className="w-full h-full object-cover" />
               </Link>
             )}
             <div className="p-4">
-              <Link to={`/c/${c.slug}`}>
+              <Link to={`/collections/${c.slug}`}>
                 <h3 className="font-semibold truncate group-hover:text-primary transition-colors">{c.name}</h3>
               </Link>
               {c.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{c.description}</p>}
