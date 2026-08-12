@@ -1285,9 +1285,10 @@ const Submit = () => {
       const existingOrders = paidOrders?.slice(0, 1);
 
       // If this exact product was already paid for (webhook created the order but the
-      // product never got scheduled), never ask the user to pay again.
+      // product never got scheduled), never ask the user to pay again — and never let
+      // it fall into the free queue, even if the plan selector defaulted back to "free".
       const orderForThisProduct = paidOrders?.find(o => o.product_id === savedProductId);
-      if (orderForThisProduct && formData.plan !== 'free') {
+      if (orderForThisProduct) {
         try {
           const planType = orderForThisProduct.plan as string;
           let launchDate: Date;
