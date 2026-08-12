@@ -17,7 +17,11 @@ Deno.serve(async (req) => {
     const slug = rawSlug.trim().replace(/^.*\/launch\//, "").replace(/[/?#].*$/, "");
 
     if (!slug) {
-      return new Response("Missing slug", { status: 400 });
+      // Never show a raw error page to a human who clicked a share link
+      return new Response(null, {
+        status: 302,
+        headers: { Location: "https://trylaunch.ai" },
+      });
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
