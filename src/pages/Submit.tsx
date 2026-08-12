@@ -546,21 +546,25 @@ const Submit = () => {
         return;
       }
 
-      // Check if there's an existing order (for rescheduling scheduled products)
-      const { data: order } = await supabase
+      // Check if there's an existing order (for rescheduling scheduled products).
+      // Use limit(1) rather than maybeSingle() — multiple orders would error out and
+      // silently drop the paid plan, pushing paid users back into the free queue.
+      const { data: orderRows } = await supabase
         .from('orders')
         .select('plan')
         .eq('product_id', id)
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false })
-        .maybeSingle();
+        .limit(1);
+      const order = orderRows?.[0] || null;
 
-      // If product is scheduled and has an order, treat it as rescheduling
-        if (product.status === 'scheduled' && order && order.plan) {
-          const planValue = order.plan as 'free' | 'join' | 'skip' | 'relaunch';
-        setExistingPlan(planValue);
-        setIsRescheduling(true);
+      const paidPlans = ['join', 'skip', 'relaunch', 'grow'];
+      // Any paid order (scheduled or still draft) keeps the paid plan locked in.
+      if (order?.plan && paidPlans.includes(order.plan)) {
+        setExistingPlan(order.plan as any);
+        if (product.status === 'scheduled') setIsRescheduling(true);
       }
+
 
       // Store product status
       setProductStatus(product.status);
