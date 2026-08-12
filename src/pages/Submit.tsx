@@ -1275,17 +1275,55 @@ const Submit = () => {
       }
 
       // Check if user has an existing paid order
-      const { data: existingOrders } = await supabase
+      const { data: paidOrders } = await supabase
         .from('orders')
         .select('*')
         .eq('user_id', session.user.id)
-        .in('plan', ['join', 'skip', 'relaunch'])
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .in('plan', ['join', 'skip', 'relaunch', 'grow'])
+        .order('created_at', { ascending: false });
+
+      const existingOrders = paidOrders?.slice(0, 1);
+
+      // If this exact product was already paid for (webhook created the order but the
+      // product never got scheduled), never ask the user to pay again.
+      const orderForThisProduct = paidOrders?.find(o => o.product_id === savedProductId);
+      if (orderForThisProduct && formData.plan !== 'free') {
+        try {
+          const planType = orderForThisProduct.plan as string;
+          let launchDate: Date;
+          if (formData.selectedDate) {
+            launchDate = new Date(formData.selectedDate);
+          } else if (planType === 'relaunch') {
+            launchDate = new Date();
+            launchDate.setDate(launchDate.getDate() + 30);
+            launchDate.setHours(0, 1, 0, 0);
+          } else {
+            launchDate = new Date(Date.now() + 60000);
+          }
+
+          const { error: updateError } = await supabase
+            .from('products')
+            .update({
+              status: 'scheduled',
+              launch_date: launchDate.toISOString(),
+            })
+            .eq('id', savedProductId);
+
+          if (updateError) throw updateError;
+
+          handleSubmitSuccess(savedProductId, formData.name, 'Product scheduled — your existing payment was applied.');
+          return;
+        } catch (error) {
+          console.error('Error applying existing payment:', error);
+          toast.error('Failed to schedule launch. Please contact support.');
+          return;
+        }
+      }
 
       const hasExistingPlan = existingOrders && existingOrders.length > 0;
       const canReuseExistingPlan = hasExistingPlan && existingOrders[0].plan !== 'join';
       const isUpgrading = hasExistingPlan && existingOrders[0].plan === 'join' && formData.plan !== 'join';
+
       
       // Check if user has active Pass - bypass payment for non-advertising features
       if (hasActivePass && formData.plan !== 'free') {
