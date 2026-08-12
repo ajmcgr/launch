@@ -1,3 +1,4 @@
+import { truncateToOneSentence } from '@/lib/tagline';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -106,8 +107,8 @@ export const HomeLaunchCard = ({
             </span>
           )}
         </div>
-        <p className="text-sm text-muted-foreground text-center line-clamp-2">
-          {tagline}
+        <p className="text-sm text-muted-foreground text-center line-clamp-2"  title={tagline}>
+          {truncateToOneSentence(tagline)}
         </p>
         {(launchDate || (platforms && platforms.length > 0)) && (
           <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mt-2">

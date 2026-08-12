@@ -1,3 +1,4 @@
+import { truncateToOneSentence } from '@/lib/tagline';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -164,8 +165,8 @@ export const LaunchCard = ({
           </span>
         </div>
         
-        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-          {tagline}
+        <p className="text-xs text-muted-foreground mb-2 line-clamp-2"  title={tagline}>
+          {truncateToOneSentence(tagline)}
         </p>
         
         {showFollowButton && (

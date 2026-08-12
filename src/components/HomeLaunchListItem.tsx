@@ -1,3 +1,4 @@
+import { truncateToOneSentence } from '@/lib/tagline';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, MessageSquare } from 'lucide-react';
@@ -7,12 +8,6 @@ import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 
 
-// Truncate text to one sentence
-const truncateToOneSentence = (text: string): string => {
-  if (!text) return '';
-  const match = text.match(/^[^.!?]*[.!?]/);
-  return match ? match[0] : text;
-};
 
 interface HomeLaunchListItemProps {
   productId?: string;
@@ -112,7 +107,7 @@ export const HomeLaunchListItem = ({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <p className="text-sm text-muted-foreground line-clamp-1 flex-1">{truncateToOneSentence(tagline)}</p>
+            <p className="text-sm text-muted-foreground line-clamp-1 flex-1" title={tagline}>{truncateToOneSentence(tagline)}</p>
             {makers.length > 0 && (
               <div className="flex items-center gap-1 flex-shrink-0">
                 {makers.filter(m => m && m.username).slice(0, 2).map((maker, index, arr) => (
