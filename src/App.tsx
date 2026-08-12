@@ -523,7 +523,7 @@ const AppContent = () => {
             <Route path="/alternatives/:slug" element={<AlternativesPage />} />
             <Route path="/my-collections" element={<Collections />} />
             <Route path="/my-collections/:slug" element={<CollectionDetailPage />} />
-            <Route path="/c/:slug" element={<PublicCollection />} />
+            <Route path="/c/:slug" element={<LegacyCollectionRedirect />} />
             <Route path="/collections" element={<CollectionsDirectory />} />
             <Route path="/reserve" element={<Reserve />} />
             {/* Vibe Coded It lives at vibecodedit.com — no in-app route. */}
