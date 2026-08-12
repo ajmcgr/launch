@@ -27,7 +27,9 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   // Crawler-facing URL so LinkedIn/Reddit render the product's own screenshot card
   const ogShareUrl = getProductShareUrl(productSlug);
   
-  const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${productUrl}\n\ncc @trylaunchai`;
+  // X only reads OG tags from the URL in the tweet, and the SPA can't serve
+  // per-product tags — use the crawler endpoint so the screenshot card renders.
+  const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${ogShareUrl}\n\ncc @trylaunchai`;
   
   const linkedInShareText = `🚀 Excited to announce: I just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nWould love your support - check it out and let me know what you think!\n\n${productUrl}`;
   
