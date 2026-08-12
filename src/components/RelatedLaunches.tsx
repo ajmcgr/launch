@@ -1,3 +1,4 @@
+import { truncateToOneSentence } from '@/lib/tagline';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,10 +18,6 @@ interface MiniProduct {
   iconUrl?: string;
 }
 
-const truncateTagline = (text: string) => {
-  const match = text?.match(/^[^.!?]*[.!?]/);
-  return match ? match[0] : text;
-};
 
 const RelatedLaunches = ({
   productId,
@@ -136,7 +133,7 @@ const RelatedLaunches = ({
             {p.name}
           </div>
           <div className="text-xs text-muted-foreground truncate">
-            {truncateTagline(p.tagline)}
+            {truncateToOneSentence(p.tagline)}
           </div>
         </div>
       </Link>

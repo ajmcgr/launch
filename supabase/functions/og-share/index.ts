@@ -12,29 +12,41 @@ Deno.serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get("slug");
+    // Tolerate pasted variants: trailing slashes, full URLs, stray whitespace
+    const rawSlug = url.searchParams.get("slug") || "";
+    const slug = rawSlug.trim().replace(/^.*\/launch\//, "").replace(/[/?#].*$/, "");
 
     if (!slug) {
-      return new Response("Missing slug", { status: 400 });
+      // Never show a raw error page to a human who clicked a share link
+      return new Response(null, {
+        status: 302,
+        headers: { Location: "https://trylaunch.ai" },
+      });
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch product details
+    // Fetch product details.
+    // No status filter: products shared before/around go-live must still
+    // resolve, otherwise the share link dumps people on the homepage.
     const { data: product, error } = await supabase
       .from("products")
       .select("id, name, tagline, slug, description")
       .eq("slug", slug)
-      .eq("status", "launched")
-      .single();
+      .maybeSingle();
 
     if (error || !product) {
-      // Redirect to homepage if product not found
+      // Still send people to the product page — only fall back to the
+      // homepage when we have no slug at all.
       return new Response(null, {
         status: 302,
-        headers: { Location: "https://trylaunch.ai" },
+        headers: {
+          Location: slug
+            ? `https://trylaunch.ai/launch/${encodeURIComponent(slug)}`
+            : "https://trylaunch.ai",
+        },
       });
     }
 

@@ -11,13 +11,8 @@ import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
 import { SubmissionTypeBadge } from '@/components/SubmissionTypeBadge';
+import { truncateToOneSentence } from '@/lib/tagline';
 
-// Truncate text to one sentence
-const truncateToOneSentence = (text: string): string => {
-  if (!text) return '';
-  const match = text.match(/^[^.!?]*[.!?]/);
-  return match ? match[0] : text;
-};
 interface LaunchListItemProps {
   id: string;
   slug: string;
@@ -165,7 +160,7 @@ export const LaunchListItem = ({
           </div>
 
           
-          <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1">
+          <p className="text-sm text-muted-foreground mb-1.5 line-clamp-1" title={tagline}>
             {truncateToOneSentence(tagline)}
           </p>
           
