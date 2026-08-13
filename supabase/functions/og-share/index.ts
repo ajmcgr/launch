@@ -50,22 +50,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fetch product media — oldest first so "first screenshot" is stable
-    const { data: media } = await supabase
+    // Fetch product media. This table has no created_at column; ordering by it
+    // causes the whole query to fail and every product to use the default card.
+    const { data: media, error: mediaError } = await supabase
       .from("product_media")
-      .select("url, type, created_at")
+      .select("url, type")
       .eq("product_id", product.id)
-      .in("type", ["screenshot", "icon"])
+      .in("type", ["screenshot", "thumbnail", "icon"])
       .not("url", "is", null)
-      .order("created_at", { ascending: true })
       .limit(20);
 
+    if (mediaError) {
+      console.error("OG share media query failed:", mediaError);
+    }
+
     const screenshot = media?.find((m: any) => m.type === "screenshot" && m.url);
+    const thumbnail = media?.find((m: any) => m.type === "thumbnail" && m.url);
     const icon = media?.find((m: any) => m.type === "icon" && m.url);
 
     // Priority: first screenshot -> thumbnail -> icon -> default Launch card
     const rawImage =
       screenshot?.url ||
+      thumbnail?.url ||
       icon?.url ||
       "https://trylaunch.ai/social-card.png";
 
