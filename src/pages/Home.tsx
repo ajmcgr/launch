@@ -941,10 +941,10 @@ const Home = () => {
           );
         }
         
-        // Insert sponsor banner after product 5
+        // Insert sponsor banner slot after product 5
         if (productIndex === 5) {
           items.push(
-            <SponsorBanner key="sponsor-banner-inline" />
+            <HomepageSponsorBanners key="sponsor-banner-inline" offset={3} limit={1} fallbackMedia className="my-2" />
           );
         }
         
