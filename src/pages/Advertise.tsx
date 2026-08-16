@@ -772,26 +772,22 @@ const Advertise = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-muted/30 rounded-lg p-4 border">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Ad</p>
-                      <div className="flex items-start gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
-                          <span className="text-lg font-bold text-primary">Y</span>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold">Your Product Name</h4>
-                          <p className="text-sm text-muted-foreground">Your tagline appears here with your branding</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <div className="w-10 h-10 border border-primary rounded-lg flex items-center justify-center">
-                            <span className="text-primary font-bold">▲</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground mt-1">123</span>
-                        </div>
-                      </div>
+                    <div className="bg-muted/30 rounded-lg p-4 border space-y-4">
+                      <img
+                        src={adPreviewFeed.url}
+                        alt="Example of a sponsored ad placement in the Launch homepage feed"
+                        className="w-full rounded-md"
+                        loading="lazy"
+                      />
+                      <img
+                        src={adPreviewSidebar.url}
+                        alt="Example of a sponsored ad tile in the Launch sidebar"
+                        className="w-40 rounded-md"
+                        loading="lazy"
+                      />
                     </div>
                     <p className="text-sm text-muted-foreground mt-3">
-                      Appears at the top of the homepage in a dedicated "Sponsored" section, visible to all monthly active users.
+                      Appears in the homepage and product feeds plus the sidebar rails, labelled "Ad" and visible to all monthly active users.
                     </p>
                   </CardContent>
                 </Card>
@@ -806,21 +802,12 @@ const Advertise = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="bg-muted/30 rounded-lg p-4 border">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">This Week's Sponsor</p>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
-                            <span className="font-bold text-primary">Y</span>
-                          </div>
-                          <div>
-                            <h4 className="font-semibold">Your Product Name</h4>
-                            <p className="text-xs text-muted-foreground">yourproduct.com</p>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Featured description of your product reaching 2,000+ engaged subscribers.
-                        </p>
-                      </div>
+                      <img
+                        src={adPreviewNewsletter.url}
+                        alt="Example of a Sponsored Launches section in the Launch newsletter"
+                        className="w-full rounded-md"
+                        loading="lazy"
+                      />
                     </div>
                     <p className="text-sm text-muted-foreground mt-3">
                       Featured prominently in our weekly newsletter sent to 2,000+ builders and AI enthusiasts.
