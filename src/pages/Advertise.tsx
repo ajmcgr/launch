@@ -31,7 +31,7 @@ interface LaunchedProduct {
 
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import stripeLogo from '@/assets/stripe-logo.png';
-import adPreviewNewsletter from '@/assets/ad-preview-newsletter.png.asset.json';
+import adPreviewNewsletter from '@/assets/ad-preview-newsletter-v2.png.asset.json';
 import adPreviewSidebar from '@/assets/ad-preview-sidebar.png.asset.json';
 import adPreviewFeed from '@/assets/ad-preview-feed.png.asset.json';
 
