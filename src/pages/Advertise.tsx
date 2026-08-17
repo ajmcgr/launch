@@ -31,6 +31,9 @@ interface LaunchedProduct {
 
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import stripeLogo from '@/assets/stripe-logo.png';
+import adPreviewNewsletter from '@/assets/ad-preview-newsletter.png.asset.json';
+import adPreviewSidebar from '@/assets/ad-preview-sidebar.png.asset.json';
+import adPreviewFeed from '@/assets/ad-preview-feed.png.asset.json';
 
 type SponsorshipType = 'website' | 'newsletter' | 'combined';
 
@@ -691,6 +694,64 @@ const Advertise = () => {
               Estimated impressions based on recent platform traffic and growth trends. Actual performance may vary.
             </p>
 
+            {/* Placement Preview Section */}
+            <div className="max-w-4xl mx-auto mb-12">
+              <h2 className="text-2xl font-bold text-center mb-8">How Your Sponsorship Appears</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Website Preview */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Eye className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">Website Ad</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-muted/30 rounded-lg p-4 border space-y-4">
+                      <img
+                        src={adPreviewFeed.url}
+                        alt="Example of a sponsored ad placement in the Launch homepage feed"
+                        className="w-full rounded-md"
+                        loading="lazy"
+                      />
+                      <img
+                        src={adPreviewSidebar.url}
+                        alt="Example of a sponsored ad tile in the Launch sidebar"
+                        className="w-40 rounded-md"
+                        loading="lazy"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      Appears in the homepage and product feeds plus the sidebar rails, labelled "Ad" and visible to all monthly active users.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Newsletter Preview */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">Newsletter Feature</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-muted/30 rounded-lg p-4 border">
+                      <img
+                        src={adPreviewNewsletter.url}
+                        alt="Example of a Sponsored Launches section in the Launch newsletter"
+                        className="w-full rounded-md"
+                        loading="lazy"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      Featured prominently in our weekly newsletter sent to 2,000+ builders and AI enthusiasts.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
             {/* Testimonials */}
             <div className="max-w-3xl mx-auto mb-8">
               <div className="text-center mb-8">
@@ -759,63 +820,6 @@ const Advertise = () => {
               <AdPerformanceStats />
             </div>
 
-            {/* Placement Preview Section */}
-            <div className="max-w-4xl mx-auto mb-12">
-              <h2 className="text-2xl font-bold text-center mb-8">How Your Sponsorship Appears</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Website Preview */}
-                <Card>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <Eye className="h-5 w-5 text-primary" />
-                      <CardTitle className="text-lg">Website Ad</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="bg-muted/30 rounded-lg p-4 border space-y-4">
-                      <img
-                        src={adPreviewFeed.url}
-                        alt="Example of a sponsored ad placement in the Launch homepage feed"
-                        className="w-full rounded-md"
-                        loading="lazy"
-                      />
-                      <img
-                        src={adPreviewSidebar.url}
-                        alt="Example of a sponsored ad tile in the Launch sidebar"
-                        className="w-40 rounded-md"
-                        loading="lazy"
-                      />
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-3">
-                      Appears in the homepage and product feeds plus the sidebar rails, labelled "Ad" and visible to all monthly active users.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Newsletter Preview */}
-                <Card>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-5 w-5 text-primary" />
-                      <CardTitle className="text-lg">Newsletter Feature</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="bg-muted/30 rounded-lg p-4 border">
-                      <img
-                        src={adPreviewNewsletter.url}
-                        alt="Example of a Sponsored Launches section in the Launch newsletter"
-                        className="w-full rounded-md"
-                        loading="lazy"
-                      />
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-3">
-                      Featured prominently in our weekly newsletter sent to 2,000+ builders and AI enthusiasts.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
 
             {/* FAQ Section */}
             <div className="max-w-2xl mx-auto mb-12">
