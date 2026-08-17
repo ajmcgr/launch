@@ -195,13 +195,32 @@ const firstSentences = (text: string | null | undefined, n = 3): string => {
   return matches.slice(0, n).join('').trim();
 };
 
+function sponsoredToHtml(
+  name: string,
+  tagline: string,
+  about: string,
+  url: string,
+  iconUrl?: string,
+) {
+  const icon = iconUrl
+    ? `<img src="${iconUrl}" alt="${escapeHtml(name)}" width="48" height="48" style="width:48px;height:48px;border-radius:10px;display:block;margin:0 0 8px 0;" />`
+    : '';
+  const aboutHtml = about ? `<p style="margin:0 0 12px 0;">${escapeHtml(about)}</p>` : '';
+  return `${icon}<p style="margin:0 0 4px 0;"><a href="${url}"><strong>${escapeHtml(name)}</strong></a> — ${escapeHtml(tagline)}</p>${aboutHtml}`;
+}
+
+function sponsoredToPlain(name: string, tagline: string, about: string) {
+  return `${name} — ${tagline}${about ? `\n${about}` : ''}`;
+}
+
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
   const taglineText = product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline';
   const aboutExcerpt = firstSentences(product.description, 3);
   const iconUrl = getIconUrl(product);
-  const htmlText = () => productToHtml(product.name, taglineText, productUrl);
-  const plainText = `${product.name}\n${taglineText}${aboutExcerpt ? `\n\n${aboutExcerpt}` : ''}\n${productUrl}`;
+  const htmlText = () => sponsoredToHtml(product.name, taglineText, aboutExcerpt, productUrl, iconUrl);
+  const plainText = sponsoredToPlain(product.name, taglineText, aboutExcerpt);
+
 
   return (
     <div className="flex items-start justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors border-border">
