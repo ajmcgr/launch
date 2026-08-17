@@ -250,7 +250,7 @@ const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
               {aboutExcerpt}
             </p>
           )}
-          <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
+          
         </div>
       </div>
       <div className="flex items-center gap-1 ml-2">
