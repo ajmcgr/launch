@@ -166,7 +166,6 @@ const ProductCard = ({ product }: { product: SurfacedProduct }) => {
           <p className="text-sm text-muted-foreground truncate mt-0.5">
             {product.tagline ? truncateToOneSentence(product.tagline) : 'No tagline'}
           </p>
-          <p className="text-xs text-muted-foreground/70 mt-1 truncate">{productUrl}</p>
         </div>
       </div>
       <div className="flex items-center gap-1 ml-2">
@@ -370,11 +369,15 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
 
   const handleCopyAll = async () => {
     const plain = products
-      .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
+      .map((p) => sponsoredToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', firstSentences(p.description, 3)))
       .join('\n\n');
-    const htmlRows = await Promise.all(
-      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
-    );
+    const htmlRows = products.map((p) => sponsoredToHtml(
+      p.name,
+      p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline',
+      firstSentences(p.description, 3),
+      `https://trylaunch.ai/launch/${p.slug}`,
+      getIconUrl(p),
+    ));
     const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
     await copyRichText(html, `${title}\n\n${plain}`);
