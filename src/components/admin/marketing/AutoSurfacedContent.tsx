@@ -369,15 +369,11 @@ const CopyAllButton = ({ products, title }: { products: SurfacedProduct[]; title
 
   const handleCopyAll = async () => {
     const plain = products
-      .map((p) => sponsoredToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', firstSentences(p.description, 3)))
+      .map((p) => productToPlain(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
       .join('\n\n');
-    const htmlRows = products.map((p) => sponsoredToHtml(
-      p.name,
-      p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline',
-      firstSentences(p.description, 3),
-      `https://trylaunch.ai/launch/${p.slug}`,
-      getIconUrl(p),
-    ));
+    const htmlRows = await Promise.all(
+      products.map((p) => productToHtml(p.name, p.tagline ? truncateToOneSentence(p.tagline) : 'No tagline', `https://trylaunch.ai/launch/${p.slug}`))
+    );
     const html = `<h3>${title}</h3>${htmlRows.join('')}`;
     
     await copyRichText(html, `${title}\n\n${plain}`);
