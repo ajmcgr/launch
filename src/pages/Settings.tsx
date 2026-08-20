@@ -300,7 +300,7 @@ const Settings = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Settings</h1>
 
-        <Tabs defaultValue="profile" className="space-y-6">
+        <Tabs defaultValue={searchParams.get('tab') === 'notifications' ? 'notifications' : 'profile'} className="space-y-6">
           <TabsList>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="products">Integrations</TabsTrigger>
