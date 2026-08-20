@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+import { DigestFrequencySelect, type DigestFrequency } from '@/components/DigestFrequencySelect';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -22,7 +22,7 @@ const Auth = () => {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [dailyDigest, setDailyDigest] = useState(true);
+  const [digestFrequency, setDigestFrequency] = useState<DigestFrequency>('daily');
 
   // Sync isSignUp state with URL parameter
   useEffect(() => {
@@ -144,19 +144,20 @@ const Auth = () => {
 
   // Subscribe ALL new users to newsletter (email and OAuth signups)
   useEffect(() => {
-    // Track signup intent + daily digest preference when on signup mode
+    // Track signup intent + New Launches digest preference when on signup mode
     if (isSignUp) {
       localStorage.setItem('pendingNewsletterSignup', 'true');
-      localStorage.setItem('pendingDailyDigest', dailyDigest ? 'true' : 'false');
+      localStorage.setItem('pendingDigestFrequency', digestFrequency);
     }
-  }, [isSignUp, dailyDigest]);
+  }, [isSignUp, digestFrequency]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Handle newsletter subscription for new users
       if (event === 'SIGNED_IN' && session?.user?.email) {
         const isPendingSignup = localStorage.getItem('pendingNewsletterSignup') === 'true';
-        const wantsDailyDigest = localStorage.getItem('pendingDailyDigest') === 'true';
+        const pendingFrequency = (localStorage.getItem('pendingDigestFrequency') || 'off') as DigestFrequency;
+        const wantsDailyDigest = pendingFrequency === 'daily';
         const subscribedKey = `beehiiv_subscribed_${session.user.id}`;
         const alreadySubscribed = localStorage.getItem(subscribedKey) === 'true';
 
@@ -167,19 +168,25 @@ const Auth = () => {
 
         if ((isPendingSignup || isNewUser) && !alreadySubscribed) {
           localStorage.removeItem('pendingNewsletterSignup');
-          localStorage.removeItem('pendingDailyDigest');
+          localStorage.removeItem('pendingDigestFrequency');
           localStorage.setItem(subscribedKey, 'true');
 
+          // Persist the New Launches digest preference on the profile
           try {
-            console.log('Subscribing new user to newsletter:', session.user.email, 'dailyDigest:', wantsDailyDigest);
+            await (supabase.from('users') as any)
+              .update({ launch_digest_frequency: pendingFrequency })
+              .eq('id', session.user.id);
+          } catch (error) {
+            console.error('Error saving digest preference:', error);
+          }
+
+          try {
             const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
               body: { email: session.user.email, dailyDigest: wantsDailyDigest },
             });
 
             if (error) {
               console.error('Newsletter subscription failed:', error);
-            } else {
-              console.log('Newsletter subscription successful');
             }
           } catch (error) {
             console.error('Error subscribing to newsletter:', error);
@@ -194,6 +201,7 @@ const Auth = () => {
         }
       }
     });
+
 
     return () => subscription.unsubscribe();
   }, []);
@@ -308,16 +316,15 @@ const Auth = () => {
               </div>
             )}
             {isSignUp && !isForgotPassword && (
-              <label className="flex items-start gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-                <Checkbox
-                  checked={dailyDigest}
-                  onCheckedChange={(c) => setDailyDigest(c === true)}
-                  className="mt-0.5"
-                />
-                <span>
-                  Email me a daily digest of top launches
-                </span>
-              </label>
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <div>
+                  <p className="text-sm font-medium text-foreground">New Launches</p>
+                  <p className="text-sm text-muted-foreground">
+                    Get the best new apps launching on Launch delivered to your inbox.
+                  </p>
+                </div>
+                <DigestFrequencySelect value={digestFrequency} onChange={setDigestFrequency} />
+              </div>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading 

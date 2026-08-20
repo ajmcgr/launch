@@ -15,6 +15,7 @@ import { PassStatus } from '@/components/PassStatus';
 import { usePass } from '@/hooks/use-pass';
 import { useQueryClient } from '@tanstack/react-query';
 import { gradientFor } from '@/lib/gradients';
+import { DigestFrequencySelect, type DigestFrequency } from '@/components/DigestFrequencySelect';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Settings = () => {
     banner_image_url: '',
     stripe_customer_id: '',
     email_notifications_enabled: true,
+    launch_digest_frequency: 'off' as DigestFrequency,
     notify_on_follow: true,
     notify_on_comment: true,
     notify_on_vote: true,
@@ -103,6 +105,7 @@ const Settings = () => {
         avatar_url: profile.avatar_url,
         banner_image_url: profile.banner_image_url,
         email_notifications_enabled: profile.email_notifications_enabled,
+        launch_digest_frequency: profile.launch_digest_frequency,
         notify_on_follow: profile.notify_on_follow,
         notify_on_comment: profile.notify_on_comment,
         notify_on_vote: profile.notify_on_vote,
@@ -111,7 +114,7 @@ const Settings = () => {
 
       const { error } = await supabase
         .from('users')
-        .update(updateData)
+        .update(updateData as any)
         .eq('id', user.id);
 
       if (error) throw error;
@@ -297,7 +300,7 @@ const Settings = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Settings</h1>
 
-        <Tabs defaultValue="profile" className="space-y-6">
+        <Tabs defaultValue={searchParams.get('tab') === 'notifications' ? 'notifications' : 'profile'} className="space-y-6">
           <TabsList>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="products">Integrations</TabsTrigger>
@@ -450,7 +453,46 @@ const Settings = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="notifications">
+          <TabsContent value="notifications" className="space-y-6">
+            <Card id="email-preferences">
+              <CardHeader>
+                <CardTitle>Email Preferences</CardTitle>
+                <CardDescription>
+                  Choose which Launch emails you want to receive
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="space-y-0.5">
+                    <Label>New Launches</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Get the best new apps launching on Launch delivered to your inbox.
+                    </p>
+                  </div>
+                  <DigestFrequencySelect
+                    value={profile.launch_digest_frequency}
+                    onChange={async (value) => {
+                      const previous = profile.launch_digest_frequency;
+                      setProfile({ ...profile, launch_digest_frequency: value });
+                      const { error } = await (supabase.from('users') as any)
+                        .update({ launch_digest_frequency: value })
+                        .eq('id', user.id);
+                      if (error) {
+                        setProfile((p) => ({ ...p, launch_digest_frequency: previous }));
+                        toast.error('Could not update your email preference');
+                      } else {
+                        toast.success(
+                          value === 'off'
+                            ? 'You will no longer receive New Launches emails'
+                            : `New Launches emails set to ${value}`,
+                        );
+                      }
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Email Notifications</CardTitle>

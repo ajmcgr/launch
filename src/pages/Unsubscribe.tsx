@@ -6,10 +6,37 @@ import { Helmet } from 'react-helmet-async';
 export default function Unsubscribe() {
   const [params] = useSearchParams();
   const email = (params.get('email') || '').trim();
+  const isDigest = params.get('type') === 'digest';
+  const uid = (params.get('uid') || '').trim();
+  const token = (params.get('token') || '').trim();
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'invalid'>('loading');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    if (isDigest) {
+      if (!uid || !token) {
+        setStatus('invalid');
+        return;
+      }
+      (async () => {
+        try {
+          const { data, error } = await supabase.functions.invoke('digest-unsubscribe', {
+            body: { uid, token },
+          });
+          if (error || (data as any)?.error) {
+            setStatus('error');
+            setErrorMsg(error?.message || (data as any)?.error || 'Something went wrong');
+          } else {
+            setStatus('success');
+          }
+        } catch (e: any) {
+          setStatus('error');
+          setErrorMsg(e?.message || 'Network error');
+        }
+      })();
+      return;
+    }
+
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setStatus('invalid');
       return;
@@ -30,7 +57,7 @@ export default function Unsubscribe() {
         setErrorMsg(e?.message || 'Network error');
       }
     })();
-  }, [email]);
+  }, [email, isDigest, uid, token]);
 
   return (
     <>
@@ -45,9 +72,19 @@ export default function Unsubscribe() {
             <p className="text-muted-foreground">Processing your request...</p>
           )}
           {status === 'invalid' && (
-            <p className="text-muted-foreground">No email provided. The unsubscribe link appears to be malformed.</p>
+            <p className="text-muted-foreground">The unsubscribe link appears to be malformed or incomplete.</p>
           )}
-          {status === 'success' && (
+          {status === 'success' && isDigest && (
+            <>
+              <p className="text-foreground">
+                You're unsubscribed from New Launches emails.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Your account and transactional emails are unaffected. You can turn New Launches back on any time in <a href="/settings?tab=notifications" className="underline">your email preferences</a>.
+              </p>
+            </>
+          )}
+          {status === 'success' && !isDigest && (
             <>
               <p className="text-foreground">
                 You're unsubscribed from outreach emails. <span className="font-medium">{email}</span> won't receive further cold outreach from us.
