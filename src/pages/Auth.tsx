@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+import { DigestFrequencySelect, type DigestFrequency } from '@/components/DigestFrequencySelect';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -22,7 +22,7 @@ const Auth = () => {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [dailyDigest, setDailyDigest] = useState(true);
+  const [digestFrequency, setDigestFrequency] = useState<DigestFrequency>('daily');
 
   // Sync isSignUp state with URL parameter
   useEffect(() => {
