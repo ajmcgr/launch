@@ -144,19 +144,20 @@ const Auth = () => {
 
   // Subscribe ALL new users to newsletter (email and OAuth signups)
   useEffect(() => {
-    // Track signup intent + daily digest preference when on signup mode
+    // Track signup intent + New Launches digest preference when on signup mode
     if (isSignUp) {
       localStorage.setItem('pendingNewsletterSignup', 'true');
-      localStorage.setItem('pendingDailyDigest', dailyDigest ? 'true' : 'false');
+      localStorage.setItem('pendingDigestFrequency', digestFrequency);
     }
-  }, [isSignUp, dailyDigest]);
+  }, [isSignUp, digestFrequency]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Handle newsletter subscription for new users
       if (event === 'SIGNED_IN' && session?.user?.email) {
         const isPendingSignup = localStorage.getItem('pendingNewsletterSignup') === 'true';
-        const wantsDailyDigest = localStorage.getItem('pendingDailyDigest') === 'true';
+        const pendingFrequency = (localStorage.getItem('pendingDigestFrequency') || 'off') as DigestFrequency;
+        const wantsDailyDigest = pendingFrequency === 'daily';
         const subscribedKey = `beehiiv_subscribed_${session.user.id}`;
         const alreadySubscribed = localStorage.getItem(subscribedKey) === 'true';
 
@@ -167,19 +168,25 @@ const Auth = () => {
 
         if ((isPendingSignup || isNewUser) && !alreadySubscribed) {
           localStorage.removeItem('pendingNewsletterSignup');
-          localStorage.removeItem('pendingDailyDigest');
+          localStorage.removeItem('pendingDigestFrequency');
           localStorage.setItem(subscribedKey, 'true');
 
+          // Persist the New Launches digest preference on the profile
           try {
-            console.log('Subscribing new user to newsletter:', session.user.email, 'dailyDigest:', wantsDailyDigest);
+            await (supabase.from('users') as any)
+              .update({ launch_digest_frequency: pendingFrequency })
+              .eq('id', session.user.id);
+          } catch (error) {
+            console.error('Error saving digest preference:', error);
+          }
+
+          try {
             const { error } = await supabase.functions.invoke('subscribe-to-newsletter', {
               body: { email: session.user.email, dailyDigest: wantsDailyDigest },
             });
 
             if (error) {
               console.error('Newsletter subscription failed:', error);
-            } else {
-              console.log('Newsletter subscription successful');
             }
           } catch (error) {
             console.error('Error subscribing to newsletter:', error);
@@ -194,6 +201,7 @@ const Auth = () => {
         }
       }
     });
+
 
     return () => subscription.unsubscribe();
   }, []);
