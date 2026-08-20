@@ -105,6 +105,7 @@ const Settings = () => {
         avatar_url: profile.avatar_url,
         banner_image_url: profile.banner_image_url,
         email_notifications_enabled: profile.email_notifications_enabled,
+        launch_digest_frequency: profile.launch_digest_frequency,
         notify_on_follow: profile.notify_on_follow,
         notify_on_comment: profile.notify_on_comment,
         notify_on_vote: profile.notify_on_vote,
@@ -113,7 +114,7 @@ const Settings = () => {
 
       const { error } = await supabase
         .from('users')
-        .update(updateData)
+        .update(updateData as any)
         .eq('id', user.id);
 
       if (error) throw error;
