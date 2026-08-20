@@ -471,9 +471,22 @@ const Settings = () => {
                   </div>
                   <DigestFrequencySelect
                     value={profile.launch_digest_frequency}
-                    onChange={(value) => {
+                    onChange={async (value) => {
+                      const previous = profile.launch_digest_frequency;
                       setProfile({ ...profile, launch_digest_frequency: value });
-                      setTimeout(() => handleUpdateProfile(new Event('submit') as any), 0);
+                      const { error } = await (supabase.from('users') as any)
+                        .update({ launch_digest_frequency: value })
+                        .eq('id', user.id);
+                      if (error) {
+                        setProfile((p) => ({ ...p, launch_digest_frequency: previous }));
+                        toast.error('Could not update your email preference');
+                      } else {
+                        toast.success(
+                          value === 'off'
+                            ? 'You will no longer receive New Launches emails'
+                            : `New Launches emails set to ${value}`,
+                        );
+                      }
                     }}
                   />
                 </div>
