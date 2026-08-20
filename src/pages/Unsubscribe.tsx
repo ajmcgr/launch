@@ -74,7 +74,17 @@ export default function Unsubscribe() {
           {status === 'invalid' && (
             <p className="text-muted-foreground">No email provided. The unsubscribe link appears to be malformed.</p>
           )}
-          {status === 'success' && (
+          {status === 'success' && isDigest && (
+            <>
+              <p className="text-foreground">
+                You're unsubscribed from New Launches emails.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Your account and transactional emails are unaffected. You can turn New Launches back on any time in <a href="/settings?tab=notifications" className="underline">your email preferences</a>.
+              </p>
+            </>
+          )}
+          {status === 'success' && !isDigest && (
             <>
               <p className="text-foreground">
                 You're unsubscribed from outreach emails. <span className="font-medium">{email}</span> won't receive further cold outreach from us.
