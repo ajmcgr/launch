@@ -90,3 +90,9 @@ verify_jwt = false
 
 [functions.send-campaign-welcome]
 verify_jwt = false
+
+[functions.send-launch-digest]
+verify_jwt = false
+
+[functions.digest-unsubscribe]
+verify_jwt = false

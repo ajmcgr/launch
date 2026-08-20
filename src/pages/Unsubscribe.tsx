@@ -72,7 +72,7 @@ export default function Unsubscribe() {
             <p className="text-muted-foreground">Processing your request...</p>
           )}
           {status === 'invalid' && (
-            <p className="text-muted-foreground">No email provided. The unsubscribe link appears to be malformed.</p>
+            <p className="text-muted-foreground">The unsubscribe link appears to be malformed or incomplete.</p>
           )}
           {status === 'success' && isDigest && (
             <>
