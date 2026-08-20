@@ -453,7 +453,33 @@ const Settings = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="notifications">
+          <TabsContent value="notifications" className="space-y-6">
+            <Card id="email-preferences">
+              <CardHeader>
+                <CardTitle>Email Preferences</CardTitle>
+                <CardDescription>
+                  Choose which Launch emails you want to receive
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="space-y-0.5">
+                    <Label>New Launches</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Get the best new apps launching on Launch delivered to your inbox.
+                    </p>
+                  </div>
+                  <DigestFrequencySelect
+                    value={profile.launch_digest_frequency}
+                    onChange={(value) => {
+                      setProfile({ ...profile, launch_digest_frequency: value });
+                      setTimeout(() => handleUpdateProfile(new Event('submit') as any), 0);
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Email Notifications</CardTitle>
