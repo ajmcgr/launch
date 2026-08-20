@@ -308,16 +308,15 @@ const Auth = () => {
               </div>
             )}
             {isSignUp && !isForgotPassword && (
-              <label className="flex items-start gap-2 text-sm text-muted-foreground cursor-pointer select-none">
-                <Checkbox
-                  checked={dailyDigest}
-                  onCheckedChange={(c) => setDailyDigest(c === true)}
-                  className="mt-0.5"
-                />
-                <span>
-                  Email me a daily digest of top launches
-                </span>
-              </label>
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <div>
+                  <p className="text-sm font-medium text-foreground">New Launches</p>
+                  <p className="text-sm text-muted-foreground">
+                    Get the best new apps launching on Launch delivered to your inbox.
+                  </p>
+                </div>
+                <DigestFrequencySelect value={digestFrequency} onChange={setDigestFrequency} />
+              </div>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading 
