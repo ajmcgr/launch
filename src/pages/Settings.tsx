@@ -15,6 +15,7 @@ import { PassStatus } from '@/components/PassStatus';
 import { usePass } from '@/hooks/use-pass';
 import { useQueryClient } from '@tanstack/react-query';
 import { gradientFor } from '@/lib/gradients';
+import { DigestFrequencySelect, type DigestFrequency } from '@/components/DigestFrequencySelect';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Settings = () => {
     banner_image_url: '',
     stripe_customer_id: '',
     email_notifications_enabled: true,
+    launch_digest_frequency: 'off' as DigestFrequency,
     notify_on_follow: true,
     notify_on_comment: true,
     notify_on_vote: true,
