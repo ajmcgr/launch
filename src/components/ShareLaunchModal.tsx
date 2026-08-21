@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { X, Linkedin, Copy, Check, ExternalLink } from 'lucide-react';
-import { getProductUrl, getProductShareUrl } from '@/lib/ogShare';
+import { getProductUrl } from '@/lib/ogShare';
 
 const RedditIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -24,12 +24,10 @@ const ShareLaunchModal = ({ open, onClose, productName, productSlug, productTagl
   const [copied, setCopied] = useState<string | null>(null);
   
   const productUrl = getProductUrl(productSlug);
-  // Crawler-facing URL so LinkedIn/Reddit render the product's own screenshot card
-  const ogShareUrl = getProductShareUrl(productSlug);
+  // Always share the clean trylaunch.ai URL — never the raw edge-function host.
+  const ogShareUrl = productUrl;
   
-  // X only reads OG tags from the URL in the tweet, and the SPA can't serve
-  // per-product tags — use the crawler endpoint so the screenshot card renders.
-  const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${ogShareUrl}\n\ncc @trylaunchai`;
+  const xShareText = `🚀 Just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nCheck it out and show some love 👇\n${productUrl}\n\ncc @trylaunchai`;
   
   const linkedInShareText = `🚀 Excited to announce: I just launched ${productName} on Launch!\n\n${productTagline || ''}\n\nWould love your support - check it out and let me know what you think!\n\n${productUrl}`;
   
