@@ -268,8 +268,8 @@ Deno.serve(async (req) => {
     console.log('Starting launch scheduler check...');
 
     // Get current time in PST for comparison
-    const nowPST = toZonedTime(new Date(), PST_TIMEZONE);
-    console.log('Current PST time:', nowPST.toISOString());
+    console.log('Current UTC time:', new Date().toISOString());
+
 
     // Find all products scheduled to launch that are past their launch date (comparing in UTC)
     const { data: productsToLaunch, error: fetchError } = await supabaseAdmin
