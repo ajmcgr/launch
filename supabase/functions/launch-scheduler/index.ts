@@ -125,14 +125,38 @@ function unauthorizedResponse(headers: Record<string, string> = {}) {
   });
 }
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+// Plain fetch-based Resend client. The SDK import used to run at module scope,
+// so a missing RESEND_API_KEY or an esm.sh hiccup crashed the whole function on
+// boot — which silently stopped every scheduled launch.
+const resend = {
+  emails: {
+    async send(payload: Record<string, unknown>) {
+      const key = Deno.env.get('RESEND_API_KEY');
+      if (!key) {
+        console.error('RESEND_API_KEY missing — skipping email');
+        return { error: 'missing_api_key' };
+      }
+      const resp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) {
+        const body = await resp.text();
+        console.error('Resend send failed [' + resp.status + ']: ' + body);
+        return { error: body };
+      }
+      return await resp.json();
+    },
+  },
+};
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const PST_TIMEZONE = 'America/Los_Angeles';
+
 
 const TWEET_FUNCTIONS = ['post-launch-tweet', 'post-launch-tweet-launch'];
 
