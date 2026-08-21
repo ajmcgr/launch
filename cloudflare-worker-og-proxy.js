@@ -43,9 +43,7 @@ export default {
     const supabaseUrl = (env.SUPABASE_URL || '').replace(/\/$/, '');
     if (!supabaseUrl) return fetch(request);
 
-    const target = `${supabaseUrl}/functions/v1/og-share?slug=${encodeURIComponent(
-      slug,
-    )}&canonical=${encodeURIComponent(url.origin + url.pathname)}`;
+    const target = `${supabaseUrl}/functions/v1/og-share?slug=${encodeURIComponent(slug)}`;
 
     try {
       const res = await fetch(target, {
