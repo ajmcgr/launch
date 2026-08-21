@@ -1,6 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { toZonedTime } from 'https://esm.sh/date-fns-tz@3';
-import { Resend } from 'https://esm.sh/resend@2.0.0';
+
 // --- inlined from _shared/auto-comment.ts (manual dashboard deploys don't bundle sibling folders) ---
 const AUTO_COMMENT_USER_ID = '5a19e42c-f6df-4ae4-9ba0-caa7cf4359bc';
 const AUTO_COMMENT_USERNAME = 'alex';
