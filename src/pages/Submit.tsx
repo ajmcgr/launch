@@ -81,15 +81,14 @@ const Submit = () => {
     setSubmittedProductName(productName);
     setShowFirstCommentModal(true);
 
-    // Campaign attribution: tag + welcome email, best-effort.
+    // Campaign attribution only. The "Vibe Code Your Future" welcome email was
+    // retired with the campaign — do NOT re-add a send here.
     const campaign = getCampaignIntent();
     if (campaign) {
       trackCampaignEvent('campaign_submission_completed', savedId, campaign);
-      supabase.functions
-        .invoke('send-campaign-welcome', { body: { productId: savedId, campaign } })
-        .catch((err) => console.debug('campaign welcome email skipped', err));
       clearCampaignIntent();
     }
+
   }, []);
 
   const handleFirstCommentClose = useCallback(() => {
