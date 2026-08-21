@@ -5,24 +5,26 @@
 // index.html. The `og-share` edge function renders per-product OG tags
 // (first screenshot as the image) for bots and 302s humans to the real page.
 //
-// Use `getProductShareUrl` for platforms that fetch metadata from a URL
-// parameter (LinkedIn, Reddit, Facebook). Use `getProductUrl` for anything
-// the user sees or copies.
+// IMPORTANT: never put the raw edge-function URL into anything a human sees.
+// It exposes the Supabase project host (…supabase.co/functions/v1/og-share…),
+// which looks broken/untrustworthy in a tweet or LinkedIn post. Every
+// user-facing share link must be the clean trylaunch.ai URL.
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 
 export const SITE_URL = 'https://trylaunch.ai';
 
-/** Clean, user-facing product URL. */
+/** Clean, user-facing product URL. Use this for ALL share links. */
 export function getProductUrl(slug: string): string {
   return `${SITE_URL}/launch/${slug}`;
 }
 
 /**
- * Crawler-facing URL that serves a product-specific OG card
- * (first screenshot) and redirects humans to the clean product URL.
+ * Crawler-facing endpoint that serves a product-specific OG card.
+ * Internal/debug use only (e.g. pasting into the X or LinkedIn post
+ * inspector to refresh a cached preview). Do NOT use in share buttons.
  */
-export function getProductShareUrl(slug: string): string {
+export function getCrawlerCardUrl(slug: string): string {
   if (!SUPABASE_URL) return getProductUrl(slug);
   return `${SUPABASE_URL}/functions/v1/og-share?slug=${encodeURIComponent(slug)}`;
 }
