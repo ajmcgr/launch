@@ -8,6 +8,25 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 // Rich clipboard helper: copies both text/html (for Beehiiv) and text/plain fallback
+function legacyCopyHtml(html: string) {
+  const holder = document.createElement('div');
+  holder.setAttribute('contenteditable', 'true');
+  holder.style.position = 'fixed';
+  holder.style.opacity = '0';
+  holder.style.pointerEvents = 'none';
+  holder.innerHTML = html;
+  document.body.appendChild(holder);
+  const range = document.createRange();
+  range.selectNodeContents(holder);
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+  const ok = document.execCommand('copy');
+  selection?.removeAllRanges();
+  holder.remove();
+  return ok;
+}
+
 async function copyRichText(html: string, plain: string) {
   try {
     await navigator.clipboard.write([
@@ -17,9 +36,17 @@ async function copyRichText(html: string, plain: string) {
       }),
     ]);
   } catch {
+    // Fall back to a real DOM selection copy so rich formatting (icons,
+    // description paragraphs) survives instead of degrading to plain text.
+    try {
+      if (legacyCopyHtml(html)) return;
+    } catch {
+      /* ignore */
+    }
     await navigator.clipboard.writeText(plain);
   }
 }
+
 
 function escapeHtml(value: string) {
   return value
@@ -202,15 +229,22 @@ function sponsoredToHtml(
   iconUrl?: string,
 ) {
   const icon = iconUrl
-    ? `<img src="${iconUrl}" alt="${escapeHtml(name)}" width="48" height="48" style="width:48px;height:48px;border-radius:10px;display:block;margin:0 0 8px 0;" />`
+    ? `<p style="margin:0 0 8px 0;"><img src="${iconUrl}" alt="${escapeHtml(name)}" width="48" height="48" style="width:48px;height:48px;border-radius:10px;" /></p>`
     : '';
-  const aboutHtml = about ? `<p style="margin:0 0 12px 0;">${escapeHtml(about)}</p>` : '';
-  return `${icon}<p style="margin:0 0 4px 0;"><a href="${url}"><strong>${escapeHtml(name)}</strong></a> — ${escapeHtml(tagline)}</p>${aboutHtml}`;
+  const aboutHtml = about
+    ? `<p style="margin:0 0 16px 0;">${escapeHtml(about)}</p>`
+    : '';
+  // Flat sequence of block elements (no wrapper div) — editors like Beehiiv
+  // sanitize nested containers and can silently drop everything after the first
+  // child, which is why the description used to disappear on paste.
+  return `${icon}<p style="margin:0 0 6px 0;"><a href="${url}"><strong>${escapeHtml(name)}</strong></a> — ${escapeHtml(tagline)}</p>${aboutHtml}<p style="margin:0 0 16px 0;">&nbsp;</p>`;
+
 }
 
 function sponsoredToPlain(name: string, tagline: string, about: string) {
   return `${name} — ${tagline}${about ? `\n${about}` : ''}`;
 }
+
 
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
