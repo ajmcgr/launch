@@ -202,15 +202,18 @@ function sponsoredToHtml(
   iconUrl?: string,
 ) {
   const icon = iconUrl
-    ? `<img src="${iconUrl}" alt="${escapeHtml(name)}" width="48" height="48" style="width:48px;height:48px;border-radius:10px;display:block;margin:0 0 8px 0;" />`
+    ? `<p style="margin:0 0 8px 0;"><img src="${iconUrl}" alt="${escapeHtml(name)}" width="48" height="48" style="width:48px;height:48px;border-radius:10px;" /></p>`
     : '';
-  const aboutHtml = about ? `<p style="margin:0 0 12px 0;">${escapeHtml(about)}</p>` : '';
-  return `${icon}<p style="margin:0 0 4px 0;"><a href="${url}"><strong>${escapeHtml(name)}</strong></a> — ${escapeHtml(tagline)}</p>${aboutHtml}`;
+  const aboutHtml = about
+    ? `<p style="margin:0 0 16px 0;">${escapeHtml(about)}</p>`
+    : '';
+  return `<div style="margin:0 0 20px 0;">${icon}<p style="margin:0 0 6px 0;"><a href="${url}"><strong>${escapeHtml(name)}</strong></a> — ${escapeHtml(tagline)}</p>${aboutHtml}</div>`;
 }
 
 function sponsoredToPlain(name: string, tagline: string, about: string) {
   return `${name} — ${tagline}${about ? `\n${about}` : ''}`;
 }
+
 
 const SponsoredProductCard = ({ product }: { product: SponsoredProduct }) => {
   const productUrl = `https://trylaunch.ai/launch/${product.slug}`;
