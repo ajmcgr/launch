@@ -207,7 +207,11 @@ function sponsoredToHtml(
   const aboutHtml = about
     ? `<p style="margin:0 0 16px 0;">${escapeHtml(about)}</p>`
     : '';
-  return `<div style="margin:0 0 20px 0;">${icon}<p style="margin:0 0 6px 0;"><a href="${url}"><strong>${escapeHtml(name)}</strong></a> — ${escapeHtml(tagline)}</p>${aboutHtml}</div>`;
+  // Flat sequence of block elements (no wrapper div) — editors like Beehiiv
+  // sanitize nested containers and can silently drop everything after the first
+  // child, which is why the description used to disappear on paste.
+  return `${icon}<p style="margin:0 0 6px 0;"><a href="${url}"><strong>${escapeHtml(name)}</strong></a> — ${escapeHtml(tagline)}</p>${aboutHtml}<p style="margin:0 0 16px 0;">&nbsp;</p>`;
+
 }
 
 function sponsoredToPlain(name: string, tagline: string, about: string) {
