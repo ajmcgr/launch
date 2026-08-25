@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { weightedShuffle } from '@/lib/weightedPick';
+import { trackAdImpression, trackAdClickCount } from '@/lib/adTracking';
 
 interface RailAd {
   key: string;
@@ -16,6 +17,7 @@ interface RailAd {
 const SLOTS_PER_SIDE = 5;
 
 const trackAdClick = (item: RailAd, placement: string) => {
+  trackAdClickCount(item.key);
   try {
     supabase.from('product_analytics').insert({
       event_type: 'ad_click',
@@ -30,6 +32,10 @@ const trackAdClick = (item: RailAd, placement: string) => {
 };
 
 const AdTile = ({ item, placement }: { item: RailAd; placement: string }) => {
+  useEffect(() => {
+    trackAdImpression(item.key, placement);
+  }, [item.key, placement]);
+
   const inner = (
     <>
       <div className="h-10 w-full flex items-center justify-center overflow-hidden mb-2 shrink-0">
@@ -132,6 +138,10 @@ const Rail = ({
 };
 
 const MarqueePill = ({ item, placement }: { item: RailAd; placement: string }) => {
+  useEffect(() => {
+    trackAdImpression(item.key, placement);
+  }, [item.key, placement]);
+
   const inner = (
     <>
       {item.iconUrl ? (

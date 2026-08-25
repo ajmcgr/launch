@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, MessageSquare, ExternalLink } from 'lucide-react';
@@ -7,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import defaultProductIcon from '@/assets/default-product-icon.png';
 import { VerifiedRevenueBadge } from '@/components/VerifiedRevenueBadge';
 import { trackSponsorClick } from '@/hooks/use-sponsor-tracking';
+import { trackAdImpression, trackAdClickCount } from '@/lib/adTracking';
 import { formatTimeAgo } from '@/lib/formatTime';
 import { PlatformIcons, Platform } from '@/components/PlatformIcons';
 import { SaveToCollectionButton } from '@/components/SaveToCollectionButton';
@@ -37,6 +39,7 @@ interface LaunchListItemProps {
   icon?: any;
   sponsored?: boolean;
   sponsoredPosition?: number;
+  sponsorshipId?: string;
   submissionType?: 'founder' | 'community' | null;
   onVote?: (productId: string) => void;
 }
@@ -62,12 +65,17 @@ export const LaunchListItem = ({
   icon: IconComponent,
   sponsored,
   sponsoredPosition,
+  sponsorshipId,
   submissionType,
   onVote,
 }: LaunchListItemProps) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
+  useEffect(() => {
+    if (sponsored && sponsorshipId) trackAdImpression(sponsorshipId, 'feed');
+  }, [sponsored, sponsorshipId]);
+
   const handleVote = () => {
     onVote(id);
   };
@@ -75,6 +83,7 @@ export const LaunchListItem = ({
   const handleClick = (e: React.MouseEvent) => {
     if (sponsored) {
       trackSponsorClick(id, sponsoredPosition);
+      if (sponsorshipId) trackAdClickCount(sponsorshipId);
     }
   };
   const handleCardClick = (e: React.MouseEvent) => {
@@ -85,6 +94,7 @@ export const LaunchListItem = ({
     }
     if (sponsored) {
       trackSponsorClick(id, sponsoredPosition);
+      if (sponsorshipId) trackAdClickCount(sponsorshipId);
     }
     navigate(`/launch/${slug}`);
   };

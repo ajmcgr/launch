@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
 import { weightedPick } from '@/lib/weightedPick';
+import { trackAdImpression, trackAdClickCount } from '@/lib/adTracking';
 
 interface SponsoredItem {
   key: string;
@@ -16,6 +17,7 @@ interface SponsoredItem {
 }
 
 const trackAdClick = (item: SponsoredItem) => {
+  trackAdClickCount(item.key);
   try {
     supabase.from('product_analytics').insert({
       event_type: 'ad_click',
@@ -92,6 +94,10 @@ const InlineAdSlot = () => {
 
     fetchSponsored();
   }, []);
+
+  useEffect(() => {
+    if (sponsored) trackAdImpression(sponsored.key, 'inline');
+  }, [sponsored]);
 
   if (loading) return null;
   if (!sponsored) {

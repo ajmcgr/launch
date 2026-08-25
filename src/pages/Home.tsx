@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate } from 'react-router-dom';
 import { trackSponsorImpression } from '@/hooks/use-sponsor-tracking';
+import { trackAdImpression, trackAdClickCount } from '@/lib/adTracking';
 import RotatingWord from '@/components/RotatingWord';
 
 import {
@@ -83,6 +84,7 @@ const Home = () => {
   const [products, setProducts] = useState<Product[]>(cachedHome || []);
   const [sponsoredProducts, setSponsoredProducts] = useState<Map<number, Product>>(new Map());
   const [customSponsored, setCustomSponsored] = useState<Map<number, { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }>>(new Map());
+  const [sponsorshipIds, setSponsorshipIds] = useState<Map<number, string>>(new Map());
   const [loading, setLoading] = useState(!cachedHome);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -256,9 +258,11 @@ const Home = () => {
         });
 
         const sponsoredMap = new Map<number, Product>();
+        const sponsorshipIdMap = new Map<number, string>();
         const customMap = new Map<number, { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }>();
 
         sponsoredRows.forEach((sponsored: any) => {
+          sponsorshipIdMap.set(sponsored.position, sponsored.id);
           if (sponsored.ad_type === 'custom' && sponsored.custom_target_url) {
             customMap.set(sponsored.position, {
               id: sponsored.id,
@@ -295,6 +299,7 @@ const Home = () => {
           });
         });
 
+        setSponsorshipIds(sponsorshipIdMap);
         setSponsoredProducts(sponsoredMap);
         setCustomSponsored(customMap);
       }
@@ -796,10 +801,12 @@ const Home = () => {
       ) => (
         <a
           key={`sponsored-custom-${pos}`}
+          ref={() => trackAdImpression(c.id, 'feed')}
           href={c.targetUrl}
           target="_blank"
           rel="noopener noreferrer sponsored nofollow"
           onClick={() => {
+            trackAdClickCount(c.id);
             try {
               supabase.from('product_analytics').insert({
                 event_type: 'ad_click',
@@ -828,6 +835,8 @@ const Home = () => {
       const featuredBoost = sponsoredProducts.get(0);
       if (featuredBoost) {
         trackSponsorImpression(featuredBoost.id, 0);
+        const boostSponsorshipId = sponsorshipIds.get(0);
+        if (boostSponsorshipId) trackAdImpression(boostSponsorshipId, 'feed');
         if (viewMode === 'compact') {
           items.push(
             <CompactLaunchListItem
