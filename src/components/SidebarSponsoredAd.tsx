@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { trackAdImpression, trackAdClickCount } from '@/lib/adTracking';
 import { weightedShuffle } from '@/lib/weightedPick';
 
 interface SponsoredItem {
@@ -14,6 +15,7 @@ interface SponsoredItem {
 }
 
 const trackAdClick = (item: SponsoredItem) => {
+  trackAdClickCount(item.key);
   try {
     supabase.from('product_analytics').insert({
       event_type: 'ad_click',
@@ -93,6 +95,10 @@ const SidebarSponsoredAd = () => {
 
     fetchSponsored();
   }, []);
+
+  useEffect(() => {
+    sponsored.forEach((item) => trackAdImpression(item.key, 'sidebar'));
+  }, [sponsored]);
 
   if (sponsored.length === 0) return null;
 
