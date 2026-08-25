@@ -187,6 +187,7 @@ Deno.serve(async (req) => {
       { loc: "/vibe-coding/v0", priority: "0.7", changefreq: "monthly" },
       { loc: "/vibe-coding/shipper", priority: "0.7", changefreq: "monthly" },
       { loc: "/about", priority: "0.5", changefreq: "monthly" },
+      { loc: "/ai-info", priority: "0.7", changefreq: "monthly" },
       { loc: "/blog", priority: "0.8", changefreq: "weekly" },
       { loc: "/pricing", priority: "0.6", changefreq: "monthly" },
       { loc: "/faq", priority: "0.5", changefreq: "monthly" },

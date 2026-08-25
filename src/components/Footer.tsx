@@ -107,6 +107,11 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
                 </Link>
               </li>
               <li>
+                <Link to="/ai-info" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  AI Info
+                </Link>
+              </li>
+              <li>
                 <Link 
                   to="/media-kit"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"

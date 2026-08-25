@@ -73,6 +73,7 @@ const CompareHub = lazy(() => import("./pages/CompareHub"));
 const ComparePage = lazy(() => import("./pages/ComparePage"));
 const DiscourseSso = lazy(() => import("./pages/DiscourseSso"));
 const MediaKit = lazy(() => import("./pages/MediaKit"));
+const AIInfo = lazy(() => import("./pages/AIInfo"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Start = lazy(() => import("./pages/Start"));
 const VibeCodingPlatform = lazy(() => import("./pages/VibeCodingPlatform"));
@@ -109,7 +110,7 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const staticPages = ['/about', '/terms', '/privacy'];
+  const staticPages = ['/about', '/terms', '/privacy', '/ai-info'];
   const standalonePages = ['/reserve'];
   const isStandalone = standalonePages.includes(location.pathname);
 
@@ -124,7 +125,7 @@ const AppContent = () => {
   const isCollectionDetail = /^\/(c|collections|my-collections)\/[^/]+$/.test(path);
   const isPricing = path === '/pricing' || path === '/pass';
   const isAdvertise = path === '/advertise';
-  const isArticle = ['/about', '/terms', '/privacy', '/media-kit'].includes(path)
+  const isArticle = ['/about', '/terms', '/privacy', '/media-kit', '/ai-info'].includes(path)
     || path.startsWith('/blog/');
   const isFAQ = path === '/faq';
   const isContact = path === '/contact';
@@ -471,6 +472,7 @@ const AppContent = () => {
             <Route path="/my-products" element={<MyProducts />} />
             <Route path="/launch/:productId/edit" element={<EditLaunch />} />
             <Route path="/about" element={<About />} />
+            <Route path="/ai-info" element={<AIInfo />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
