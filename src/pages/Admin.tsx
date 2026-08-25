@@ -431,7 +431,7 @@ const Admin = () => {
             <Tabs defaultValue="users" className="space-y-4">
               <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
                 <TabsTrigger value="users" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Members</TabsTrigger>
-                <TabsTrigger value="promotion" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Promotion</TabsTrigger>
+                <TabsTrigger value="promotion" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Launches</TabsTrigger>
                 <TabsTrigger value="advertising" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Advertising</TabsTrigger>
                 <TabsTrigger value="blog" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">Blog</TabsTrigger>
                 <TabsTrigger value="seo" className="text-xs px-3 h-7 rounded-md data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors">SEO</TabsTrigger>
@@ -482,7 +482,7 @@ const Admin = () => {
               <TabsContent value="promotion" className="space-y-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Products to Promote</CardTitle>
+                    <CardTitle>Launches</CardTitle>
                     <CardDescription>Products with Launch Lite or Launch plans that need promotion on socials and newsletter</CardDescription>
                   </CardHeader>
                   <CardContent>
