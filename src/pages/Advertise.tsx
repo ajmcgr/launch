@@ -302,8 +302,13 @@ const Advertise = () => {
       img.onerror = () => resolve(null);
       img.src = URL.createObjectURL(file);
     });
-    if (!dims || dims.w < 600 || dims.h < 315) {
-      toast.error('Image must be at least 600×315px');
+    if (!dims || dims.w < 256 || dims.h < 256) {
+      toast.error('Icon must be at least 256×256px');
+      return;
+    }
+    const ratio = dims.w / dims.h;
+    if (ratio < 0.9 || ratio > 1.1) {
+      toast.error('Icon must be square (1:1 aspect ratio)');
       return;
     }
 
