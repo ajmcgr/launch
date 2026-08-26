@@ -16,6 +16,7 @@ import AdminHomepageSponsorsTab from '@/components/admin/AdminHomepageSponsorsTa
 import AdminCollectionsTab from '@/components/admin/AdminCollectionsTab';
 
 import { format } from 'date-fns';
+import { formatCtr } from '@/lib/adTracking';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -606,6 +607,21 @@ const Admin = () => {
                                 <span>{format(new Date(sp.start_date), 'MMM d, yyyy')} - {format(new Date(sp.end_date), 'MMM d, yyyy')}</span>
                               </div>
                               <span>Position: #{sp.position}</span>
+                            </div>
+
+                            <div className="flex items-center gap-6 text-sm">
+                              <div>
+                                <span className="text-muted-foreground">Impressions </span>
+                                <strong>{(sp.impressions || 0).toLocaleString()}</strong>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Clicks </span>
+                                <strong>{(sp.clicks || 0).toLocaleString()}</strong>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">CTR </span>
+                                <strong>{formatCtr(sp.clicks, sp.impressions)}</strong>
+                              </div>
                             </div>
 
                             <div className="flex gap-2">
