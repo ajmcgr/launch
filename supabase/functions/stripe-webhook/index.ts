@@ -378,16 +378,17 @@ Deno.serve(async (req) => {
                   .select('id, position, end_date')
                   .lte('start_date', endDate.toISOString().split('T')[0])
                   .gte('end_date', startDate.toISOString().split('T')[0])
+                  .in('sponsorship_type', ['website', 'combined'])
                   .order('position', { ascending: true });
 
                 const occupiedPositions = new Set(existingSponsors?.map((s: any) => s.position) || []);
-                let nextPosition = 2;
-                while (occupiedPositions.has(nextPosition) && nextPosition <= 4) {
+                let nextPosition = 1;
+                while (occupiedPositions.has(nextPosition) && nextPosition <= 10) {
                   nextPosition++;
                 }
 
-                if (nextPosition > 4) {
-                  console.log(`No available positions for ${monthStr} - all slots (2-4) are filled`);
+                if ((existingSponsors?.length ?? 0) >= 10 || nextPosition > 10) {
+                  console.error(`No available positions for ${monthStr} - all 10 website ad slots are filled`);
                 } else {
                   const insertPayload: any = {
                     position: nextPosition,

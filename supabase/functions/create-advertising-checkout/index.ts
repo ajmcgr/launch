@@ -1,4 +1,7 @@
 import Stripe from 'https://esm.sh/stripe@12.18.0?target=deno';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const MAX_WEBSITE_ADVERTISERS_PER_MONTH = 10;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -43,6 +46,10 @@ Deno.serve(async (req) => {
       throw new Error('Invalid ad type');
     }
 
+    if (!Array.isArray(selectedMonths) || selectedMonths.length === 0) {
+      throw new Error('At least one advertising month is required');
+    }
+
     if (adType === 'product') {
       if (!launchUrl) {
         throw new Error('Launch URL is required');
@@ -66,6 +73,35 @@ Deno.serve(async (req) => {
       }
       if (customAd.description && (typeof customAd.description !== 'string' || customAd.description.length > 180)) {
         throw new Error('Custom description must be 180 characters or fewer');
+      }
+    }
+
+    // Prevent checkout for website inventory that has already reached capacity.
+    if (sponsorshipType === 'website' || sponsorshipType === 'combined') {
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+
+      for (const monthStr of selectedMonths) {
+        const monthDate = new Date(`1 ${monthStr}`);
+        if (isNaN(monthDate.getTime())) {
+          throw new Error(`Invalid advertising month: ${monthStr}`);
+        }
+
+        const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+        const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+        const { count, error: capacityError } = await supabaseClient
+          .from('sponsored_products')
+          .select('id', { count: 'exact', head: true })
+          .lte('start_date', endDate.toISOString().split('T')[0])
+          .gte('end_date', startDate.toISOString().split('T')[0])
+          .in('sponsorship_type', ['website', 'combined']);
+
+        if (capacityError) throw capacityError;
+        if ((count ?? 0) >= MAX_WEBSITE_ADVERTISERS_PER_MONTH) {
+          throw new Error(`${monthStr} is fully booked. Please choose another month.`);
+        }
       }
     }
 
@@ -114,7 +150,7 @@ Deno.serve(async (req) => {
             },
             unit_amount: unitAmount,
           },
-          quantity: parseInt(months),
+          quantity: selectedMonths.length,
         },
       ],
       mode: 'payment',
@@ -127,7 +163,7 @@ Deno.serve(async (req) => {
         launch_url: launchUrl || '',
         product_id: productId || '',
         product_slug: productSlug,
-        months: months,
+        months: String(selectedMonths.length),
         selected_months: selectedMonths?.join(', ') || '',
         message: (message || '').slice(0, 400),
         // Custom-ad fields (each Stripe metadata value capped at 500 chars)
