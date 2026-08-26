@@ -7,6 +7,7 @@ import codex from '@/assets/platforms/codex.png.asset.json';
 import googleAiStudio from '@/assets/platforms/googleaustudio.png.asset.json';
 import base44 from '@/assets/platforms/base44.png.asset.json';
 import v0 from '@/assets/platforms/v0.png.asset.json';
+import clonk from '@/assets/platforms/clonk.png.asset.json';
 
 export interface BuiltWithPlatform {
   /** matches stack_items.slug */
@@ -27,6 +28,7 @@ export const builtWithPlatforms: BuiltWithPlatform[] = [
   { slug: 'codex',            name: 'Codex',            description: 'Discover the best products built with Codex.',            logoUrl: codex.url,           plate: 'bg-white dark:bg-white' },
   { slug: 'google-ai-studio', name: 'Google AI Studio', description: 'Discover the best products built with Google AI Studio.', logoUrl: googleAiStudio.url,  plate: 'bg-white dark:bg-white' },
   { slug: 'base44',           name: 'Base44',           description: 'Discover the best products built with Base44.',           logoUrl: base44.url,          plate: 'bg-white dark:bg-white' },
+  { slug: 'clonk',            name: 'Clonk',            description: 'Discover the best products built with Clonk.',            logoUrl: clonk.url,           plate: 'bg-white dark:bg-white' },
   { slug: 'v0',               name: 'v0',               description: 'Discover the best products built with v0.',               logoUrl: v0.url,              plate: 'bg-white dark:bg-white' },
 ];
 
