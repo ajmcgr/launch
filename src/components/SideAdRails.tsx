@@ -257,7 +257,6 @@ const MobileAdMarquees = ({
 const SideAdRails = () => {
   const { pathname } = useLocation();
   const [ads, setAds] = useState<RailAd[]>([]);
-  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -315,24 +314,11 @@ const SideAdRails = () => {
     fetchAds();
   }, []);
 
-  // Rotate through the FULL inventory so every purchased ad gets rail exposure,
-  // not just the first 10.
-  useEffect(() => {
-    if (ads.length <= SLOTS_PER_SIDE) return;
-    const id = setInterval(() => setOffset((o) => (o + 1) % ads.length), 12000);
-    return () => clearInterval(id);
-  }, [ads.length]);
-
-  const rotated =
-    ads.length > 0
-      ? Array.from({ length: ads.length }, (_, i) => ads[(i + offset) % ads.length])
-      : [];
-
   const showMobileMarquee = pathname === '/';
 
   // Fill all ten rail tiles before showing placeholders.
-  const left = rotated.slice(0, SLOTS_PER_SIDE);
-  const right = rotated.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
+  const left = ads.slice(0, SLOTS_PER_SIDE);
+  const right = ads.slice(SLOTS_PER_SIDE, SLOTS_PER_SIDE * 2);
 
 
   return (

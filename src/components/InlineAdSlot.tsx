@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import AdvertiseCTA from '@/components/AdvertiseCTA';
-import { weightedShuffle } from '@/lib/weightedPick';
+import { weightedPick } from '@/lib/weightedPick';
 import { trackAdImpression, trackAdClickCount } from '@/lib/adTracking';
 
 interface SponsoredItem {
@@ -32,8 +32,7 @@ const trackAdClick = (item: SponsoredItem) => {
 };
 
 const InlineAdSlot = () => {
-  const [sponsored, setSponsored] = useState<SponsoredItem[]>([]);
-  const [offset, setOffset] = useState(0);
+  const [sponsored, setSponsored] = useState<SponsoredItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,34 +62,31 @@ const InlineAdSlot = () => {
         .in('sponsorship_type', ['website', 'combined']);
 
       if (data && data.length > 0) {
-        const items = weightedShuffle(data as any[])
-          .map((s: any): SponsoredItem | null => {
-            if (s.ad_type === 'custom' && s.custom_target_url) {
-              return {
-                key: s.id,
-                adType: 'custom',
-                href: s.custom_target_url,
-                external: true,
-                name: s.custom_title || 'Ad',
-                tagline: s.custom_description || '',
-                iconUrl: s.custom_image_url || undefined,
-              };
-            }
-            if (!s.products) return null;
-            const p = s.products;
-            const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url;
-            return {
-              key: s.id,
-              adType: 'product',
-              href: `/launch/${p.slug}`,
-              external: false,
-              name: p.name,
-              tagline: p.tagline,
-              iconUrl: icon,
-            };
-          })
-          .filter((item: SponsoredItem | null): item is SponsoredItem => item !== null);
-        setSponsored(items);
+        const s: any = weightedPick(data as any[]);
+        if (!s) { setLoading(false); return; }
+        if (s.ad_type === 'custom' && s.custom_target_url) {
+          setSponsored({
+            key: s.id,
+            adType: 'custom',
+            href: s.custom_target_url,
+            external: true,
+            name: s.custom_title || 'Ad',
+            tagline: s.custom_description || '',
+            iconUrl: s.custom_image_url || undefined,
+          });
+        } else if (s.products) {
+          const p = s.products;
+          const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url;
+          setSponsored({
+            key: s.id,
+            adType: 'product',
+            href: `/launch/${p.slug}`,
+            external: false,
+            name: p.name,
+            tagline: p.tagline,
+            iconUrl: icon,
+          });
+        }
       }
       setLoading(false);
     };
@@ -99,47 +95,39 @@ const InlineAdSlot = () => {
   }, []);
 
   useEffect(() => {
-    if (sponsored.length <= 1) return;
-    const id = setInterval(() => setOffset((current) => (current + 1) % sponsored.length), 12000);
-    return () => clearInterval(id);
-  }, [sponsored.length]);
-
-  const current = sponsored[offset % Math.max(sponsored.length, 1)] ?? null;
-
-  useEffect(() => {
-    if (current) trackAdImpression(current.key, 'inline');
-  }, [current]);
+    if (sponsored) trackAdImpression(sponsored.key, 'inline');
+  }, [sponsored]);
 
   if (loading) return null;
-  if (!current) {
+  if (!sponsored) {
     return <AdvertiseCTA className="rounded-lg" />;
   }
 
   const inner = (
     <>
-      {current.iconUrl ? (
+      {sponsored.iconUrl ? (
         <img
-          src={current.iconUrl}
-          alt={current.name}
+          src={sponsored.iconUrl}
+          alt={sponsored.name}
           className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
         />
       ) : (
         <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 text-base font-bold text-muted-foreground">
-          {current.name[0]}
+          {sponsored.name[0]}
         </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
-            {current.name}
+            {sponsored.name}
           </p>
           <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">
             Ad
           </span>
         </div>
-        {current.tagline && (
+        {sponsored.tagline && (
           <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
-            {current.tagline}
+            {sponsored.tagline}
           </p>
         )}
       </div>
@@ -147,18 +135,18 @@ const InlineAdSlot = () => {
   );
   const cls = 'flex items-center gap-4 p-5 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors group';
 
-  return current.external ? (
+  return sponsored.external ? (
     <a
-      href={current.href}
+      href={sponsored.href}
       target="_blank"
       rel="noopener noreferrer sponsored nofollow"
-      onClick={() => trackAdClick(current)}
+      onClick={() => trackAdClick(sponsored)}
       className={cls}
     >
       {inner}
     </a>
   ) : (
-    <Link to={current.href} onClick={() => trackAdClick(current)} className={cls}>
+    <Link to={sponsored.href} onClick={() => trackAdClick(sponsored)} className={cls}>
       {inner}
     </Link>
   );

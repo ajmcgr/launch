@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { trackAdImpression, trackAdClickCount } from '@/lib/adTracking';
@@ -31,7 +31,6 @@ const trackAdClick = (item: SponsoredItem) => {
 
 const SidebarSponsoredAd = () => {
   const [sponsored, setSponsored] = useState<SponsoredItem[]>([]);
-  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     const fetchSponsored = async () => {
@@ -60,8 +59,8 @@ const SidebarSponsoredAd = () => {
         .in('sponsorship_type', ['website', 'combined']);
 
       if (data && data.length > 0) {
-        // Keep the full inventory so the visible six can rotate fairly.
-        const shuffled = weightedShuffle(data as any[]);
+        // Select a fresh weighted set on each page load and keep it stable.
+        const shuffled = weightedShuffle(data as any[]).slice(0, 6);
         const items: SponsoredItem[] = shuffled
           .map((s: any): SponsoredItem | null => {
             if (s.ad_type === 'custom' && s.custom_target_url) {
@@ -98,25 +97,8 @@ const SidebarSponsoredAd = () => {
   }, []);
 
   useEffect(() => {
-    if (sponsored.length <= 6) return;
-    const id = setInterval(() => setOffset((current) => (current + 1) % sponsored.length), 12000);
-    return () => clearInterval(id);
-  }, [sponsored.length]);
-
-  const visible = useMemo(
-    () =>
-      sponsored.length > 0
-        ? Array.from(
-            { length: Math.min(6, sponsored.length) },
-            (_, index) => sponsored[(offset + index) % sponsored.length]
-          )
-        : [],
-    [offset, sponsored]
-  );
-
-  useEffect(() => {
-    visible.forEach((item) => trackAdImpression(item.key, 'sidebar'));
-  }, [visible]);
+    sponsored.forEach((item) => trackAdImpression(item.key, 'sidebar'));
+  }, [sponsored]);
 
   if (sponsored.length === 0) return null;
 
@@ -126,7 +108,7 @@ const SidebarSponsoredAd = () => {
         <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Ad</h3>
       </div>
       <div className="space-y-2">
-        {visible.map((item) => {
+        {sponsored.map((item) => {
           const inner = (
             <>
               {item.iconUrl ? (
