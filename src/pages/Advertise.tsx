@@ -302,8 +302,13 @@ const Advertise = () => {
       img.onerror = () => resolve(null);
       img.src = URL.createObjectURL(file);
     });
-    if (!dims || dims.w < 600 || dims.h < 315) {
-      toast.error('Image must be at least 600×315px');
+    if (!dims || dims.w < 256 || dims.h < 256) {
+      toast.error('Icon must be at least 256×256px');
+      return;
+    }
+    const ratio = dims.w / dims.h;
+    if (ratio < 0.9 || ratio > 1.1) {
+      toast.error('Icon must be square (1:1 aspect ratio)');
       return;
     }
 
@@ -1043,14 +1048,14 @@ const Advertise = () => {
                     <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
                       <div className="space-y-2">
                         <Label className={formErrors.custom_image ? 'text-destructive' : ''}>
-                          Custom Image * <span className="text-xs text-muted-foreground font-normal">(JPG/PNG/WEBP, min 600×315, max 5MB)</span>
+                          Custom Icon * <span className="text-xs text-muted-foreground font-normal">(JPG/PNG/WEBP, square 1:1, min 256×256, max 5MB)</span>
                         </Label>
                         {customAd.image_url ? (
-                          <div className="relative">
+                          <div className="relative w-32">
                             <img
                               src={customAd.image_url}
                               alt="Ad creative preview"
-                              className="w-full max-h-48 object-cover rounded-md border"
+                              className="w-32 h-32 object-cover rounded-xl border"
                             />
                             <Button
                               type="button"
