@@ -239,7 +239,27 @@ export const vibeCodingPlatforms: VibeCodingPlatform[] = [
     launchPitch:
       'Built something with Shipper? Launch your product to 500,000+ founders, makers, and indie hackers ready to try it.',
   },
+  {
+    slug: 'clonk',
+    name: 'Clonk',
+    tagline: 'Clone any app or website and make it yours with AI.',
+    description:
+      'Clonk is an AI app builder that lets you start from something that already exists — point it at an app or site you like, and it recreates the experience as a working project you can customise, extend, and ship as your own product.',
+    website: 'https://www.clonk.ai/',
+    bestFor: 'Makers who want a fast, reference-driven starting point instead of a blank prompt.',
+    strengths: [
+      'Start from a real reference instead of a blank page',
+      'AI-generated, editable full-stack projects',
+      'Fast iteration from clone to original product',
+      'Great for validating ideas before investing weeks',
+    ],
+    workflow:
+      'Point Clonk at a reference app or describe what you want, let it generate the project, then customise the design, data, and logic until it is your own.',
+    launchPitch:
+      'Built something with Clonk? Launch puts your product in front of 500,000+ founders, makers, and indie hackers hunting for new AI-built tools.',
+  },
 ];
+
 
 export const getVibeCodingPlatform = (slug: string) =>
   vibeCodingPlatforms.find((p) => p.slug === slug);
