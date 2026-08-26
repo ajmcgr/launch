@@ -868,6 +868,7 @@ const Home = () => {
               rank={1}
               sponsored
               sponsoredPosition={0}
+              sponsorshipId={sponsorshipIds.get(0)}
               onVote={handleVote}
             />
           );
@@ -879,6 +880,7 @@ const Home = () => {
               rank={1}
               sponsored
               sponsoredPosition={0}
+              sponsorshipId={sponsorshipIds.get(0)}
               onVote={handleVote}
             />
           );
@@ -899,6 +901,7 @@ const Home = () => {
             {...pos1Sponsor}
             sponsored
             sponsoredPosition={1}
+            sponsorshipId={sponsorshipIds.get(1)}
             onVote={handleVote}
           />
         );
@@ -976,6 +979,7 @@ const Home = () => {
                     {...sponsor}
                     sponsored
                     sponsoredPosition={sponsorPosition}
+                    sponsorshipId={sponsorshipIds.get(sponsorPosition)}
                     onVote={handleVote}
                   />
                 );
