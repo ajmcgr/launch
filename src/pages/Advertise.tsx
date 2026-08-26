@@ -1048,14 +1048,14 @@ const Advertise = () => {
                     <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
                       <div className="space-y-2">
                         <Label className={formErrors.custom_image ? 'text-destructive' : ''}>
-                          Custom Image * <span className="text-xs text-muted-foreground font-normal">(JPG/PNG/WEBP, min 600×315, max 5MB)</span>
+                          Custom Icon * <span className="text-xs text-muted-foreground font-normal">(JPG/PNG/WEBP, square 1:1, min 256×256, max 5MB)</span>
                         </Label>
                         {customAd.image_url ? (
-                          <div className="relative">
+                          <div className="relative w-32">
                             <img
                               src={customAd.image_url}
                               alt="Ad creative preview"
-                              className="w-full max-h-48 object-cover rounded-md border"
+                              className="w-32 h-32 object-cover rounded-xl border"
                             />
                             <Button
                               type="button"
