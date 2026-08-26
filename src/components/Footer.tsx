@@ -5,6 +5,11 @@ import { comparisons } from '@/lib/comparisons';
 import { vibeCodingPlatforms } from '@/lib/vibeCodingPlatforms';
 import { freeTools } from '@/lib/freeTools';
 
+const footerVibeCodingPlatforms = [
+  ...vibeCodingPlatforms.filter((platform) => platform.slug !== 'clonk').slice(0, 9),
+  ...vibeCodingPlatforms.filter((platform) => platform.slug === 'clonk'),
+];
+
 // Custom X (Twitter) icon
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
@@ -212,7 +217,7 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Vibe Coding</h3>
             <ul className="space-y-1">
-              {vibeCodingPlatforms.slice(0, 9).map((p) => (
+              {footerVibeCodingPlatforms.map((p) => (
                 <li key={p.slug}>
                   <Link
                     to={`/vibe-coding/${p.slug}`}
