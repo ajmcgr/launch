@@ -42,7 +42,7 @@ import { CommunityCallout } from '@/components/CommunityCallout';
 
 import BuiltWithSection from '@/components/BuiltWithSection';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
-import { weightedPick } from '@/lib/weightedPick';
+import { weightedPick, weightedShuffle } from '@/lib/weightedPick';
 
 interface Product {
   id: string;
@@ -85,7 +85,6 @@ const Home = () => {
   const [sponsoredProducts, setSponsoredProducts] = useState<Map<number, Product>>(new Map());
   const [customSponsored, setCustomSponsored] = useState<Map<number, { id: string; title: string; description: string | null; imageUrl: string; targetUrl: string }>>(new Map());
   const [sponsorshipIds, setSponsorshipIds] = useState<Map<number, string>>(new Map());
-  const sponsorRotationOffset = useRef(0);
   const [loading, setLoading] = useState(!cachedHome);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -152,7 +151,7 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userLoaded, user]);
 
-  const fetchSponsoredProducts = async (rotationOffset = 0) => {
+  const fetchSponsoredProducts = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       const nowIso = new Date().toISOString();
@@ -202,12 +201,12 @@ const Home = () => {
       // Boost (position 0) is pinned and always keeps its slot.
       const boostRows = activeRows.filter((s) => s.sponsorship_type === 'boost');
 
-      // Rotate the complete monthly inventory through the four feed placements.
-      const pool = activeRows.filter((s) => s.sponsorship_type !== 'boost');
+      // Choose four placements from the complete monthly inventory per page load.
+      const pool = weightedShuffle(activeRows.filter((s) => s.sponsorship_type !== 'boost'));
       const slotAssignments: any[] = [];
       const visibleSlots = [1, 2, 3, 4];
       visibleSlots.forEach((slot, idx) => {
-        const row = pool.length > 0 ? pool[(rotationOffset + idx) % pool.length] : null;
+        const row = pool[idx];
         if (row) slotAssignments.push({ ...row, position: slot });
       });
 
@@ -305,16 +304,6 @@ const Home = () => {
       console.error('Error fetching sponsored products:', error);
     }
   };
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      sponsorRotationOffset.current += 1;
-      fetchSponsoredProducts(sponsorRotationOffset.current);
-    }, 12000);
-    return () => clearInterval(id);
-    // The fetch function intentionally reads the latest authenticated user.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   const getStartDateForPeriod = (period: 'all' | 'today' | 'week' | 'month' | 'year'): Date => {
     const now = new Date();
