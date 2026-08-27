@@ -811,20 +811,21 @@ const Home = () => {
               } as any);
             } catch {}
           }}
-          className="flex items-center gap-4 p-4 rounded-lg border bg-muted/20 hover:bg-muted/40 transition-colors"
+          className="flex items-center gap-4 p-5 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors group"
         >
           {c.imageUrl && (
-            <img src={c.imageUrl} alt={c.title} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+            <img src={c.imageUrl} alt={c.title} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <p className="font-semibold truncate">{c.title}</p>
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground border border-muted-foreground/30 rounded px-1">Ad</span>
+              <p className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{c.title}</p>
+              <span className="text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded flex-shrink-0">Ad</span>
             </div>
             {c.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">{c.description}</p>
+              <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{c.description}</p>
             )}
           </div>
+
         </a>
       );
 
