@@ -505,6 +505,7 @@ const AppContent = () => {
             <Route path="/tech" element={<TechLeaderboard />} />
             <Route path="/vibecoders" element={<Leaderboard />} />
             <Route path="/makers" element={<Navigate to="/vibecoders" replace />} />
+            <Route path="/leaderboard" element={<Navigate to="/vibecoders" replace />} />
             <Route path="/success-stories" element={<SuccessStories />} />
             <Route path="/awards" element={<Awards />} />
             <Route path="/compare" element={<CompareHub />} />
