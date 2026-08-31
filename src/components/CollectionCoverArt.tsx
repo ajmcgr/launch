@@ -25,7 +25,7 @@ export default function CollectionCoverArt({ slug, name, coverImageUrl, fallback
         <img
           src={platform.logoUrl}
           alt={`${platform.name} logo`}
-          className="max-h-[60%] max-w-[78%] object-contain"
+          className={`${platform.imgClass ?? 'max-h-[60%] max-w-[78%]'} object-contain`}
           loading="lazy"
         />
       </div>

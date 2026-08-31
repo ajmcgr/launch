@@ -18,6 +18,8 @@ export interface BuiltWithPlatform {
   logoUrl: string;
   /** Tailwind background class for the logo plate — tuned per logo */
   plate: string;
+  /** Optional Tailwind sizing override for wide wordmark logos */
+  imgClass?: string;
 }
 
 export const builtWithPlatforms: BuiltWithPlatform[] = [
@@ -30,7 +32,7 @@ export const builtWithPlatforms: BuiltWithPlatform[] = [
   { slug: 'google-ai-studio', name: 'Google AI Studio', description: 'Discover the best products built with Google AI Studio.', logoUrl: googleAiStudio.url,  plate: 'bg-white dark:bg-white' },
   { slug: 'base44',           name: 'Base44',           description: 'Discover the best products built with Base44.',           logoUrl: base44.url,          plate: 'bg-white dark:bg-white' },
   { slug: 'clonk',            name: 'Clonk',            description: 'Discover the best products built with Clonk.',            logoUrl: clonk.url,           plate: 'bg-white dark:bg-white' },
-  { slug: 'rork',             name: 'Rork',             description: 'Discover the best products built with Rork.',             logoUrl: rork.url,            plate: 'bg-white dark:bg-white' },
+  { slug: 'rork',             name: 'Rork',             description: 'Discover the best products built with Rork.',             logoUrl: rork.url,            plate: 'bg-white dark:bg-white', imgClass: 'max-h-14 max-w-[52%]' },
   { slug: 'v0',               name: 'v0',               description: 'Discover the best products built with v0.',               logoUrl: v0.url,              plate: 'bg-white dark:bg-white' },
 ];
 
