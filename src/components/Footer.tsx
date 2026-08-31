@@ -6,8 +6,8 @@ import { vibeCodingPlatforms } from '@/lib/vibeCodingPlatforms';
 import { freeTools } from '@/lib/freeTools';
 
 const footerVibeCodingPlatforms = [
-  ...vibeCodingPlatforms.filter((platform) => platform.slug !== 'clonk').slice(0, 9),
-  ...vibeCodingPlatforms.filter((platform) => platform.slug === 'clonk'),
+  ...vibeCodingPlatforms.filter((platform) => !['clonk', 'rork'].includes(platform.slug)).slice(0, 9),
+  ...vibeCodingPlatforms.filter((platform) => ['rork', 'clonk'].includes(platform.slug)),
 ];
 
 // Custom X (Twitter) icon
