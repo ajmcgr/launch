@@ -450,8 +450,16 @@ const Admin = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
+                    <div className="mb-4">
+                      <Input
+                        value={userSearch}
+                        onChange={(e) => setUserSearch(e.target.value)}
+                        placeholder="Search by username…"
+                        className="max-w-xs"
+                      />
+                    </div>
                     <div className="space-y-4">
-                      {allUsers?.map((user) => (
+                      {filteredUsers?.map((user) => (
                         <div key={user.id} className="border rounded-lg p-4 flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <img 
@@ -466,19 +474,70 @@ const Admin = () => {
                               </p>
                             </div>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex items-center gap-2">
                             {user.user_roles?.map((ur: any) => (
                               <Badge key={ur.role} variant="secondary">
                                 {ur.role}
                               </Badge>
                             ))}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => setUserToDelete({ id: user.id, username: user.username || '' })}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                       ))}
+                      {filteredUsers?.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No members match that search.</p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
+
+                <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete @{userToDelete?.username}?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This permanently deletes the account and all of their products, votes, comments,
+                        collections and orders. This cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={deletingUser}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        disabled={deletingUser}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          if (!userToDelete) return;
+                          setDeletingUser(true);
+                          try {
+                            const { data, error } = await supabase.functions.invoke('admin-delete-user', {
+                              body: { userId: userToDelete.id },
+                            });
+                            if (error) throw error;
+                            if (data?.error) throw new Error(data.error);
+                            toast.success(`Deleted @${userToDelete.username}`);
+                            setUserToDelete(null);
+                            refetchUsers();
+                          } catch (err: any) {
+                            toast.error(err?.message || 'Failed to delete account');
+                          } finally {
+                            setDeletingUser(false);
+                          }
+                        }}
+                      >
+                        {deletingUser ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete account'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TabsContent>
+
 
               <TabsContent value="promotion" className="space-y-4">
                 <Card>
