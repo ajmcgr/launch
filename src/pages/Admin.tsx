@@ -168,14 +168,24 @@ const Admin = () => {
   });
 
 
-  const { data: allUsers } = useQuery({
-    queryKey: ['all-users'],
+  const [userSearch, setUserSearch] = useState('');
+  const [userToDelete, setUserToDelete] = useState<{ id: string; username: string } | null>(null);
+  const [deletingUser, setDeletingUser] = useState(false);
+
+  const { data: allUsers, refetch: refetchUsers } = useQuery({
+    queryKey: ['all-users', userSearch],
     queryFn: async () => {
-      const { data: usersData, error: usersError } = await supabase
+      let query = supabase
         .from('users')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
+
+      if (userSearch.trim()) {
+        query = query.ilike('username', `%${userSearch.trim()}%`);
+      }
+
+      const { data: usersData, error: usersError } = await query;
 
       if (usersError) throw usersError;
 
@@ -198,6 +208,9 @@ const Admin = () => {
     },
     enabled: isAdmin,
   });
+
+  const filteredUsers = allUsers;
+
 
   const { data: sponsoredProducts, refetch: refetchSponsored } = useQuery({
     queryKey: ['sponsored-products-admin'],
