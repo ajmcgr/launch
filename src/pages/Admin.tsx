@@ -6,8 +6,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { Calendar, Tags, Mail, Loader2, Megaphone } from 'lucide-react';
+import { Calendar, Tags, Mail, Loader2, Megaphone, Trash2 } from 'lucide-react';
+
 import AdminSeoTab from '@/components/AdminSeoTab';
 import AdminMarketingTab from '@/components/admin/AdminMarketingTab';
 import AdminBlogTab from '@/components/admin/AdminBlogTab';
