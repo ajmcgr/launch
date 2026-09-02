@@ -94,6 +94,8 @@ const Reserve = lazy(() => import("./pages/Reserve"));
 const Search = lazy(() => import("./pages/Search"));
 const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
+import { pingLaunchScheduler } from "@/lib/launchHeartbeat";
+
 
 const queryClient = new QueryClient();
 
@@ -110,9 +112,16 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
+
+  // Fallback trigger so scheduled launches go live even if pg_cron is down.
+  useEffect(() => {
+    pingLaunchScheduler();
+  }, []);
+
   const staticPages = ['/about', '/terms', '/privacy', '/ai-info'];
   const standalonePages = ['/reserve'];
   const isStandalone = standalonePages.includes(location.pathname);
+
 
   const showNewsletter = !staticPages.includes(location.pathname)
     && !isStandalone;
