@@ -94,6 +94,8 @@ const Reserve = lazy(() => import("./pages/Reserve"));
 const Search = lazy(() => import("./pages/Search"));
 const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
+import { pingLaunchScheduler } from "@/lib/launchHeartbeat";
+
 
 const queryClient = new QueryClient();
 
