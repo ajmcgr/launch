@@ -267,6 +267,7 @@ const SideAdRails = () => {
           id,
           ad_type,
           weight,
+          sponsorship_type,
           product_id,
           custom_image_url,
           custom_title,
@@ -276,36 +277,43 @@ const SideAdRails = () => {
         `)
         .lte('start_date', today)
         .gte('end_date', today)
-        .in('sponsorship_type', ['website', 'combined']);
+        // Boosts are paid placements too, so they get a rail tile while active.
+        .in('sponsorship_type', ['website', 'combined', 'boost']);
 
       if (!data || data.length === 0) return;
 
-      const items = weightedShuffle(data as any[])
-        .map((s: any): RailAd | null => {
-          if (s.ad_type === 'custom' && s.custom_target_url) {
-            return {
-              key: s.id,
-              adType: 'custom',
-              href: s.custom_target_url,
-              external: true,
-              name: s.custom_title || 'Ad',
-              tagline: s.custom_description || '',
-              iconUrl: s.custom_image_url || undefined,
-            };
-          }
-          const p = s.products;
-          if (!p) return null;
-          const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url;
+      const toRailAd = (s: any): RailAd | null => {
+        if (s.ad_type === 'custom' && s.custom_target_url) {
           return {
             key: s.id,
-            adType: 'product',
-            href: `/launch/${p.slug}`,
-            external: false,
-            name: p.name,
-            tagline: p.tagline,
-            iconUrl: icon,
+            adType: 'custom',
+            href: s.custom_target_url,
+            external: true,
+            name: s.custom_title || 'Ad',
+            tagline: s.custom_description || '',
+            iconUrl: s.custom_image_url || undefined,
           };
-        })
+        }
+        const p = s.products;
+        if (!p) return null;
+        const icon = p.product_media?.find((m: any) => m.type === 'icon')?.url;
+        return {
+          key: s.id,
+          adType: 'product',
+          href: `/launch/${p.slug}`,
+          external: false,
+          name: (p.name || '').trim(),
+          tagline: p.tagline,
+          iconUrl: icon,
+        };
+      };
+
+      const rows = data as any[];
+      const boosts = rows.filter((s) => s.sponsorship_type === 'boost');
+      const standard = rows.filter((s) => s.sponsorship_type !== 'boost');
+
+      const items = [...weightedShuffle(boosts), ...weightedShuffle(standard)]
+        .map(toRailAd)
         .filter((x: RailAd | null): x is RailAd => x !== null);
 
       setAds(items);
