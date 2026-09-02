@@ -110,9 +110,16 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
+
+  // Fallback trigger so scheduled launches go live even if pg_cron is down.
+  useEffect(() => {
+    pingLaunchScheduler();
+  }, []);
+
   const staticPages = ['/about', '/terms', '/privacy', '/ai-info'];
   const standalonePages = ['/reserve'];
   const isStandalone = standalonePages.includes(location.pathname);
+
 
   const showNewsletter = !staticPages.includes(location.pathname)
     && !isStandalone;
