@@ -177,7 +177,7 @@ const Admin = () => {
     queryFn: async () => {
       let query = supabase
         .from('users')
-        .select('*')
+        .select('id, username, avatar_url, created_at')
         .order('created_at', { ascending: false })
         .limit(50);
 

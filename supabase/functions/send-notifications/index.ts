@@ -5,166 +5,179 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+const productionUrl = Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
+type NotificationType = 'new_follower' | 'new_comment' | 'product_launch' | 'new_vote';
 
 interface NotificationRequest {
   userId: string;
-  type: 'new_follower' | 'new_comment' | 'product_launch' | 'new_vote';
-  title: string;
-  message: string;
+  type: NotificationType;
   relatedProductId?: string;
   relatedUserId?: string;
-  sendEmail?: boolean;
 }
 
+const escapeHtml = (value: string) => value
+  .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+const jsonResponse = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
+  status,
+  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+});
+
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    // Validate caller JWT
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 401,
-      });
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    if (!authHeader?.startsWith('Bearer ')) return jsonResponse({ error: 'Unauthorized' }, 401);
+
+    const supabaseAdmin = createClient(Deno.env.get('SUPABASE_URL') ?? '', serviceRoleKey);
+    const token = authHeader.slice('Bearer '.length);
+    const isServiceRequest = token === serviceRoleKey;
+    let actorId: string | null = null;
+
+    if (!isServiceRequest) {
+      const { data, error } = await supabaseAdmin.auth.getUser(token);
+      if (error || !data.user) return jsonResponse({ error: 'Unauthorized' }, 401);
+      actorId = data.user.id;
     }
 
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const { userId, type, relatedProductId, relatedUserId }: NotificationRequest = await req.json();
+    const allowedTypes: NotificationType[] = ['new_follower', 'new_comment', 'product_launch', 'new_vote'];
+    if (!userId || !allowedTypes.includes(type)) return jsonResponse({ error: 'Invalid request body' }, 400);
+    if (type === 'product_launch' && !isServiceRequest) return jsonResponse({ error: 'Forbidden' }, 403);
+    if (type !== 'product_launch' && !actorId) return jsonResponse({ error: 'Forbidden' }, 403);
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
-    if (userErr || !userData?.user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 401,
-      });
+    const { data: target, error: targetError } = await supabaseAdmin
+      .from('users')
+      .select('email_notifications_enabled, notify_on_follow, notify_on_comment, notify_on_vote, notify_on_launch')
+      .eq('id', userId)
+      .maybeSingle();
+    if (targetError) throw targetError;
+    if (!target) return jsonResponse({ error: 'Notification recipient not found' }, 404);
+
+    const prefMap: Record<NotificationType, keyof typeof target> = {
+      new_follower: 'notify_on_follow',
+      new_comment: 'notify_on_comment',
+      new_vote: 'notify_on_vote',
+      product_launch: 'notify_on_launch',
+    };
+    if (!target.email_notifications_enabled || !target[prefMap[type]]) {
+      return jsonResponse({ success: true, skipped: 'preferences' });
     }
 
-    const { userId, type, title, message, relatedProductId, relatedUserId, sendEmail = true }: NotificationRequest = await req.json();
+    let title = '';
+    let message = '';
+    let verifiedRelatedUserId: string | null = actorId;
+    let sourceCreatedAt: string | null = null;
+    let sourceEventKey = '';
+    const { data: actor } = actorId
+      ? await supabaseAdmin.from('users').select('username').eq('id', actorId).maybeSingle()
+      : { data: null };
+    const actorName = actor?.username ? `@${actor.username}` : 'A Launch member';
 
-    // Basic input validation
-    if (!userId || typeof userId !== 'string' || !type || !title || !message) {
-      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      });
+    if (type === 'new_follower' && relatedProductId) {
+      const [{ data: product }, { data: follow }] = await Promise.all([
+        supabaseAdmin.from('products').select('owner_id, name').eq('id', relatedProductId).maybeSingle(),
+        supabaseAdmin.from('product_follows').select('created_at').eq('product_id', relatedProductId).eq('follower_id', actorId!).maybeSingle(),
+      ]);
+      if (!product || product.owner_id !== userId || !follow) return jsonResponse({ error: 'Forbidden' }, 403);
+      title = 'New product follower';
+      message = `${actorName} is now following ${product.name}`;
+      sourceCreatedAt = follow.created_at;
+      sourceEventKey = `product-follow:${relatedProductId}:${actorId}`;
+    } else if (type === 'new_follower') {
+      const { data: follow } = await supabaseAdmin.from('follows').select('created_at')
+        .eq('follower_id', actorId!).eq('followed_id', userId).maybeSingle();
+      if (!follow || (relatedUserId && relatedUserId !== actorId)) return jsonResponse({ error: 'Forbidden' }, 403);
+      title = 'New follower';
+      message = `${actorName} is now following you`;
+      sourceCreatedAt = follow.created_at;
+      sourceEventKey = `user-follow:${userId}:${actorId}`;
+    } else if (type === 'new_comment') {
+      if (!relatedProductId) return jsonResponse({ error: 'Invalid request body' }, 400);
+      const [{ data: product }, { data: comment }] = await Promise.all([
+        supabaseAdmin.from('products').select('owner_id, name').eq('id', relatedProductId).maybeSingle(),
+        supabaseAdmin.from('comments').select('id, created_at').eq('product_id', relatedProductId)
+          .eq('user_id', actorId!).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      ]);
+      if (!product || product.owner_id !== userId || !comment) return jsonResponse({ error: 'Forbidden' }, 403);
+      title = 'New comment on your product';
+      message = `${actorName} commented on ${product.name}`;
+      sourceCreatedAt = comment.created_at;
+      sourceEventKey = `comment:${comment.id}`;
+    } else if (type === 'new_vote') {
+      if (!relatedProductId) return jsonResponse({ error: 'Invalid request body' }, 400);
+      const [{ data: product }, { data: vote }] = await Promise.all([
+        supabaseAdmin.from('products').select('owner_id, name').eq('id', relatedProductId).maybeSingle(),
+        supabaseAdmin.from('votes').select('id, created_at').eq('product_id', relatedProductId)
+          .eq('user_id', actorId!).gt('value', 0).maybeSingle(),
+      ]);
+      if (!product || product.owner_id !== userId || !vote) return jsonResponse({ error: 'Forbidden' }, 403);
+      title = 'New upvote on your product';
+      message = `${actorName} upvoted ${product.name}`;
+      sourceCreatedAt = vote.created_at;
+      sourceEventKey = `vote:${vote.id}`;
+    } else if (type === 'product_launch') {
+      if (!relatedProductId) return jsonResponse({ error: 'Invalid request body' }, 400);
+      const [{ data: product }, { data: follow }] = await Promise.all([
+        supabaseAdmin.from('products').select('name, launch_date').eq('id', relatedProductId).maybeSingle(),
+        supabaseAdmin.from('product_follows').select('created_at').eq('product_id', relatedProductId).eq('follower_id', userId).maybeSingle(),
+      ]);
+      if (!product || !follow) return jsonResponse({ error: 'Forbidden' }, 403);
+      title = `${product.name} just launched!`;
+      message = "The product you're following is now live.";
+      sourceCreatedAt = product.launch_date;
+      verifiedRelatedUserId = null;
+      sourceEventKey = `product-launch:${relatedProductId}:${product.launch_date}`;
     }
-    const allowedTypes = ['new_follower', 'new_comment', 'product_launch', 'new_vote'];
-    if (!allowedTypes.includes(type)) {
-      return new Response(JSON.stringify({ error: 'Invalid notification type' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      });
-    }
 
+    let duplicateQuery = supabaseAdmin.from('notifications').select('id').eq('user_id', userId).eq('type', type);
+    duplicateQuery = relatedProductId
+      ? duplicateQuery.eq('related_product_id', relatedProductId)
+      : duplicateQuery.is('related_product_id', null);
+    duplicateQuery = verifiedRelatedUserId
+      ? duplicateQuery.eq('related_user_id', verifiedRelatedUserId)
+      : duplicateQuery.is('related_user_id', null);
+    if (sourceCreatedAt) duplicateQuery = duplicateQuery.gte('created_at', sourceCreatedAt);
+    const { data: existing } = await duplicateQuery.limit(1).maybeSingle();
+    if (existing) return jsonResponse({ success: true, skipped: 'duplicate' });
 
-    // Create in-app notification
-    const { data: notification, error: notifError } = await supabaseAdmin
-      .from('notifications')
-      .insert({
-        user_id: userId,
-        type,
-        title,
-        message,
-        related_product_id: relatedProductId,
-        related_user_id: relatedUserId,
-        email_sent: false,
-      })
-      .select()
-      .single();
+    const { data: notification, error: notifError } = await supabaseAdmin.from('notifications').insert({
+      user_id: userId,
+      type,
+      title,
+      message,
+      related_product_id: relatedProductId || null,
+      related_user_id: verifiedRelatedUserId,
+      source_event_key: sourceEventKey,
+      email_sent: false,
+    }).select().single();
+    if (notifError?.code === '23505') return jsonResponse({ success: true, skipped: 'duplicate' });
+    if (notifError) throw notifError;
 
-    if (notifError) {
-      console.error('Error creating notification:', notifError);
-      throw notifError;
-    }
-
-    // Send email if requested
-    if (sendEmail) {
-      // Get user email from auth
-      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
-      
-      if (authUser?.user?.email) {
-        const productUrl = relatedProductId
-          ? `${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/launch/${relatedProductId}`
-          : Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
-
-        const emailHtml = `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
-                .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-                .card { background: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-                .header { padding: 30px; text-align: center; border-bottom: 1px solid #e5e7eb; }
-                .logo { height: 32px; }
-                .content { padding: 30px; }
-                .content h1 { margin: 0 0 16px 0; font-size: 20px; color: #111; }
-                .content p { margin: 0 0 20px 0; color: #4b5563; }
-                .button { display: inline-block; background: #206dcb; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; }
-                .footer { padding: 20px 30px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; }
-                .footer a { color: #6b7280; }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <div class="card">
-                  <div class="header">
-                    <img src="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/images/email-logo.png" alt="Launch" class="logo" />
-                  </div>
-                  <div class="content">
-                    <h1>${title}</h1>
-                    <p>${message}</p>
-                    ${relatedProductId ? `<p><a href="${productUrl}" class="button" style="color: #ffffff !important;">View Product</a></p>` : ''}
-                  </div>
-                  <div class="footer">
-                    <p>You're receiving this because you're a member of Launch.<br/>
-                    <a href="${Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai'}/settings">Manage notifications</a></p>
-                  </div>
-                </div>
-              </div>
-            </body>
-          </html>
-        `;
-
-        try {
-          const emailResponse = await resend.emails.send({
-            from: 'Launch <notifications@trylaunch.ai>',
-            to: [authUser.user.email],
-            subject: title,
-            html: emailHtml,
-          });
-
-          // Update notification to mark email as sent
-          await supabaseAdmin
-            .from('notifications')
-            .update({ email_sent: true })
-            .eq('id', notification.id);
-
-        } catch (emailError) {
-          console.error('Error sending email:', emailError);
-          // Don't fail the whole request if email fails
-        }
+    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+    if (authUser?.user?.email) {
+      const safeTitle = escapeHtml(title);
+      const safeMessage = escapeHtml(message);
+      const productUrl = relatedProductId ? `${productionUrl}/launch/${encodeURIComponent(relatedProductId)}` : productionUrl;
+      try {
+        await resend.emails.send({
+          from: 'Launch <notifications@trylaunch.ai>',
+          to: [authUser.user.email],
+          subject: title,
+          html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f9fafb;color:#333;padding:40px 20px"><div style="max-width:600px;margin:auto;background:#fff;padding:30px;border-radius:8px"><img src="${productionUrl}/images/email-logo.png" alt="Launch" height="32"><h1 style="font-size:20px">${safeTitle}</h1><p>${safeMessage}</p>${relatedProductId ? `<p><a href="${productUrl}" style="display:inline-block;background:#206dcb;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px">View Product</a></p>` : ''}<p style="color:#9ca3af;font-size:12px"><a href="${productionUrl}/settings">Manage notifications</a></p></div></body></html>`,
+        });
+        await supabaseAdmin.from('notifications').update({ email_sent: true }).eq('id', notification.id);
+      } catch (emailError) {
+        console.error('Error sending notification email:', emailError);
       }
     }
 
-    return new Response(
-      JSON.stringify({ success: true, notification }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-    );
+    return jsonResponse({ success: true, notification });
   } catch (error) {
     console.error('Error in send-notifications:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-    );
+    return jsonResponse({ error: error instanceof Error ? error.message : 'Unknown error' }, 500);
   }
 });

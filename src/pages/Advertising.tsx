@@ -206,7 +206,7 @@ const Advertising = () => {
     queryFn: async () => {
       const [productsRes, usersRes, clicksRes] = await Promise.all([
         supabase.from('products').select('*', { count: 'exact', head: true }).eq('status', 'launched'),
-        supabase.from('users').select('*', { count: 'exact', head: true }),
+        supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('product_analytics_summary').select('total_website_clicks'),
       ]);
       const totalClicks = (clicksRes.data ?? []).reduce(

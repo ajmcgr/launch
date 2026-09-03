@@ -553,7 +553,7 @@ const UserProfile = () => {
 
       const { data: profileData, error } = await supabase
         .from('users')
-        .select('*')
+        .select('id, username, avatar_url, bio, name, banner_image_url, website, twitter, linkedin, instagram, youtube, telegram, created_at')
         .eq('username', username)
         .single();
 

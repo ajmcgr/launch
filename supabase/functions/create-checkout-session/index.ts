@@ -63,6 +63,22 @@ serve(async (req) => {
       throw new Error('Invalid plan');
     }
 
+    // One-time product purchases may only mutate products owned by the payer.
+    if (!selectedPlan.isSubscription) {
+      if (!productId || typeof productId !== 'string') {
+        throw new Error('Product is required');
+      }
+      const { data: ownedProduct, error: productError } = await supabaseAdmin
+        .from('products')
+        .select('id')
+        .eq('id', productId)
+        .eq('owner_id', user.id)
+        .maybeSingle();
+      if (productError || !ownedProduct) {
+        throw new Error('Product not found or access denied');
+      }
+    }
+
     // Get or create Stripe customer
     let customerId: string;
     

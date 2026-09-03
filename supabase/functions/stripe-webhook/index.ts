@@ -67,11 +67,53 @@ Deno.serve(async (req) => {
     return new Response('Missing signature or webhook secret', { status: 400 });
   }
 
+  let claimedEventId: string | null = null;
+  let webhookStateClient: any = null;
+  const markEvent = async (status: 'completed' | 'failed', lastError?: string) => {
+    if (!claimedEventId || !webhookStateClient) return;
+    const { error } = await webhookStateClient
+      .from('stripe_webhook_events')
+      .update({
+        status,
+        last_error: lastError || null,
+        updated_at: new Date().toISOString(),
+        completed_at: status === 'completed' ? new Date().toISOString() : null,
+      })
+      .eq('event_id', claimedEventId);
+    if (error) console.error('Failed to update webhook event state:', error);
+  };
+
   try {
     const body = await req.text();
     const event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
 
     console.log('Webhook event type:', event.type);
+
+    webhookStateClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+    const { data: claimed, error: claimError } = await webhookStateClient.rpc(
+      'claim_stripe_webhook_event',
+      { p_event_id: event.id, p_event_type: event.type },
+    );
+    if (claimError) throw claimError;
+    if (!claimed) {
+      const { data: existingEvent, error: existingEventError } = await webhookStateClient
+        .from('stripe_webhook_events')
+        .select('status')
+        .eq('event_id', event.id)
+        .single();
+      if (existingEventError) throw existingEventError;
+
+      const completed = existingEvent.status === 'completed';
+      console.log('Webhook event already processed or currently claimed:', event.id, existingEvent.status);
+      return new Response(JSON.stringify({ received: completed, duplicate: completed }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: completed ? 200 : 500,
+      });
+    }
+    claimedEventId = event.id;
 
     // Handle subscription events
     if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
@@ -80,7 +122,8 @@ Deno.serve(async (req) => {
       
       if (!metadata?.user_id) {
         console.log('No user_id in subscription metadata, skipping');
-        return new Response(JSON.stringify({ received: true }), {
+      await markEvent('completed');
+      return new Response(JSON.stringify({ received: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
         });
@@ -215,6 +258,7 @@ Deno.serve(async (req) => {
         }
       }
 
+      await markEvent('completed');
       return new Response(JSON.stringify({ received: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
@@ -228,7 +272,8 @@ Deno.serve(async (req) => {
       
       if (!metadata?.user_id) {
         console.log('No user_id in subscription metadata, skipping');
-        return new Response(JSON.stringify({ received: true }), {
+      await markEvent('completed');
+      return new Response(JSON.stringify({ received: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
         });
@@ -254,7 +299,7 @@ Deno.serve(async (req) => {
       }
 
       console.log(`Subscription deleted for user ${metadata.user_id}`);
-
+      await markEvent('completed');
       return new Response(JSON.stringify({ received: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
@@ -305,6 +350,7 @@ Deno.serve(async (req) => {
         }
       }
 
+      await markEvent('completed');
       return new Response(JSON.stringify({ received: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
@@ -336,8 +382,22 @@ Deno.serve(async (req) => {
         // For website/combined sponsorships, we need to create sponsored_products entries
         const adType = (metadata.ad_type as string) || 'product';
         const isWebsiteOrCombined = metadata.sponsorship_type === 'website' || metadata.sponsorship_type === 'combined';
+        const refundUnfulfilledAdvertising = async (reason: unknown) => {
+          const paymentIntent = typeof session.payment_intent === 'string' ? session.payment_intent : null;
+          if (!paymentIntent) throw reason;
+          await stripe.refunds.create(
+            { payment_intent: paymentIntent, reason: 'requested_by_customer' },
+            { idempotencyKey: `advertising-inventory-refund-${session.id}` },
+          );
+          console.error('Advertising fulfillment failed; payment refunded:', reason);
+          await markEvent('completed');
+          return new Response(JSON.stringify({ received: true, refunded: true }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          });
+        };
 
-        if (isWebsiteOrCombined && (adType === 'custom' || metadata.product_slug)) {
+        if (isWebsiteOrCombined) {
           // Resolve product (only required for product ads)
           let productId: string | null = null;
           let productLabel = 'Custom Ad';
@@ -366,57 +426,35 @@ Deno.serve(async (req) => {
           if (productId || hasCustomCreative) {
             const selectedMonthsStr = metadata.selected_months || '';
             const monthStrings = selectedMonthsStr.split(', ').filter(Boolean);
-
-            for (const monthStr of monthStrings) {
+            const monthRanges = monthStrings.map((monthStr) => {
               const monthDate = new Date(`1 ${monthStr}`);
-              if (!isNaN(monthDate.getTime())) {
-                const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
-                const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+              if (isNaN(monthDate.getTime())) throw new Error(`Invalid advertising month: ${monthStr}`);
+              return {
+                start: new Date(monthDate.getFullYear(), monthDate.getMonth(), 1).toISOString().split('T')[0],
+                end: new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).toISOString().split('T')[0],
+              };
+            });
 
-                const { data: existingSponsors } = await supabaseClient
-                  .from('sponsored_products')
-                  .select('id, position, end_date')
-                  .lte('start_date', endDate.toISOString().split('T')[0])
-                  .gte('end_date', startDate.toISOString().split('T')[0])
-                  .in('sponsorship_type', ['website', 'combined'])
-                  .order('position', { ascending: true });
+            const { error: fulfillmentError } = await supabaseClient.rpc('fulfill_website_sponsorship', {
+              p_checkout_session_id: session.id,
+              p_product_id: productId,
+              p_sponsorship_type: metadata.sponsorship_type,
+              p_ad_type: adType,
+              p_start_dates: monthRanges.map((range) => range.start),
+              p_end_dates: monthRanges.map((range) => range.end),
+              p_custom_image_url: adType === 'custom' ? metadata.custom_image_url : null,
+              p_custom_title: adType === 'custom' ? metadata.custom_title : null,
+              p_custom_description: adType === 'custom' ? metadata.custom_description || null : null,
+              p_custom_target_url: adType === 'custom' ? metadata.custom_target_url : null,
+            });
 
-                const occupiedPositions = new Set(existingSponsors?.map((s: any) => s.position) || []);
-                let nextPosition = 1;
-                while (occupiedPositions.has(nextPosition) && nextPosition <= 10) {
-                  nextPosition++;
-                }
-
-                if ((existingSponsors?.length ?? 0) >= 10 || nextPosition > 10) {
-                  console.error(`No available positions for ${monthStr} - all 10 website ad slots are filled`);
-                } else {
-                  const insertPayload: any = {
-                    position: nextPosition,
-                    sponsorship_type: metadata.sponsorship_type,
-                    start_date: startDate.toISOString().split('T')[0],
-                    end_date: endDate.toISOString().split('T')[0],
-                    ad_type: adType,
-                    product_id: productId,
-                  };
-                  if (adType === 'custom') {
-                    insertPayload.custom_image_url = metadata.custom_image_url;
-                    insertPayload.custom_title = metadata.custom_title;
-                    insertPayload.custom_description = metadata.custom_description || null;
-                    insertPayload.custom_target_url = metadata.custom_target_url;
-                  }
-
-                  const { error: insertError } = await supabaseClient
-                    .from('sponsored_products')
-                    .insert(insertPayload);
-
-                  if (insertError) {
-                    console.error('Error creating sponsored product:', insertError);
-                  } else {
-                    console.log(`Created ${adType} sponsored entry for ${productLabel} at position ${nextPosition} for ${monthStr}`);
-                  }
-                }
-              }
+            if (fulfillmentError) {
+              return await refundUnfulfilledAdvertising(fulfillmentError);
             }
+
+            console.log(`Created ${adType} sponsored entries for ${productLabel}: ${monthStrings.join(', ')}`);
+          } else {
+            return await refundUnfulfilledAdvertising(new Error('Advertising target could not be resolved'));
           }
         }
 
@@ -537,7 +575,8 @@ Deno.serve(async (req) => {
           }
         }
 
-        return new Response(JSON.stringify({ received: true }), {
+      await markEvent('completed');
+      return new Response(JSON.stringify({ received: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
         });
@@ -721,8 +760,8 @@ Deno.serve(async (req) => {
           });
 
         console.log('Boost scheduled for product:', metadata.product_id, 'starts:', startsAt.toISOString(), 'ends:', endsAt.toISOString());
-
-        return new Response(JSON.stringify({ received: true }), {
+      await markEvent('completed');
+      return new Response(JSON.stringify({ received: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
         });
@@ -827,8 +866,9 @@ Deno.serve(async (req) => {
         } catch (emailError) {
           console.error('Error sending annual access confirmation email:', emailError);
         }
-        
-        return new Response(JSON.stringify({ received: true }), {
+
+      await markEvent('completed');
+      return new Response(JSON.stringify({ received: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
         });
@@ -1077,7 +1117,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ received: true }), {
+      await markEvent('completed');
+      return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
@@ -1103,11 +1144,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    // For any other downstream processing error, ack with 200 so Stripe doesn't retry forever.
-    // The error is logged above and we (Launch) will reconcile manually if needed.
+    await markEvent('failed', message);
+
+    // Retry downstream failures: the durable claim prevents duplicate fulfillment
+    // while allowing Stripe to redeliver failures that may be transient.
     return new Response(
-      JSON.stringify({ received: true, processing_error: message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      JSON.stringify({ received: false, processing_error: message }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
 });

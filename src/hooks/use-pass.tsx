@@ -7,7 +7,6 @@ export interface PassStatus {
   plan: string | null;
   subscriptionStatus: string | null;
   cancelAtPeriodEnd: boolean;
-  stripeSubscriptionId: string | null;
 }
 
 export const usePass = (userId: string | undefined) => {
@@ -21,13 +20,12 @@ export const usePass = (userId: string | undefined) => {
           plan: null,
           subscriptionStatus: null,
           cancelAtPeriodEnd: false,
-          stripeSubscriptionId: null,
         };
       }
 
       const { data, error } = await supabase
         .from('users')
-        .select('plan, annual_access_expires_at, subscription_status, subscription_cancel_at_period_end, stripe_subscription_id')
+        .select('plan, annual_access_expires_at, subscription_status, subscription_cancel_at_period_end')
         .eq('id', userId)
         .single();
 
@@ -38,7 +36,6 @@ export const usePass = (userId: string | undefined) => {
           plan: null,
           subscriptionStatus: null,
           cancelAtPeriodEnd: false,
-          stripeSubscriptionId: null,
         };
       }
 
@@ -61,7 +58,6 @@ export const usePass = (userId: string | undefined) => {
         plan: data.plan,
         subscriptionStatus: data.subscription_status,
         cancelAtPeriodEnd: data.subscription_cancel_at_period_end ?? false,
-        stripeSubscriptionId: data.stripe_subscription_id,
       };
     },
     enabled: !!userId,

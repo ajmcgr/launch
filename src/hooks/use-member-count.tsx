@@ -8,7 +8,7 @@ export const useMemberCount = () => {
     queryFn: async () => {
       const { count } = await supabase
         .from('users')
-        .select('*', { count: 'exact', head: true });
+        .select('id', { count: 'exact', head: true });
       return count ?? 0;
     },
     staleTime: 1000 * 60 * 60, // 1 hour

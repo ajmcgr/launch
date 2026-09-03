@@ -11,30 +11,6 @@ interface SendNotificationParams {
 
 export const sendNotification = async (params: SendNotificationParams) => {
   try {
-    // Check if user has email notifications enabled
-    const { data: userPrefs } = await supabase
-      .from('users')
-      .select('email_notifications_enabled, notify_on_follow, notify_on_comment, notify_on_vote, notify_on_launch')
-      .eq('id', params.userId)
-      .single();
-
-    if (!userPrefs?.email_notifications_enabled) {
-      return;
-    }
-
-    // Check specific notification type preference
-    const prefMap = {
-      new_follower: 'notify_on_follow',
-      new_comment: 'notify_on_comment',
-      new_vote: 'notify_on_vote',
-      product_launch: 'notify_on_launch',
-    };
-
-    const prefKey = prefMap[params.type];
-    if (prefKey && !userPrefs[prefKey as keyof typeof userPrefs]) {
-      return;
-    }
-
     // Get current session for authorization
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
