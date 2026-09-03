@@ -6,7 +6,7 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-token",
 };
 
 serve(async (req): Promise<Response> => {
@@ -19,6 +19,23 @@ serve(async (req): Promise<Response> => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
+
+    const authHeader = req.headers.get('Authorization');
+    const suppliedCronToken = req.headers.get('x-cron-token');
+    const isServiceRequest = authHeader === `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''}`;
+    const { data: cronToken, error: cronTokenError } = await supabaseAdmin
+      .from('internal_cron_tokens')
+      .select('token')
+      .eq('name', 'send-renewal-reminders')
+      .single();
+
+    if (cronTokenError) throw cronTokenError;
+    if (!isServiceRequest && (!suppliedCronToken || suppliedCronToken !== cronToken.token)) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
 
     // Find users whose subscriptions will renew in 7 days
     const sevenDaysFromNow = new Date();
@@ -55,6 +72,17 @@ serve(async (req): Promise<Response> => {
           console.log(`No email for user ${user.id}, skipping`);
           continue;
         }
+
+        const renewalDateKey = new Date(user.annual_access_expires_at!).toISOString().slice(0, 10);
+        const { error: claimError } = await supabaseAdmin
+          .from('renewal_reminders_sent')
+          .insert({ user_id: user.id, renewal_date: renewalDateKey });
+
+        if (claimError?.code === '23505') {
+          console.log(`Renewal reminder already sent for user ${user.id} on ${renewalDateKey}`);
+          continue;
+        }
+        if (claimError) throw claimError;
 
         const renewalDate = new Date(user.annual_access_expires_at!).toLocaleDateString('en-US', {
           weekday: 'long',
@@ -112,12 +140,23 @@ serve(async (req): Promise<Response> => {
           </html>
         `;
 
-        await resend.emails.send({
-          from: 'Launch <notifications@trylaunch.ai>',
-          to: [authUser.user.email],
-          subject: '🔔 Your Launch Pass renews in 7 days',
-          html: emailHtml,
-        });
+        try {
+          const { error: sendError } = await resend.emails.send({
+            from: 'Launch <notifications@trylaunch.ai>',
+            to: [authUser.user.email],
+            subject: '🔔 Your Launch Pass renews in 7 days',
+            html: emailHtml,
+          });
+          if (sendError) throw sendError;
+        } catch (sendError) {
+          // Release the claim so a later scheduled run can retry a failed send.
+          await supabaseAdmin
+            .from('renewal_reminders_sent')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('renewal_date', renewalDateKey);
+          throw sendError;
+        }
 
         sentCount++;
         console.log(`Sent renewal reminder to ${authUser.user.email}`);

@@ -32,7 +32,7 @@ const Following = () => {
       setLoading(true);
       try {
         const { data: profileData } = await supabase
-          .from('users').select('*').eq('username', username).single();
+          .from('users').select('id, username, avatar_url, bio, name, banner_image_url, website, twitter, linkedin, instagram, youtube, telegram').eq('username', username).single();
         if (!profileData) { setLoading(false); return; }
         setProfile(profileData);
 
