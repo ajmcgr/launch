@@ -3,6 +3,9 @@ project_id = "gzpypxgdkxdynovploxn"
 [functions.stripe-webhook]
 verify_jwt = false
 
+[functions.create-portal-session]
+verify_jwt = false
+
 [functions.setup-stripe-products]
 verify_jwt = false
 

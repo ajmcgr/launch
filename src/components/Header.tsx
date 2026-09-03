@@ -67,7 +67,7 @@ export const Header = () => {
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from('users')
-      .select('*')
+      .select('id, username, avatar_url')
       .eq('id', userId)
       .single();
     setProfile(data);

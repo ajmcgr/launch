@@ -34,7 +34,6 @@ const Settings = () => {
     website: '',
     avatar_url: '',
     banner_image_url: '',
-    stripe_customer_id: '',
     email_notifications_enabled: true,
     launch_digest_frequency: 'off' as DigestFrequency,
     notify_on_follow: true,
@@ -44,6 +43,7 @@ const Settings = () => {
   });
   const [uploading, setUploading] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [hasBillingCustomer, setHasBillingCustomer] = useState(false);
   
   // Pass status
   const { data: passStatus, refetch: refetchPassStatus } = usePass(user?.id);
@@ -68,15 +68,19 @@ const Settings = () => {
   }, [navigate, searchParams]);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    const [{ data }, billingStatus] = await Promise.all([
+      supabase
+        .from('users')
+        .select('id, name, username, bio, twitter, instagram, linkedin, youtube, telegram, website, avatar_url, banner_image_url, email_notifications_enabled, launch_digest_frequency, notify_on_follow, notify_on_comment, notify_on_vote, notify_on_launch')
+        .eq('id', userId)
+        .single(),
+      supabase.functions.invoke('create-portal-session', { body: { action: 'status' } }),
+    ]);
     
     if (data) {
       setProfile({ banner_image_url: '', ...(data as any) });
     }
+    setHasBillingCustomer(Boolean(billingStatus.data?.hasBillingCustomer));
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -261,18 +265,9 @@ const Settings = () => {
     try {
       setLoading(true);
       
-      // Check if user has a Stripe customer ID
-      if (!profile.stripe_customer_id) {
-        toast.error('No billing information found. Please make a purchase first.');
-        return;
-      }
-
       // Call edge function to create portal session
       const { data, error } = await supabase.functions.invoke('create-portal-session', {
-        body: {
-          customerId: profile.stripe_customer_id,
-          returnUrl: `${window.location.origin}/settings`,
-        },
+        body: {},
       });
 
       if (error) throw error;
@@ -660,7 +655,7 @@ const Settings = () => {
             />
             
             {/* Stripe Billing Portal - only show if user has billing history */}
-            {profile.stripe_customer_id ? (
+            {hasBillingCustomer ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Payment History</CardTitle>

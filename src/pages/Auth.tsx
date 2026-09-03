@@ -20,13 +20,16 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(searchParams.get('mode') === 'reset');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [digestFrequency, setDigestFrequency] = useState<DigestFrequency>('daily');
 
   // Sync isSignUp state with URL parameter
   useEffect(() => {
     setIsSignUp(searchParams.get('mode') === 'signup');
+    setIsResetPassword(searchParams.get('mode') === 'reset');
   }, [searchParams]);
 
   useEffect(() => {
@@ -34,7 +37,7 @@ const Auth = () => {
     
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+      if (session && !isResetPassword) {
         if (returnTo) {
           navigate(decodeURIComponent(returnTo));
         } else {
@@ -44,7 +47,9 @@ const Auth = () => {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && event === 'SIGNED_IN') {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsResetPassword(true);
+      } else if (session && event === 'SIGNED_IN' && !isResetPassword) {
         if (returnTo) {
           navigate(decodeURIComponent(returnTo));
         } else {
@@ -54,7 +59,7 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, isSignUp, searchParams]);
+  }, [navigate, isSignUp, isResetPassword, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,6 +147,37 @@ const Auth = () => {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const validation = z.string()
+        .min(6, 'Password must be at least 6 characters')
+        .max(100, 'Password too long')
+        .safeParse(password);
+
+      if (!validation.success) {
+        toast.error(validation.error.errors[0].message);
+        return;
+      }
+      if (password !== confirmPassword) {
+        toast.error('Passwords do not match');
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: validation.data });
+      if (error) throw error;
+
+      toast.success('Password updated successfully.');
+      navigate('/');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Subscribe ALL new users to newsletter (email and OAuth signups)
   useEffect(() => {
     // Track signup intent + New Launches digest preference when on signup mode
@@ -211,10 +247,14 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
-            {isForgotPassword ? 'Reset Password' : (isSignUp ? 'Start building.' : 'Welcome back.')}
+            {isResetPassword
+              ? 'Choose a new password'
+              : (isForgotPassword ? 'Reset Password' : (isSignUp ? 'Start building.' : 'Welcome back.'))}
           </CardTitle>
           <CardDescription>
-            {isForgotPassword 
+            {isResetPassword
+              ? 'Enter and confirm your new password.'
+              : isForgotPassword
               ? 'Enter your email to receive a password reset link'
               : (isSignUp 
                 ? 'Join thousands of people building their future.'
@@ -224,7 +264,7 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {!isForgotPassword && (
+          {!isForgotPassword && !isResetPassword && (
             <>
               <div className="space-y-3">
                 <Button
@@ -280,8 +320,11 @@ const Auth = () => {
             </>
           )}
 
-          <form onSubmit={isForgotPassword ? handleForgotPassword : handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+          <form
+            onSubmit={isResetPassword ? handleResetPassword : (isForgotPassword ? handleForgotPassword : handleSubmit)}
+            className="space-y-4"
+          >
+            {!isResetPassword && <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -291,10 +334,10 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            </div>
+            </div>}
             {!isForgotPassword && (
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{isResetPassword ? 'New password' : 'Password'}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -304,7 +347,7 @@ const Auth = () => {
                   required
                   minLength={6}
                 />
-                {!isSignUp && (
+                {!isSignUp && !isResetPassword && (
                   <button
                     type="button"
                     onClick={() => setIsForgotPassword(true)}
@@ -315,7 +358,21 @@ const Auth = () => {
                 )}
               </div>
             )}
-            {isSignUp && !isForgotPassword && (
+            {isResetPassword && (
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm new password</Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+              </div>
+            )}
+            {isSignUp && !isForgotPassword && !isResetPassword && (
               <div className="rounded-lg border border-border p-3 space-y-2">
                 <div>
                   <p className="text-sm font-medium text-foreground">New Launches</p>
@@ -328,8 +385,8 @@ const Auth = () => {
             )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading 
-                ? (isForgotPassword ? 'Sending...' : (isSignUp ? 'Signing up...' : 'Signing in...'))
-                : (isForgotPassword ? 'Send Reset Link' : (isSignUp ? 'Sign Up' : 'Sign In'))
+                ? (isResetPassword ? 'Updating...' : (isForgotPassword ? 'Sending...' : (isSignUp ? 'Signing up...' : 'Signing in...')))
+                : (isResetPassword ? 'Update Password' : (isForgotPassword ? 'Send Reset Link' : (isSignUp ? 'Sign Up' : 'Sign In')))
               }
             </Button>
             {isForgotPassword && (
@@ -344,7 +401,7 @@ const Auth = () => {
             )}
           </form>
 
-          {!isForgotPassword && (
+          {!isForgotPassword && !isResetPassword && (
             <p className="text-center text-sm text-muted-foreground">
               {isSignUp ? (
                 <>
