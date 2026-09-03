@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Youtube } from 'lucide-react';
+
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { comparisons } from '@/lib/comparisons';
 import { vibeCodingPlatforms } from '@/lib/vibeCodingPlatforms';
@@ -250,28 +250,6 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
                 </a>
               </li>
 
-              <li>
-                <a 
-                  href="https://instagram.com/trylaunch" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                >
-                  <Instagram className="h-4 w-4" />
-                  Instagram
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://www.youtube.com/channel/UCiWIdnazQN7JqkioVROrblQ/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
-                >
-                  <Youtube className="h-4 w-4" />
-                  YouTube
-                </a>
-              </li>
               <li>
                 <a 
                   href="https://discord.gg/rjnXdm5zgw" 
