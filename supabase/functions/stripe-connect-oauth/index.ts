@@ -24,19 +24,17 @@ Deno.serve(async (req) => {
     const { action, productId, code, state, stripeProductId } = await req.json();
     const productionUrl = (Deno.env.get('PRODUCTION_URL') || '').replace(/\/$/, '');
 
-    // Get user from auth header
+    // Every action, including the browser-mediated callback, must belong to the
+    // currently signed-in user.
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader && action !== 'callback') {
+    if (!authHeader?.startsWith('Bearer ')) {
       throw new Error('Unauthorized');
     }
 
-    let userId: string | null = null;
-    if (authHeader) {
-      const token = authHeader.replace('Bearer ', '');
-      const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-      if (error || !user) throw new Error('Unauthorized');
-      userId = user.id;
-    }
+    const token = authHeader.slice('Bearer '.length);
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
+    if (userError || !user) throw new Error('Unauthorized');
+    const userId = user.id;
 
     if (action === 'connect') {
       // Generate OAuth link for Stripe Connect
@@ -51,13 +49,21 @@ Deno.serve(async (req) => {
         throw new Error('Product not found or unauthorized');
       }
 
-      // Create OAuth link with state containing productId and userId
-      const stateData = JSON.stringify({ productId, userId });
-      const encodedState = btoa(stateData);
+      const stateToken = crypto.randomUUID();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+      const { error: stateError } = await supabaseAdmin
+        .from('stripe_connect_oauth_states')
+        .insert({
+          state_token: stateToken,
+          product_id: productId,
+          user_id: userId,
+          expires_at: expiresAt,
+        });
+      if (stateError) throw new Error('Failed to initialize Stripe connection');
       
       // Redirect to settings page which will handle the callback
       const redirectUri = `${productionUrl}/settings?stripe_callback=true`;
-      const connectUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${Deno.env.get('STRIPE_CONNECT_CLIENT_ID')}&scope=read_write&redirect_uri=${encodeURIComponent(redirectUri)}&state=${encodedState}`;
+      const connectUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${Deno.env.get('STRIPE_CONNECT_CLIENT_ID')}&scope=read_write&redirect_uri=${encodeURIComponent(redirectUri)}&state=${stateToken}`;
 
       return new Response(
         JSON.stringify({ url: connectUrl }),
@@ -71,8 +77,23 @@ Deno.serve(async (req) => {
         throw new Error('Missing code or state');
       }
 
-      const stateData = JSON.parse(atob(state));
-      const { productId: pId, userId: uId } = stateData;
+      const consumedAt = new Date().toISOString();
+      const { data: oauthState, error: stateError } = await supabaseAdmin
+        .from('stripe_connect_oauth_states')
+        .update({ consumed_at: consumedAt })
+        .eq('state_token', state)
+        .eq('user_id', userId)
+        .is('consumed_at', null)
+        .gt('expires_at', consumedAt)
+        .select('product_id, user_id')
+        .maybeSingle();
+
+      if (stateError || !oauthState) {
+        throw new Error('Invalid or expired OAuth state');
+      }
+
+      const pId = oauthState.product_id;
+      const uId = oauthState.user_id;
 
       // Exchange code for access token
       const response = await stripe.oauth.token({
@@ -88,6 +109,7 @@ Deno.serve(async (req) => {
         .from('products')
         .select('stripe_product_id')
         .eq('id', pId)
+        .eq('owner_id', uId)
         .single();
 
       // Fetch MRR from the connected account, filtered by product if set
@@ -95,7 +117,7 @@ Deno.serve(async (req) => {
       console.log('Fetched MRR:', mrr);
 
       // Update product with Stripe Connect info
-      const { error: updateError } = await supabaseAdmin
+      const { data: updatedProduct, error: updateError } = await supabaseAdmin
         .from('products')
         .update({
           stripe_connect_account_id: connectedAccountId,
@@ -103,9 +125,11 @@ Deno.serve(async (req) => {
           mrr_verified_at: new Date().toISOString(),
         })
         .eq('id', pId)
-        .eq('owner_id', uId);
+        .eq('owner_id', uId)
+        .select('id')
+        .maybeSingle();
 
-      if (updateError) {
+      if (updateError || !updatedProduct) {
         console.error('Error updating product:', updateError);
         throw new Error('Failed to update product');
       }
@@ -268,9 +292,10 @@ Deno.serve(async (req) => {
     throw new Error('Invalid action');
   } catch (error) {
     console.error('Stripe Connect error:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      JSON.stringify({ error: message }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: message === 'Unauthorized' ? 401 : 400 }
     );
   }
 });

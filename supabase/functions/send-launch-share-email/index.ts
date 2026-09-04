@@ -5,7 +5,7 @@ const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-token',
 };
 
 const PRODUCTION_URL = Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
@@ -416,6 +416,24 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
+
+    const authHeader = req.headers.get('Authorization');
+    const suppliedCronToken = req.headers.get('x-cron-token');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const isServiceRequest = Boolean(serviceRoleKey) && authHeader === `Bearer ${serviceRoleKey}`;
+    const { data: cronToken, error: cronTokenError } = await supabaseAdmin
+      .from('internal_cron_tokens')
+      .select('token')
+      .eq('name', 'send-launch-share-email')
+      .single();
+
+    if (cronTokenError) throw cronTokenError;
+    if (!isServiceRequest && (!suppliedCronToken || suppliedCronToken !== cronToken.token)) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const now = new Date();
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
