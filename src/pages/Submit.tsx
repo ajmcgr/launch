@@ -1348,18 +1348,22 @@ const Submit = () => {
         const launchStatus = formData.plan === 'join' ? 'launched' : 'scheduled';
         
         // Create order record referencing annual pass
-        await supabase.from('orders').insert({
+        const { error: passOrderError } = await supabase.from('orders').insert({
           user_id: session.user.id,
           product_id: savedProductId,
           plan: formData.plan,
           stripe_session_id: 'annual_access_' + Date.now(),
         });
+
+        if (passOrderError) throw passOrderError;
         
         // Update product
-        await supabase.from('products').update({
+        const { error: passProductError } = await supabase.from('products').update({
           status: launchStatus,
           launch_date: launchDate.toISOString(),
         }).eq('id', savedProductId);
+
+        if (passProductError) throw passProductError;
 
         if (launchStatus === 'launched') {
           try {

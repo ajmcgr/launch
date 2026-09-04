@@ -338,13 +338,18 @@ Deno.serve(async (req) => {
             console.log('Using fallback expiry for renewal');
           }
           
-          await supabaseClient
+          const { error: renewalUpdateError } = await supabaseClient
             .from('users')
             .update({
               annual_access_expires_at: expiryDateIso,
               subscription_status: 'active',
             })
             .eq('id', metadata.user_id);
+
+          if (renewalUpdateError) {
+            console.error('Error updating renewed subscription:', renewalUpdateError);
+            throw renewalUpdateError;
+          }
 
           console.log(`Subscription renewed for user ${metadata.user_id} until ${expiryDateIso}`);
         }
@@ -730,34 +735,18 @@ Deno.serve(async (req) => {
         }
         const endsAt = new Date(startsAt.getTime() + 24 * 60 * 60 * 1000);
 
-        const { error: boostError } = await supabaseClient
-          .from('sponsored_products')
-          .insert({
-            product_id: metadata.product_id,
-            position: 0,
-            sponsorship_type: 'boost',
-            // start_date gates day-level display; boost_ends_at is the
-            // authoritative 24h expiry (measured from launch time when
-            // the product is scheduled for the future).
-            start_date: startsAt.toISOString().split('T')[0],
-            end_date: endsAt.toISOString().split('T')[0],
-            boost_ends_at: endsAt.toISOString(),
-          });
+        const { error: boostError } = await supabaseClient.rpc('fulfill_boost_purchase', {
+          p_checkout_session_id: session.id,
+          p_user_id: metadata.user_id,
+          p_product_id: metadata.product_id,
+          p_starts_at: startsAt.toISOString(),
+          p_ends_at: endsAt.toISOString(),
+        });
 
         if (boostError) {
-          console.error('Error creating boost:', boostError);
+          console.error('Error fulfilling boost purchase:', boostError);
           throw boostError;
         }
-
-        // Create order record
-        await supabaseClient
-          .from('orders')
-          .insert({
-            user_id: metadata.user_id,
-            product_id: metadata.product_id,
-            stripe_session_id: session.id,
-            plan: 'boost',
-          });
 
         console.log('Boost scheduled for product:', metadata.product_id, 'starts:', startsAt.toISOString(), 'ends:', endsAt.toISOString());
       await markEvent('completed');
@@ -958,14 +947,22 @@ Deno.serve(async (req) => {
       }
 
       // Create order record
-      await supabaseClient
+      const { error: orderError } = await supabaseClient
         .from('orders')
-        .insert({
+        .upsert({
           user_id: metadata.user_id,
           product_id: product.id,
           stripe_session_id: session.id,
           plan: metadata.plan,
+        }, {
+          onConflict: 'stripe_session_id,product_id,plan',
+          ignoreDuplicates: true,
         });
+
+      if (orderError) {
+        console.error('Error recording fulfilled order:', orderError);
+        throw orderError;
+      }
 
       console.log('Order and product created successfully');
 
