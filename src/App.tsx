@@ -95,6 +95,7 @@ const Search = lazy(() => import("./pages/Search"));
 const ClaimVerify = lazy(() => import("./pages/ClaimVerify"));
 import { SEO_COLLECTION_SLUGS } from "@/lib/seoCollections";
 import { pingLaunchScheduler } from "@/lib/launchHeartbeat";
+import { trackFunnelEvent } from "@/lib/funnelTracking";
 
 
 const queryClient = new QueryClient();
@@ -116,6 +117,12 @@ const AppContent = () => {
   // Fallback trigger so scheduled launches go live even if pg_cron is down.
   useEffect(() => {
     pingLaunchScheduler();
+  }, []);
+
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('launch_visited_before') === 'true';
+    trackFunnelEvent(hasVisited ? 'return_session' : 'first_session');
+    localStorage.setItem('launch_visited_before', 'true');
   }, []);
 
   const staticPages = ['/about', '/terms', '/privacy', '/ai-info'];

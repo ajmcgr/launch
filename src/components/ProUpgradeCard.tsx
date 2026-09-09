@@ -33,8 +33,8 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
 }> = {
   low_rank: {
     icon: AlertTriangle,
-    getTitle: (p) => `You're ranked #${p.rank || '—'} — top 5 gets ~80% of clicks`,
-    getMessage: () => 'Pro launches average 4x more upvotes and get featured in the newsletter (2K+ subs).',
+    getTitle: (p) => `You're ranked #${p.rank || '—'} — add Pro promotion`,
+    getMessage: () => 'Pro includes launch-day promotion and a newsletter feature.',
     cta: 'Move up the leaderboard — $39',
     borderColor: 'border-amber-500/20',
     bgColor: 'bg-amber-500/5',
@@ -52,8 +52,8 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
 
   low_traction: {
     icon: Eye,
-    getTitle: () => 'Free launches average ~12 views in 24h',
-    getMessage: () => 'Pro launches average ~380 views and 4x more upvotes. Newsletter feature alone reaches 2K+ subs.',
+    getTitle: () => 'Add promotion to your launch',
+    getMessage: () => 'Pro adds a newsletter feature and launch-day social promotion.',
     cta: 'Get real visibility — $39',
     borderColor: 'border-primary/20',
     bgColor: 'bg-primary/5',
@@ -61,8 +61,8 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
   },
   post_submission: {
     icon: Rocket,
-    getTitle: () => 'Free launches wait ~9 days in queue',
-    getMessage: () => 'Pro skips the queue (launch today), gets featured in the newsletter (2K+ subs), and posted on X & LinkedIn. 8 of last week\'s top 10 were Pro.',
+    getTitle: () => 'Choose your launch date with Pro',
+    getMessage: () => 'Pro adds launch-day promotion, a newsletter feature, and date selection.',
     cta: 'Launch today — $39',
     borderColor: 'border-primary/20',
     bgColor: 'bg-primary/5',
@@ -70,8 +70,8 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
   },
   product_detail_sidebar: {
     icon: TrendingUp,
-    getTitle: (p) => `${p.productName}: 4x more upvotes with Pro`,
-    getMessage: () => 'Newsletter feature (2K+ subs) + X & LinkedIn posts. Pro launches consistently fill last week\'s top 10.',
+    getTitle: (p) => `${p.productName}: add Pro promotion`,
+    getMessage: () => 'Pro includes a newsletter feature and launch-day social promotion.',
     cta: 'Upgrade to Pro — $39',
     borderColor: 'border-primary/20',
     bgColor: 'bg-primary/5',

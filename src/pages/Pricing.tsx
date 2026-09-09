@@ -45,7 +45,7 @@ const Pricing = () => {
             {
               "@type": "Question",
               "name": "Can I relaunch my product?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Yes, you can relaunch your product with updated positioning. Relaunch pricing starts at $29." }
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes, you can relaunch your product with updated positioning. Relaunch pricing starts at $19." }
             },
             {
               "@type": "Question",
@@ -103,7 +103,7 @@ const Pricing = () => {
                     <div className="text-3xl font-bold">
                       ${plan.price}<span className="text-sm font-normal text-muted-foreground"> USD</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">Standard launch queue ~3 days</p>
+                    <p className="text-xs text-muted-foreground">Current queue estimate shown before submitting</p>
                   </div>
                 )}
 
@@ -142,18 +142,6 @@ const Pricing = () => {
                     </li>
                   )}
                 </ul>
-
-                {/* Value callout */}
-                {plan.id === 'skip' && (
-                  <div className="pt-2 border-t space-y-1">
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">~380 views avg</span> vs ~12 on Free
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      8 of last week's top 10 launches were Pro
-                    </p>
-                  </div>
-                )}
 
                 <Button 
                   asChild
@@ -256,7 +244,7 @@ const Pricing = () => {
                 </li>
                 <li className="flex items-center gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span>All future features · 12 months access</span>
+                  <span>Future self-serve launch features · 12 months access</span>
                 </li>
               </ul>
 

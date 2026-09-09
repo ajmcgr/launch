@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type MouseEvent } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CAMPAIGN_SLUG } from '@/lib/campaign';
@@ -43,6 +43,22 @@ const LaunchDetail = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [bestRanking, setBestRanking] = useState<{ rank: number; period: string; date: string } | null>(null);
   const [currentRank, setCurrentRank] = useState<number | undefined>(undefined);
+
+  const handleWebsiteVisit = (event: MouseEvent<HTMLAnchorElement>, source: string) => {
+    event.preventDefault();
+    if (!product?.domain_url) return;
+
+    // Open synchronously to preserve the user's click, then record the attribution without unloading this page.
+    window.open(product.domain_url, '_blank', 'noopener,noreferrer');
+    void supabase.from('product_analytics').insert({
+      product_id: product.id,
+      event_type: 'website_click',
+      visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
+      metadata: { source },
+    }).then(({ error }) => {
+      if (error) console.error('Failed to track click:', error);
+    });
+  };
 
   useEffect(() => {
     // Check for success parameter from Stripe redirect
@@ -754,16 +770,7 @@ const LaunchDetail = () => {
                     href={product.domain_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => {
-                      supabase.from('product_analytics').insert({
-                        product_id: product.id,
-                        event_type: 'website_click',
-                        visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
-                        metadata: { source: 'sidebar_primary' },
-                      }).then(({ error }) => {
-                        if (error) console.error('Failed to track click:', error);
-                      });
-                    }}
+                    onClick={(event) => handleWebsiteVisit(event, 'sidebar_primary')}
                   >
                     Visit Website
                     <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -1044,16 +1051,7 @@ const LaunchDetail = () => {
               href={product.domain_url}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => {
-                supabase.from('product_analytics').insert({
-                  product_id: product.id,
-                  event_type: 'website_click',
-                  visitor_id: localStorage.getItem('visitor_id') || crypto.randomUUID(),
-                  metadata: { source: 'mobile_sticky' },
-                }).then(({ error }) => {
-                  if (error) console.error('Failed to track click:', error);
-                });
-              }}
+              onClick={(event) => handleWebsiteVisit(event, 'mobile_sticky')}
             >
               Visit Website
               <ExternalLink className="ml-2 h-4 w-4" />

@@ -43,6 +43,7 @@ import { CommunityCallout } from '@/components/CommunityCallout';
 import BuiltWithSection from '@/components/BuiltWithSection';
 import SidebarSponsoredAd from '@/components/SidebarSponsoredAd';
 import { weightedPick, weightedShuffle } from '@/lib/weightedPick';
+import { trackFunnelEvent } from '@/lib/funnelTracking';
 
 interface Product {
   id: string;
@@ -1041,6 +1042,25 @@ const Home = () => {
       <WebSiteSchema />
       <FAQSchema faqs={homepageFaqs} />
       <div className="container mx-auto px-4 py-6 max-w-7xl">
+        {!user && (
+          <section className="mb-6 rounded-xl border bg-muted/30 px-6 py-7 md:px-8 md:py-8">
+            <p className="mb-2 text-sm font-medium text-primary">For founders shipping AI, SaaS, and indie products</p>
+            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-2xl">
+                <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Launch your product to people building what is next.</h1>
+                <p className="mt-3 text-muted-foreground">Create a permanent product page, get discovered by the Launch community, and collect feedback from fellow makers.</p>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-3">
+                <Button asChild className="gap-2">
+                  <Link to="/auth?mode=signup" onClick={() => trackFunnelEvent('founder_cta_clicked', { source: 'home_primary' })}>Launch a product</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/start">How it works</Link>
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
         <Tabs value={currentPeriod} onValueChange={(v) => handlePeriodChange(v as any)}>
           <div className="flex flex-row items-center justify-between gap-2 mb-6">
             <TabsList className="h-9 bg-transparent border rounded-md p-1 gap-1">
@@ -1061,24 +1081,6 @@ const Home = () => {
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Main feed column */}
             <div className="flex-1 min-w-0">
-              {/* Logged-out CTA */}
-              {!user && (
-                <div className="w-full bg-muted/30 rounded-lg px-6 py-6 md:py-0 flex items-center md:aspect-[7/1] mb-6">
-                  <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div className="flex-1 text-center md:text-left">
-                      <h3 className="text-lg font-semibold mb-1">Launch your thing to thousands of vibe coders</h3>
-                      <p className="text-sm text-muted-foreground">Ship it. Get discovered. Build your reputation — free to start.</p>
-                    </div>
-                    <div className="shrink-0">
-                      <Button asChild className="gap-2">
-                        <Link to="/auth?mode=signup">Sign Up →</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-
               {/* Value Proposition */}
               <div className="text-left mb-8">
                 <h2 className="text-2xl font-bold mb-2">

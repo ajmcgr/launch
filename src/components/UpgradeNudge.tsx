@@ -20,7 +20,7 @@ const UpgradeNudge = ({ productName, currentPlan, productId }: UpgradeNudgeProps
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold mb-1">
-            {productName}: ~12 views vs ~380 with Pro
+            Add Pro promotion to {productName}
           </p>
           <div className="flex flex-col gap-1 mb-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -29,7 +29,7 @@ const UpgradeNudge = ({ productName, currentPlan, productId }: UpgradeNudgeProps
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Mail className="h-3 w-3 text-muted-foreground/60" />
-              <span>Missing newsletter (2K+ subs, 25% open rate)</span>
+              <span>Add a newsletter feature</span>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -40,7 +40,7 @@ const UpgradeNudge = ({ productName, currentPlan, productId }: UpgradeNudgeProps
               </Link>
             </Button>
             <span className="text-[10px] text-muted-foreground">
-              4x more upvotes on average
+              Add priority scheduling to your launch
             </span>
           </div>
         </div>

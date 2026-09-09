@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { X, CalendarIcon, Plus, Zap } from 'lucide-react';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { FirstCommentModal } from '@/components/FirstCommentModal';
 import VerifyRevenueModal from '@/components/VerifyRevenueModal';
+import PostSubmissionUpgradeModal from '@/components/PostSubmissionUpgradeModal';
 import { PLATFORMS, Platform } from '@/components/PlatformIcons';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORIES, PRICING_PLANS, PLAN_FEATURE_LABELS } from '@/lib/constants';
@@ -27,6 +28,7 @@ import { PassOption } from '@/components/PassOption';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
 import { captureCampaignFromSearch, getCampaignIntent, clearCampaignIntent, trackCampaignEvent } from '@/lib/campaign';
+import { trackFunnelEvent } from '@/lib/funnelTracking';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -62,9 +64,13 @@ const Submit = () => {
   const [existingPlan, setExistingPlan] = useState<'free' | 'join' | 'skip' | 'relaunch' | null>(null);
   const [isLoadingProduct, setIsLoadingProduct] = useState(!!productIdParam);
   const [showFirstCommentModal, setShowFirstCommentModal] = useState(false);
+  const [showPostSubmissionUpgradeModal, setShowPostSubmissionUpgradeModal] = useState(false);
   const [showVerifyRevenueModal, setShowVerifyRevenueModal] = useState(false);
   const [submittedProductId, setSubmittedProductId] = useState<string | null>(null);
   const [submittedProductName, setSubmittedProductName] = useState<string>('');
+  const [submittedLaunchDate, setSubmittedLaunchDate] = useState<string | null>(null);
+  const [submittedPlan, setSubmittedPlan] = useState<string | null>(null);
+  const hasTrackedSubmissionStart = useRef(false);
 
   // Persist campaign attribution (e.g. ?campaign=vibecodedit) for this session.
   useEffect(() => {
@@ -72,14 +78,21 @@ const Submit = () => {
     if (campaign) trackCampaignEvent('campaign_submission_started', null, campaign);
   }, []);
 
-  const handleSubmitSuccess = useCallback((savedId: string, productName: string, successMessage: string) => {
+  const handleSubmitSuccess = useCallback((savedId: string, productName: string, successMessage: string, options?: { plan?: string; launchDate?: string; showProUpgrade?: boolean }) => {
     localStorage.removeItem('submitFormData');
     localStorage.removeItem('submitMedia');
     localStorage.removeItem('submitStep');
     toast.success(successMessage);
     setSubmittedProductId(savedId);
     setSubmittedProductName(productName);
-    setShowFirstCommentModal(true);
+    setSubmittedLaunchDate(options?.launchDate || null);
+    setSubmittedPlan(options?.plan || formData.plan);
+    trackFunnelEvent('submission_completed', { plan: options?.plan || formData.plan });
+    if (options?.showProUpgrade) {
+      setShowPostSubmissionUpgradeModal(true);
+    } else {
+      setShowFirstCommentModal(true);
+    }
 
     // Campaign attribution only. The "Vibe Code Your Future" welcome email was
     // retired with the campaign — do NOT re-add a send here.
@@ -89,6 +102,11 @@ const Submit = () => {
       clearCampaignIntent();
     }
 
+  }, [formData.plan]);
+
+  const handlePostSubmissionUpgradeClose = useCallback(() => {
+    setShowPostSubmissionUpgradeModal(false);
+    setShowFirstCommentModal(true);
   }, []);
 
   const handleFirstCommentClose = useCallback(() => {
@@ -98,8 +116,8 @@ const Submit = () => {
 
   const handleVerifyRevenueClose = useCallback(() => {
     setShowVerifyRevenueModal(false);
-    navigate('/my-products?success=true');
-  }, [navigate]);
+    navigate(submittedPlan === 'free' ? '/my-products?submitted=free' : '/my-products?success=true');
+  }, [navigate, submittedPlan]);
   const [step, setStep] = useState(() => {
     // If productId is present, we're rescheduling, go to step 4
     if (productIdParam) {
@@ -365,6 +383,13 @@ const Submit = () => {
     
     checkAuth();
   }, [navigate, draftId, productIdParam]);
+
+  useEffect(() => {
+    if (user && !hasTrackedSubmissionStart.current) {
+      hasTrackedSubmissionStart.current = true;
+      trackFunnelEvent('submission_started');
+    }
+  }, [user]);
 
   const loadProductForReschedule = async (id: string, userId: string) => {
     setIsLoadingProduct(true);
@@ -1513,7 +1538,11 @@ const Submit = () => {
           const message = productStatus === 'launched'
             ? 'Product launched successfully!'
             : `Product scheduled for free launch on ${launchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at ${launchDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-          handleSubmitSuccess(savedProductId, formData.name, message);
+          handleSubmitSuccess(savedProductId, formData.name, message, {
+            plan: 'free',
+            launchDate: launchDate.toISOString(),
+            showProUpgrade: true,
+          });
           return;
         } catch (error: any) {
           console.error('Free launch error details:', {
@@ -1530,6 +1559,7 @@ const Submit = () => {
       
       // Handle new paid plans with Stripe checkout (including upgrades from 'join' to other plans)
       toast.info('Redirecting to payment...');
+      trackFunnelEvent('checkout_started', { plan: formData.plan, source: 'submit' });
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         headers: {
@@ -2407,6 +2437,16 @@ const Submit = () => {
           productId={submittedProductId}
           productName={submittedProductName}
           userId={user.id}
+        />
+      )}
+
+      {showPostSubmissionUpgradeModal && submittedProductId && (
+        <PostSubmissionUpgradeModal
+          open={showPostSubmissionUpgradeModal}
+          onClose={handlePostSubmissionUpgradeClose}
+          productId={submittedProductId}
+          productName={submittedProductName}
+          launchDate={submittedLaunchDate || undefined}
         />
       )}
 

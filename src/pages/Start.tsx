@@ -124,7 +124,7 @@ const makerSteps = [
   {
     icon: Calendar,
     title: 'Pick a launch date',
-    description: 'Free launches join the standard queue (~3 days). Pro, Grow, and Pass let you choose any date.',
+    description: 'Free launches join the standard queue. Your current estimate is shown before you submit. Pro, Grow, and Pass let you choose any date.',
   },
   {
     icon: Share2,
@@ -166,7 +166,7 @@ const pricingPlans = [
     name: 'Free',
     price: '$0',
     suffix: '',
-    description: 'Basic listing in the standard launch queue (~3 days out).',
+    description: 'Basic listing in the standard launch queue. You will see the current launch estimate before submitting.',
     cta: 'Start free',
     href: '/submit',
     highlight: false,
@@ -266,7 +266,7 @@ const faqs = [
   {
     icon: HelpCircle,
     title: 'Is launching really free?',
-    description: 'Yes. Free launches join the standard queue (~3 days). Pro ($39) and Grow ($199) let you pick any date and add promotion.',
+    description: 'Yes. Free launches join the standard queue, with the current estimate shown before submission. Pro ($39) and Grow ($199) let you pick any date and add promotion.',
   },
   {
     icon: HelpCircle,

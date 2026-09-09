@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { DigestFrequencySelect, type DigestFrequency } from '@/components/DigestFrequencySelect';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { trackFunnelEvent } from '@/lib/funnelTracking';
 import { z } from 'zod';
 
 const authSchema = z.object({
@@ -87,6 +88,7 @@ const Auth = () => {
         });
 
         if (error) throw error;
+        trackFunnelEvent('signup_completed', { method: 'email' });
         toast.success('Successfully signed up! Please check your email to confirm.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
