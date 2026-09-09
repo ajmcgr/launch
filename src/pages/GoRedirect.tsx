@@ -13,22 +13,34 @@ const GoRedirect = () => {
         return;
       }
 
-      // Fetch product domain URL
+      // Fetch product domain URL (any status — links must not break)
       const { data: product, error: fetchError } = await supabase
         .from('products')
         .select('id, domain_url')
         .eq('slug', slug)
-        .eq('status', 'launched')
-        .single();
+        .maybeSingle();
 
       if (fetchError || !product?.domain_url) {
         setError(true);
         return;
       }
 
-      // Track the referral click
+      // Build destination URL with UTM params (tolerate missing protocol)
+      let destination = product.domain_url.trim();
+      if (!/^https?:\/\//i.test(destination)) destination = `https://${destination}`;
       try {
-        await supabase.from('product_analytics').insert({
+        const destUrl = new URL(destination);
+        destUrl.searchParams.set('utm_source', 'trylaunch');
+        destUrl.searchParams.set('utm_medium', 'referral');
+        destUrl.searchParams.set('utm_campaign', slug);
+        destination = destUrl.toString();
+      } catch {
+        // keep raw destination
+      }
+
+      // Track the referral click (never block or delay the redirect)
+      try {
+        void supabase.from('product_analytics').insert({
           product_id: product.id,
           event_type: 'referral_click',
           visitor_id: crypto.randomUUID(),
@@ -38,17 +50,11 @@ const GoRedirect = () => {
           },
         });
       } catch (e) {
-        // Don't block redirect on tracking failure
         console.error('Tracking error:', e);
       }
 
-      // Build destination URL with UTM params
-      const destUrl = new URL(product.domain_url);
-      destUrl.searchParams.set('utm_source', 'trylaunch');
-      destUrl.searchParams.set('utm_medium', 'referral');
-      destUrl.searchParams.set('utm_campaign', slug);
+      window.location.replace(destination);
 
-      window.location.href = destUrl.toString();
     };
 
     redirect();

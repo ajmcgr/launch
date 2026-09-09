@@ -1334,7 +1334,7 @@ const Submit = () => {
           launchDate = new Date(Date.now() + 60000);
         }
         
-        const launchStatus = 'scheduled';
+        const launchStatus: string = 'scheduled';
 
         // The database validates ownership and active Pass entitlement before creating the order.
         const { error: passOrderError } = await supabase.rpc('create_pass_launch_order', {
