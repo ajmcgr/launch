@@ -5,19 +5,36 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-token, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 // ---------------------------------------------------------------- auth
-function isCronAuthorized(req: Request): boolean {
+async function isCronAuthorized(req: Request): Promise<boolean> {
   const authHeader = req.headers.get("Authorization") || req.headers.get("authorization") || "";
   const cronSecretHeader = req.headers.get("x-cron-secret") || req.headers.get("X-Cron-Secret") || "";
+  const cronToken = req.headers.get("x-cron-token") || "";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
   const expectedCronSecret = Deno.env.get("CRON_SECRET") || "";
   if (serviceKey && authHeader === `Bearer ${serviceKey}`) return true;
   if (expectedCronSecret && cronSecretHeader === expectedCronSecret) return true;
   if (expectedCronSecret && authHeader === `Bearer ${expectedCronSecret}`) return true;
-  return false;
+  if (!cronToken) return false;
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+  const { data, error } = await supabase
+    .from("internal_cron_tokens")
+    .select("token")
+    .eq("name", "generate-blog-post")
+    .maybeSingle();
+
+  if (error) {
+    console.error("Could not validate generate-blog-post cron token:", error.message);
+    return false;
+  }
+  return data?.token === cronToken;
 }
 
 function unauthorizedResponse(headers: Record<string, string> = {}) {
@@ -473,7 +490,7 @@ Return everything via the tool call.`;
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  if (!isCronAuthorized(req)) {
+  if (!(await isCronAuthorized(req))) {
     return unauthorizedResponse(corsHeaders);
   }
 
