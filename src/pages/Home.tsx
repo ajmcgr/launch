@@ -1044,7 +1044,7 @@ const Home = () => {
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         {!user && (
           <section className="mb-6 rounded-xl border bg-muted/30 px-6 py-7 md:px-8 md:py-8">
-            <p className="mb-2 text-sm font-medium text-primary">For founders shipping AI, SaaS, and indie products</p>
+            
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
               <div className="max-w-2xl">
                 <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Launch your product to people building what is next.</h1>
