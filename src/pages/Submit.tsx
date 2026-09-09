@@ -78,46 +78,6 @@ const Submit = () => {
     if (campaign) trackCampaignEvent('campaign_submission_started', null, campaign);
   }, []);
 
-  const handleSubmitSuccess = useCallback((savedId: string, productName: string, successMessage: string, options?: { plan?: string; launchDate?: string; showProUpgrade?: boolean }) => {
-    localStorage.removeItem('submitFormData');
-    localStorage.removeItem('submitMedia');
-    localStorage.removeItem('submitStep');
-    toast.success(successMessage);
-    setSubmittedProductId(savedId);
-    setSubmittedProductName(productName);
-    setSubmittedLaunchDate(options?.launchDate || null);
-    setSubmittedPlan(options?.plan || formData.plan);
-    trackFunnelEvent('submission_completed', { plan: options?.plan || formData.plan });
-    if (options?.showProUpgrade) {
-      setShowPostSubmissionUpgradeModal(true);
-    } else {
-      setShowFirstCommentModal(true);
-    }
-
-    // Campaign attribution only. The "Vibe Code Your Future" welcome email was
-    // retired with the campaign — do NOT re-add a send here.
-    const campaign = getCampaignIntent();
-    if (campaign) {
-      trackCampaignEvent('campaign_submission_completed', savedId, campaign);
-      clearCampaignIntent();
-    }
-
-  }, [formData.plan]);
-
-  const handlePostSubmissionUpgradeClose = useCallback(() => {
-    setShowPostSubmissionUpgradeModal(false);
-    setShowFirstCommentModal(true);
-  }, []);
-
-  const handleFirstCommentClose = useCallback(() => {
-    setShowFirstCommentModal(false);
-    setShowVerifyRevenueModal(true);
-  }, []);
-
-  const handleVerifyRevenueClose = useCallback(() => {
-    setShowVerifyRevenueModal(false);
-    navigate(submittedPlan === 'free' ? '/my-products?submitted=free' : '/my-products?success=true');
-  }, [navigate, submittedPlan]);
   const [step, setStep] = useState(() => {
     // If productId is present, we're rescheduling, go to step 4
     if (productIdParam) {
@@ -181,6 +141,46 @@ const Submit = () => {
       submissionType: null as 'founder' | 'community' | null,
     };
   });
+  const handleSubmitSuccess = useCallback((savedId: string, productName: string, successMessage: string, options?: { plan?: string; launchDate?: string; showProUpgrade?: boolean }) => {
+    localStorage.removeItem('submitFormData');
+    localStorage.removeItem('submitMedia');
+    localStorage.removeItem('submitStep');
+    toast.success(successMessage);
+    setSubmittedProductId(savedId);
+    setSubmittedProductName(productName);
+    setSubmittedLaunchDate(options?.launchDate || null);
+    setSubmittedPlan(options?.plan || formData.plan);
+    trackFunnelEvent('submission_completed', { plan: options?.plan || formData.plan });
+    if (options?.showProUpgrade) {
+      setShowPostSubmissionUpgradeModal(true);
+    } else {
+      setShowFirstCommentModal(true);
+    }
+
+    // Campaign attribution only. The "Vibe Code Your Future" welcome email was
+    // retired with the campaign — do NOT re-add a send here.
+    const campaign = getCampaignIntent();
+    if (campaign) {
+      trackCampaignEvent('campaign_submission_completed', savedId, campaign);
+      clearCampaignIntent();
+    }
+
+  }, [formData.plan]);
+
+  const handlePostSubmissionUpgradeClose = useCallback(() => {
+    setShowPostSubmissionUpgradeModal(false);
+    setShowFirstCommentModal(true);
+  }, []);
+
+  const handleFirstCommentClose = useCallback(() => {
+    setShowFirstCommentModal(false);
+    setShowVerifyRevenueModal(true);
+  }, []);
+
+  const handleVerifyRevenueClose = useCallback(() => {
+    setShowVerifyRevenueModal(false);
+    navigate(submittedPlan === 'free' ? '/my-products?submitted=free' : '/my-products?success=true');
+  }, [navigate, submittedPlan]);
   const [availableTags, setAvailableTags] = useState<Array<{ id: number; name: string; slug: string }>>([]);
   const [availableStackItems, setAvailableStackItems] = useState<Array<{ id: number; name: string; slug: string }>>([]);
   const [newTagName, setNewTagName] = useState('');
