@@ -42,7 +42,15 @@ export const SubmissionAttribution = ({ product, currentUserId, onClaimed }: Pro
     });
   }, [submittedById, ownerId, isClaimed]);
 
-  const canClaim = isCommunity && !isClaimed && !!currentUserId && currentUserId !== submittedById;
+  // Any unclaimed launch can be claimed by a verified founder at the product's
+  // domain — including listings posted on a founder's behalf by a third party.
+  const canClaim =
+    !isClaimed &&
+    !!currentUserId &&
+    currentUserId !== submittedById &&
+    currentUserId !== ownerId &&
+    !!productDomain;
+
 
   return (
     <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
