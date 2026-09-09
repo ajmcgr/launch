@@ -79,7 +79,7 @@ const Products = () => {
       toast('Sign up to upvote your favorite launches', {
         action: {
           label: 'Sign up',
-          onClick: () => { window.location.href = '/auth?signup=true'; },
+          onClick: () => { window.location.href = '/auth?mode=signup'; },
         },
       });
       return;

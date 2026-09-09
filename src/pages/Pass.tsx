@@ -165,8 +165,8 @@ const Pass = () => {
     },
     {
       icon: Zap,
-      title: "All Future Features",
-      description: "Access to any new non-advertising features we add"
+      title: "Future Self-Serve Features",
+      description: "Access to new self-serve launch features we add; managed services are separate"
     },
     {
       icon: Calendar,
@@ -179,14 +179,14 @@ const Pass = () => {
     "New product launches",
     "Product relaunches",
     "Skip-the-queue launches",
-    "All future non-advertising features",
+    "All future self-serve launch features",
     "Priority support"
   ];
 
   const stats = [
-    { value: "70K+", label: "Monthly Active Users" },
-    { value: "28K+", label: "Weekly Active Users" },
-    { value: "500K+", label: "Product Views Monthly" },
+    { value: "6,100+", label: "Makers" },
+    { value: "5,000+", label: "Products launched" },
+    { value: "120K+", label: "Tracked product-page views" },
   ];
 
   if (passLoading) {

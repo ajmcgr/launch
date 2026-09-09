@@ -1285,8 +1285,6 @@ const Submit = () => {
         .in('plan', ['join', 'skip', 'relaunch', 'grow'])
         .order('created_at', { ascending: false });
 
-      const existingOrders = paidOrders?.slice(0, 1);
-
       // If this exact product was already paid for (webhook created the order but the
       // product never got scheduled), never ask the user to pay again — and never let
       // it fall into the free queue, even if the plan selector defaulted back to "free".
@@ -1324,35 +1322,23 @@ const Submit = () => {
         }
       }
 
-      const hasExistingPlan = existingOrders && existingOrders.length > 0;
-      const canReuseExistingPlan = hasExistingPlan && existingOrders[0].plan !== 'join';
-      const isUpgrading = hasExistingPlan && existingOrders[0].plan === 'join' && formData.plan !== 'join';
-
-      
-      // Check if user has active Pass - bypass payment for non-advertising features
-      if (hasActivePass && formData.plan !== 'free') {
+      // Pass covers self-serve Pro launches. Grow includes a manual service and is billed separately.
+      if (hasActivePass && formData.plan === 'skip') {
         toast.info('Processing with Pass...');
         
         // Determine launch date
         let launchDate: Date;
-        if ((formData.plan === 'skip' || formData.plan === 'grow') && formData.selectedDate) {
+        if (formData.selectedDate) {
           launchDate = new Date(formData.selectedDate);
-        } else if (formData.plan === 'relaunch') {
-          launchDate = new Date();
-          launchDate.setDate(launchDate.getDate() + 30);
-          launchDate.setHours(0, 1, 0, 0);
         } else {
           launchDate = new Date(Date.now() + 60000);
         }
         
-        const launchStatus = formData.plan === 'join' ? 'launched' : 'scheduled';
-        
-        // Create order record referencing annual pass
-        const { error: passOrderError } = await supabase.from('orders').insert({
-          user_id: session.user.id,
-          product_id: savedProductId,
-          plan: formData.plan,
-          stripe_session_id: 'annual_access_' + Date.now(),
+        const launchStatus = 'scheduled';
+
+        // The database validates ownership and active Pass entitlement before creating the order.
+        const { error: passOrderError } = await supabase.rpc('create_pass_launch_order', {
+          p_product_id: savedProductId,
         });
 
         if (passOrderError) throw passOrderError;
@@ -1542,71 +1528,6 @@ const Submit = () => {
         }
       }
       
-      // Handle paid plans
-      // If user has a paid plan that can be reused (skip/relaunch), use it without requiring another payment
-      // If upgrading from 'join', go through payment for the new plan
-      // Only reuse if the user selected the same plan type as their existing order
-      const existingPlanType = existingOrders?.[0]?.plan as 'join' | 'skip' | 'relaunch' | undefined;
-      const shouldReuseExistingPlan = canReuseExistingPlan && formData.plan === existingPlanType && formData.plan !== 'free';
-      
-      if (shouldReuseExistingPlan) {
-        try {
-          // Reuse existing order for this launch
-          const existingOrder = existingOrders[0];
-          const planType = existingOrder.plan as 'join' | 'skip' | 'relaunch';
-          
-          // Auto-assign date based on plan type
-          let launchDate: Date;
-          if (planType === 'join') {
-            // Auto-assign at least 7 days out
-            launchDate = new Date();
-            launchDate.setDate(launchDate.getDate() + 7);
-            launchDate.setHours(0, 1, 0, 0);
-          } else if (planType === 'relaunch') {
-            // Auto-assign at least 30 days out
-            launchDate = new Date();
-            launchDate.setDate(launchDate.getDate() + 30);
-            launchDate.setHours(0, 1, 0, 0);
-          } else if (planType === 'skip' && formData.selectedDate) {
-            // Use user-selected date
-            launchDate = new Date(formData.selectedDate);
-          } else {
-            toast.error('Please select a launch date');
-            return;
-          }
-          
-          // Create a new order entry referencing the same plan
-          const { error: orderError } = await supabase
-            .from('orders')
-            .insert({
-              user_id: session.user.id,
-              product_id: savedProductId,
-              plan: planType,
-              stripe_session_id: existingOrder.stripe_session_id, // Reference original payment
-            });
-
-          if (orderError) throw orderError;
-
-          // Update product status to scheduled
-          const { error: updateError } = await supabase
-            .from('products')
-            .update({
-              status: 'scheduled',
-              launch_date: launchDate.toISOString(),
-            })
-            .eq('id', savedProductId);
-
-          if (updateError) throw updateError;
-
-          handleSubmitSuccess(savedProductId, formData.name, 'Product scheduled using your existing plan!');
-          return;
-        } catch (error) {
-          console.error('Error using existing plan:', error);
-          toast.error('Failed to schedule launch. Please try again.');
-          return;
-        }
-      }
-      
       // Handle new paid plans with Stripe checkout (including upgrades from 'join' to other plans)
       toast.info('Redirecting to payment...');
       
@@ -1656,7 +1577,7 @@ const Submit = () => {
             {isRescheduling ? 'Reschedule Launch' : 'Submit'}
           </h1>
           <p className="text-muted-foreground mb-1">
-            {isRescheduling ? 'Pick a new launch date.' : 'Launch your thing to 500,000+ vibe coders.'}
+            {isRescheduling ? 'Pick a new launch date.' : 'Launch your thing to thousands of vibe coders.'}
           </p>
           
         </div>
@@ -2154,7 +2075,7 @@ const Submit = () => {
                         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3">
                           <Zap className="h-5 w-5 text-primary flex-shrink-0" />
                           <p className="text-sm font-medium">
-                            <span className="font-bold">Pass Active</span> — All launch options are included at no additional cost.
+                            <span className="font-bold">Pass Active</span> — Pro launches and relaunches are included. Grow services are billed separately.
                           </p>
                         </div>
                       )}
@@ -2203,7 +2124,7 @@ const Submit = () => {
                                isSelected={isSelected}
                                isDisabled={isDisabled}
                                isCurrentPlan={isCurrentPaidPlan}
-                               hasActivePass={hasActivePass}
+                               hasActivePass={hasActivePass && plan.id === 'skip'}
                                onClick={() => handleInputChange('plan', plan.id)}
                              />
                            );

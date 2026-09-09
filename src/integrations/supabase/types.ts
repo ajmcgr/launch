@@ -1694,6 +1694,10 @@ export type Database = {
         Args: { _points: number; _user_id: string }
         Returns: undefined
       }
+      create_pass_launch_order: {
+        Args: { p_product_id: string }
+        Returns: string
+      }
       current_week_start: { Args: never; Returns: string }
       get_comment_count: { Args: { product_uuid: string }; Returns: number }
       get_product_rating: {

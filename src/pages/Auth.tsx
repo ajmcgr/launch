@@ -18,7 +18,9 @@ const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
+  const [isSignUp, setIsSignUp] = useState(
+    searchParams.get('mode') === 'signup' || searchParams.get('signup') === 'true'
+  );
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(searchParams.get('mode') === 'reset');
   const [email, setEmail] = useState('');
@@ -28,7 +30,7 @@ const Auth = () => {
 
   // Sync isSignUp state with URL parameter
   useEffect(() => {
-    setIsSignUp(searchParams.get('mode') === 'signup');
+    setIsSignUp(searchParams.get('mode') === 'signup' || searchParams.get('signup') === 'true');
     setIsResetPassword(searchParams.get('mode') === 'reset');
   }, [searchParams]);
 

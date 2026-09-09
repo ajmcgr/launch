@@ -244,7 +244,7 @@ const LaunchArchiveDaily = () => {
       toast('Sign up to upvote your favorite launches', {
         action: {
           label: 'Sign up',
-          onClick: () => navigate('/auth?signup=true'),
+          onClick: () => navigate('/auth?mode=signup'),
         },
       });
       return;

@@ -90,9 +90,8 @@ async function fetchGA4Data(): Promise<{
     const sa = JSON.parse(saJsonRaw);
     const token = await getGA4AccessToken(sa);
 
-    // Match the GA mobile card for "Trend of Seven-day active users" over the
-    // selected 30-day range. GA shows the sum of the daily active7DayUsers
-    // time-series values, not a single distinct-user total for the whole range.
+    // Request one aggregate row so activeUsers is the distinct 30-day audience,
+    // rather than summing overlapping daily rolling-user counts.
     const reportResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`,
       {
@@ -103,13 +102,11 @@ async function fetchGA4Data(): Promise<{
         },
         body: JSON.stringify({
           dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
-          dimensions: [{ name: "date" }],
           metrics: [
-            { name: "active7DayUsers" },
+            { name: "activeUsers" },
             { name: "screenPageViews" },
             { name: "sessions" },
           ],
-          orderBys: [{ dimension: { dimensionName: "date" } }],
         }),
       },
     );
@@ -119,19 +116,10 @@ async function fetchGA4Data(): Promise<{
       return null;
     }
 
-    const rows = reportData.rows ?? [];
-    const visitorsMTD = rows.reduce(
-      (sum: number, row: any) => sum + parseInt(row.metricValues?.[0]?.value ?? "0", 10),
-      0,
-    );
-    const pageviewsMTD = rows.reduce(
-      (sum: number, row: any) => sum + parseInt(row.metricValues?.[1]?.value ?? "0", 10),
-      0,
-    );
-    const sessionsMTD = rows.reduce(
-      (sum: number, row: any) => sum + parseInt(row.metricValues?.[2]?.value ?? "0", 10),
-      0,
-    );
+    const row = reportData.rows?.[0];
+    const visitorsMTD = parseInt(row?.metricValues?.[0]?.value ?? "0", 10);
+    const pageviewsMTD = parseInt(row?.metricValues?.[1]?.value ?? "0", 10);
+    const sessionsMTD = parseInt(row?.metricValues?.[2]?.value ?? "0", 10);
 
     const realtimeResp = await fetch(
       `https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`,

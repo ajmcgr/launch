@@ -154,8 +154,8 @@ const ProductHuntAlternative = () => {
           <div className="container mx-auto px-4 max-w-4xl">
             <div className="grid grid-cols-3 gap-8 text-center">
               <div>
-                <p className="text-3xl md:text-4xl font-bold text-primary">70K+</p>
-                <p className="text-muted-foreground">Monthly Impressions</p>
+                <p className="text-3xl md:text-4xl font-bold text-primary">6,100+</p>
+                <p className="text-muted-foreground">Makers</p>
               </div>
               <div>
                 <p className="text-3xl md:text-4xl font-bold text-primary">2K+</p>

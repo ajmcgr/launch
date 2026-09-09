@@ -160,7 +160,7 @@ export const PlanComparisonCard = ({
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground pt-1">
-              <span className="font-medium text-foreground">70K+ impressions/month</span> • Best for maximum visibility
+              <span className="font-medium text-foreground">Coordinated multi-channel promotion</span> • Best for maximum visibility
             </p>
           </div>
         )}

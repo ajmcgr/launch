@@ -210,7 +210,7 @@ export const ThisWeekHighlights = ({ view = 'list' }: { view?: 'list' | 'grid' |
         action: {
           label: 'Sign up',
           onClick: () => {
-            window.location.href = '/auth?signup=true';
+            window.location.href = '/auth?mode=signup';
           },
         },
       });

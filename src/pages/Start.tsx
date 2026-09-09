@@ -609,18 +609,18 @@ const Start = () => {
                 <SectionHeader
                   eyebrow="Why founders choose Launch"
                   EyebrowIcon={CheckCircle}
-                  title="What you get on every launch"
-                  description="The same set of perks for everyone who ships on Launch — free or paid."
+                  title="What every launch includes"
+                  description="Every launch gets a permanent product page and community discovery. Paid plans add scheduling and promotion."
                 />
                 <Card>
                   <CardContent className="p-6">
                     <ul className="grid sm:grid-cols-2 gap-3">
                       {[
-                        'Reach thousands of founders, builders, and early adopters',
+                        'Permanent product page and homepage listing',
                         'Dofollow backlinks on every product page (great for SEO)',
-                        'Featured in our weekly newsletter (2K+ subscribers)',
-                        'Auto-promoted on X and LinkedIn',
-                        'Verified badges to embed on your site',
+                        'Community upvotes, comments, and reviews',
+                        'Maker attribution and profile visibility',
+                        'Eligibility for community awards',
                         'Built-in analytics for views, votes, and clicks',
                       ].map((b) => (
                         <li key={b} className="flex items-start gap-3 text-sm">

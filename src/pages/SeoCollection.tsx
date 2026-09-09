@@ -174,7 +174,7 @@ const SeoCollectionPage = () => {
   const handleVote = async (productId: string) => {
     if (!user) {
       toast('Sign up to upvote', {
-        action: { label: 'Sign up', onClick: () => navigate('/auth?signup=true') },
+        action: { label: 'Sign up', onClick: () => navigate('/auth?mode=signup') },
       });
       return;
     }
