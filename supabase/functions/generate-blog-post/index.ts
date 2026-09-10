@@ -52,10 +52,14 @@ const BLOG_IMAGE_BUCKET = "blog-images";
 
 const STYLE_GUIDE = [
   "Wide 16:9 widescreen editorial cover.",
-  "Consistent Launch brand visual identity: premium SaaS, modern, minimal, editorial.",
-  "Abstract conceptual composition (never literal), bold geometric forms, soft layered gradients,",
-  "high contrast, generous negative space, subtle depth and light, refined professional art direction.",
-  "Palette: deep near-black and off-white base with a confident accent (electric blue / violet / warm amber).",
+  "Launch brand identity: light, clean, calm, Swiss-minimal editorial design.",
+  "Flat vector illustration on a plain white or very light off-white (#F7F7F8) background.",
+  "Simple abstract geometric shapes only - circles, rounded rectangles, arcs, thin lines, soft grids.",
+  "Restrained palette: white, light grays (#E5E7EB, #9CA3AF), charcoal (#111827) and ONE single muted",
+  "accent (soft blue #3B82F6) used sparingly. Mostly monochrome and quiet.",
+  "Flat 2D, no gradients-heavy glow, no 3D renders, no neon, no dark backgrounds, no glossy metallics,",
+  "no dramatic lighting, no particles or sparks, no isometric tech scenes.",
+  "Generous negative space, balanced composition, subtle soft shadow at most.",
   "Strictly avoid: any text, letters, words, numbers, watermarks, logos, UI screenshots, clipart,",
   "stock-photo people, generic robots, brains, circuit-board cliches, low-quality AI artefacts, random icons.",
 ].join(" ");
@@ -497,6 +501,24 @@ Deno.serve(async (req) => {
   try {
     const requestBody = await req.json().catch(() => ({}));
     const source = typeof requestBody?.source === "string" ? requestBody.source : "manual";
+
+    if (typeof requestBody?.reimagePostId === "string") {
+      const supabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      const { data: post, error } = await supabase
+        .from("blog_posts")
+        .select("id, slug, title, excerpt, content_md, tags, published_at")
+        .eq("id", requestBody.reimagePostId)
+        .maybeSingle();
+      if (error || !post) throw new Error("Blog post not found");
+
+      const images = await attachImagesToPost(supabase, post);
+      return new Response(JSON.stringify({ success: true, slug: post.slug, cover_image_url: images?.hero ?? null }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (source === "cron") {
       const job = generateBlogPost({ ...requestBody, source: "cron" });
