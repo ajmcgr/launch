@@ -211,6 +211,27 @@ const Admin = () => {
 
   const filteredUsers = allUsers;
 
+  const [productSearch, setProductSearch] = useState('');
+  const [productToDelete, setProductToDelete] = useState<{ id: string; name: string; slug: string } | null>(null);
+  const [deletingProduct, setDeletingProduct] = useState(false);
+
+  const { data: searchedProducts, refetch: refetchSearchedProducts } = useQuery({
+    queryKey: ['admin-product-search', productSearch],
+    queryFn: async () => {
+      const term = productSearch.trim();
+      if (!term) return [];
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, slug, status, launch_date')
+        .or(`slug.ilike.%${term}%,name.ilike.%${term}%`)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isAdmin && productSearch.trim().length > 0,
+  });
+
 
   const { data: sponsoredProducts, refetch: refetchSponsored } = useQuery({
     queryKey: ['sponsored-products-admin'],
@@ -565,6 +586,95 @@ const Admin = () => {
 
 
               <TabsContent value="promotion" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Delete a Launch</CardTitle>
+                    <CardDescription>Search for a product by name or slug and permanently delete it</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-4">
+                      <Input
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                        placeholder="Search by product name or slug…"
+                        className="max-w-xs"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      {searchedProducts?.map((product) => (
+                        <div key={product.id} className="border rounded-lg p-4 flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">{product.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              /{product.slug} · {product.status}
+                              {product.launch_date && ` · ${format(new Date(product.launch_date), 'MMM d, yyyy')}`}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => navigate(`/launch/${product.slug}`)}
+                            >
+                              View
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => setProductToDelete({ id: product.id, name: product.name, slug: product.slug })}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                      {productSearch.trim() && searchedProducts?.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No products match that search.</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete {productToDelete?.name}?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This permanently deletes /{productToDelete?.slug} and all of its votes, comments,
+                        media, orders and analytics. This cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={deletingProduct}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        disabled={deletingProduct}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          if (!productToDelete) return;
+                          setDeletingProduct(true);
+                          try {
+                            const { data, error } = await supabase.functions.invoke('admin-delete-product', {
+                              body: { productId: productToDelete.id },
+                            });
+                            if (error) throw error;
+                            if (data?.error) throw new Error(data.error);
+                            toast.success(`Deleted ${productToDelete.name}`);
+                            setProductToDelete(null);
+                            refetchSearchedProducts();
+                          } catch (err: any) {
+                            toast.error(err?.message || 'Failed to delete launch');
+                          } finally {
+                            setDeletingProduct(false);
+                          }
+                        }}
+                      >
+                        {deletingProduct ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete launch'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
                 <Card>
                   <CardHeader>
                     <CardTitle>Launches</CardTitle>
