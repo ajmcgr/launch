@@ -211,6 +211,27 @@ const Admin = () => {
 
   const filteredUsers = allUsers;
 
+  const [productSearch, setProductSearch] = useState('');
+  const [productToDelete, setProductToDelete] = useState<{ id: string; name: string; slug: string } | null>(null);
+  const [deletingProduct, setDeletingProduct] = useState(false);
+
+  const { data: searchedProducts, refetch: refetchSearchedProducts } = useQuery({
+    queryKey: ['admin-product-search', productSearch],
+    queryFn: async () => {
+      const term = productSearch.trim();
+      if (!term) return [];
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, slug, status, launch_date')
+        .or(`slug.ilike.%${term}%,name.ilike.%${term}%`)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isAdmin && productSearch.trim().length > 0,
+  });
+
 
   const { data: sponsoredProducts, refetch: refetchSponsored } = useQuery({
     queryKey: ['sponsored-products-admin'],
