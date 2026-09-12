@@ -31,7 +31,7 @@ import { formatMRRRange } from '@/lib/revenue';
 import { getBestTrigger } from '@/lib/upgradeTracking';
 import { usePass } from '@/hooks/use-pass';
 import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
-import { trackFunnelEvent } from '@/lib/funnelTracking';
+import { getFunnelAttribution, trackFunnelEvent } from '@/lib/funnelTracking';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -81,7 +81,7 @@ const MyProducts = () => {
     if (hasSuccess && user && !successProcessed) {
       // Mark as processed immediately to prevent duplicate triggers
       setSuccessProcessed(true);
-      trackFunnelEvent('checkout_completed');
+      trackFunnelEvent('checkout_completed', getFunnelAttribution());
       
       toast.success('🎉 Your product has been submitted! Share it to get more visibility.');
       

@@ -28,7 +28,7 @@ import { PassOption } from '@/components/PassOption';
 import { TrustPhrase } from '@/hooks/use-member-count';
 import { PlatformStats } from '@/components/PlatformStats';
 import { captureCampaignFromSearch, getCampaignIntent, clearCampaignIntent, trackCampaignEvent } from '@/lib/campaign';
-import { trackFunnelEvent } from '@/lib/funnelTracking';
+import { getFunnelAttribution, trackFunnelEvent } from '@/lib/funnelTracking';
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -150,7 +150,7 @@ const Submit = () => {
     setSubmittedProductName(productName);
     setSubmittedLaunchDate(options?.launchDate || null);
     setSubmittedPlan(options?.plan || formData.plan);
-    trackFunnelEvent('submission_completed', { plan: options?.plan || formData.plan });
+    trackFunnelEvent('submission_completed', { plan: options?.plan || formData.plan, ...getFunnelAttribution() });
     if (options?.showProUpgrade) {
       setShowPostSubmissionUpgradeModal(true);
     } else {
@@ -387,7 +387,7 @@ const Submit = () => {
   useEffect(() => {
     if (user && !hasTrackedSubmissionStart.current) {
       hasTrackedSubmissionStart.current = true;
-      trackFunnelEvent('submission_started');
+      trackFunnelEvent('submission_started', getFunnelAttribution());
     }
   }, [user]);
 
@@ -1559,7 +1559,7 @@ const Submit = () => {
       
       // Handle new paid plans with Stripe checkout (including upgrades from 'join' to other plans)
       toast.info('Redirecting to payment...');
-      trackFunnelEvent('checkout_started', { plan: formData.plan, source: 'submit' });
+      trackFunnelEvent('checkout_started', { plan: formData.plan, source: 'submit', ...getFunnelAttribution() });
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         headers: {

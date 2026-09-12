@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { vibeCodingPlatforms } from '@/lib/vibeCodingPlatforms';
+import { builtWithPlatforms } from '@/lib/builtWithPlatforms';
 
 const VibeCodingHub = () => {
   const title = 'Compare Vibe Coding Platforms — AI App Builders (2026)';
@@ -59,6 +60,24 @@ const VibeCodingHub = () => {
             </li>
           ))}
         </ul>
+
+        <section className="mt-16 pt-10 border-t border-border/40">
+          <h2 className="text-2xl font-bold mb-4">See what builders have shipped</h2>
+          <p className="text-muted-foreground leading-relaxed mb-6">
+            Browse real products submitted by makers who used the platforms below.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {builtWithPlatforms.map((platform) => (
+              <Link
+                key={platform.slug}
+                to={`/tech/${platform.slug}`}
+                className="rounded-md bg-muted px-3 py-1.5 text-sm hover:bg-muted/70 transition-colors"
+              >
+                Built with {platform.name}
+              </Link>
+            ))}
+          </div>
+        </section>
 
         <section className="mt-16 pt-10 border-t border-border/40">
           <h2 className="text-2xl font-bold mb-4">Why compare?</h2>

@@ -7,6 +7,11 @@ const corsHeaders = {
 };
 
 const SITE_URL = "https://trylaunch.ai";
+const INDEXABLE_BUILT_WITH_SLUGS = [
+  "lovable", "cursor", "bolt", "replit", "claude-code", "codex",
+  "google-ai-studio", "base44", "clonk", "rork", "v0",
+];
+const MIN_INDEXABLE_BUILT_WITH_PRODUCTS = 8;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -18,12 +23,38 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch all launched products (status='launched' is the active state, see Core memory)
-    const { data: products } = await supabase
-      .from("products")
-      .select("slug, created_at, launch_date")
-      .eq("status", "launched")
-      .order("launch_date", { ascending: false });
+    // Supabase caps a single response at 1,000 rows. Keep the sitemap complete
+    // as the launch directory grows beyond that default page size.
+    const products: any[] = [];
+    const productPageSize = 1000;
+    for (let from = 0; ; from += productPageSize) {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, slug, created_at, launch_date")
+        .eq("status", "launched")
+        .order("launch_date", { ascending: false })
+        .range(from, from + productPageSize - 1);
+      if (error) throw error;
+      products.push(...(data ?? []));
+      if ((data?.length ?? 0) < productPageSize) break;
+    }
+
+    // These are a curated subset of stack values. The broader stack parser accepts
+    // free-form input, so only recognized app-building platforms are sitemap SEO pages.
+    const { data: builtWithItems } = await supabase
+      .from("stack_items")
+      .select("id, slug")
+      .in("slug", INDEXABLE_BUILT_WITH_SLUGS);
+    const builtWithIds = (builtWithItems ?? []).map((item: any) => item.id);
+    const { data: builtWithMappings } = builtWithIds.length
+      ? await supabase.from("product_stack_map").select("stack_item_id, product_id").in("stack_item_id", builtWithIds)
+      : { data: [] as any[] };
+    const launchedProductIds = new Set(products.map((product: any) => product.id));
+    const builtWithCounts = new Map<number, number>();
+    (builtWithMappings ?? []).forEach((mapping: any) => {
+      if (!launchedProductIds.has(mapping.product_id)) return;
+      builtWithCounts.set(mapping.stack_item_id, (builtWithCounts.get(mapping.stack_item_id) ?? 0) + 1);
+    });
 
     // Fetch all tags
     const { data: tags } = await supabase
@@ -243,6 +274,17 @@ Deno.serve(async (req) => {
     <priority>0.8</priority>
   </url>`;
       }
+    }
+
+    // Add only the curated built-with pages that have enough real product inventory.
+    for (const item of builtWithItems ?? []) {
+      if ((builtWithCounts.get(item.id) ?? 0) < MIN_INDEXABLE_BUILT_WITH_PRODUCTS) continue;
+      xml += `
+  <url>
+    <loc>${SITE_URL}/tech/${item.slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
     }
 
     // Add tags

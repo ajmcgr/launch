@@ -11,8 +11,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
-import { buildFaqJsonLd, techFaqs, techIntroFallback } from '@/lib/seoFaq';
-import { builtWithBySlug } from '@/lib/builtWithPlatforms';
+import { buildFaqJsonLd, buildItemListJsonLd, techFaqs, techIntroFallback } from '@/lib/seoFaq';
+import {
+  builtWithBySlug,
+  builtWithPlatforms,
+  indexableBuiltWithSlugs,
+  MIN_INDEXABLE_BUILT_WITH_PRODUCTS,
+} from '@/lib/builtWithPlatforms';
+import { setFunnelAttribution, trackFunnelEvent } from '@/lib/funnelTracking';
 
 interface Product {
   id: string;
@@ -269,30 +275,70 @@ const StackPage = () => {
     }
   };
 
-  const pageTitle = stackInfo ? `Products built with ${stackInfo.name}` : 'Stack';
+  const platform = slug ? builtWithBySlug.get(slug) : undefined;
+  const isIndexable = Boolean(
+    platform && slug && indexableBuiltWithSlugs.has(slug) && totalProducts >= MIN_INDEXABLE_BUILT_WITH_PRODUCTS,
+  );
+  const displayName = platform?.name || stackInfo?.name || slug;
+  const productsCount = totalProducts || products.length;
+  const pageTitle = platform ? `Apps Built with ${platform.name} (${productsCount}) | Launch` : stackInfo ? `Products built with ${stackInfo.name}` : 'Stack';
   const pageDescription = stackInfo
-    ? `Discover ${products.length} products built with ${stackInfo.name} on Launch — submitted and verified by their makers.`
+    ? `Explore ${productsCount} launched products built with ${displayName}. Discover real apps, SaaS products, and AI tools submitted by their makers on Launch.`
     : '';
-  const introText = stackInfo ? techIntroFallback(stackInfo.name, products.length) : '';
-  const faqs = stackInfo ? techFaqs(stackInfo.name, products.length) : [];
+  const introText = stackInfo ? techIntroFallback(displayName || stackInfo.name, productsCount) : '';
+  const faqs = isIndexable && displayName ? techFaqs(displayName, productsCount) : [];
+  const canonical = `https://trylaunch.ai/tech/${slug}`;
+  const itemListSchema = buildItemListJsonLd(
+    `Products built with ${displayName}`,
+    products.map((product) => ({ name: product.name, url: `https://trylaunch.ai/launch/${product.slug}` })),
+  );
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://trylaunch.ai/' },
+      { '@type': 'ListItem', position: 2, name: 'Built with', item: 'https://trylaunch.ai/tech' },
+      { '@type': 'ListItem', position: 3, name: `Built with ${displayName}`, item: canonical },
+    ],
+  };
+  const relatedPlatforms = platform
+    ? builtWithPlatforms.filter((item) => item.slug !== platform.slug).slice(0, 6)
+    : [];
+
+  useEffect(() => {
+    if (isIndexable && platform) {
+      trackFunnelEvent('seo_built_with_page_view', { page_type: 'built_with', platform: platform.slug });
+    }
+  }, [isIndexable, platform]);
 
   return (
     <div className="min-h-screen bg-background py-12">
       <Helmet>
-        <title>{pageTitle} - Launch</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        <link rel="canonical" href={`https://trylaunch.ai/tech/${slug}`} />
+        <link rel="canonical" href={canonical} />
+        {!isIndexable && <meta name="robots" content="noindex,follow" />}
+        {isIndexable && <>
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={pageTitle} />
+          <meta property="og:description" content={pageDescription} />
+          <meta property="og:url" content={canonical} />
+          <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>
+          <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+        </>}
         {faqs.length > 0 && (
           <script type="application/ld+json">{JSON.stringify(buildFaqJsonLd(faqs))}</script>
         )}
       </Helmet>
       <div className="container mx-auto px-4 max-w-5xl">
-        {(() => {
-          const platform = slug ? builtWithBySlug.get(slug) : undefined;
-          const displayName = platform?.name || stackInfo?.name || slug;
-          const productsCount = totalProducts || products.length;
-          return (
-            <div className="mb-8">
+        <nav className="text-sm text-muted-foreground mb-6" aria-label="Breadcrumb">
+          <Link to="/" className="hover:text-foreground">Home</Link>
+          <span className="mx-2">/</span>
+          <Link to="/tech" className="hover:text-foreground">Built with</Link>
+          <span className="mx-2">/</span>
+          <span className="text-foreground">{displayName}</span>
+        </nav>
+        <div className="mb-8">
               <div className="flex items-center gap-4 mb-4">
                 {platform && (
                   <div className={`${platform.plate} h-16 w-16 rounded-2xl border flex items-center justify-center shrink-0 overflow-hidden`}>
@@ -321,10 +367,28 @@ const StackPage = () => {
                   {introText}
                 </p>
               )}
-            </div>
-          );
-        })()}
+        </div>
 
+        {platform && (
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg bg-muted/30 px-5 py-4">
+            <div>
+              <div className="font-semibold">Built something with {platform.name}?</div>
+              <div className="text-sm text-muted-foreground">Launch it free and put it in front of builders looking for new products.</div>
+            </div>
+            <Button asChild>
+              <Link
+                to={`/auth?mode=signup&returnTo=${encodeURIComponent('/submit')}`}
+                onClick={() => {
+                  const attribution = { page_type: 'built_with', platform: platform.slug };
+                  setFunnelAttribution(attribution);
+                  trackFunnelEvent('seo_built_with_cta_clicked', { ...attribution, placement: 'inline' });
+                }}
+              >
+                Launch your product
+              </Link>
+            </Button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between mb-6">
           <SortToggle sort={sortBy} onSortChange={setSortBy} />
@@ -407,6 +471,43 @@ const StackPage = () => {
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {relatedPlatforms.length > 0 && (
+          <section className="mt-16 pt-10 border-t border-border/40">
+            <h2 className="text-2xl font-bold mb-6 font-reckless">Explore more products built with AI</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {relatedPlatforms.map((related) => (
+                <Link
+                  key={related.slug}
+                  to={`/tech/${related.slug}`}
+                  className="block rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors px-4 py-3"
+                >
+                  <div className="font-semibold">Built with {related.name}</div>
+                  <div className="text-sm text-muted-foreground">{related.description}</div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {platform && (
+          <section className="mt-16 rounded-xl bg-gradient-to-br from-primary/10 to-muted/30 px-6 py-10 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold font-reckless mb-3">Launch your {platform.name} product</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto mb-5">Create a permanent product page, collect community feedback, and help the next builder discover what you made.</p>
+            <Button asChild size="lg">
+              <Link
+                to={`/auth?mode=signup&returnTo=${encodeURIComponent('/submit')}`}
+                onClick={() => {
+                  const attribution = { page_type: 'built_with', platform: platform.slug };
+                  setFunnelAttribution(attribution);
+                  trackFunnelEvent('seo_built_with_cta_clicked', { ...attribution, placement: 'bottom' });
+                }}
+              >
+                Submit your product
+              </Link>
+            </Button>
           </section>
         )}
       </div>

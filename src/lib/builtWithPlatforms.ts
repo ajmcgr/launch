@@ -37,3 +37,9 @@ export const builtWithPlatforms: BuiltWithPlatform[] = [
 ];
 
 export const builtWithBySlug = new Map(builtWithPlatforms.map((p) => [p.slug, p]));
+
+// Only the verified app-building platforms become indexable discovery pages.
+// Other stack values come from free-form submissions and are intentionally not
+// treated as SEO inventory.
+export const MIN_INDEXABLE_BUILT_WITH_PRODUCTS = 8;
+export const indexableBuiltWithSlugs = new Set(builtWithPlatforms.map((p) => p.slug));
