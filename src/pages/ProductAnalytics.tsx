@@ -12,6 +12,8 @@ import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trop
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import OutcomeReporting from '@/components/OutcomeReporting';
 import FounderAchievements from '@/components/FounderAchievements';
+import { clearUpgradeCheckoutAttribution, setUpgradeCheckoutAttribution, trackUpgradeTrigger } from '@/lib/upgradeTracking';
+import { trackFunnelEvent } from '@/lib/funnelTracking';
 
 const ProductAnalytics = () => {
   const { slug } = useParams();
@@ -26,6 +28,7 @@ const ProductAnalytics = () => {
   const [referralClicks, setReferralClicks] = useState<any[]>([]);
   const [voteHistory, setVoteHistory] = useState<any[]>([]);
   const [collectionAdds, setCollectionAdds] = useState(0);
+  const [boostLoading, setBoostLoading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -119,6 +122,12 @@ const ProductAnalytics = () => {
 
     load();
   }, [slug, navigate]);
+
+  useEffect(() => {
+    if (isAuthorized && product?.id) {
+      trackUpgradeTrigger(product.id, 'analytics_boost', 'trigger_shown');
+    }
+  }, [isAuthorized, product?.id]);
 
   // Computed metrics
   const totalViews = useMemo(() => analytics.filter(a => a.event_type === 'page_view').length, [analytics]);
@@ -223,6 +232,32 @@ const ProductAnalytics = () => {
   }
 
   if (!isAuthorized || !product) return null;
+
+  const handleBoostCheckout = async () => {
+    await trackUpgradeTrigger(product.id, 'analytics_boost', 'trigger_clicked');
+    setUpgradeCheckoutAttribution(product.id, 'analytics_boost');
+    await trackUpgradeTrigger(product.id, 'analytics_boost', 'checkout_started');
+    trackFunnelEvent('checkout_started', { plan: 'boost', source: 'product_analytics' });
+    setBoostLoading(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Please sign in again before purchasing a boost.');
+
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { plan: 'boost', productId: product.id },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error('Could not start Boost checkout.');
+      window.location.assign(data.url);
+    } catch (error: any) {
+      clearUpgradeCheckoutAttribution();
+      console.error('Boost checkout error:', error);
+      toast.error(error?.message || 'Could not start Boost checkout. Please try again.');
+      setBoostLoading(false);
+    }
+  };
 
   const ctrNum = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
   const isTrending = !!(product as any).won_daily || !!(product as any).won_weekly || !!(product as any).won_monthly;
@@ -574,13 +609,18 @@ const ProductAnalytics = () => {
             <p className="text-xs text-muted-foreground">Pick a single move to multiply this launch's visibility.</p>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Link to={`/launch/${product.slug}?boost=1`} className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3">
+            <button
+              type="button"
+              onClick={handleBoostCheckout}
+              disabled={boostLoading}
+              className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3 text-left disabled:cursor-not-allowed disabled:opacity-60"
+            >
               <Flame className="h-5 w-5 text-primary mt-0.5" />
               <div>
                 <p className="font-medium text-sm">Boost this launch</p>
-                <p className="text-xs text-muted-foreground">Pin to #1 for 24h — instant visibility burst.</p>
+                <p className="text-xs text-muted-foreground">{boostLoading ? 'Starting secure checkout...' : 'Pin to #1 for 24h — $19 one-time.'}</p>
               </div>
-            </Link>
+            </button>
             <Link to="/advertise" className="p-4 rounded-lg border bg-card hover:border-primary/40 transition-colors flex items-start gap-3">
               <Star className="h-5 w-5 text-primary mt-0.5" />
               <div>

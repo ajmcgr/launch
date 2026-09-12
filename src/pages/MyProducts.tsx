@@ -28,7 +28,7 @@ import InstantLaunchUpsellModal from '@/components/InstantLaunchUpsellModal';
 import InstantLaunchPromo from '@/components/InstantLaunchPromo';
 import BoostNudgeCard from '@/components/BoostNudgeCard';
 import { formatMRRRange } from '@/lib/revenue';
-import { getBestTrigger } from '@/lib/upgradeTracking';
+import { consumeUpgradeCheckoutAttribution, getBestTrigger, trackUpgradeTrigger } from '@/lib/upgradeTracking';
 import { usePass } from '@/hooks/use-pass';
 import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
 import { getFunnelAttribution, trackFunnelEvent } from '@/lib/funnelTracking';
@@ -73,6 +73,11 @@ const MyProducts = () => {
     
     if (hasBoostSuccess && user && !successProcessed) {
       setSuccessProcessed(true);
+      const attribution = consumeUpgradeCheckoutAttribution();
+      if (attribution) {
+        trackUpgradeTrigger(attribution.productId, attribution.triggerType, 'checkout_completed');
+        trackFunnelEvent('checkout_completed', { plan: 'boost', source: attribution.triggerType });
+      }
       toast.success('⚡ Boost activated! Your product is now featured on the homepage.');
       searchParams.delete('boost');
       setSearchParams(searchParams, { replace: true });

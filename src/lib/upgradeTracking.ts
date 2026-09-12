@@ -8,15 +8,19 @@ export type UpgradeTriggerType =
   | 'product_detail_sidebar'
   | 'instant_launch_modal'
   | 'instant_launch_banner'
-  | 'instant_launch_card';
+  | 'instant_launch_card'
+  | 'analytics_boost';
 
 export type UpgradeTriggerEvent =
   | 'trigger_shown'
   | 'trigger_clicked'
-  | 'trigger_dismissed';
+  | 'trigger_dismissed'
+  | 'checkout_started'
+  | 'checkout_completed';
 
 const DISMISS_KEY = 'upgrade_nudge_dismissed';
 const SHOWN_KEY = 'upgrade_nudge_shown_session';
+const CHECKOUT_KEY = 'launch_upgrade_checkout';
 
 /**
  * Track an upgrade trigger event via product_analytics
@@ -27,15 +31,38 @@ export const trackUpgradeTrigger = async (
   event: UpgradeTriggerEvent
 ) => {
   try {
-    await supabase.from('product_analytics').insert({
+    const { error } = await supabase.from('product_analytics').insert({
       product_id: productId,
-      event_type: `upgrade_${event}`,
-      referrer: triggerType,
+      // product_analytics has no referrer column. Encode the surface in the
+      // event name so every funnel step can be queried without a schema change.
+      event_type: `upgrade_${triggerType}_${event}`,
     });
+    if (error) throw error;
   } catch (err) {
     console.error('Failed to track upgrade trigger:', err);
   }
 };
+
+export const setUpgradeCheckoutAttribution = (productId: string, triggerType: UpgradeTriggerType) => {
+  sessionStorage.setItem(CHECKOUT_KEY, JSON.stringify({ productId, triggerType, startedAt: Date.now() }));
+};
+
+export const consumeUpgradeCheckoutAttribution = (): { productId: string; triggerType: UpgradeTriggerType } | null => {
+  try {
+    const value = sessionStorage.getItem(CHECKOUT_KEY);
+    sessionStorage.removeItem(CHECKOUT_KEY);
+    if (!value) return null;
+    const attribution = JSON.parse(value);
+    // A cancelled checkout should not be credited to a different later payment.
+    if (!attribution.startedAt || Date.now() - attribution.startedAt > 2 * 60 * 60 * 1000) return null;
+    return attribution;
+  } catch {
+    sessionStorage.removeItem(CHECKOUT_KEY);
+    return null;
+  }
+};
+
+export const clearUpgradeCheckoutAttribution = () => sessionStorage.removeItem(CHECKOUT_KEY);
 
 /**
  * Check if user has dismissed this trigger type recently (within session)
