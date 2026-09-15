@@ -104,7 +104,17 @@ const TRIGGER_CONFIG: Record<UpgradeTriggerType, {
     bgColor: 'bg-primary/5',
     iconColor: 'text-primary',
   },
+  analytics_boost: {
+    icon: TrendingUp,
+    getTitle: (p) => `Get more traffic to ${p.productName}`,
+    getMessage: () => 'Boost pins your launch to the top for 24h and drives more visits.',
+    cta: 'Boost your launch — $19',
+    borderColor: 'border-primary/20',
+    bgColor: 'bg-primary/5',
+    iconColor: 'text-primary',
+  },
 };
+
 
 const ProUpgradeCard = (props: ProUpgradeCardProps) => {
   const { productId, triggerType, variant = 'card' } = props;
