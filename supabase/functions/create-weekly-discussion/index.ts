@@ -1,3 +1,4 @@
+import { isCronAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -34,6 +35,8 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  if (!isCronAuthorized(req)) return unauthorizedResponse(corsHeaders);
 
   try {
     const discourseUrl = Deno.env.get('DISCOURSE_FORUM_URL') || 'https://forums.trylaunch.ai';

@@ -1,3 +1,4 @@
+import { isCronAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 // Founder Milestone System — detection + email
 // Deploy MANUALLY via Supabase dashboard (per project convention).
 // Suggested schedule: hourly via pg_cron.
@@ -99,6 +100,8 @@ function buildEmail(args: {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+
+  if (!isCronAuthorized(req)) return unauthorizedResponse(corsHeaders);
 
   try {
     const supabase = createClient(
