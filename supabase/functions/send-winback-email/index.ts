@@ -1,4 +1,4 @@
-import { isCronAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
+import { isCronOrAdminAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
 
@@ -6,7 +6,7 @@ const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
 };
 
 const PRODUCTION_URL = Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (!isCronAuthorized(req)) return unauthorizedResponse(corsHeaders);
+  if (!(await isCronOrAdminAuthorized(req))) return unauthorizedResponse(corsHeaders);
 
   try {
     const supabase = createClient(

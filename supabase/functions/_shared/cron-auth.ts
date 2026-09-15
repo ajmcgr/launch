@@ -18,6 +18,39 @@ export function isCronAuthorized(req: Request): boolean {
   return false;
 }
 
+// Extended check: cron/service-role OR a signed-in admin user (so these
+// functions can also be triggered manually from the dashboard / admin UI).
+export async function isCronOrAdminAuthorized(req: Request): Promise<boolean> {
+  if (isCronAuthorized(req)) return true;
+
+  const authHeader = req.headers.get('Authorization') || req.headers.get('authorization') || '';
+  if (!authHeader.startsWith('Bearer ')) return false;
+  const token = authHeader.slice('Bearer '.length).trim();
+  if (!token) return false;
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  if (!supabaseUrl || !serviceKey) return false;
+
+  try {
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
+    const { data: { user }, error } = await admin.auth.getUser(token);
+    if (error || !user) return false;
+
+    const { data: roles } = await admin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .limit(1);
+    return Boolean(roles && roles.length > 0);
+  } catch (err) {
+    console.error('isCronOrAdminAuthorized error:', err);
+    return false;
+  }
+}
+
 export function unauthorizedResponse(corsHeaders: Record<string, string> = {}) {
   return new Response(JSON.stringify({ error: 'Unauthorized' }), {
     status: 401,
