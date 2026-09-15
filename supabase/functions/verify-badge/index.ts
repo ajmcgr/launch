@@ -73,16 +73,66 @@ Deno.serve(async (req) => {
 
     console.log(`Fetching ${product.domain_url} to verify badge`);
 
-    // Fetch the product's website
+    // SSRF protection: only fetch public http/https URLs.
+    const BLOCKED_HOSTNAMES = new Set(['localhost', 'metadata.google.internal', 'metadata']);
+    const BLOCKED_SUFFIXES = ['.internal', '.local', '.lan', '.corp', '.home.arpa'];
+
+    const isPrivateIpLiteral = (host: string): boolean => {
+      const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+      if (ipv4) {
+        const [a, b] = [Number(ipv4[1]), Number(ipv4[2])];
+        return (
+          a === 10 || a === 127 || a === 0 ||
+          (a === 172 && b >= 16 && b <= 31) ||
+          (a === 192 && b === 168) ||
+          (a === 169 && b === 254) ||
+          (a === 100 && b >= 64 && b <= 127)
+        );
+      }
+      const h = host.toLowerCase().replace(/^\[|\]$/g, '');
+      return h === '::1' || h.startsWith('fc') || h.startsWith('fd') || h.startsWith('fe80');
+    };
+
+    const validateFetchUrl = (input: string): { ok: true; url: URL } | { ok: false; error: string } => {
+      let url: URL;
+      try {
+        url = new URL(input);
+      } catch {
+        return { ok: false, error: 'Invalid URL' };
+      }
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        return { ok: false, error: 'Only http/https URLs are allowed' };
+      }
+      const host = url.hostname.toLowerCase();
+      if (BLOCKED_HOSTNAMES.has(host) || BLOCKED_SUFFIXES.some((s) => host.endsWith(s)) || isPrivateIpLiteral(host)) {
+        return { ok: false, error: 'Refusing to fetch a private or internal address' };
+      }
+      return { ok: true, url };
+    };
+
+    // Fetch with manual redirect handling so every hop is re-validated.
     let websiteHtml: string;
     try {
-      const response = await fetch(product.domain_url, {
-        headers: {
-          'User-Agent': 'Launch-Badge-Verifier/1.0',
-        },
-        signal: AbortSignal.timeout(10000), // 10 second timeout
-      });
-
+      let current = product.domain_url as string;
+      let response: Response | null = null;
+      for (let hop = 0; hop <= 3; hop++) {
+        const check = validateFetchUrl(current);
+        if (!check.ok) throw new Error(check.error);
+        response = await fetch(check.url.toString(), {
+          headers: { 'User-Agent': 'Launch-Badge-Verifier/1.0' },
+          signal: AbortSignal.timeout(10000), // 10 second timeout
+          redirect: 'manual',
+        });
+        if (response.status >= 300 && response.status < 400) {
+          const location = response.headers.get('location');
+          if (!location) throw new Error(`HTTP ${response.status} redirect without Location`);
+          current = new URL(location, check.url).toString();
+          response = null;
+          continue;
+        }
+        break;
+      }
+      if (!response) throw new Error('Too many redirects');
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -91,7 +141,7 @@ Deno.serve(async (req) => {
     } catch (fetchError) {
       const errorMessage = fetchError instanceof Error ? fetchError.message : 'Unknown error';
       console.error('Error fetching website:', fetchError);
-      
+
       // Update last check time even on failure
       await supabaseAdmin
         .from('products')
@@ -99,9 +149,9 @@ Deno.serve(async (req) => {
         .eq('id', productId);
 
       return new Response(
-        JSON.stringify({ 
-          verified: false, 
-          error: `Could not fetch website: ${errorMessage}` 
+        JSON.stringify({
+          verified: false,
+          error: `Could not fetch website: ${errorMessage}`
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );

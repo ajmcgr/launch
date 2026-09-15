@@ -113,22 +113,25 @@ serve(async (req) => {
     
     console.log("Received auth email request");
     
-    // Verify webhook signature if secret is configured
-    if (hookSecret) {
-      try {
-        const headers = Object.fromEntries(req.headers);
-        const wh = new Webhook(hookSecret);
-        payload = wh.verify(payloadText, headers) as AuthEmailPayload;
-      } catch (verifyError: any) {
-        console.error("Webhook verification failed:", verifyError?.message);
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-    } else {
-      payload = JSON.parse(payloadText);
-      console.log("No hook secret configured, parsing payload directly");
+    // Always require a valid webhook signature; refuse to send email for
+    // unverified callers (prevents phishing via attacker-controlled payloads).
+    if (!hookSecret) {
+      console.error("SEND_EMAIL_HOOK_SECRET is not configured; refusing request");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    try {
+      const headers = Object.fromEntries(req.headers);
+      const wh = new Webhook(hookSecret);
+      payload = wh.verify(payloadText, headers) as AuthEmailPayload;
+    } catch (verifyError: any) {
+      console.error("Webhook verification failed:", verifyError?.message);
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     
