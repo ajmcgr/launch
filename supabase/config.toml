@@ -99,3 +99,9 @@ verify_jwt = false
 
 [functions.digest-unsubscribe]
 verify_jwt = false
+
+[functions.send-outcome-nudge-email]
+verify_jwt = false
+
+[functions.detect-milestones]
+verify_jwt = false
