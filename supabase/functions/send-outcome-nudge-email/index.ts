@@ -1,4 +1,3 @@
-import { isCronOrAdminAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
 
@@ -11,12 +10,35 @@ const corsHeaders = {
 
 const PRODUCTION_URL = Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
 
+async function isAuthorized(req: Request): Promise<boolean> {
+  const authHeader = req.headers.get('authorization') || '';
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const cronSecret = Deno.env.get('CRON_SECRET') || '';
+  if (serviceKey && authHeader === `Bearer ${serviceKey}`) return true;
+  if (cronSecret && req.headers.get('x-cron-secret') === cronSecret) return true;
+  if (!authHeader.startsWith('Bearer ') || !serviceKey) return false;
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+  if (!supabaseUrl) return false;
+  const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
+  const { data: { user }, error } = await admin.auth.getUser(authHeader.slice(7).trim());
+  if (error || !user) return false;
+  const { data: roles } = await admin.from('user_roles').select('role').eq('user_id', user.id).eq('role', 'admin').limit(1);
+  return Boolean(roles?.length);
+}
+
+function unauthorizedResponse() {
+  return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    status: 401,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (!(await isCronOrAdminAuthorized(req))) return unauthorizedResponse(corsHeaders);
+  if (!(await isAuthorized(req))) return unauthorizedResponse();
 
   try {
     const supabase = createClient(
