@@ -1,4 +1,4 @@
-import { isCronAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
+import { isCronOrAdminAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 // Founder Milestone System — detection + email
 // Deploy MANUALLY via Supabase dashboard (per project convention).
 // Suggested schedule: hourly via pg_cron.
@@ -9,7 +9,7 @@ const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
 };
 
 const PRODUCTION_URL = Deno.env.get('PRODUCTION_URL') || 'https://trylaunch.ai';
@@ -101,7 +101,7 @@ function buildEmail(args: {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-  if (!isCronAuthorized(req)) return unauthorizedResponse(corsHeaders);
+  if (!(await isCronOrAdminAuthorized(req))) return unauthorizedResponse(corsHeaders);
 
   try {
     const supabase = createClient(

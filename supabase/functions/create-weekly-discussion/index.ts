@@ -1,7 +1,7 @@
-import { isCronAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
+import { isCronOrAdminAuthorized, unauthorizedResponse } from '../_shared/cron-auth.ts';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
 };
 
 interface WeeklyThread {
@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (!isCronAuthorized(req)) return unauthorizedResponse(corsHeaders);
+  if (!(await isCronOrAdminAuthorized(req))) return unauthorizedResponse(corsHeaders);
 
   try {
     const discourseUrl = Deno.env.get('DISCOURSE_FORUM_URL') || 'https://forums.trylaunch.ai';
