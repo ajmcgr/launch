@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getProductUrl } from '@/lib/ogShare';
-import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft, Link2, Bookmark, FolderPlus, Sparkles, Rocket, Star, Mail, Target, Flame } from 'lucide-react';
+import { Eye, MousePointerClick, ArrowUp, MessageSquare, Users, TrendingUp, Trophy, BarChart3, Share2, Copy, ArrowLeft, Link2, Bookmark, FolderPlus, Sparkles, Rocket, Star, Mail, Target, Flame, Send } from 'lucide-react';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import OutcomeReporting from '@/components/OutcomeReporting';
 import FounderAchievements from '@/components/FounderAchievements';
@@ -29,6 +29,8 @@ const ProductAnalytics = () => {
   const [voteHistory, setVoteHistory] = useState<any[]>([]);
   const [collectionAdds, setCollectionAdds] = useState(0);
   const [boostLoading, setBoostLoading] = useState(false);
+  const [postReferralId, setPostReferralId] = useState<string | null>(null);
+  const [postLoading, setPostLoading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -128,6 +130,25 @@ const ProductAnalytics = () => {
       trackUpgradeTrigger(product.id, 'analytics_boost', 'trigger_shown');
     }
   }, [isAuthorized, product?.id]);
+
+  useEffect(() => {
+    if (!isAuthorized || !product?.id || !product.launch_date) return;
+    if (Date.now() - new Date(product.launch_date).getTime() < 24 * 60 * 60 * 1000) return;
+
+    let cancelled = false;
+    const createReferral = async () => {
+      const { data, error } = await (supabase as any).rpc('create_launch_post_referral', {
+        p_product_id: product.id,
+      });
+      if (error) {
+        console.error('Failed to create Post referral:', error);
+        return;
+      }
+      if (!cancelled && typeof data === 'string') setPostReferralId(data);
+    };
+    void createReferral();
+    return () => { cancelled = true; };
+  }, [isAuthorized, product?.id, product?.launch_date]);
 
   // Computed metrics
   const totalViews = useMemo(() => analytics.filter(a => a.event_type === 'page_view').length, [analytics]);
@@ -259,6 +280,29 @@ const ProductAnalytics = () => {
     }
   };
 
+  const handlePostRecommendation = async () => {
+    if (!postReferralId || !product?.id) return;
+    setPostLoading(true);
+    try {
+      const { error } = await (supabase as any).rpc('mark_launch_post_referral_clicked', {
+        p_referral_id: postReferralId,
+      });
+      if (error) throw error;
+      trackFunnelEvent('post_recommendation_clicked', { product_id: product.id, campaign: 'post_launch_analytics' });
+      const params = new URLSearchParams({
+        source: 'launch',
+        campaign: 'post_launch_analytics',
+        ref: postReferralId,
+        product: product.id,
+      });
+      window.location.assign(`https://trypost.ai/signup?${params.toString()}`);
+    } catch (error) {
+      console.error('Failed to record Post referral click:', error);
+      toast.error('Could not open Post. Please try again.');
+      setPostLoading(false);
+    }
+  };
+
   const ctrNum = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
   const isTrending = !!(product as any).won_daily || !!(product as any).won_weekly || !!(product as any).won_monthly;
   const launchedDate = product.launch_date ? new Date(product.launch_date) : null;
@@ -335,6 +379,21 @@ const ProductAnalytics = () => {
             </Card>
           ))}
         </div>
+
+        {postReferralId && (
+          <Card className="border-primary/25 bg-primary/[0.03]">
+            <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold">Keep your launch momentum going</p>
+                <p className="mt-1 text-sm text-muted-foreground">Schedule follow-up promotion for {product.name} across your social channels with Post.</p>
+              </div>
+              <Button variant="outline" onClick={handlePostRecommendation} disabled={postLoading} className="shrink-0">
+                <Send className="mr-2 h-4 w-4" />
+                {postLoading ? 'Opening Post...' : 'Plan social posts'}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Section 2: Traffic Over Time */}
         <Card>
