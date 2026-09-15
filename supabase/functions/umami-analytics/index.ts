@@ -3,9 +3,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const UMAMI_API_KEY = "api_qJbOUc8Ksl62zKaY7LDiOcyZKZZdy1ZE";
-const WEBSITE_ID = "1f21892f-ed7c-4d90-acf5-4225124a0b40";
+const UMAMI_API_KEY = Deno.env.get("UMAMI_API_KEY") || "";
+const WEBSITE_ID = Deno.env.get("UMAMI_WEBSITE_ID") || "";
 const BASE = "https://api.umami.is/v1";
+
 
 async function umami(path: string) {
   const res = await fetch(`${BASE}${path}`, {
