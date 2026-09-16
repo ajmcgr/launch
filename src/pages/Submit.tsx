@@ -1427,8 +1427,8 @@ const Submit = () => {
           
           console.log('Order created successfully:', orderData);
 
-          // Free launches can launch same-day if there's capacity
-          const now = new Date();
+          // Free launches are queued — earliest slot is 3 days out
+          const FREE_QUEUE_DELAY_DAYS = 3;
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           
@@ -1436,11 +1436,11 @@ const Submit = () => {
           let productStatus: string = 'scheduled';
           let foundSlot = false;
           
-          // Free launches start from today (day 0) - launch immediately if capacity available
-          for (let i = 0; i < 60; i++) {
+          for (let i = FREE_QUEUE_DELAY_DAYS; i < 60; i++) {
             const checkDate = new Date(today);
             checkDate.setDate(checkDate.getDate() + i);
             checkDate.setHours(0, 0, 0, 0);
+            
             
             const nextDay = new Date(checkDate);
             nextDay.setDate(nextDay.getDate() + 1);
