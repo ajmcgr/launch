@@ -1478,13 +1478,8 @@ const Submit = () => {
             // Free launch can go if: total < 100 AND free launches haven't exceeded their limit
             if ((totalCount || 0) < totalCapacity && freeCapacityUsed < freeCapacityLimit) {
               launchDate = new Date(checkDate);
-              // If launching today, launch now; otherwise schedule for midnight
-              if (i === 0) {
-                launchDate = new Date(now.getTime() + 60000); // 1 minute from now
-                productStatus = 'launched'; // Launch immediately
-              } else {
-                launchDate.setHours(0, 1, 0, 0);
-              }
+              launchDate.setHours(0, 1, 0, 0);
+              productStatus = 'scheduled';
               foundSlot = true;
               break;
             }
