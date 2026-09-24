@@ -30,7 +30,7 @@ const CategorySponsorBanner = ({ categoryId, categoryName, hideFallback = false 
       let id = categoryId;
       if (id === undefined) {
         const { data: cat } = await (supabase as any)
-          .from('categories').select('id').ilike('name', categoryName).maybeSingle();
+          .from('product_categories').select('id').ilike('name', categoryName).maybeSingle();
         id = cat?.id;
       }
       if (id === undefined) {
