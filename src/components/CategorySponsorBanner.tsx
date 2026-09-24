@@ -102,6 +102,8 @@ const CategorySponsorBanner = ({ categoryId, categoryName, hideFallback = false 
     );
   }
 
+  if (hideFallback) return null;
+
   // Fallback: Media banner
   return (
     <div className="w-full flex flex-col items-center py-4 mb-6">
