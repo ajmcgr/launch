@@ -45,11 +45,14 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = 
   useEffect(() => {
     const fetchSponsors = async () => {
       const today = new Date().toISOString().split('T')[0];
+      // Use end-of-day so sponsors starting "today" (stored with a time) still show,
+      // regardless of the visitor's timezone.
+      const endOfToday = `${today}T23:59:59.999Z`;
       const { data } = await (supabase as any)
         .from('homepage_sponsors')
         .select('id, sponsor_name, banner_image_url, destination_url, weight')
         .eq('enabled', true)
-        .lte('start_date', today)
+        .lte('start_date', endOfToday)
         .gte('end_date', today);
       // Weighted random order so every active sponsor rotates fairly.
       const shuffled = weightedShuffle((data as any[]) || []);
@@ -78,6 +81,10 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = 
   ];
 
   let sliced = list.slice(offset, limit !== undefined ? offset + limit : undefined);
+  // Fewer active sponsors than slots: reuse real sponsors instead of old placeholder banners.
+  if (sliced.length === 0 && sponsors.length > 0 && limit !== undefined) {
+    sliced = Array.from({ length: limit }, (_, i) => sponsors[(offset + i) % sponsors.length]);
+  }
   if (sliced.length === 0 && fallbackMedia) {
     sliced = [{ id: 'fallback-media-slot', sponsor_name: 'Media', banner_image_url: '/src/assets/sponsors/media-banner.png', destination_url: 'https://trymedia.ai/' }];
   }
