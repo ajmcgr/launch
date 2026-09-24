@@ -14,6 +14,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Platform } from '@/components/PlatformIcons';
 import { PlatformFilter } from '@/components/PlatformFilter';
 import { toast } from 'sonner';
+import CategorySponsorBanner from '@/components/CategorySponsorBanner';
 
 const Products = () => {
   const isMobile = useIsMobile();
@@ -633,6 +634,10 @@ const Products = () => {
               Clear all
             </Button>
           </div>
+        )}
+
+        {selectedCategories.length === 1 && (
+          <CategorySponsorBanner categoryName={selectedCategories[0]} hideFallback />
         )}
 
         {effectiveView === 'compact' ? (

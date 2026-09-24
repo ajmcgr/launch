@@ -12,11 +12,13 @@ interface Sponsor {
 }
 
 interface Props {
-  categoryId: number;
+  categoryId?: number;
   categoryName: string;
+  /** Hide the placeholder banner when no sponsor is active. */
+  hideFallback?: boolean;
 }
 
-const CategorySponsorBanner = ({ categoryId, categoryName }: Props) => {
+const CategorySponsorBanner = ({ categoryId, categoryName, hideFallback = false }: Props) => {
   const [sponsor, setSponsor] = useState<Sponsor | null>(null);
   const [loading, setLoading] = useState(true);
   const trackedRef = useRef<string | null>(null);
@@ -25,13 +27,25 @@ const CategorySponsorBanner = ({ categoryId, categoryName }: Props) => {
     let cancelled = false;
     const fetchSponsor = async () => {
       setLoading(true);
+      let id = categoryId;
+      if (id === undefined) {
+        const { data: cat } = await (supabase as any)
+          .from('categories').select('id').ilike('name', categoryName).maybeSingle();
+        id = cat?.id;
+      }
+      if (id === undefined) {
+        if (!cancelled) { setSponsor(null); setLoading(false); }
+        return;
+      }
       const today = new Date().toISOString().split('T')[0];
+      // End-of-day so sponsors starting today (stored with a time) still show.
+      const endOfToday = `${today}T23:59:59.999Z`;
       const { data } = await (supabase as any)
         .from('category_sponsors')
         .select('id, sponsor_name, banner_image_url, destination_url, weight')
-        .eq('category_id', categoryId)
+        .eq('category_id', id)
         .eq('enabled', true)
-        .lte('start_date', today)
+        .lte('start_date', endOfToday)
         .gte('end_date', today);
 
       if (cancelled) return;
@@ -42,7 +56,7 @@ const CategorySponsorBanner = ({ categoryId, categoryName }: Props) => {
     };
     fetchSponsor();
     return () => { cancelled = true; };
-  }, [categoryId]);
+  }, [categoryId, categoryName]);
 
   // Track impression once per sponsor view
   useEffect(() => {
