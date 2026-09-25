@@ -1,3 +1,4 @@
+import TaxonomyPicker from '@/components/TaxonomyPicker';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -308,26 +309,23 @@ const Submit = () => {
 
   // Fetch available tags on mount
   useEffect(() => {
-    const fetchTags = async () => {
-      const { data } = await supabase
-        .from('product_tags')
-        .select('id, name, slug')
-        .order('name');
-      if (data) {
-        setAvailableTags(data);
+    // Page through results — the API caps each request at 1000 rows
+    const fetchAll = async (table: 'product_tags' | 'stack_items') => {
+      const all: Array<{ id: number; name: string; slug: string }> = [];
+      for (let from = 0; from < 20000; from += 1000) {
+        const { data, error } = await supabase
+          .from(table)
+          .select('id, name, slug')
+          .order('name')
+          .range(from, from + 999);
+        if (error || !data) break;
+        all.push(...(data as any));
+        if (data.length < 1000) break;
       }
+      return all;
     };
-    const fetchStackItems = async () => {
-      const { data } = await supabase
-        .from('stack_items')
-        .select('id, name, slug')
-        .order('name');
-      if (data) {
-        setAvailableStackItems(data);
-      }
-    };
-    fetchTags();
-    fetchStackItems();
+    fetchAll('product_tags').then(setAvailableTags);
+    fetchAll('stack_items').then(setAvailableStackItems);
   }, []);
 
   // Save to localStorage whenever step changes
@@ -757,8 +755,8 @@ const Submit = () => {
     return { list: newList, selected: [...selectedIds, data.id], added: true };
   };
 
-  const handleCreateStackItem = async () => {
-    const raw = newStackName.trim();
+  const handleCreateStackItem = async (nameArg?: string) => {
+    const raw = (nameArg ?? newStackName).trim();
     if (!raw) return;
 
     // Split on commas, semicolons, slashes, pipes, or newlines so users can
@@ -808,41 +806,61 @@ const Submit = () => {
     }
   };
 
-  const handleCreateTag = async () => {
-    const trimmedName = newTagName.trim();
+  const handleCreateTag = async (nameArg?: string) => {
+    const trimmedName = (nameArg ?? newTagName).trim();
     if (!trimmedName) return;
-    
-    // Check if tag already exists
+    const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    if (!slug) return;
+
+    const selectTag = (tag: { id: number; name: string; slug: string }) => {
+      setAvailableTags(prev =>
+        prev.some(t => t.id === tag.id) ? prev : [...prev, tag].sort((a, b) => a.name.localeCompare(b.name))
+      );
+      if (formData.tags.includes(tag.id)) {
+        toast.info(`"${tag.name}" is already in your tags`);
+        return;
+      }
+      if (formData.tags.length >= 5) {
+        toast.error('You can select up to 5 tags');
+        return;
+      }
+      setFormData(prev => ({ ...prev, tags: [...prev.tags, tag.id] }));
+      toast.success(`"${tag.name}" added to your tags`);
+    };
+
     const existingTag = availableTags.find(
-      t => t.name.toLowerCase() === trimmedName.toLowerCase()
+      t => t.slug === slug || t.name.toLowerCase() === trimmedName.toLowerCase()
     );
     if (existingTag) {
-      toast.error('This tag already exists');
+      selectTag(existingTag);
+      setNewTagName('');
       return;
     }
-    
+
     setIsCreatingTag(true);
     try {
-      const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      
       const { data, error } = await supabase
         .from('product_tags')
         .insert({ name: trimmedName, slug })
         .select('id, name, slug')
         .single();
-      
-      if (error) throw error;
-      
-      // Add to available tags and select it
-      setAvailableTags(prev => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
-      if (formData.tags.length < 5) {
-        setFormData(prev => ({ ...prev, tags: [...prev.tags, data.id] }));
+
+      if (error || !data) {
+        // Most likely already exists (duplicate slug) — look it up and select it
+        const { data: found } = await supabase
+          .from('product_tags')
+          .select('id, name, slug')
+          .eq('slug', slug)
+          .maybeSingle();
+        if (!found) throw error || new Error('Insert failed');
+        selectTag(found);
+      } else {
+        selectTag(data);
       }
       setNewTagName('');
-      toast.success(`Tag "${trimmedName}" created!`);
     } catch (error: any) {
       console.error('Error creating tag:', error);
-      toast.error('Failed to create tag');
+      toast.error(`Couldn't add "${trimmedName}". Please try again.`);
     } finally {
       setIsCreatingTag(false);
     }
@@ -1885,48 +1903,16 @@ const Submit = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Tags (Select up to 5)</Label>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-4 border rounded-md">
-                    {availableTags.map((tag) => (
-                      <div key={tag.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`tag-${tag.id}`}
-                          checked={formData.tags.includes(tag.id)}
-                          onCheckedChange={() => handleTagToggle(tag.id)}
-                          disabled={!formData.tags.includes(tag.id) && formData.tags.length >= 5}
-                        />
-                        <Label htmlFor={`tag-${tag.id}`} className="text-sm cursor-pointer">
-                          {tag.name}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <Input
-                      placeholder="Create new tag..."
-                      value={newTagName}
-                      onChange={(e) => setNewTagName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleCreateTag();
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCreateTag}
-                      disabled={isCreatingTag || !newTagName.trim()}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      {isCreatingTag ? 'Adding...' : 'Add'}
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Tags help users discover your product via search. Can't find a tag? Create one!
-                  </p>
+                  <TaxonomyPicker
+                    label="tags"
+                    items={availableTags}
+                    selected={formData.tags}
+                    onToggle={handleTagToggle}
+                    onCreate={(name) => handleCreateTag(name)}
+                    creating={isCreatingTag}
+                    max={5}
+                    placeholder="Search tags, e.g. SEO"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="slug">URL Slug</Label>
@@ -1972,47 +1958,15 @@ const Submit = () => {
                   <p className="text-sm text-muted-foreground mb-2">
                     What technologies did you use to build your product?
                   </p>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-4 border rounded-md">
-                    {availableStackItems.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`stack-${item.id}`}
-                          checked={formData.stackItems?.includes(item.id)}
-                          onCheckedChange={() => handleStackToggle(item.id)}
-                        />
-                        <Label htmlFor={`stack-${item.id}`} className="text-sm cursor-pointer">
-                          {item.name}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <Input
-                      placeholder="Add tech (e.g. Next.js, React, Tailwind)"
-                      value={newStackName}
-                      onChange={(e) => setNewStackName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleCreateStackItem();
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCreateStackItem}
-                      disabled={isCreatingStack || !newStackName.trim()}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      {isCreatingStack ? 'Adding...' : 'Add'}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Tip: separate multiple with commas — we'll add each as its own tag.
-                  </p>
+                  <TaxonomyPicker
+                    label="technologies"
+                    items={availableStackItems}
+                    selected={formData.stackItems || []}
+                    onToggle={handleStackToggle}
+                    onCreate={(name) => handleCreateStackItem(name)}
+                    creating={isCreatingStack}
+                    placeholder="Search tech, e.g. Next.js, Supabase"
+                  />
                 </div>
 
                 <div className="space-y-2 pt-4 border-t">
