@@ -369,104 +369,104 @@ const Admin = () => {
         </div>
 
         <TabsContent value="metrics" className="mt-0">
-          <div className="container mx-auto px-4 py-4 md:py-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+          <div className="container mx-auto px-4 py-8 md:py-10">
+            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Products</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">⚡ {stats?.totalProducts || 0}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newProducts || 0} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">⚡ {stats?.totalProducts || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+{stats?.newProducts || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Vibe Coders</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">🎉 {stats?.totalUsers || 0}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newUsers || 0} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">🎉 {stats?.totalUsers || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+{stats?.newUsers || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Votes</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">⬆ {stats?.totalVotes || 0}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newVotes || 0} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">⬆ {stats?.totalVotes || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+{stats?.newVotes || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Ratings</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">⭐ {stats?.totalRatings || 0}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newRatings || 0} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">⭐ {stats?.totalRatings || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+{stats?.newRatings || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Comments</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">💬 {stats?.totalComments || 0}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newComments || 0} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">💬 {stats?.totalComments || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+{stats?.newComments || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Advertisers</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">🎯 {(stats?.totalPromotions || 0) + (stats?.totalSponsorships || 0)}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newAdvertisers || 0} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">🎯 {(stats?.totalPromotions || 0) + (stats?.totalSponsorships || 0)}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+{stats?.newAdvertisers || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Badges Awarded</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">🏅 {stats?.totalBadges || 0}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+{stats?.newBadges || 0} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">🏅 {stats?.totalBadges || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+{stats?.newBadges || 0} past 7 days</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Verified MRR</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
-                  <div className="text-xs text-muted-foreground mt-1">across launches</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">💵 ${stats?.totalVerifiedMRR?.toLocaleString() || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-muted-foreground">across launches</div>
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-2xl">
-                <img src="/images/launch-logo.png" alt="" className="absolute top-4 right-4 h-8" />
-                <CardHeader className="pb-2">
+              <Card className="relative flex min-h-[248px] flex-col overflow-hidden rounded-xl md:min-h-[310px]">
+                <img src="/images/launch-logo.png" alt="" className="absolute right-6 top-6 h-7 md:right-9 md:top-9" />
+                <CardHeader className="p-6 pb-0 md:p-9 md:pb-0">
                   <CardTitle className="text-base font-medium text-muted-foreground">Revenue</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+${(stats?.newRevenue || 0).toLocaleString()} past 7 days</div>
+                <CardContent className="mt-auto p-6 pt-0 md:p-9 md:pt-0">
+                  <div className="text-5xl font-bold leading-none tracking-tight md:text-6xl">💰 ${stats?.totalRevenue?.toLocaleString() || 0}</div>
+                  <div className="mt-5 text-sm font-medium text-emerald-600 dark:text-emerald-400">+${(stats?.newRevenue || 0).toLocaleString()} past 7 days</div>
                 </CardContent>
               </Card>
             </div>
