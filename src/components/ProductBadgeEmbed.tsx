@@ -17,13 +17,16 @@ interface ProductBadgeEmbedProps {
   wonDaily?: boolean;
   wonWeekly?: boolean;
   wonMonthly?: boolean;
+  badgeEmbedded?: boolean;
 }
 
 type BadgeTheme = 'white' | 'color' | 'gold' | 'silver' | 'bronze';
 
-const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [], wonDaily = false, wonWeekly = false, wonMonthly = false }: ProductBadgeEmbedProps) => {
+const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [], wonDaily = false, wonWeekly = false, wonMonthly = false, badgeEmbedded = false }: ProductBadgeEmbedProps) => {
   const [copiedBasic, setCopiedBasic] = useState<BadgeTheme | null>(null);
   const [copiedWithCategories, setCopiedWithCategories] = useState<BadgeTheme | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(badgeEmbedded);
   const badgeRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const productUrl = `https://trylaunch.ai/launch/${productSlug}`;
@@ -70,8 +73,8 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
 
   const generateBasicBadgeHTML = (theme: BadgeTheme) => {
     const logoUrl = getBadgeImageUrl(theme);
-    return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-block; text-decoration: none;">
+    return `<!-- Launch Badge -->
+<a href="${productUrl}" target="_blank" rel="noopener" style="display: inline-block; text-decoration: none;">
   <img src="${logoUrl}" alt="Featured on Launch" height="53" style="display: block; height: 53px; width: auto;" />
 </a>`;
   };
@@ -81,8 +84,8 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     const textColor = getThemeTextColor(theme);
     const categoriesText = categories.slice(0, 2).join(' · ');
     
-    return `<!-- Launch Badge - Embed this badge and get a dofollow backlink! -->
-<a href="${productUrl}" target="_blank" rel="dofollow" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    return `<!-- Launch Badge -->
+<a href="${productUrl}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <img src="${logoUrl}" alt="Featured on Launch" height="53" style="display: inline-block; height: 53px; width: auto; vertical-align: middle;" />
   ${categoriesText ? `<span style="display: inline-block; font-size: 13px; font-weight: 500; color: ${textColor}; opacity: 0.7; white-space: nowrap; vertical-align: middle;">${categoriesText}</span>` : ''}
 </a>`;
@@ -99,6 +102,27 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
       setTimeout(() => setCopiedWithCategories(null), 2000);
     }
     toast.success('Embed code copied to clipboard!');
+  };
+
+  const verifyBadge = async () => {
+    setIsVerifying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-badge', {
+        body: { productId },
+      });
+      if (error) throw error;
+      if (data?.verified) {
+        setIsVerified(true);
+        toast.success('Badge verified on your website.');
+      } else {
+        setIsVerified(false);
+        toast.error(data?.error || 'We could not find the Launch badge on your website yet.');
+      }
+    } catch {
+      toast.error('Could not verify the badge. Please try again shortly.');
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const downloadAsImage = async (type: 'basic' | 'category', theme: BadgeTheme) => {
@@ -202,8 +226,14 @@ const ProductBadgeEmbed = ({ productId, productSlug, productName, categories = [
     <div className="border-t pt-6 mt-6">
       <h3 className="text-base font-semibold mb-2">Embeddable Launch Badges</h3>
       <p className="text-sm text-muted-foreground mb-4">
-        Copy the embed code to add these badges to your website to get a dofollow backlink.
+        Copy the embed code to link your site to this permanent Launch page. The link is followed unless your website adds a <code>nofollow</code> directive.
       </p>
+      <div className="flex items-center gap-3 mb-5">
+        <Button variant="outline" size="sm" onClick={verifyBadge} disabled={isVerifying}>
+          {isVerifying ? 'Checking…' : isVerified ? 'Recheck installation' : 'Verify installation'}
+        </Button>
+        {isVerified && <span className="text-xs font-medium text-emerald-700">Verified on your website</span>}
+      </div>
 
       {hasWon && awardTheme && (
         <div className="mb-6">

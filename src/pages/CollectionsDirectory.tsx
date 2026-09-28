@@ -142,7 +142,7 @@ export default function CollectionsDirectory() {
       <Helmet>
         <title>Collections — Curated Launches | Launch</title>
         <meta name="description" content="Explore curated collections of the best launches. Trending, new, most saved, and featured collections from the Launch community." />
-        <link rel="canonical" href="/collections" />
+        <link rel="canonical" href="https://trylaunch.ai/collections" />
       </Helmet>
 
       <header className="mb-8 text-center">

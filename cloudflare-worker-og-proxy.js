@@ -1,67 +1,80 @@
 /**
- * Cloudflare Worker: serve per-product Open Graph cards on trylaunch.ai.
+ * Cloudflare Worker: canonical routing and crawler-visible metadata for Launch.
  *
- * WHY: the site is a static SPA. Social crawlers (X, LinkedIn, Slack, Discord,
- * Facebook) do not run JavaScript, so on https://trylaunch.ai/launch/:slug they
- * only ever read the generic card baked into index.html. The `og-share` Supabase
- * edge function already renders the correct per-product tags (first screenshot as
- * the image) — this Worker routes ONLY bot requests to it, so humans keep the
- * clean branded URL and bots get the product card.
- *
- * DEPLOY (trylaunch.ai must be on Cloudflare DNS, proxied/orange-cloud):
- *   1. Cloudflare dashboard → Workers & Pages → Create → Worker.
- *   2. Paste this file, deploy.
- *   3. Worker → Settings → Domains & Routes → Add route:
- *        trylaunch.ai/launch/*        (zone: trylaunch.ai)
- *      Add a second route for www if you serve it: www.trylaunch.ai/launch/*
- *   4. Set the SUPABASE_URL variable (Settings → Variables) to
- *        https://<your-project-ref>.supabase.co
- *
- * VERIFY:
- *   curl -A "Twitterbot" https://trylaunch.ai/launch/<slug> | grep og:image
- *   -> should show the product screenshot, not social-card.png
- *   Then re-scrape the URL in the X Post Inspector / LinkedIn Post Inspector.
+ * Deploy on `trylaunch.ai/*` and `www.trylaunch.ai/*` with SUPABASE_URL set to
+ * the Launch project URL. Humans continue to receive the SPA; major crawlers
+ * receive small server-rendered documents from `seo-page`.
  */
 
 const BOT_UA =
   /(twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|whatsapp|telegrambot|pinterest|redditbot|embedly|quora link preview|showyoubot|outbrain|vkshare|w3c_validator|skypeuripreview|bingbot|googlebot|applebot|bluesky|mastodon|iframely)/i;
 
+const APEX_HOST = 'trylaunch.ai';
+
+const redirect = (url, path, status) => {
+  const destination = new URL(url);
+  destination.hostname = APEX_HOST;
+  destination.protocol = 'https:';
+  destination.pathname = path;
+  return Response.redirect(destination.toString(), status);
+};
+
+const seoRequest = async (env, path, mode) => {
+  const supabaseUrl = (env.SUPABASE_URL || '').replace(/\/$/, '');
+  if (!supabaseUrl) return null;
+  const target = `${supabaseUrl}/functions/v1/seo-page?mode=${encodeURIComponent(mode)}&path=${encodeURIComponent(path)}`;
+  try {
+    return await fetch(target, {
+      headers: { accept: mode === 'page' ? 'text/html' : 'application/json' },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    });
+  } catch (_) {
+    return null;
+  }
+};
+
+const isCanonicalSlashPath = (pathname) =>
+  /^\/(?:launch|category|tag|collections|tech|blog|vibe-coding|tools|compare|best|vs|alternatives|launches)\/[^/]+\/$/.test(pathname)
+  || pathname === '/makers/'
+  || pathname === '/leaderboard/'
+  || /^\/c\/[^/]+\/$/.test(pathname);
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const method = request.method.toUpperCase();
     const ua = request.headers.get('user-agent') || '';
 
-    const isBot = BOT_UA.test(ua);
-    const match = url.pathname.match(/^\/launch\/([^/]+)\/?$/);
+    if (url.hostname === `www.${APEX_HOST}`) return redirect(url, url.pathname, 301);
 
-    // Humans, non-product paths, non-GET: pass straight through to the SPA.
-    if (!isBot || !match || request.method !== 'GET') {
-      return fetch(request);
+    if (url.pathname === '/makers' || url.pathname === '/makers/') return redirect(url, '/vibecoders', 301);
+    if (url.pathname === '/leaderboard' || url.pathname === '/leaderboard/') return redirect(url, '/vibecoders', 301);
+    const legacyCollection = url.pathname.match(/^\/c\/([^/]+)\/?$/);
+    if (legacyCollection) return redirect(url, `/collections/${legacyCollection[1]}`, 301);
+    if (isCanonicalSlashPath(url.pathname)) return redirect(url, url.pathname.slice(0, -1), 308);
+
+    // Resolve product URLs for every browser and crawler request. This protects
+    // backlinks when a slug changes and prevents fake product URLs returning 200.
+    const productMatch = url.pathname.match(/^\/launch\/([^/]+)$/);
+    if (productMatch && (method === 'GET' || method === 'HEAD')) {
+      const resolved = await seoRequest(env, url.pathname, 'resolve');
+      if (!resolved) return new Response('Service unavailable', { status: 503 });
+      if (resolved.status === 404) return new Response('Not found', { status: 404 });
+      const result = await resolved.json();
+      if (result.state === 'redirect' && result.canonicalPath) {
+        return redirect(url, result.canonicalPath, 301);
+      }
     }
 
-    const slug = decodeURIComponent(match[1]);
-    const supabaseUrl = (env.SUPABASE_URL || '').replace(/\/$/, '');
-    if (!supabaseUrl) return fetch(request);
+    if (!BOT_UA.test(ua) || method !== 'GET') return fetch(request);
 
-    const target = `${supabaseUrl}/functions/v1/og-share?slug=${encodeURIComponent(slug)}`;
-
-    try {
-      const res = await fetch(target, {
-        headers: { 'user-agent': ua, accept: 'text/html' },
-        // og-share 302s humans; for bots we want the rendered HTML, and the
-        // function returns HTML directly when it detects a crawler UA.
-        redirect: 'manual',
-        cf: { cacheTtl: 300, cacheEverything: true },
-      });
-
-      if (res.status >= 200 && res.status < 300) {
-        const headers = new Headers(res.headers);
-        headers.set('content-type', 'text/html; charset=utf-8');
-        headers.set('cache-control', 'public, max-age=300');
-        return new Response(res.body, { status: 200, headers });
-      }
-    } catch (_) {
-      // fall through to the SPA on any failure
+    const metadata = await seoRequest(env, url.pathname, 'page');
+    if (metadata?.status === 404 && productMatch) return new Response('Not found', { status: 404 });
+    if (metadata?.ok) {
+      const headers = new Headers(metadata.headers);
+      headers.set('content-type', 'text/html; charset=utf-8');
+      headers.set('cache-control', 'public, max-age=300');
+      return new Response(metadata.body, { status: 200, headers });
     }
 
     return fetch(request);

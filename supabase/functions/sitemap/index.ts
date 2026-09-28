@@ -12,6 +12,10 @@ const INDEXABLE_BUILT_WITH_SLUGS = [
   "google-ai-studio", "base44", "clonk", "rork", "v0",
 ];
 const MIN_INDEXABLE_BUILT_WITH_PRODUCTS = 8;
+const MIN_INDEXABLE_TAG_PRODUCTS = 8;
+const MIN_INDEXABLE_CATEGORY_PRODUCTS = 5;
+const MIN_INDEXABLE_COLLECTION_PRODUCTS = 5;
+const PAGE_SIZE = 1000;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -26,18 +30,28 @@ Deno.serve(async (req) => {
     // Supabase caps a single response at 1,000 rows. Keep the sitemap complete
     // as the launch directory grows beyond that default page size.
     const products: any[] = [];
-    const productPageSize = 1000;
-    for (let from = 0; ; from += productPageSize) {
+    for (let from = 0; ; from += PAGE_SIZE) {
       const { data, error } = await supabase
         .from("products")
         .select("id, slug, created_at, launch_date")
         .eq("status", "launched")
         .order("launch_date", { ascending: false })
-        .range(from, from + productPageSize - 1);
+        .range(from, from + PAGE_SIZE - 1);
       if (error) throw error;
       products.push(...(data ?? []));
-      if ((data?.length ?? 0) < productPageSize) break;
+      if ((data?.length ?? 0) < PAGE_SIZE) break;
     }
+
+    const fetchAll = async (query: any) => {
+      const rows: any[] = [];
+      for (let from = 0; ; from += PAGE_SIZE) {
+        const { data, error } = await query.range(from, from + PAGE_SIZE - 1);
+        if (error) throw error;
+        rows.push(...(data ?? []));
+        if ((data?.length ?? 0) < PAGE_SIZE) break;
+      }
+      return rows;
+    };
 
     // These are a curated subset of stack values. The broader stack parser accepts
     // free-form input, so only recognized app-building platforms are sitemap SEO pages.
@@ -46,9 +60,9 @@ Deno.serve(async (req) => {
       .select("id, slug")
       .in("slug", INDEXABLE_BUILT_WITH_SLUGS);
     const builtWithIds = (builtWithItems ?? []).map((item: any) => item.id);
-    const { data: builtWithMappings } = builtWithIds.length
-      ? await supabase.from("product_stack_map").select("stack_item_id, product_id").in("stack_item_id", builtWithIds)
-      : { data: [] as any[] };
+    const builtWithMappings = builtWithIds.length
+      ? await fetchAll(supabase.from("product_stack_map").select("stack_item_id, product_id").in("stack_item_id", builtWithIds).order("stack_item_id"))
+      : [] as any[];
     const launchedProductIds = new Set(products.map((product: any) => product.id));
     const builtWithCounts = new Map<number, number>();
     (builtWithMappings ?? []).forEach((mapping: any) => {
@@ -56,54 +70,84 @@ Deno.serve(async (req) => {
       builtWithCounts.set(mapping.stack_item_id, (builtWithCounts.get(mapping.stack_item_id) ?? 0) + 1);
     });
 
-    // Fetch all tags
-    const { data: tags } = await supabase
+    // Fetch the complete tag and mapping sets. Supabase otherwise returns only
+    // its default first 1,000 rows, silently dropping valid sitemap URLs.
+    const tags = await fetchAll(supabase
       .from("product_tags")
-      .select("slug, created_at")
-      .order("name");
+      .select("id, slug")
+      .order("id"));
+    const tagMappings = await fetchAll(supabase
+      .from("product_tag_map")
+      .select("tag_id, product_id")
+      .order("tag_id"));
+    const tagCounts = new Map<number, number>();
+    tagMappings.forEach((mapping: any) => {
+      if (!launchedProductIds.has(mapping.product_id)) return;
+      tagCounts.set(mapping.tag_id, (tagCounts.get(mapping.tag_id) ?? 0) + 1);
+    });
 
-    // Fetch all categories
-    const { data: categories } = await supabase
+    const categories = await fetchAll(supabase
       .from("product_categories")
       .select("id, name")
-      .order("name");
+      .order("id"));
+    const categoryMappings = await fetchAll(supabase
+      .from("product_category_map")
+      .select("category_id, product_id")
+      .order("category_id"));
+    const categoryCounts = new Map<number, number>();
+    categoryMappings.forEach((mapping: any) => {
+      if (!launchedProductIds.has(mapping.product_id)) return;
+      categoryCounts.set(mapping.category_id, (categoryCounts.get(mapping.category_id) ?? 0) + 1);
+    });
 
     // Fetch all curated collections
-    const { data: collections } = await supabase
+    const collections = await fetchAll(supabase
       .from("collections")
       .select("id, slug, updated_at")
-      .order("name");
+      .order("id"));
 
     // Fetch all public user_collections (community-created)
-    const { data: userCollections } = await (supabase as any)
+    const userCollections = await fetchAll((supabase as any)
       .from("user_collections")
-      .select("id, slug, updated_at")
-      .eq("is_public", true);
+      .select("id, slug, description, updated_at")
+      .eq("is_public", true)
+      .order("id"));
 
     // Item counts to filter empty collections from sitemap
-    const curatedIds = (collections ?? []).map((c: any) => c.id);
-    const userColIds = (userCollections ?? []).map((c: any) => c.id);
+    const curatedIds = new Set((collections ?? []).map((c: any) => c.id));
+    const userColIds = new Set((userCollections ?? []).map((c: any) => c.id));
 
-    const [{ data: curatedItems }, { data: userItems }] = await Promise.all([
-      curatedIds.length
-        ? supabase.from("collection_products").select("collection_id").in("collection_id", curatedIds)
-        : Promise.resolve({ data: [] as any[] }),
-      userColIds.length
-        ? (supabase as any).from("user_collection_items").select("collection_id").in("collection_id", userColIds)
-        : Promise.resolve({ data: [] as any[] }),
+    // Do not use `.in()` with every public collection ID: thousands of IDs make
+    // a URL larger than PostgREST accepts. These join tables are small enough to
+    // page through, then filter to the public collections in memory.
+    const [curatedItems, userItems] = await Promise.all([
+      curatedIds.size
+        ? fetchAll(supabase.from("collection_products").select("collection_id, product_id").order("collection_id"))
+        : Promise.resolve([] as any[]),
+      userColIds.size
+        ? fetchAll((supabase as any).from("user_collection_items").select("collection_id, product_id").order("collection_id"))
+        : Promise.resolve([] as any[]),
     ]);
 
-    const curatedCounts = new Set<string>();
-    (curatedItems ?? []).forEach((r: any) => curatedCounts.add(r.collection_id));
-    const userCounts = new Set<string>();
-    (userItems ?? []).forEach((r: any) => userCounts.add(r.collection_id));
+    const curatedCounts = new Map<string, number>();
+    curatedItems.forEach((item: any) => {
+      if (!curatedIds.has(item.collection_id)) return;
+      if (!launchedProductIds.has(item.product_id)) return;
+      curatedCounts.set(item.collection_id, (curatedCounts.get(item.collection_id) ?? 0) + 1);
+    });
+    const userCounts = new Map<string, number>();
+    userItems.forEach((item: any) => {
+      if (!userColIds.has(item.collection_id)) return;
+      if (!launchedProductIds.has(item.product_id)) return;
+      userCounts.set(item.collection_id, (userCounts.get(item.collection_id) ?? 0) + 1);
+    });
 
     // Fetch all published blog posts
-    const { data: blogPosts } = await (supabase as any)
+    const blogPosts = await fetchAll((supabase as any)
       .from("blog_posts")
       .select("slug, published_at, updated_at")
       .eq("status", "published")
-      .order("published_at", { ascending: false });
+      .order("published_at", { ascending: false }));
 
     const createSlug = (name: string) => {
       return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -151,6 +195,13 @@ Deno.serve(async (req) => {
       { loc: "/", priority: "1.0", changefreq: "daily" },
       { loc: "/products", priority: "0.9", changefreq: "daily" },
       { loc: "/launches/today", priority: "0.9", changefreq: "daily" },
+      { loc: "/vibecoders", priority: "0.8", changefreq: "weekly" },
+      { loc: "/tech", priority: "0.8", changefreq: "weekly" },
+      { loc: "/categories", priority: "0.7", changefreq: "weekly" },
+      { loc: "/tags", priority: "0.7", changefreq: "weekly" },
+      { loc: "/awards", priority: "0.7", changefreq: "weekly" },
+      { loc: "/success-stories", priority: "0.7", changefreq: "monthly" },
+      { loc: "/collections", priority: "0.7", changefreq: "weekly" },
       { loc: "/product-hunt-alternative", priority: "0.8", changefreq: "monthly" },
       // Programmatic SEO landing pages
       { loc: "/best-ai-tools", priority: "0.9", changefreq: "daily" },
@@ -265,6 +316,7 @@ Deno.serve(async (req) => {
     // Add products
     if (products) {
       for (const product of products) {
+        if (!product.slug) continue;
         const lastmod = product.launch_date || product.created_at;
         xml += `
   <url>
@@ -290,6 +342,7 @@ Deno.serve(async (req) => {
     // Add tags
     if (tags) {
       for (const tag of tags) {
+        if ((tagCounts.get(tag.id) ?? 0) < MIN_INDEXABLE_TAG_PRODUCTS) continue;
         xml += `
   <url>
     <loc>${SITE_URL}/tag/${tag.slug}</loc>
@@ -302,6 +355,7 @@ Deno.serve(async (req) => {
     // Add categories
     if (categories) {
       for (const category of categories) {
+        if ((categoryCounts.get(category.id) ?? 0) < MIN_INDEXABLE_CATEGORY_PRODUCTS) continue;
         const slug = createSlug(category.name);
         xml += `
   <url>
@@ -315,7 +369,7 @@ Deno.serve(async (req) => {
     // Add curated collections (only those with >=1 product)
     if (collections) {
       for (const collection of collections) {
-        if (!curatedCounts.has(collection.id)) continue;
+        if ((curatedCounts.get(collection.id) ?? 0) < MIN_INDEXABLE_COLLECTION_PRODUCTS) continue;
         const lastmod = collection.updated_at;
         xml += `
   <url>
@@ -330,7 +384,8 @@ Deno.serve(async (req) => {
     // Add public community collections (only those with >=1 item)
     if (userCollections) {
       for (const collection of userCollections) {
-        if (!userCounts.has(collection.id)) continue;
+        if ((userCounts.get(collection.id) ?? 0) < MIN_INDEXABLE_COLLECTION_PRODUCTS) continue;
+        if (!collection.description?.trim()) continue;
         const lastmod = collection.updated_at;
         xml += `
   <url>

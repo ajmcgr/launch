@@ -93,6 +93,11 @@ const Leaderboard = () => {
           name="description"
           content="Live leaderboard of the top vibe coders on Launch. Track trending builders, biggest risers, new entrants, and weekly rank movement."
         />
+        <link rel="canonical" href="https://trylaunch.ai/vibecoders" />
+        <meta property="og:title" content="Top Vibe Coders | Launch" />
+        <meta property="og:description" content="Live leaderboard of the top vibe coders on Launch. Track trending builders, biggest risers, new entrants, and weekly rank movement." />
+        <meta property="og:url" content="https://trylaunch.ai/vibecoders" />
+        <meta property="og:type" content="website" />
       </Helmet>
 
       <div className="container mx-auto px-4 max-w-7xl">

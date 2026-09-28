@@ -157,21 +157,16 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check for badge presence
-    // Look for: 
-    // 1. Link to product page (https://trylaunch.ai/launch/{slug})
-    // 2. Link to trylaunch.ai with dofollow
-    const productLinkRegex = new RegExp(`href=["']https://trylaunch\\.ai/launch/${product.slug}["'][^>]*rel=["']dofollow["']`, 'i');
-    const trylaunchLinkRegex = /href=["']https:\/\/trylaunch\.ai[^"']*["'][^>]*rel=["']dofollow["']/i;
-    
-    const hasProductLink = productLinkRegex.test(websiteHtml);
-    const hasTrylaunchLink = trylaunchLinkRegex.test(websiteHtml);
-    
-    const verified = hasProductLink && hasTrylaunchLink;
+    // A standard link is followed unless the host applies nofollow. Verify the
+    // canonical product destination itself, not a non-standard rel="dofollow".
+    const escapedSlug = product.slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const productLinkRegex = new RegExp(
+      `href=["']https://trylaunch\\.ai/launch/${escapedSlug}(?:[/?#][^"']*)?["']`,
+      'i',
+    );
+    const verified = productLinkRegex.test(websiteHtml);
 
     console.log(`Verification result for ${product.slug}:`, {
-      hasProductLink,
-      hasTrylaunchLink,
       verified,
     });
 
@@ -201,8 +196,8 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         verified,
         message: verified 
-          ? 'Badge verified! Your product now has a dofollow backlink on Launch.'
-          : 'Badge not found or not properly configured. Make sure you embed the badge with both links (product + Launch) with rel="dofollow".'
+          ? 'Badge verified! Your website links to this product’s canonical Launch page.'
+          : 'Badge not found. Make sure the embed links to this product’s canonical Launch page.'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );

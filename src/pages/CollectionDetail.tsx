@@ -287,6 +287,15 @@ export default function CollectionDetail({ publicMode = false }: Props) {
         <title>{collection.name} | Launch Collection</title>
         <meta name="description" content={collection.description?.slice(0, 155) || `A collection of ${items.length} launches.`} />
         {!collection.is_public && <meta name="robots" content="noindex" />}
+        {publicMode && collection.is_public && (
+          <>
+            <link rel="canonical" href={`https://trylaunch.ai/collections/${collection.slug}`} />
+            <meta property="og:title" content={`${collection.name} | Launch Collection`} />
+            <meta property="og:description" content={collection.description?.slice(0, 155) || `A collection of ${items.length} launches.`} />
+            <meta property="og:url" content={`https://trylaunch.ai/collections/${collection.slug}`} />
+            <meta property="og:type" content="website" />
+          </>
+        )}
       </Helmet>
 
       {!publicMode && (

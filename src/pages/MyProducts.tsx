@@ -1110,6 +1110,7 @@ const MyProducts = () => {
                           wonDaily={product.won_daily}
                           wonWeekly={product.won_weekly}
                           wonMonthly={product.won_monthly}
+                          badgeEmbedded={product.badge_embedded}
                         />
                       </CollapsibleContent>
                     </Collapsible>
