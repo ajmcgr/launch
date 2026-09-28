@@ -431,7 +431,7 @@ Deno.serve(async (req) => {
           if (productId || hasCustomCreative) {
             const selectedMonthsStr = metadata.selected_months || '';
             const monthStrings = selectedMonthsStr.split(', ').filter(Boolean);
-            const monthRanges = monthStrings.map((monthStr) => {
+            const monthRanges = monthStrings.map((monthStr: string) => {
               const monthDate = new Date(`1 ${monthStr}`);
               if (isNaN(monthDate.getTime())) throw new Error(`Invalid advertising month: ${monthStr}`);
               return {
@@ -445,8 +445,8 @@ Deno.serve(async (req) => {
               p_product_id: productId,
               p_sponsorship_type: metadata.sponsorship_type,
               p_ad_type: adType,
-              p_start_dates: monthRanges.map((range) => range.start),
-              p_end_dates: monthRanges.map((range) => range.end),
+              p_start_dates: monthRanges.map((range: { start: string; end: string }) => range.start),
+              p_end_dates: monthRanges.map((range: { start: string; end: string }) => range.end),
               p_custom_image_url: adType === 'custom' ? metadata.custom_image_url : null,
               p_custom_title: adType === 'custom' ? metadata.custom_title : null,
               p_custom_description: adType === 'custom' ? metadata.custom_description || null : null,
