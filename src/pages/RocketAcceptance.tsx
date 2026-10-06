@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { completeRocketLogin, readSession, rocketRequest, signOutRocket, startRocketLogin } from "@/lib/rocketAcceptance";
+import RocketButton from "@/components/RocketButton";
 
 export default function RocketAcceptance() {
   const location = useLocation();
@@ -48,12 +49,12 @@ export default function RocketAcceptance() {
     <h1 className="text-3xl font-bold">Launch with Rocket</h1>
     <p>This controlled acceptance area is for a new Buy with Rocket purchase. Your existing Launch account and Launch Pass stay the same.</p>
     <p>The temporary acceptance plan is $1 USD per month, recurring until canceled. It unlocks this area only.</p>
-    {!signedIn ? <button className="rounded-lg bg-primary text-primary-foreground px-5 py-3" disabled={busy} onClick={continueWithRocket}>Continue with Rocket</button> : <div className="flex gap-3">
+    {!signedIn ? <RocketButton action="continue" variant="primary" loading={busy} disabled={busy} onActivate={continueWithRocket} /> : <div className="flex gap-3">
       <button className="rounded-lg border px-5 py-3" disabled={busy} onClick={checkAccess}>Check access</button>
       <button className="rounded-lg border px-5 py-3" disabled={busy} onClick={() => { signOutRocket(); setSignedIn(false); setActive(false); setMessage(""); }}>Sign out of Rocket</button>
     </div>}
-    {active ? <div className="space-y-3"><p role="status" className="rounded-lg border border-green-600 p-4">{message}</p><button className="rounded-lg border px-5 py-3" disabled={busy} onClick={async () => { setBusy(true); try { await rocketRequest("proof", {}, true); setMessage("Your new purchase and Launch access are verified."); } catch (error) { setMessage((error as Error).message); } finally { setBusy(false); } }}>Verify acceptance</button></div> : <>
-      {offer?.available ? <a className="inline-block rounded-lg bg-primary text-primary-foreground px-5 py-3" href={offer.buy_url} rel="noreferrer">Buy with Rocket · $1/month</a> : <p>Purchases are not open yet.</p>}
+    {active ? <div className="space-y-3"><p role="status" className="rounded-lg border border-primary p-4">{message}</p><button className="rounded-lg border px-5 py-3" disabled={busy} onClick={async () => { setBusy(true); try { await rocketRequest("proof", {}, true); setMessage("Your new purchase and Launch access are verified."); } catch (error) { setMessage((error as Error).message); } finally { setBusy(false); } }}>Verify acceptance</button></div> : <>
+      {offer?.available ? <div className="space-y-1"><RocketButton action="buy" variant="primary" onActivate={() => window.location.assign(offer.buy_url)} /><p className="text-sm text-muted-foreground">$1 USD/month, recurring until canceled.</p></div> : <><RocketButton action="buy" variant="primary" disabled onActivate={() => {}} /><p>Purchases are not open yet.</p></>}
       {message && <p role="status">{message}</p>}
     </>}
     <p className="text-sm text-muted-foreground">Manage Rocket purchases and connected apps in Rocket. This area does not change your Launch billing.</p>
