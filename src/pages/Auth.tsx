@@ -123,6 +123,13 @@ const Auth = () => {
 
   const handleOAuthLogin = async (provider: 'google' | 'github' | 'twitter') => {
     try {
+      // Clear stale PKCE verifiers from abandoned sign-in attempts — a leftover
+      // verifier is the usual cause of "expired OAuth state" errors.
+      try {
+        Object.keys(localStorage)
+          .filter((k) => k.includes('code-verifier') || k.includes('pkce'))
+          .forEach((k) => localStorage.removeItem(k));
+      } catch {}
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
