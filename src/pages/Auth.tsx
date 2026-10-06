@@ -35,9 +35,24 @@ const Auth = () => {
     setIsResetPassword(searchParams.get('mode') === 'reset');
   }, [searchParams]);
 
+  // Surface OAuth errors (e.g. expired state) instead of dead-ending the user
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const oauthError = searchParams.get('error') || hashParams.get('error');
+    if (!oauthError) return;
+    const description =
+      searchParams.get('error_description') || hashParams.get('error_description') || '';
+    const friendly = /expired|state/i.test(description)
+      ? 'That sign-in attempt expired. Please try again from this browser.'
+      : decodeURIComponent(description.replace(/\+/g, ' ')) || 'Sign-in failed. Please try again.';
+    toast.error(friendly);
+    // Clean the URL so a refresh doesn't re-show the error
+    window.history.replaceState(null, '', window.location.pathname + window.location.search.replace(/[?&]error(_description)?=[^&]*/g, '').replace(/\?$/, ''));
+  }, [searchParams]);
+
   useEffect(() => {
     const returnTo = searchParams.get('returnTo');
-    
+
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session && !isResetPassword) {
@@ -108,6 +123,13 @@ const Auth = () => {
 
   const handleOAuthLogin = async (provider: 'google' | 'github' | 'twitter') => {
     try {
+      // Clear stale PKCE verifiers from abandoned sign-in attempts — a leftover
+      // verifier is the usual cause of "expired OAuth state" errors.
+      try {
+        Object.keys(localStorage)
+          .filter((k) => k.includes('code-verifier') || k.includes('pkce'))
+          .forEach((k) => localStorage.removeItem(k));
+      } catch {}
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
