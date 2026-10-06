@@ -52,7 +52,7 @@ export default function RocketAcceptance() {
       <button className="rounded-lg border px-5 py-3" disabled={busy} onClick={checkAccess}>Check access</button>
       <button className="rounded-lg border px-5 py-3" disabled={busy} onClick={() => { signOutRocket(); setSignedIn(false); setActive(false); setMessage(""); }}>Sign out of Rocket</button>
     </div>}
-    {active ? <p role="status" className="rounded-lg border border-green-600 p-4">{message}</p> : <>
+    {active ? <div className="space-y-3"><p role="status" className="rounded-lg border border-green-600 p-4">{message}</p><button className="rounded-lg border px-5 py-3" disabled={busy} onClick={async () => { setBusy(true); try { await rocketRequest("proof", {}, true); setMessage("Your new purchase and Launch access are verified."); } catch (error) { setMessage((error as Error).message); } finally { setBusy(false); } }}>Verify acceptance</button></div> : <>
       {offer?.available ? <a className="inline-block rounded-lg bg-primary text-primary-foreground px-5 py-3" href={offer.buy_url} rel="noreferrer">Buy with Rocket · $1/month</a> : <p>Purchases are not open yet.</p>}
       {message && <p role="status">{message}</p>}
     </>}

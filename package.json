@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:rocket": "node --test tests/rocket-acceptance.test.ts tests/rocket-server.test.mjs",
-    "typecheck:rocket": "tsc --noEmit -p tsconfig.rocket.json"
+    "typecheck:rocket": "node scripts/check-rocket-types.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

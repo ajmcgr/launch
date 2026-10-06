@@ -41,7 +41,19 @@ LAUNCH_ROCKET_ACCEPTANCE_PRODUCT_KEY=<new Launch connect_products.product_key>
 
 Without both identifiers the Launch acceptance flow denies access and hides Buy. Rocket also requires its global live checkout gate, isolated Connect webhook secret, current verified ownership, production client, ready live merchant, one activated plan, exact Stripe price and `integration_confirmed_at`.
 
-As inspected, Rocket has **no supported operation that records `integration_confirmed_at`**. Do not fabricate this proof with a blind SQL update. Implement/approve an auditable readiness-confirmation step and validate the actual production callback/denial paths before activation. The global gate must stay off while this remains unresolved. Never enable public checkout merely to bypass a readiness check.
+Rocket's new `launch-rocket-acceptance` function provides a disabled private pilot and audited proof path. It never changes the public catalog or creates a merchant. Before any checkout initiation, obtain explicit transaction approval and configure Rocket's function environment:
+
+```
+LAUNCH_ACCEPTANCE_BUYER_USER_ID=<one independent controlled Rocket buyer UUID>
+LAUNCH_ACCEPTANCE_PLAN_ID=<the newly created $1 monthly Launch plan UUID>
+LAUNCH_ACCEPTANCE_ENABLED=true
+```
+
+Do not set the enabled flag until the user approves the exact transaction. Default is off; identifiers are unset. Keep the public global gate off and the plan inactive. After actual buyer consent and the pre-purchase denial check, the approved buyer opens `https://tryrocket.ai/apps/launch?acceptance=1`. Only that buyer can see this private offer, and its button requires acceptance of the monthly recurring terms. Server checks reject the owner, every other buyer, any prior Launch Rocket purchase/entitlement, mismatched price, merchant, plan, and total. Checkout is idempotent and limited to exactly 100 USD cents.
+
+After the user's actual payment, use **Verify acceptance** in the Launch acceptance area. Proof requires the current client-bound Rocket token, the new webhook transaction and its exact active future entitlement, canonical live paid $1 invoice, and a successful protected-resource request to the fixed Launch endpoint (which independently verifies the ES256 identity and live entitlement). It records evidence without tokens in `connect_entitlement_events` and only then sets `integration_confirmed_at`. A fixture or owner attestation cannot mark production proof.
+
+Disable the private pilot immediately after the controlled purchase. Public activation is a separate decision after proof: validate the isolated Connect event destination, enable the existing public gate, then activate the one verified plan through Rocket's owner API. Until then, public Buy stays hidden. No SQL flag fabrication or bypass of public readiness checks is required.
 
 ## Proposed live transaction — approval required
 

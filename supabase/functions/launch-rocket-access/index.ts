@@ -51,12 +51,18 @@ Deno.serve(async req => {
       await identity(tokens.access_token, tokens.id_token, body.nonce);
       return json({ access_token: tokens.access_token, id_token: tokens.id_token, expires_in: tokens.expires_in });
     }
-    if (!["status", "protected"].includes(body.action)) return json({ error: "invalid_action" }, 400);
+    if (!["status", "protected", "proof"].includes(body.action)) return json({ error: "invalid_action" }, 400);
     const authorization = req.headers.get("authorization") || "";
     const idToken = req.headers.get("x-rocket-id-token") || "";
     if (!/^Bearer [A-Za-z0-9_-]+$/.test(authorization) || !idToken || idToken.length > 8192) return json({ error: "sign_in_required" }, 401);
     const session = await identity(authorization.slice(7), idToken);
     const active = hasAcceptanceAccess(session.entitlements, session.sub, Deno.env.get("LAUNCH_ROCKET_ACCEPTANCE_PRODUCT_KEY"));
+    if (body.action === "proof") {
+      if (!active) return json({ error: "purchase_required" }, 403);
+      const proof = await rocket("launch-rocket-acceptance", { method: "POST", headers: { "Content-Type": "application/json", Authorization: authorization, "X-Rocket-ID-Token": idToken }, body: JSON.stringify({ action: "proof" }) });
+      if (proof.verified !== true) throw new Error("verification_unavailable");
+      return json({ verified: true });
+    }
     if (body.action === "protected") return active ? json({ message: "Your new Buy with Rocket purchase unlocks this Launch acceptance area." }) : json({ error: "purchase_required" }, 403);
     return json({ active });
   } catch {
