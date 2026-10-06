@@ -20,6 +20,7 @@ const Products = lazy(() => import("./pages/Products"));
 const Submit = lazy(() => import("./pages/Submit"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Auth = lazy(() => import("./pages/Auth"));
+const RocketAcceptance = lazy(() => import("./pages/RocketAcceptance"));
 const LaunchDetail = lazy(() => import("./pages/LaunchDetail"));
 const Settings = lazy(() => import("./pages/Settings"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
@@ -480,6 +481,8 @@ const AppContent = () => {
             <Route path="/claim/verify" element={<ClaimVerify />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/rocket/acceptance" element={<RocketAcceptance />} />
+            <Route path="/rocket/callback" element={<RocketAcceptance />} />
             <Route path="/launch/:slug" element={<LaunchDetail />} />
             <Route path="/launch/:slug/analytics" element={<ProductAnalytics />} />
             <Route path="/go/:slug" element={<GoRedirect />} />
