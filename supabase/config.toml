@@ -105,3 +105,7 @@ verify_jwt = false
 
 [functions.detect-milestones]
 verify_jwt = false
+
+[functions.launch-rocket-access]
+# Verifies Rocket ES256 ID tokens, audience, live access token and entitlement scope itself.
+verify_jwt = false

@@ -1,0 +1,10 @@
+const ts = require("typescript");
+const configPath = ts.findConfigFile(".", ts.sys.fileExists, "tsconfig.rocket.json");
+const config = ts.readConfigFile(configPath, ts.sys.readFile);
+if (config.error) throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText, "\n"));
+const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, ".");
+const program = ts.createProgram(parsed.fileNames, parsed.options);
+const errors = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
+console.log(ts.formatDiagnosticsWithColorAndContext(errors, { getCurrentDirectory: ts.sys.getCurrentDirectory, getCanonicalFileName: f => f, getNewLine: () => "\n" }));
+console.log(`Rocket integration: ${errors.length} TypeScript errors`);
+process.exit(errors.length ? 1 : 0);

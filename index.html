@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <script>
+      // Strip Rocket credentials before analytics or third-party scripts load.
+      if (window.location.pathname === '/rocket/callback') {
+        try { window.sessionStorage.setItem('launch:rocket:callback', window.location.search); } catch {}
+        window.history.replaceState(null, '', '/rocket/callback');
+        var rocketReferrer = document.createElement('meta');
+        rocketReferrer.name = 'referrer'; rocketReferrer.content = 'no-referrer';
+        document.head.appendChild(rocketReferrer);
+      }
       if (window.location.pathname === '/traffic') {
         window.location.replace('https://cloud.umami.is/share/uzrUbiLh9swkzLoL');
       }
