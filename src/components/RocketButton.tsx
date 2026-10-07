@@ -19,6 +19,26 @@ type Props = {
   className?: string;
 };
 
+const launchAuthStyles = `
+  :host { display: block; width: 100%; }
+  button {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid hsl(0 0% 90%);
+    border-radius: 0.375rem;
+    background: hsl(0 0% 100%);
+    color: hsl(0 0% 22%);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+  }
+  button:hover:not(:disabled) { background: hsl(0 0% 96%); filter: none; }
+  button:active:not(:disabled) { transform: none; }
+  button:focus-visible { outline: 2px solid hsl(213 60% 50%); outline-offset: 2px; box-shadow: none; }
+  button:disabled { background: hsl(0 0% 96%); color: hsl(0 0% 40%); border-color: hsl(0 0% 90%); }
+`;
+
 // Official hosted Rocket Button. The component only renders; our existing flow runs on rocket-activate.
 export default function RocketButton({ action, variant = "primary", loading, disabled, onActivate, className }: Props) {
   const ref = useRef<HTMLElement>(null);
@@ -30,13 +50,24 @@ export default function RocketButton({ action, variant = "primary", loading, dis
     // Rocket's hosted control uses an open Shadow DOM. Expose semantic parts
     // so host applications can style presentation without replacing behavior.
     void customElements.whenDefined("rocket-button").then(() => {
-      const shadow = ref.current?.shadowRoot;
+      const host = ref.current;
+      const shadow = host?.shadowRoot;
       if (cancelled || !shadow) return;
       shadow.querySelector("button")?.setAttribute("part", "control");
       shadow.querySelector(".mark")?.setAttribute("part", "mark");
       shadow.querySelector(".label")?.setAttribute("part", "label");
       shadow.querySelector(".spinner")?.setAttribute("part", "spinner");
       shadow.querySelector(".status")?.setAttribute("part", "status");
+
+      // Rocket's own stylesheet is scoped inside Shadow DOM. This auth-only
+      // override follows it, giving Launch the same visual affordance as its
+      // Google and GitHub controls without changing provider behavior.
+      if (host.classList.contains("launch-auth-rocket-button") && !shadow.querySelector("style[data-launch-auth-rocket]")) {
+        const style = document.createElement("style");
+        style.dataset.launchAuthRocket = "";
+        style.textContent = launchAuthStyles;
+        shadow.append(style);
+      }
     });
 
     return () => { cancelled = true; };
