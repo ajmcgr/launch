@@ -47,10 +47,18 @@ export default function RocketButton({ action, variant = "primary", loading, dis
   useEffect(() => { loadScript(); }, []);
   useEffect(() => {
     let cancelled = false;
+    const host = ref.current;
+    if (!host) return;
+
+    // React forwards className to custom elements as a `classname` attribute,
+    // rather than the real class attribute. Set it explicitly so host styles
+    // and this auth-only Shadow DOM override can reliably target the control.
+    if (className) host.className = className;
+    else host.removeAttribute("class");
+
     // Rocket's hosted control uses an open Shadow DOM. Expose semantic parts
     // so host applications can style presentation without replacing behavior.
     void customElements.whenDefined("rocket-button").then(() => {
-      const host = ref.current;
       const shadow = host?.shadowRoot;
       if (cancelled || !shadow) return;
       shadow.querySelector("button")?.setAttribute("part", "control");
@@ -71,7 +79,7 @@ export default function RocketButton({ action, variant = "primary", loading, dis
     });
 
     return () => { cancelled = true; };
-  }, []);
+  }, [className]);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -82,7 +90,7 @@ export default function RocketButton({ action, variant = "primary", loading, dis
   const attrs: Record<string, string> = { action, variant };
   if (loading) attrs.loading = "";
   if (disabled) attrs.disabled = "";
-  return <rocket-button ref={ref} className={className} {...attrs} />;
+  return <rocket-button ref={ref} {...attrs} />;
 }
 
 declare global {
