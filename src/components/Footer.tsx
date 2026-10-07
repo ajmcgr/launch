@@ -47,7 +47,7 @@ const Copyright = () => (
 
 const RocketBadge = () => (
   <a
-    href="https://tryrocket.ai/apps/b202d75a-02ae-46e6-8419-5b3410cbaac8"
+    href="https://tryrocket.ai/apps/launch"
     target="_blank"
     rel="noopener"
     className="inline-block"
