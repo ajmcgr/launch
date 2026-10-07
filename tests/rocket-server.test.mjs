@@ -17,11 +17,13 @@ test('server validates signed Rocket identity and never returns raw Rocket crede
   assert.doesNotMatch(client, /id_token:/);
 });
 
-test('OAuth code exchange is one-use and browser callback requires a matching local state', () => {
+test('OAuth code exchange is one-use and browser callback requires a matching short-lived state', () => {
   assert.match(source, /consume_rocket_oauth_transaction/);
   assert.match(source, /code_verifier: verifier/);
-  assert.match(client, /state !== pending\.state/);
-  assert.match(client, /sessionStorage\.removeItem\(PENDING_KEY\)/);
+  assert.match(client, /attempts\.find\(\(item\) => item\.state === state\)/);
+  assert.match(client, /PENDING_TTL_MS/);
+  assert.match(client, /SameSite=Lax; Secure/);
+  assert.match(client, /Path=\/rocket/);
 });
 
 test('revoked or failed entitlement verification fails closed and requires a new Rocket sign-in', () => {
