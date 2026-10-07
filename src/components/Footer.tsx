@@ -55,8 +55,8 @@ const RocketBadge = () => (
     <img
       src="https://tryrocket.ai/badges/find-it-on-rocket-black.svg"
       alt="Discover it on Rocket"
-      width="220"
-      height="68"
+      width="160"
+      height="50"
       className="block h-auto max-w-full"
     />
   </a>
