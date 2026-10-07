@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const source = await readFile(new URL('../supabase/functions/launch-rocket-access/index.ts', import.meta.url), 'utf8');
 const client = await readFile(new URL('../src/lib/rocketAcceptance.ts', import.meta.url), 'utf8');
+const callbackPage = await readFile(new URL('../src/pages/RocketAcceptance.tsx', import.meta.url), 'utf8');
 
 test('server validates signed Rocket identity and never returns raw Rocket credentials', () => {
   assert.match(source, /jwtVerify\(idToken, jwks/);
@@ -24,6 +25,12 @@ test('OAuth code exchange is one-use and browser callback requires a matching sh
   assert.match(client, /PENDING_TTL_MS/);
   assert.match(client, /SameSite=Lax; Secure/);
   assert.match(client, /Path=\/rocket/);
+});
+
+test('callback consumes the credential-safe query hand-off before using router state', () => {
+  assert.match(callbackPage, /CALLBACK_QUERY_KEY = 'launch:rocket:callback'/);
+  assert.match(callbackPage, /window\.sessionStorage\.getItem\(CALLBACK_QUERY_KEY\)/);
+  assert.match(callbackPage, /const query = readCallbackQuery\(location\.search\)/);
 });
 
 test('revoked or failed entitlement verification fails closed and requires a new Rocket sign-in', () => {

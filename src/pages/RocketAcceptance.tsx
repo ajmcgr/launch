@@ -4,6 +4,22 @@ import { Helmet } from 'react-helmet-async';
 import { completeRocketLogin, startRocketLogin } from '@/lib/rocketAcceptance';
 import RocketButton from '@/components/RocketButton';
 
+const CALLBACK_QUERY_KEY = 'launch:rocket:callback';
+
+function readCallbackQuery(fallback: string) {
+  // index.html removes provider credentials from the visible URL before any
+  // analytics scripts run. Consume that protected hand-off here instead of
+  // reading the now-empty router location.
+  try {
+    const stored = window.sessionStorage.getItem(CALLBACK_QUERY_KEY);
+    if (stored) {
+      window.sessionStorage.removeItem(CALLBACK_QUERY_KEY);
+      return stored;
+    }
+  } catch { /* fallback to the router query if session storage is unavailable */ }
+  return fallback;
+}
+
 export default function RocketAcceptance() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -14,7 +30,7 @@ export default function RocketAcceptance() {
   useEffect(() => {
     if (started.current || location.pathname !== '/rocket/callback') return;
     started.current = true;
-    const query = location.search;
+    const query = readCallbackQuery(location.search);
     window.history.replaceState(null, '', '/rocket/callback');
     setBusy(true);
     void completeRocketLogin(query)
