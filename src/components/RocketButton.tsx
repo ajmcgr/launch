@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SRC = "https://tryrocket.ai/buttons/v1/rocket-buttons.js";
 
@@ -42,6 +42,8 @@ const launchAuthStyles = `
 // Official hosted Rocket Button. The component only renders; our existing flow runs on rocket-activate.
 export default function RocketButton({ action, variant = "primary", loading, disabled, onActivate, className }: Props) {
   const ref = useRef<HTMLElement>(null);
+  const [ready, setReady] = useState(false);
+  const showPlaceholder = className?.split(/\s+/).includes("launch-auth-rocket-button") && !ready;
   const handler = useRef(onActivate);
   handler.current = onActivate;
   useEffect(() => { loadScript(); }, []);
@@ -76,6 +78,7 @@ export default function RocketButton({ action, variant = "primary", loading, dis
         style.textContent = launchAuthStyles;
         shadow.append(style);
       }
+      if (shadow.querySelector("button")) setReady(true);
     });
 
     return () => { cancelled = true; };
@@ -90,7 +93,15 @@ export default function RocketButton({ action, variant = "primary", loading, dis
   const attrs: Record<string, string> = { action, variant };
   if (loading) attrs.loading = "";
   if (disabled) attrs.disabled = "";
-  return <rocket-button ref={ref} {...attrs} />;
+  return <>
+    {showPlaceholder && <button
+      type="button"
+      disabled
+      aria-busy="true"
+      className="flex h-10 w-full items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground"
+    >Continue with Rocket</button>}
+    <rocket-button ref={ref} {...attrs} style={showPlaceholder ? { display: "none" } : undefined} />
+  </>;
 }
 
 declare global {
