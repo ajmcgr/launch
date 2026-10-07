@@ -27,8 +27,8 @@ export default function ContinueWithRocket({ returnPath }: Props) {
     catch { setError('Rocket sign-in could not open. Please try again.'); setLoading(false); }
   };
 
-  return <div className="flex flex-col items-center gap-2">
-    <RocketButton action="continue" variant="primary" loading={loading} disabled={loading || !available} onActivate={continueWithRocket} />
+  return <div className="flex flex-col gap-2">
+    <RocketButton action="continue" variant="primary" className="launch-auth-rocket-button" loading={loading} disabled={loading || !available} onActivate={continueWithRocket} />
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
   </div>;
 }
