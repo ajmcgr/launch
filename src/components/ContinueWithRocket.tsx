@@ -20,7 +20,7 @@ export default function ContinueWithRocket() {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <RocketButton action="continue" loading={loading} disabled={loading} onActivate={continueWithRocket} />
+      <RocketButton action="continue" variant="light" loading={loading} disabled={loading} onActivate={continueWithRocket} />
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     </div>
   );
