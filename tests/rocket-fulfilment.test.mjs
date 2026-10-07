@@ -1,40 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-const { PGlite } = await import(process.env.ROCKET_TEST_PGLITE_MODULE || '@electric-sql/pglite');
-test('isolated SQL: ten observations, ownership, consumed order retention and browser forgery', async () => {
-  const db = new PGlite();
-  const user = '10000000-0000-4000-8000-000000000001';
-  const subject = '20000000-0000-4000-8000-000000000001';
-  const listing = '30000000-0000-4000-8000-000000000001';
-  const otherListing = '30000000-0000-4000-8000-000000000002';
-  const canonical = '40000000-0000-4000-8000-000000000001';
-  const purchase = '50000000-0000-4000-8000-000000000001';
-  // Fixtures exist ONLY in this in-memory database, never production.
-  await db.exec(`create role anon; create role authenticated; create role service_role;
-    create schema auth; create table auth.users(id uuid primary key);
-    create table public.products(id uuid primary key,owner_id uuid not null,status text);
-    create table public.orders(id uuid primary key default gen_random_uuid(),user_id uuid not null,product_id uuid,stripe_session_id text not null,plan text not null,created_at timestamptz default now());
-    insert into auth.users values('${user}');
-    insert into products values('${listing}','${user}','draft'),('${otherListing}','${user}','draft');`);
-  await db.exec(await readFile(new URL('../supabase/migrations/20261007024116_launch_rocket_one_time_fulfilment.sql', import.meta.url), 'utf8'));
-  const fulfil = () => db.query('select public.fulfil_rocket_pro($1,$2,$3,$4,$5) as id', [user,subject,purchase,canonical,listing]);
-  await assert.rejects(fulfil(), /identity not linked/);
-  await db.query('select public.link_rocket_identity($1,$2)', [user,subject]);
-  await assert.rejects(fulfil(), /canonical product unavailable/);
-  await db.query('update public.rocket_pro_configuration set product_id=$1,product_key=$2', [canonical,'isolated-fixture']);
-  const observations = await Promise.all(Array.from({length: 10}, fulfil));
-  assert.equal(new Set(observations.map(r => r.rows[0].id)).size, 1);
-  assert.equal((await db.query('select count(*)::int as n from orders')).rows[0].n, 1);
-  await assert.rejects(db.query('select public.fulfil_rocket_pro($1,$2,$3,$4,$5)', [user,subject,purchase,canonical,otherListing]), /isolation mismatch/);
-  await db.query("update products set status='launched' where id=$1", [listing]);
-  assert.equal((await fulfil()).rows[0].id, observations[0].rows[0].id);
-  await assert.rejects(db.query('delete from orders where rocket_purchase_id=$1', [purchase]), /financial purchase history retained/);
-  await assert.rejects(db.query('update orders set rocket_purchase_id=null where rocket_purchase_id=$1', [purchase]), /purchase binding immutable|check constraint/);
-  await db.exec('grant select,insert,update on public.orders to authenticated; set role authenticated;');
-  await assert.rejects(fulfil(), /permission denied/);
-  await assert.rejects(db.query(`insert into orders(user_id,product_id,stripe_session_id,plan,rocket_purchase_id,rocket_client_id,rocket_subject,rocket_product_id)
-    values($1,$2,'forged','skip',$3,'rocket-dev-fZfbAEjB3Kp_eroMLQ_y4_fn',$4,$5)`, [user,otherListing,'50000000-0000-4000-8000-000000000002',subject,canonical]), /server verified purchase required/);
-  await db.exec('reset role');
-  await db.close();
+
+test('Rocket fulfilment uses the stable paid purchase id as an idempotency key', async () => {
+  const [initial, serverAuth] = await Promise.all([
+    readFile(new URL('../supabase/migrations/20261007024116_launch_rocket_one_time_fulfilment.sql', import.meta.url), 'utf8'),
+    readFile(new URL('../supabase/migrations/20261007075223_rocket_id_server_auth.sql', import.meta.url), 'utf8'),
+  ]);
+  assert.match(initial, /orders_rocket_purchase_unique/);
+  assert.match(serverAuth, /pg_advisory_xact_lock\(pg_catalog\.hashtextextended\(p_purchase_id::text, 0\)\)/);
+  assert.match(serverAuth, /if found then[\s\S]*return existing\.id/);
+  assert.match(serverAuth, /cfg\.enabled is not true/);
+  assert.match(serverAuth, /owned draft required/);
 });

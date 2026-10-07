@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DigestFrequencySelect, type DigestFrequency } from '@/components/DigestFrequencySelect';
+import ContinueWithRocket from '@/components/ContinueWithRocket';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getFunnelAttribution, trackFunnelEvent } from '@/lib/funnelTracking';
@@ -331,6 +332,8 @@ const Auth = () => {
                   </svg>
                   Continue with GitHub
                 </Button>
+
+                <ContinueWithRocket />
               </div>
 
               <div className="relative">

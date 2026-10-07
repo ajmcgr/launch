@@ -1,50 +1,57 @@
 import { supabase } from '@/integrations/supabase/client';
+
 const ENDPOINT = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/launch-rocket-access`;
-export const PENDING_KEY = "launch:rocket:pending";
-export const SESSION_KEY = "launch:rocket:session";
-type RocketSession = { access_token: string; id_token: string; expires_at: number };
-export { validCallback } from "./rocketCallback";
-import { validCallback, type PendingLogin } from "./rocketCallback";
-export function readSession(): RocketSession | null {
-  try {
-    const value = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
-    if (value && typeof value.access_token === "string" && typeof value.id_token === "string" && value.expires_at > Date.now()) return value;
-  } catch { /* Invalid or expired sessions require a new Rocket sign-in. */ }
-  sessionStorage.removeItem(SESSION_KEY);
-  return null;
-}
-export async function rocketRequest(action: string, body = {}, authenticated = false) {
-  const session = authenticated ? readSession() : null;
-  if (authenticated && !session) throw new Error("Please continue with Rocket again.");
-  const launch = ['link', 'fulfil', 'pilot-checkout'].includes(action) ? (await supabase.auth.getSession()).data.session : null;
-  if (['link', 'fulfil', 'pilot-checkout'].includes(action) && !launch) throw new Error('Please sign in to your existing Launch account first.');
+const PENDING_KEY = 'launch:rocket:pending';
+const STATE = /^[A-Za-z0-9_-]{43}$/;
+
+type PendingLogin = { state: string; created_at: number };
+
+async function request(body: Record<string, unknown>) {
   const response = await fetch(ENDPOINT, {
-    method: "POST", cache: "no-store",
-    headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}`, "X-Rocket-ID-Token": session.id_token } : {}), ...(launch ? { 'X-Launch-Access-Token': launch.access_token } : {}) },
-    body: JSON.stringify({ ...body, action }),
+    method: 'POST',
+    cache: 'no-store',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
   });
-  if (!response.ok) throw new Error("We could not verify your Rocket access. Please try again.");
+  if (!response.ok) throw new Error('Rocket sign-in could not be verified. Please try again.');
   return response.json();
 }
-const base64url = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-const random = () => base64url(crypto.getRandomValues(new Uint8Array(32)));
-export async function startRocketLogin() {
-  const config = await rocketRequest("config");
-  const pending = { state: random(), nonce: random(), verifier: random(), created_at: Date.now() };
-  const challenge = base64url(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pending.verifier))));
-  sessionStorage.setItem(PENDING_KEY, JSON.stringify(pending));
-  const url = new URL(config.authorization_endpoint);
-  url.search = new URLSearchParams({ client_id: config.client_id, redirect_uri: config.callback, response_type: "code", scope: config.scope, state: pending.state, nonce: pending.nonce, code_challenge: challenge, code_challenge_method: "S256" }).toString();
-  window.location.assign(url.toString());
+
+function currentPath() {
+  return `${window.location.pathname}${window.location.search}`;
 }
+
+export async function startRocketLogin(returnPath = currentPath()) {
+  const response = await request({ action: 'start', return_path: returnPath });
+  if (typeof response?.state !== 'string' || !STATE.test(response.state) || typeof response?.authorization_url !== 'string') {
+    throw new Error('Rocket sign-in is unavailable.');
+  }
+  sessionStorage.setItem(PENDING_KEY, JSON.stringify({ state: response.state, created_at: Date.now() } satisfies PendingLogin));
+  window.location.assign(response.authorization_url);
+}
+
 export async function completeRocketLogin(query: string) {
   const params = new URLSearchParams(query);
   let pending: PendingLogin | null = null;
-  try { pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) || "null"); } catch { /* Reject malformed state. */ }
-  // Consume state before any asynchronous work to prevent callback replay.
+  try { pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null'); } catch { /* reject malformed state */ }
   sessionStorage.removeItem(PENDING_KEY);
-  if (params.has("error") || !params.get("code") || !validCallback(pending, params.get("state"))) throw new Error("Rocket sign-in was not completed. Please start again.");
-  const tokens = await rocketRequest("complete", { code: params.get("code"), verifier: pending!.verifier, nonce: pending!.nonce });
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ access_token: tokens.access_token, id_token: tokens.id_token, expires_at: Date.now() + tokens.expires_in * 1000 }));
+  const state = params.get('state');
+  const code = params.get('code');
+  if (params.has('error') || !pending || !code || !state || state !== pending.state || !STATE.test(state) ||
+    !Number.isFinite(pending.created_at) || pending.created_at > Date.now() || Date.now() - pending.created_at >= 10 * 60_000) {
+    throw new Error('Rocket sign-in was not completed. Please start again from this browser.');
+  }
+  const response = await request({ action: 'complete', code, state });
+  if (typeof response?.email !== 'string' || typeof response?.token_hash !== 'string') throw new Error('Rocket sign-in could not create a Launch session.');
+  const { error } = await supabase.auth.verifyOtp({ email: response.email, token_hash: response.token_hash, type: 'magiclink' });
+  if (error) throw error;
+  return typeof response.return_path === 'string' && response.return_path.startsWith('/') && !response.return_path.startsWith('//')
+    ? response.return_path
+    : '/';
 }
-export function signOutRocket() { sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(PENDING_KEY); sessionStorage.removeItem("launch:rocket:callback"); }
+
+export async function rocketStatus() {
+  const { data, error } = await supabase.functions.invoke('launch-rocket-access', { body: { action: 'status' } });
+  if (error) throw new Error('Rocket access could not be verified. Please continue with Rocket again.');
+  return data as { connected: boolean; reauth_required: boolean; purchases: Array<{ purchase_id: string }>; buy_available: boolean };
+}

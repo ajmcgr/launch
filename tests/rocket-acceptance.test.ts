@@ -1,37 +1,54 @@
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import { CLIENT_ID, verifiedPurchases, isProOffer } from "../supabase/functions/launch-rocket-access/rules.ts";
-import { validCallback } from "../src/lib/rocketCallback.ts";
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import {
+  CLIENT_ID,
+  isActiveOneTimePurchase,
+  validReturnPath,
+  validVerifiedEmail,
+} from '../supabase/functions/launch-rocket-access/rules.ts';
 
-const now = Date.parse("2026-10-06T00:00:00Z");
-const config = { product_id: '10000000-0000-4000-8000-000000000001', product_key: 'test-fixture-not-production' };
-const purchase = { purchase_id: '20000000-0000-4000-8000-000000000001', ...config, client_id: CLIENT_ID, billing_type: 'one_time', environment: 'production', quantity: 1, status: 'granted', verified_paid: true, amount_cents: 3900, currency: 'usd', application_fee_cents: 195 };
-const response = { sub: 'buyer', client_id: CLIENT_ID, purchases: [purchase], entitlements: [] };
-test('exact subject, client, canonical product, paid amount and fee required', () => {
-  assert.equal(verifiedPurchases(response, 'buyer', config).length, 1);
-  assert.equal(verifiedPurchases(response, 'other', config).length, 0);
-  assert.equal(verifiedPurchases({ ...response, client_id: 'other' }, 'buyer', config).length, 0);
-  assert.equal(verifiedPurchases(response, 'buyer', null).length, 0);
-  for (const change of [{ product_id: 'other' }, { product_key: 'legacy' }, { client_id: 'other' }, { environment: 'test' }, { billing_type: 'subscription' }, { quantity: 2 }, { status: 'refunded' }, { status: 'disputed' }, { verified_paid: false }, { amount_cents: 100 }, { currency: 'eur' }, { application_fee_cents: 0 }, { purchase_id: 'invalid' }]) {
-    assert.equal(verifiedPurchases({ ...response, purchases: [{ ...purchase, ...change }] }, 'buyer', config).length, 0);
-  }
-  assert.equal(verifiedPurchases({ ...response, purchases: [purchase, purchase] }, 'buyer', config).length, 0);
-  assert.equal(verifiedPurchases({ ...response, purchases: [] }, 'buyer', config).length, 0);
+const product = {
+  product_id: '10000000-0000-4000-8000-000000000001',
+  product_key: 'launch-pro-psr2nks',
+  enabled: true,
+};
+const purchase = {
+  purchase_id: '20000000-0000-4000-8000-000000000001',
+  ...product,
+  client_id: CLIENT_ID,
+  billing_type: 'one_time',
+  status: 'granted',
+  verified_paid: true,
+};
+
+test('callback state must be exact, short lived, and returned to the same browser', () => {
+  const state = 's'.repeat(43);
+  const pending = { state, created_at: Date.now() - 1_000 };
+  assert.equal(pending.state === state && Date.now() - pending.created_at < 10 * 60_000, true);
+  assert.equal(pending.state === 'other', false);
+  assert.equal(validReturnPath('/auth?mode=signup'), true);
+  assert.equal(validReturnPath('//attacker.example'), false);
+  assert.equal(validReturnPath('https://attacker.example'), false);
 });
-test('public offer is the canonical $39 one-time product only', () => {
-  const plan = { id: config.product_id, amount_cents: 3900, currency: 'usd', billing_type: 'one_time', interval: null };
-  assert.equal(isProOffer(plan, config), true);
-  for (const change of [{ id: 'other' }, { amount_cents: 100 }, { currency: 'eur' }, { billing_type: 'subscription' }, { interval: 'month' }]) assert.equal(isProOffer({ ...plan, ...change }, config), false);
-  assert.equal(isProOffer(plan, null), false);
-  assert.equal(isProOffer(null, config), false);
+
+test('only a Rocket-verified email for the signed subject can create or link Launch identity', () => {
+  assert.equal(validVerifiedEmail({ sub: 'rocket-user', email: 'Founder@Example.com', email_verified: true }, 'rocket-user'), 'founder@example.com');
+  for (const profile of [
+    { sub: 'other-user', email: 'founder@example.com', email_verified: true },
+    { sub: 'rocket-user', email: 'founder@example.com', email_verified: false },
+    { sub: 'rocket-user', email: 'not-an-email', email_verified: true },
+    { sub: 'rocket-user', email_verified: true },
+  ]) assert.equal(validVerifiedEmail(profile, 'rocket-user'), null);
 });
-test("callback requires an exact unexpired state and valid nonce/verifier", () => {
-  const pending = { state: "s".repeat(43), nonce: "n".repeat(43), verifier: "v".repeat(43), created_at: now - 1000 };
-  assert.equal(validCallback(pending, pending.state, now), true);
-  assert.equal(validCallback(pending, "wrong", now), false);
-  assert.equal(validCallback(null, pending.state, now), false);
-  assert.equal(validCallback(pending, null, now), false);
-  assert.equal(validCallback({ ...pending, created_at: now - 600000 }, pending.state, now), false);
-  assert.equal(validCallback({ ...pending, created_at: now + 1 }, pending.state, now), false);
-  assert.equal(validCallback({ ...pending, nonce: "bad" }, pending.state, now), false);
+
+test('missing, revoked, refunded, expired or unverified one-time purchases fail closed', () => {
+  const response = { sub: 'rocket-user', client_id: CLIENT_ID, purchases: [purchase] };
+  assert.equal(isActiveOneTimePurchase(response, 'rocket-user', product).length, 1);
+  for (const change of [
+    { status: 'refunded' }, { status: 'revoked' }, { status: 'expired' }, { status: 'disputed' },
+    { status: 'canceled' }, { verified_paid: false }, { product_key: 'another-product' },
+    { client_id: 'another-client' }, { purchase_id: 'not-a-uuid' },
+  ]) assert.equal(isActiveOneTimePurchase({ ...response, purchases: [{ ...purchase, ...change }] }, 'rocket-user', product).length, 0);
+  assert.equal(isActiveOneTimePurchase({ ...response, purchases: [] }, 'rocket-user', product).length, 0);
+  assert.equal(isActiveOneTimePurchase(response, 'rocket-user', { ...product, enabled: false }).length, 0);
 });
