@@ -40,7 +40,8 @@ export default function RocketProClaim({ onFulfilled }: { onFulfilled?: () => vo
     setBusy(true);
     try {
       await rocketRequest('fulfil', { purchase_id: purchaseId, product_id: productId }, true);
-      setFulfilled(productId); setMessage('One Pro order saved. Complete your launch using the existing submission flow.'); onFulfilled?.();
+      setFulfilled(productId); setPurchases(items => items.filter(p => p.purchase_id !== purchaseId));
+      setMessage('One Pro order saved. Complete your launch using the existing submission flow.'); onFulfilled?.();
     } catch (error) { setMessage((error as Error).message); }
     finally { setBusy(false); }
   }
@@ -49,7 +50,7 @@ export default function RocketProClaim({ onFulfilled }: { onFulfilled?: () => vo
     <p>Sign in to your existing <Link to="/auth" className="underline">Launch account</Link>, then explicitly link your Rocket identity. No email matching or changes to your existing billing.</p>
     <div className="flex gap-3"><button disabled={busy} onClick={link} className="border rounded px-3 py-2">Link Rocket to this Launch account</button><button disabled={busy} onClick={check} className="border rounded px-3 py-2">Check verified purchases</button></div>
     {message && <p role="status">{message}</p>}
-    {!!purchases.length && <><label className="block">Use one Pro purchase for an owned draft<select className="block border rounded p-2 w-full" value={productId} onChange={e => setProductId(e.target.value)}><option value="">Choose a draft</option>{drafts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></label>{purchases.map(p => <button className="border rounded px-3 py-2" key={p.purchase_id} disabled={busy || !productId || !!fulfilled} onClick={() => fulfil(p.purchase_id)}>Apply verified Pro purchase {p.purchase_id.slice(0, 8)}</button>)}</>}
+    {!!purchases.length && <><label className="block">Use one Pro purchase for an owned draft<select className="block border rounded p-2 w-full" value={productId} onChange={e => setProductId(e.target.value)}><option value="">Choose a draft</option>{drafts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></label>{purchases.map(p => <button className="border rounded px-3 py-2" key={p.purchase_id} disabled={busy || !productId} onClick={() => fulfil(p.purchase_id)}>Apply verified Pro purchase {p.purchase_id.slice(0, 8)}</button>)}</>}
     {fulfilled && <Link className="underline" to={`/submit?productId=${fulfilled}`}>Complete your Pro launch</Link>}
   </section>;
 }
