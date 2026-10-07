@@ -45,6 +45,23 @@ const Copyright = () => (
   </p>
 );
 
+const RocketBadge = () => (
+  <a
+    href="https://tryrocket.ai/apps/b202d75a-02ae-46e6-8419-5b3410cbaac8"
+    target="_blank"
+    rel="noopener"
+    className="inline-block"
+  >
+    <img
+      src="https://tryrocket.ai/badges/find-it-on-rocket-black.svg"
+      alt="Discover it on Rocket"
+      width="220"
+      height="68"
+      className="block h-auto max-w-full"
+    />
+  </a>
+);
+
 
 interface FooterProps {
   /** Renders only the copyright line (used by standalone campaign pages). */
@@ -55,7 +72,8 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
   if (minimal) {
     return (
       <footer>
-        <div className="container mx-auto px-4 max-w-7xl py-8 text-center text-sm text-muted-foreground">
+        <div className="container mx-auto px-4 max-w-7xl py-8 text-center text-sm text-muted-foreground space-y-2">
+          <RocketBadge />
           <Copyright />
         </div>
       </footer>
@@ -267,6 +285,7 @@ export const Footer = ({ minimal = false }: FooterProps = {}) => {
           </div>
           </div>
           <div className="pb-8 text-center text-sm text-muted-foreground space-y-2">
+            <RocketBadge />
             <Copyright />
           </div>
         </div>
