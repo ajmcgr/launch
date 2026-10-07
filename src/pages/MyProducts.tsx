@@ -32,6 +32,7 @@ import { consumeUpgradeCheckoutAttribution, getBestTrigger, trackUpgradeTrigger 
 import { usePass } from '@/hooks/use-pass';
 import { isActiveLaunch, formatLaunchCountdown, isLaunchEndingSoon } from '@/lib/launchWindow';
 import { getFunnelAttribution, trackFunnelEvent } from '@/lib/funnelTracking';
+import RocketProClaim from '@/components/RocketProClaim';
 
 const MyProducts = () => {
   const navigate = useNavigate();
@@ -643,6 +644,7 @@ const MyProducts = () => {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4 max-w-5xl">
+        {user && <RocketProClaim onFulfilled={() => { void fetchProducts(user.id); }} />}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-bold">My Products</h1>
           <Button asChild>

@@ -1,32 +1,29 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CLIENT_ID, hasAcceptanceAccess, isAcceptanceOffer } from "../supabase/functions/launch-rocket-access/rules.ts";
+import { CLIENT_ID, verifiedPurchases, isProOffer } from "../supabase/functions/launch-rocket-access/rules.ts";
 import { validCallback } from "../src/lib/rocketCallback.ts";
 
 const now = Date.parse("2026-10-06T00:00:00Z");
-const entitlement = { product_key: "acceptance", status: "active", active: true, valid_until: "2026-11-06T00:00:00Z" };
-const response = { sub: "buyer", client_id: CLIENT_ID, entitlements: [entitlement] };
-test("only the exact buyer, client and configured product grant acceptance access", () => {
-  assert.equal(hasAcceptanceAccess(response, "buyer", "acceptance", now), true);
-  assert.equal(hasAcceptanceAccess(response, "other", "acceptance", now), false);
-  assert.equal(hasAcceptanceAccess({ ...response, client_id: "another-app" }, "buyer", "acceptance", now), false);
-  assert.equal(hasAcceptanceAccess(response, "buyer", "other-product", now), false);
-  assert.equal(hasAcceptanceAccess(response, "buyer", undefined, now), false);
-  assert.equal(hasAcceptanceAccess({ ...response, entitlements: [] }, "buyer", "acceptance", now), false);
-});
-test("revoked, inactive, expired, missing, malformed and duplicate entitlements deny access", () => {
-  for (const change of [{ status: "revoked" }, { active: false }, { valid_until: null }, { valid_until: "invalid" }, { valid_until: "2026-10-06T00:00:00Z" }, { valid_until: "2026-09-01T00:00:00Z" }]) {
-    assert.equal(hasAcceptanceAccess({ ...response, entitlements: [{ ...entitlement, ...change }] }, "buyer", "acceptance", now), false);
+const config = { product_id: '10000000-0000-4000-8000-000000000001', product_key: 'test-fixture-not-production' };
+const purchase = { purchase_id: '20000000-0000-4000-8000-000000000001', ...config, client_id: CLIENT_ID, billing_type: 'one_time', environment: 'production', quantity: 1, status: 'granted', verified_paid: true, amount_cents: 3900, currency: 'usd', application_fee_cents: 195 };
+const response = { sub: 'buyer', client_id: CLIENT_ID, purchases: [purchase], entitlements: [] };
+test('exact subject, client, canonical product, paid amount and fee required', () => {
+  assert.equal(verifiedPurchases(response, 'buyer', config).length, 1);
+  assert.equal(verifiedPurchases(response, 'other', config).length, 0);
+  assert.equal(verifiedPurchases({ ...response, client_id: 'other' }, 'buyer', config).length, 0);
+  assert.equal(verifiedPurchases(response, 'buyer', null).length, 0);
+  for (const change of [{ product_id: 'other' }, { product_key: 'legacy' }, { client_id: 'other' }, { environment: 'test' }, { billing_type: 'subscription' }, { quantity: 2 }, { status: 'refunded' }, { status: 'disputed' }, { verified_paid: false }, { amount_cents: 100 }, { currency: 'eur' }, { application_fee_cents: 0 }, { purchase_id: 'invalid' }]) {
+    assert.equal(verifiedPurchases({ ...response, purchases: [{ ...purchase, ...change }] }, 'buyer', config).length, 0);
   }
-  assert.equal(hasAcceptanceAccess({ ...response, entitlements: [entitlement, entitlement] }, "buyer", "acceptance", now), false);
-  assert.equal(hasAcceptanceAccess({ ...response, entitlements: [{ ...entitlement, status: "canceling" }] }, "buyer", "acceptance", now), true);
+  assert.equal(verifiedPurchases({ ...response, purchases: [purchase, purchase] }, 'buyer', config).length, 0);
+  assert.equal(verifiedPurchases({ ...response, purchases: [] }, 'buyer', config).length, 0);
 });
-test("public offer needs the specific live $1 USD monthly acceptance plan", () => {
-  const plan = { id: "plan", amount_cents: 100, currency: "usd", interval: "month" };
-  assert.equal(isAcceptanceOffer(plan, "plan"), true);
-  for (const change of [{ id: "other" }, { amount_cents: 9900 }, { currency: "eur" }, { interval: "year" }]) assert.equal(isAcceptanceOffer({ ...plan, ...change }, "plan"), false);
-  assert.equal(isAcceptanceOffer(plan, undefined), false);
-  assert.equal(isAcceptanceOffer(null, "plan"), false);
+test('public offer is the canonical $39 one-time product only', () => {
+  const plan = { id: config.product_id, amount_cents: 3900, currency: 'usd', billing_type: 'one_time', interval: null };
+  assert.equal(isProOffer(plan, config), true);
+  for (const change of [{ id: 'other' }, { amount_cents: 100 }, { currency: 'eur' }, { billing_type: 'subscription' }, { interval: 'month' }]) assert.equal(isProOffer({ ...plan, ...change }, config), false);
+  assert.equal(isProOffer(plan, null), false);
+  assert.equal(isProOffer(null, config), false);
 });
 test("callback requires an exact unexpired state and valid nonce/verifier", () => {
   const pending = { state: "s".repeat(43), nonce: "n".repeat(43), verifier: "v".repeat(43), created_at: now - 1000 };

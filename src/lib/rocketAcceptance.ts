@@ -1,3 +1,4 @@
+import { supabase } from '@/integrations/supabase/client';
 const ENDPOINT = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/launch-rocket-access`;
 export const PENDING_KEY = "launch:rocket:pending";
 export const SESSION_KEY = "launch:rocket:session";
@@ -15,9 +16,11 @@ export function readSession(): RocketSession | null {
 export async function rocketRequest(action: string, body = {}, authenticated = false) {
   const session = authenticated ? readSession() : null;
   if (authenticated && !session) throw new Error("Please continue with Rocket again.");
+  const launch = ['link', 'fulfil', 'pilot-checkout'].includes(action) ? (await supabase.auth.getSession()).data.session : null;
+  if (['link', 'fulfil', 'pilot-checkout'].includes(action) && !launch) throw new Error('Please sign in to your existing Launch account first.');
   const response = await fetch(ENDPOINT, {
     method: "POST", cache: "no-store",
-    headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}`, "X-Rocket-ID-Token": session.id_token } : {}) },
+    headers: { "Content-Type": "application/json", ...(session ? { Authorization: `Bearer ${session.access_token}`, "X-Rocket-ID-Token": session.id_token } : {}), ...(launch ? { 'X-Launch-Access-Token': launch.access_token } : {}) },
     body: JSON.stringify({ ...body, action }),
   });
   if (!response.ok) throw new Error("We could not verify your Rocket access. Please try again.");
