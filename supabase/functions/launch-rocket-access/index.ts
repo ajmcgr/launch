@@ -2,6 +2,7 @@ import { createRemoteJWKSet, jwtVerify } from "npm:jose@6.1.0";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
   AUTHORIZATION_ENDPOINT,
+  APP_ID,
   CALLBACK,
   CLIENT_ID,
   ISSUER,
@@ -19,12 +20,14 @@ const ROCKET_JWKS = "https://lcujmvdgczkjxdstzhnr.supabase.co/functions/v1/rocke
 const TOKEN_ENDPOINT = "https://lcujmvdgczkjxdstzhnr.supabase.co/functions/v1/rocket-connect-token";
 const USERINFO_ENDPOINT = "https://lcujmvdgczkjxdstzhnr.supabase.co/functions/v1/rocket-connect-userinfo";
 const ENTITLEMENTS_ENDPOINT = "https://lcujmvdgczkjxdstzhnr.supabase.co/functions/v1/connect-entitlements";
+const BUY_ENDPOINT = `${ROCKET_API}/rocket-buy`;
+const BUY_RETURN = "https://trylaunch.ai/my-products?success=true";
 const ORIGIN = "https://trylaunch.ai";
 const jwks = createRemoteJWKSet(new URL(ROCKET_JWKS));
 
 const headers = {
   "Access-Control-Allow-Origin": ORIGIN,
-  "Access-Control-Allow-Headers": "authorization, content-type",
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Cache-Control": "no-store",
   "Content-Type": "application/json",
@@ -38,7 +41,7 @@ const admin = () => createClient(
 );
 
 class RemoteError extends Error {
-  constructor(readonly status: number) { super("rocket_unavailable"); }
+  constructor(readonly status: number, readonly code?: string, readonly checkoutStatus?: string) { super("rocket_unavailable"); }
 }
 
 function base64url(bytes: Uint8Array) {
@@ -81,7 +84,10 @@ async function decrypt(value: string) {
 }
 async function requestRocket(url: string, init?: RequestInit) {
   const response = await fetch(url, { ...init, signal: AbortSignal.timeout(10_000) });
-  if (!response.ok) throw new RemoteError(response.status);
+  if (!response.ok) {
+    const failure = await response.json().catch(() => ({}));
+    throw new RemoteError(response.status, failure?.error, failure?.checkout_status);
+  }
   return response.json();
 }
 async function currentLaunchUser(req: Request) {
@@ -95,6 +101,16 @@ async function configuration(): Promise<CanonicalProduct> {
     .select("product_id, product_key, enabled").eq("singleton", true).single();
   if (error || !data) return { product_id: null, product_key: null, enabled: false };
   return { product_id: data.product_id, product_key: data.product_key, enabled: data.enabled === true };
+}
+async function buyAvailable() {
+  const product = await configuration();
+  if (!product.enabled || !product.product_id || !product.product_key) return false;
+  const catalog = await requestRocket(BUY_ENDPOINT, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "catalog", app_id: APP_ID }),
+  });
+  return catalog?.plan?.id === product.product_id && catalog.plan.billing_type === "one_time" &&
+    catalog.plan.amount_cents === 3900 && catalog.plan.currency === "usd";
 }
 async function verifiedIdentity(accessToken: string, idToken: string, nonce: string) {
   const { payload } = await jwtVerify(idToken, jwks, {
@@ -224,12 +240,15 @@ async function status(userId: string) {
     const accessToken = await decrypt(connection.access_token_ciphertext);
     const entitlements = await requestRocket(ENTITLEMENTS_ENDPOINT, { headers: { Authorization: `Bearer ${accessToken}` } });
     const product = await configuration();
+    const { data: used, error: usedError } = await admin().from("orders").select("rocket_purchase_id").eq("user_id", userId);
+    if (usedError) throw new Error("orders_unavailable");
     return {
       connected: true,
       reauth_required: false,
       purchases: isActiveOneTimePurchase(entitlements, connection.rocket_subject, product)
+        .filter(purchase => !(used || []).some(order => order.rocket_purchase_id === purchase.purchase_id))
         .map((purchase) => ({ purchase_id: purchase.purchase_id })),
-      buy_available: product.enabled,
+      buy_available: await buyAvailable(),
     };
   } catch (error) {
     if (error instanceof RemoteError && [401, 403].includes(error.status)) {
@@ -238,6 +257,55 @@ async function status(userId: string) {
     }
     throw error;
   }
+}
+
+async function connectedIdentity(userId: string) {
+  const { data, error } = await admin().from("rocket_identities")
+    .select("rocket_subject, access_token_ciphertext, token_expires_at, revoked_at")
+    .eq("user_id", userId).maybeSingle();
+  if (error || !data || data.revoked_at || new Date(data.token_expires_at).getTime() <= Date.now()) {
+    throw new Error("rocket_sign_in_required");
+  }
+  return { subject: data.rocket_subject, token: await decrypt(data.access_token_ciphertext) };
+}
+
+async function buy(userId: string, productId: unknown, requestId: unknown) {
+  if (typeof productId !== "string" || !UUID.test(productId) || typeof requestId !== "string" || !UUID.test(requestId)) {
+    return json({ error: "invalid_purchase" }, 400);
+  }
+  if (!await buyAvailable()) return json({ error: "product_unavailable" }, 409);
+  const { data: draft, error } = await admin().from("products").select("id")
+    .eq("id", productId).eq("owner_id", userId).eq("status", "draft").maybeSingle();
+  const { data: orders, error: orderError } = await admin().from("orders").select("id").eq("product_id", productId).limit(1);
+  if (error || orderError || !draft || orders?.length) return json({ error: "owned_unpaid_draft_required" }, 409);
+  const identity = await connectedIdentity(userId);
+  const product = await configuration();
+  const response = await requestRocket(BUY_ENDPOINT, {
+    method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${identity.token}` },
+    body: JSON.stringify({ action: "checkout", app_id: APP_ID, client_id: CLIENT_ID,
+      product_key: product.product_key, return_uri: BUY_RETURN, purchase_request_id: requestId }),
+  });
+  const checkout = new URL(response.checkout_url);
+  if (checkout.origin !== "https://checkout.stripe.com") throw new Error("invalid_checkout_url");
+  return json({ checkout_url: checkout.toString() });
+}
+
+async function fulfil(userId: string, productId: unknown, purchaseId: unknown) {
+  if (typeof productId !== "string" || !UUID.test(productId) || typeof purchaseId !== "string" || !UUID.test(purchaseId)) {
+    return json({ error: "invalid_purchase" }, 400);
+  }
+  const identity = await connectedIdentity(userId);
+  const product = await configuration();
+  const entitlements = await requestRocket(ENTITLEMENTS_ENDPOINT, { headers: { Authorization: `Bearer ${identity.token}` } });
+  if (!isActiveOneTimePurchase(entitlements, identity.subject, product).some(p => p.purchase_id === purchaseId)) {
+    return json({ error: "verified_purchase_required" }, 403);
+  }
+  const { data: orderId, error } = await admin().rpc("fulfil_rocket_pro", {
+    p_user_id: userId, p_subject: identity.subject, p_purchase_id: purchaseId,
+    p_rocket_product_id: product.product_id, p_product_id: productId,
+  });
+  if (error) return json({ error: "purchase_could_not_be_applied" }, 409);
+  return json({ order_id: orderId });
 }
 
 Deno.serve(async (req) => {
@@ -252,17 +320,24 @@ Deno.serve(async (req) => {
       try { await encryptionKey(); return json({ available: true }); }
       catch { return json({ available: false }); }
     }
+    if (body?.action === "buy_availability") {
+      try { return json({ available: await buyAvailable() }); }
+      catch { return json({ available: false }); }
+    }
     if (body?.action === "start") return json(await start(body.return_path));
     if (body?.action === "complete") return json(await complete(body.code, body.state));
 
     const user = await currentLaunchUser(req);
     if (!user) return json({ error: "launch_sign_in_required" }, 401);
     if (body?.action === "status") return json(await status(user.id));
-    // There is intentionally no browser checkout path while Rocket's catalog is
-    // inactive. A future enabled product must still be verified server-side.
-    if (body?.action === "buy" || body?.action === "fulfil") return json({ error: "product_unavailable" }, 403);
+    if (body?.action === "buy") return await buy(user.id, body.product_id, body.purchase_request_id);
+    if (body?.action === "fulfil") return await fulfil(user.id, body.product_id, body.purchase_id);
     return json({ error: "invalid_action" }, 400);
   } catch (error) {
+    if (error instanceof Error && error.message === "rocket_sign_in_required") return json({ error: "rocket_sign_in_required" }, 401);
+    if (error instanceof RemoteError && error.code === "purchase_request_already_used") {
+      return json({ error: "purchase_request_already_used", checkout_status: error.checkoutStatus === "expired" ? "expired" : "complete" }, 409);
+    }
     if (error instanceof RemoteError) return json({ error: "verification_unavailable" }, 503);
     return json({ error: "verification_unavailable" }, 401);
   }

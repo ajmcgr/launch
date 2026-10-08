@@ -110,3 +110,33 @@ export async function rocketStatus() {
   if (error) throw new Error('Rocket access could not be verified. Please continue with Rocket again.');
   return data as { connected: boolean; reauth_required: boolean; purchases: Array<{ purchase_id: string }>; buy_available: boolean };
 }
+
+export async function buyRocketPro(productId: string) {
+  const status = await rocketStatus();
+  if (!status.connected || status.reauth_required) {
+    await startRocketLogin(`/submit?draft=${encodeURIComponent(productId)}&step=4&payment=rocket`);
+    return;
+  }
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Launch sign-in required');
+  const key = `launch:rocket:purchase:${user.id}:${productId}`;
+  let requestId = localStorage.getItem(key);
+  if (!requestId) { requestId = crypto.randomUUID(); localStorage.setItem(key, requestId); }
+  const { data, error } = await supabase.functions.invoke('launch-rocket-access', {
+    body: { action: 'buy', product_id: productId, purchase_request_id: requestId },
+  });
+  if (error) {
+    const failure = error.context instanceof Response ? await error.context.clone().json().catch(() => null) : null;
+    if (failure?.error === 'purchase_request_already_used' && failure.checkout_status === 'expired') localStorage.removeItem(key);
+    if (failure?.error === 'purchase_request_already_used' && failure.checkout_status === 'complete') {
+      window.location.assign('/my-products');
+      return;
+    }
+    throw new Error('Rocket checkout unavailable');
+  }
+  if (!data?.checkout_url) throw new Error('Rocket checkout unavailable');
+  const url = new URL(data.checkout_url);
+  if (url.origin !== 'https://checkout.stripe.com') throw new Error('Invalid checkout destination');
+  localStorage.setItem('launch:rocket:pending-purchase', user.id);
+  window.location.assign(url.toString());
+}

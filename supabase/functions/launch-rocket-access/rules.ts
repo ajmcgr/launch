@@ -43,6 +43,8 @@ export function isActiveOneTimePurchase(data: unknown, subject: string, product:
     if (!purchase || typeof purchase.purchase_id !== "string" || !UUID.test(purchase.purchase_id) ||
       purchase.client_id !== CLIENT_ID || purchase.product_id !== product.product_id || purchase.product_key !== product.product_key ||
       purchase.billing_type !== "one_time" || purchase.status !== "granted" || purchase.verified_paid !== true ||
+      purchase.environment !== "production" || purchase.amount_cents !== 3900 || purchase.currency !== "usd" || purchase.quantity !== 1 ||
+      (purchase.valid_until != null && (typeof purchase.valid_until !== "string" || !Number.isFinite(Date.parse(purchase.valid_until)) || Date.parse(purchase.valid_until) <= Date.now())) ||
       purchase.refunded === true || purchase.revoked === true || purchase.disputed === true || purchase.canceled === true) return [];
     return [purchase as RocketPurchase];
   });

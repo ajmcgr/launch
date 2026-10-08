@@ -1,4 +1,6 @@
 import TaxonomyPicker from '@/components/TaxonomyPicker';
+import RocketProOption from '@/components/RocketProOption';
+import { buyRocketPro } from '@/lib/rocketAcceptance';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -123,7 +125,7 @@ const Submit = () => {
       };
     }
     const saved = localStorage.getItem('submitFormData');
-    return saved ? JSON.parse(saved) : {
+    return saved ? { ...JSON.parse(saved), ...(searchParams.get('payment') === 'rocket' ? { plan: 'skip' } : {}) } : {
       name: '',
       tagline: '',
       url: '',
@@ -137,7 +139,7 @@ const Submit = () => {
       couponCode: '',
       couponDescription: '',
       twitterHandle: '',
-      plan: 'free' as 'free' | 'skip' | 'relaunch' | 'grow',
+      plan: (searchParams.get('payment') === 'rocket' ? 'skip' : 'free') as 'free' | 'skip' | 'relaunch' | 'grow',
       selectedDate: null as string | null,
       submissionType: null as 'founder' | 'community' | null,
     };
@@ -599,7 +601,7 @@ const Submit = () => {
       };
 
       // Set form data with the paid plan pre-selected
-      const paidPlan = (order?.plan as 'free' | 'skip' | 'relaunch') || 'free';
+      const paidPlan = (order?.plan as 'free' | 'skip' | 'relaunch') || (searchParams.get('payment') === 'rocket' ? 'skip' : 'free');
       
       setFormData({
         name: product.name || '',
@@ -1213,7 +1215,7 @@ const Submit = () => {
     handleSaveDraft(false);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (useRocket = false) => {
     if (!user) {
       toast.error('Please sign in to submit your product');
       return;
@@ -1570,6 +1572,12 @@ const Submit = () => {
         }
       }
       
+      if (useRocket) {
+        if (formData.plan !== 'skip') throw new Error('Rocket supports Launch Pro only');
+        await buyRocketPro(savedProductId);
+        return;
+      }
+
       // Handle new paid plans with Stripe checkout (including upgrades from 'join' to other plans)
       toast.info('Redirecting to payment...');
       trackFunnelEvent('checkout_started', { plan: formData.plan, source: 'submit', ...getFunnelAttribution() });
@@ -2368,7 +2376,7 @@ const Submit = () => {
               </Button>
             )}
             {step === 5 && (
-              <Button onClick={handleSubmit}>
+              <Button onClick={() => void handleSubmit()}>
                 {isRescheduling 
                   ? 'Reschedule Launch' 
                   : 'Submit to Launch'
@@ -2377,6 +2385,9 @@ const Submit = () => {
             )}
           </div>
         </div>
+        {step === 5 && formData.plan === 'skip' && !isRescheduling && !hasActivePass && (
+          <div className="mt-4 flex justify-end"><RocketProOption onActivate={() => handleSubmit(true)} /></div>
+        )}
       </div>
 
       {showFirstCommentModal && submittedProductId && user && (

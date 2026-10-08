@@ -19,6 +19,7 @@ const purchase = {
   billing_type: 'one_time',
   status: 'granted',
   verified_paid: true,
+  environment: 'production', amount_cents: 3900, currency: 'usd', quantity: 1,
 };
 
 test('callback state must be exact, short lived, and returned to the same browser', () => {
@@ -48,6 +49,8 @@ test('missing, revoked, refunded, expired or unverified one-time purchases fail 
     { status: 'refunded' }, { status: 'revoked' }, { status: 'expired' }, { status: 'disputed' },
     { status: 'canceled' }, { verified_paid: false }, { product_key: 'another-product' },
     { client_id: 'another-client' }, { purchase_id: 'not-a-uuid' },
+    { environment: 'test' }, { amount_cents: 99 }, { quantity: 2 },
+    { valid_until: '2000-01-01T00:00:00Z' }, { valid_until: 'invalid' },
   ]) assert.equal(isActiveOneTimePurchase({ ...response, purchases: [{ ...purchase, ...change }] }, 'rocket-user', product).length, 0);
   assert.equal(isActiveOneTimePurchase({ ...response, purchases: [] }, 'rocket-user', product).length, 0);
   assert.equal(isActiveOneTimePurchase(response, 'rocket-user', { ...product, enabled: false }).length, 0);

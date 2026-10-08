@@ -1,1 +1,1 @@
-{"extends":"./tsconfig.app.json","include":["src/pages/RocketAcceptance.tsx","src/lib/rocketAcceptance.ts","src/lib/rocketCallback.ts","src/components/RocketButton.tsx","src/vite-env.d.ts"]}
+{"extends":"./tsconfig.app.json","include":["src/pages/RocketAcceptance.tsx","src/lib/rocketAcceptance.ts","src/lib/rocketCallback.ts","src/components/RocketButton.tsx","src/components/RocketProOption.tsx","src/components/RocketProClaim.tsx","src/vite-env.d.ts"]}
