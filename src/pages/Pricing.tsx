@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, X, Lock, Rocket, RefreshCw, Zap, Calendar, TrendingUp, Mail, Award, Eye } from 'lucide-react';
 import { PRICING_PLANS } from '@/lib/constants';
-import RocketProOption from '@/components/RocketProOption';
 import stripeLogo from '@/assets/stripe-logo.png';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import jakeAvatar from '@/assets/jake-avatar.jpg';
@@ -154,7 +153,6 @@ const Pricing = () => {
                     {plan.price === 0 ? 'Start Free' : 'Get Started'}
                   </Link>
                 </Button>
-                {plan.id === 'skip' && <RocketProOption />}
               </CardContent>
             </Card>
           ))}
