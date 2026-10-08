@@ -96,7 +96,9 @@ export async function completeRocketLogin(query: string) {
   }
   const response = await request({ action: 'complete', code, state });
   if (typeof response?.email !== 'string' || typeof response?.token_hash !== 'string') throw new Error('Rocket sign-in could not create a Launch session.');
-  const { error } = await supabase.auth.verifyOtp({ email: response.email, token_hash: response.token_hash, type: 'magiclink' });
+  // Hash verification is a separate Supabase API shape from email + OTP.
+  // Including email with token_hash causes Auth to reject the session exchange.
+  const { error } = await supabase.auth.verifyOtp({ token_hash: response.token_hash, type: 'magiclink' });
   if (error) throw error;
   return typeof response.return_path === 'string' && response.return_path.startsWith('/') && !response.return_path.startsWith('//')
     ? response.return_path
