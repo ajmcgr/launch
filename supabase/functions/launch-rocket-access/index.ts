@@ -109,8 +109,9 @@ async function buyAvailable() {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "catalog", app_id: APP_ID }),
   });
-  return catalog?.plan?.id === product.product_id && catalog.plan.billing_type === "one_time" &&
-    catalog.plan.amount_cents === 3900 && catalog.plan.currency === "usd";
+  const offers = Array.isArray(catalog?.offers) ? catalog.offers : catalog?.plan ? [catalog.plan] : [];
+  return offers.some((offer: any) => offer.id === product.product_id && offer.product_key === product.product_key &&
+    offer.billing_type === "one_time" && offer.amount_cents === 3900 && offer.currency === "usd");
 }
 async function verifiedIdentity(accessToken: string, idToken: string, nonce: string) {
   const { payload } = await jwtVerify(idToken, jwks, {
