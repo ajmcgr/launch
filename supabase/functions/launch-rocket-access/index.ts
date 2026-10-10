@@ -21,6 +21,7 @@ const TOKEN_ENDPOINT = "https://lcujmvdgczkjxdstzhnr.supabase.co/functions/v1/ro
 const USERINFO_ENDPOINT = "https://lcujmvdgczkjxdstzhnr.supabase.co/functions/v1/rocket-connect-userinfo";
 const ENTITLEMENTS_ENDPOINT = "https://lcujmvdgczkjxdstzhnr.supabase.co/functions/v1/connect-entitlements";
 const BUY_ENDPOINT = `${ROCKET_API}/rocket-buy`;
+const ACCEPTANCE_ENDPOINT = `${ROCKET_API}/launch-rocket-acceptance`;
 const BUY_RETURN = "https://trylaunch.ai/my-products?success=true";
 const ORIGIN = "https://trylaunch.ai";
 const jwks = createRemoteJWKSet(new URL(ROCKET_JWKS));
@@ -235,26 +236,37 @@ async function status(userId: string) {
     .eq("user_id", userId).maybeSingle();
   if (error) throw new Error("identity_unavailable");
   if (!connection || connection.revoked_at || new Date(connection.token_expires_at).getTime() <= Date.now()) {
-    return { connected: false, reauth_required: true, purchases: [], buy_available: false };
+    return { connected: false, reauth_required: true, identity_verified: false, rocket_subject: null, purchases: [], fulfilments: [], buy_available: false };
   }
   try {
     const accessToken = await decrypt(connection.access_token_ciphertext);
     const entitlements = await requestRocket(ENTITLEMENTS_ENDPOINT, { headers: { Authorization: `Bearer ${accessToken}` } });
+    const identityVerified = entitlements?.sub === connection.rocket_subject && entitlements?.client_id === CLIENT_ID;
+    if (!identityVerified) throw new Error("identity_mismatch");
     const product = await configuration();
-    const { data: used, error: usedError } = await admin().from("orders").select("rocket_purchase_id").eq("user_id", userId);
+    const { data: used, error: usedError } = await admin().from("orders")
+      .select("id,product_id,plan,rocket_purchase_id,rocket_client_id,rocket_subject,rocket_product_id")
+      .eq("user_id", userId).not("rocket_purchase_id", "is", null);
     if (usedError) throw new Error("orders_unavailable");
     return {
       connected: true,
       reauth_required: false,
+      identity_verified: true,
+      rocket_subject: connection.rocket_subject,
       purchases: isActiveOneTimePurchase(entitlements, connection.rocket_subject, product)
         .filter(purchase => !(used || []).some(order => order.rocket_purchase_id === purchase.purchase_id))
         .map((purchase) => ({ purchase_id: purchase.purchase_id })),
+      fulfilments: (used || []).filter(order => order.plan === "skip" && order.rocket_client_id === CLIENT_ID &&
+        order.rocket_subject === connection.rocket_subject && order.rocket_product_id === product.product_id)
+        .map(order => ({ purchase_id: order.rocket_purchase_id, order_id: order.id,
+          launch_product_id: order.product_id, rocket_product_id: order.rocket_product_id,
+          rocket_client_id: order.rocket_client_id, rocket_subject: order.rocket_subject })),
       buy_available: await buyAvailable(),
     };
   } catch (error) {
     if (error instanceof RemoteError && [401, 403].includes(error.status)) {
       await admin().from("rocket_identities").update({ revoked_at: new Date().toISOString() }).eq("user_id", userId);
-      return { connected: false, reauth_required: true, purchases: [], buy_available: false };
+      return { connected: false, reauth_required: true, identity_verified: false, rocket_subject: null, purchases: [], fulfilments: [], buy_available: false };
     }
     throw error;
   }
@@ -291,7 +303,29 @@ async function buy(userId: string, productId: unknown, requestId: unknown) {
   return json({ checkout_url: checkout.toString() });
 }
 
-async function fulfil(userId: string, productId: unknown, purchaseId: unknown) {
+async function confirmAcceptance(req: Request, userId: string, purchaseId: unknown) {
+  if (typeof purchaseId !== "string" || !UUID.test(purchaseId)) return false;
+  const identity = await connectedIdentity(userId);
+  const { data: order, error } = await admin().from("orders")
+    .select("id,rocket_subject,rocket_client_id,rocket_product_id")
+    .eq("user_id", userId).eq("rocket_purchase_id", purchaseId).maybeSingle();
+  if (error || !order || order.rocket_subject !== identity.subject || order.rocket_client_id !== CLIENT_ID) return false;
+  const product = await configuration();
+  if (!product.enabled || order.rocket_product_id !== product.product_id) return false;
+  const launchAuthorization = req.headers.get("authorization");
+  if (!launchAuthorization?.startsWith("Bearer ")) return false;
+  try {
+    const proof = await requestRocket(ACCEPTANCE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${identity.token}`,
+        "X-Launch-Authorization": launchAuthorization },
+      body: JSON.stringify({ action: "proof" }),
+    });
+    return proof?.verified === true && proof.purchase_id === purchaseId;
+  } catch { return false; }
+}
+
+async function fulfil(req: Request, userId: string, productId: unknown, purchaseId: unknown) {
   if (typeof productId !== "string" || !UUID.test(productId) || typeof purchaseId !== "string" || !UUID.test(purchaseId)) {
     return json({ error: "invalid_purchase" }, 400);
   }
@@ -306,7 +340,7 @@ async function fulfil(userId: string, productId: unknown, purchaseId: unknown) {
     p_rocket_product_id: product.product_id, p_product_id: productId,
   });
   if (error) return json({ error: "purchase_could_not_be_applied" }, 409);
-  return json({ order_id: orderId });
+  return json({ order_id: orderId, acceptance_verified: await confirmAcceptance(req, userId, purchaseId) });
 }
 
 Deno.serve(async (req) => {
@@ -332,7 +366,8 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: "launch_sign_in_required" }, 401);
     if (body?.action === "status") return json(await status(user.id));
     if (body?.action === "buy") return await buy(user.id, body.product_id, body.purchase_request_id);
-    if (body?.action === "fulfil") return await fulfil(user.id, body.product_id, body.purchase_id);
+    if (body?.action === "fulfil") return await fulfil(req, user.id, body.product_id, body.purchase_id);
+    if (body?.action === "confirm_acceptance") return json({ verified: await confirmAcceptance(req, user.id, body.purchase_id) });
     return json({ error: "invalid_action" }, 400);
   } catch (error) {
     if (error instanceof Error && error.message === "rocket_sign_in_required") return json({ error: "rocket_sign_in_required" }, 401);
