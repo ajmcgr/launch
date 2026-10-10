@@ -34,6 +34,7 @@ async function harness({ enabled = true, owner = 'launch-user', purchase = paid,
       let selected = rows[table] || [];
       const query = {
         select: () => query, limit: () => query,
+        not: (name, _operator, value) => { selected = selected.filter(row => row[name] !== value); return query; },
         eq: (name, value) => { selected = selected.filter(row => row[name] === value); return query; },
         single: async () => ({ data: selected[0] || null, error: null }),
         maybeSingle: async () => ({ data: selected[0] || null, error: null }),
@@ -100,4 +101,15 @@ test('verified purchase reuses the existing atomic Pro fulfilment RPC', async ()
   assert.equal(app.calls[0].args.p_purchase_id, purchaseId);
   assert.equal(app.calls[0].args.p_user_id, 'launch-user');
   assert.equal(app.calls[0].args.p_product_id, draftId);
+});
+
+test('authenticated status derives identity and fulfilled purchase from linked subject and real order', async () => {
+  const app = await harness();
+  const status = await app.invoke({ action: 'status' });
+  assert.equal(status.status, 200);
+  const state = await status.json();
+  assert.equal(state.identity_verified, true);
+  assert.equal(state.rocket_subject, 'rocket-user');
+  assert.deepEqual(state.fulfilments, []);
+  assert.deepEqual(state.purchases, [{ purchase_id: purchaseId }]);
 });
