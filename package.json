@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:rocket": "node --test tests/rocket-acceptance.test.ts tests/rocket-server.test.mjs tests/rocket-identity-server.test.mjs tests/rocket-fulfilment.test.mjs tests/rocket-callback.test.mjs tests/rocket-purchase-server.test.mjs",
+    "test:rocket": "node --test tests/rocket-acceptance.test.ts tests/rocket-server.test.mjs tests/rocket-identity-server.test.mjs tests/rocket-fulfilment.test.mjs tests/rocket-callback.test.mjs tests/rocket-purchase-server.test.mjs tests/rocket-test-acceptance.test.mjs",
     "typecheck:rocket": "node scripts/check-rocket-types.cjs"
   },
   "dependencies": {

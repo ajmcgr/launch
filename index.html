@@ -11,6 +11,13 @@
         rocketReferrer.name = 'referrer'; rocketReferrer.content = 'no-referrer';
         document.head.appendChild(rocketReferrer);
       }
+      if (window.location.pathname === '/rocket/test/callback') {
+        try { window.sessionStorage.setItem('launch:rocket:test:callback', window.location.search); } catch {}
+        window.history.replaceState(null, '', '/rocket/test/callback');
+        var rocketTestReferrer = document.createElement('meta');
+        rocketTestReferrer.name = 'referrer'; rocketTestReferrer.content = 'no-referrer';
+        document.head.appendChild(rocketTestReferrer);
+      }
       if (window.location.pathname === '/traffic') {
         window.location.replace('https://cloud.umami.is/share/uzrUbiLh9swkzLoL');
       }
