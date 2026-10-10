@@ -53,6 +53,16 @@ const MyProducts = () => {
   const passStatus = usePass(user?.id);
 
   useEffect(() => {
+    // The Stripe return is navigation only; the test page checks Rocket's
+    // server-side purchase record before recording any sandbox fulfilment.
+    if ((searchParams.get('checkout') === 'success' || searchParams.get('checkout') === 'cancelled') &&
+        localStorage.getItem('launch:rocket:test:pending-purchase')) {
+      if (searchParams.get('checkout') === 'cancelled') localStorage.removeItem('launch:rocket:test:pending-purchase');
+      navigate('/rocket/test', { replace: true });
+    }
+  }, [navigate, searchParams]);
+
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         toast.error('Please login to view your products');

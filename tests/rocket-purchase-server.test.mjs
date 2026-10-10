@@ -53,7 +53,10 @@ async function harness({ enabled = true, owner = 'launch-user', purchase = paid,
       remoteCalls.push({ url, body: options?.body ? JSON.parse(options.body) : null });
       if (remoteFails) return Response.json({ error: 'unavailable' }, { status: 503 });
       if (url.endsWith('connect-entitlements')) return Response.json({ sub: 'rocket-user', client_id: rules.CLIENT_ID, purchases: [purchase] });
-      if (JSON.parse(options.body).action === 'catalog') return Response.json({ plan: { id: productId, billing_type: 'one_time', amount_cents: 3900, currency: 'usd' } });
+      if (JSON.parse(options.body).action === 'catalog') return Response.json({ offers: [
+        { id: 'another-offer', product_key: 'grow', billing_type: 'one_time', amount_cents: 19900, currency: 'usd' },
+        { id: productId, product_key: product.product_key, billing_type: 'one_time', amount_cents: 3900, currency: 'usd' },
+      ] });
       return Response.json({ checkout_url: 'https://checkout.stripe.com/c/pay/test' });
     },
   });
