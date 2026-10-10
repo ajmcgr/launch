@@ -26,10 +26,22 @@ export default function RocketButton({ action, variant = "primary", loading, dis
   handler.current = onActivate;
   useEffect(() => { loadScript(); }, []);
   useEffect(() => {
+    let cancelled = false;
     const host = ref.current;
     if (!host) return;
+
+    // React forwards className to custom elements as a `classname` attribute.
     if (className) host.className = className;
     else host.removeAttribute("class");
+
+    // Let the auth page style the hosted control through its open Shadow DOM.
+    void customElements.whenDefined("rocket-button").then(() => {
+      const shadow = host?.shadowRoot;
+      if (cancelled || !shadow) return;
+      shadow.querySelector("button")?.setAttribute("part", "control");
+    });
+
+    return () => { cancelled = true; };
   }, [className]);
   useEffect(() => {
     const el = ref.current;
