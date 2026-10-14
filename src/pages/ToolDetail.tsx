@@ -54,7 +54,7 @@ const ToolDetail = () => {
         <meta property="og:title" content={`${tool.name} — Free Tool by Launch`} />
         <meta property="og:description" content={tool.tagline} />
         <meta property="og:url" content={url} />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png?v=6" />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 

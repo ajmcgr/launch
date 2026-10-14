@@ -21,7 +21,7 @@ const Tools = () => {
         <meta property="og:title" content="Free Marketing Tools for Makers — Launch" />
         <meta property="og:description" content="20+ free tools to help you ship and market your product. No signup required." />
         <meta property="og:url" content="https://trylaunch.ai/tools" />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png?v=6" />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 

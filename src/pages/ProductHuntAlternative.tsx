@@ -53,13 +53,13 @@ const ProductHuntAlternative = () => {
         <meta property="og:description" content="Looking for a Product Hunt alternative? Launch is a community-driven platform for founders to launch AI products and reach engaged early adopters." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://trylaunch.ai/product-hunt-alternative" />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png?v=6" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Product Hunt Alternative - Launch Your Product on Launch" />
         <meta name="twitter:description" content="Looking for a Product Hunt alternative? Launch is a community-driven platform for founders to launch AI products." />
-        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png" />
+        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png?v=6" />
       </Helmet>
 
       <div className="min-h-screen bg-background">

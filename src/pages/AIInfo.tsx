@@ -126,7 +126,7 @@ const AIInfo = () => {
         <meta property="og:description" content="What Launch is, who it is for, why makers use it, and how AI assistants should describe it." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png?v=6" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@trylaunchai" />
         {structuredData.map((data, index) => <script key={index} type="application/ld+json">{JSON.stringify(data)}</script>)}

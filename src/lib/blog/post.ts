@@ -31,7 +31,7 @@ export interface BlogPostRecord {
 const WORDS_PER_MINUTE = 220;
 
 /** Branded fallback used when an article has no generated artwork yet. */
-export const BLOG_PLACEHOLDER_IMAGE = '/social-card.png';
+export const BLOG_PLACEHOLDER_IMAGE = '/social-card.png?v=6';
 
 /** Full-width hero / article header image. */
 export const heroImage = (post: BlogPostRecord): string =>
@@ -43,7 +43,7 @@ export const cardImage = (post: BlogPostRecord): string =>
 
 /** 1200x630 social preview (X, LinkedIn, Facebook, Discord). */
 export const ogImage = (post: BlogPostRecord): string =>
-  post.og_image_url || post.cover_image_url || 'https://trylaunch.ai/social-card.png';
+  post.og_image_url || post.cover_image_url || 'https://trylaunch.ai/social-card.png?v=6';
 
 export const readTime = (post: BlogPostRecord): number => {
   if (post.read_minutes && post.read_minutes > 0) return post.read_minutes;

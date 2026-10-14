@@ -370,7 +370,7 @@ const Start = () => {
           content="The fastest way to understand Launch. For founders shipping products and the people who love discovering them."
         />
         <meta property="og:url" content="https://trylaunch.ai/start" />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png?v=6" />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 

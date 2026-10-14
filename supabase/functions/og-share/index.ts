@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
       screenshot?.url ||
       thumbnail?.url ||
       icon?.url ||
-      "https://trylaunch.ai/social-card.png";
+      "https://trylaunch.ai/social-card.png?v=6";
 
     // Crawlers require absolute URLs
     const ogImage = /^https?:\/\//i.test(rawImage)

@@ -479,7 +479,7 @@ const LaunchDetail = () => {
   const videoUrl = product.product_media?.find((m: any) => m.type === 'video')?.url;
   
   // Use first screenshot as social sharing image, fallback to thumbnail, then default
-  const socialImage = screenshots[0] || thumbnail || 'https://trylaunch.ai/social-card.png';
+  const socialImage = screenshots[0] || thumbnail || 'https://trylaunch.ai/social-card.png?v=6';
   
   // Extract YouTube video ID if it's a YouTube URL
   const getYouTubeEmbedUrl = (url: string) => {

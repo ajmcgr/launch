@@ -57,13 +57,13 @@ const ProductLaunchPlatform = () => {
         <meta property="og:description" content="Launch is the product launch platform for AI startups and SaaS products. Submit your product, reach early adopters, and grow your user base." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://trylaunch.ai/product-launch-platform" />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png?v=6" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Product Launch Platform - Launch Your Startup | Launch" />
         <meta name="twitter:description" content="Launch is the product launch platform for AI startups and SaaS products." />
-        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png" />
+        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png?v=6" />
       </Helmet>
 
       <div className="min-h-screen bg-background">

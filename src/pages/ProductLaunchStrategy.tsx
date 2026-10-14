@@ -149,13 +149,13 @@ const ProductLaunchStrategy = () => {
         <meta property="og:description" content="Complete product launch strategy guide with checklist. Learn how to plan, execute, and measure a successful product launch." />
         <meta property="og:type" content="article" />
         <meta property="og:url" content="https://trylaunch.ai/product-launch-strategy" />
-        <meta property="og:image" content="https://trylaunch.ai/social-card.png" />
+        <meta property="og:image" content="https://trylaunch.ai/social-card.png?v=6" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Product Launch Strategy Guide" />
         <meta name="twitter:description" content="Complete product launch strategy guide with checklist for founders." />
-        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png" />
+        <meta name="twitter:image" content="https://trylaunch.ai/social-card.png?v=6" />
       </Helmet>
 
       <FAQSchema faqs={faqs} />

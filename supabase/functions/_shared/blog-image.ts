@@ -14,7 +14,7 @@ const IMAGE_MODEL = "gemini-2.5-flash-image";
 export const BLOG_IMAGE_BUCKET = "blog-images";
 
 /** Branded fallback used when Gemini is unavailable after retries. */
-export const PLACEHOLDER_IMAGE_URL = "https://trylaunch.ai/social-card.png";
+export const PLACEHOLDER_IMAGE_URL = "https://trylaunch.ai/social-card.png?v=6";
 
 export interface BlogImageSet {
   hero: string;

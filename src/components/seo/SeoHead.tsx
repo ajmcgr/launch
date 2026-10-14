@@ -66,12 +66,12 @@ export const SeoHead = ({ title, description, path, faqs, breadcrumbs, itemList 
       <meta property="og:url" content={url} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Launch" />
-      <meta property="og:image" content={`${BASE}/social-card.png`} />
+      <meta property="og:image" content={`${BASE}/social-card.png?v=6`} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@trylaunchai" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={`${BASE}/social-card.png`} />
+      <meta name="twitter:image" content={`${BASE}/social-card.png?v=6`} />
       {jsonLd.map((j, i) => (
         <script key={i} type="application/ld+json">
           {JSON.stringify(j)}

@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SITE = 'https://trylaunch.ai';
-const DEFAULT_IMAGE = `${SITE}/social-card.jpg?v=5`;
+const DEFAULT_IMAGE = `${SITE}/social-card.jpg?v=6`;
 const MIN_INDEXABLE_TAG_PRODUCTS = 8;
 const MIN_INDEXABLE_CATEGORY_PRODUCTS = 5;
 const MIN_INDEXABLE_COLLECTION_PRODUCTS = 5;
