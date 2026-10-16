@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import founderPhoto from '@/assets/founder-photo.png';
+import founderSignature from '@/assets/founder-signature.png';
 
 const About = () => {
   return (
@@ -71,6 +72,13 @@ const About = () => {
                   src={founderPhoto} 
                   alt="Alex MacGregor" 
                   className="w-32 h-32 object-cover mb-4"
+                />
+                <img
+                  src={founderSignature}
+                  alt="Alex MacGregor's signature"
+                  width={538}
+                  height={246}
+                  className="!mt-0 !mb-3 h-auto w-44 max-w-full dark:invert"
                 />
                 <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
                 <p className="text-lg font-bold mb-4">Founder, Launch</p>
