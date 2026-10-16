@@ -78,7 +78,7 @@ const About = () => {
                   alt="Alex MacGregor's signature"
                   width={538}
                   height={246}
-                  className="!mt-0 !mb-3 h-auto w-44 max-w-full dark:invert"
+                  className="!mt-0 !mb-3 h-auto w-28 max-w-full dark:invert"
                 />
                 <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
                 <p className="text-lg font-bold mb-4">Founder, Launch</p>
