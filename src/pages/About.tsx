@@ -71,16 +71,16 @@ const About = () => {
                 <img 
                   src={founderPhoto} 
                   alt="Alex MacGregor" 
-                  className="w-32 h-32 object-cover mb-4"
+                  className="w-32 h-32 object-cover !mb-8"
                 />
                 <img
                   src={founderSignature}
                   alt="Alex MacGregor's signature"
                   width={538}
                   height={246}
-                  className="!mt-0 !mb-3 h-auto w-28 max-w-full dark:invert"
+                  className="!mt-0 !mb-1 h-auto w-28 max-w-full dark:invert"
                 />
-                <h3 className="text-lg font-bold mb-0">Alex MacGregor</h3>
+                <h3 className="!mt-0 text-lg font-bold mb-0">Alex MacGregor</h3>
                 <p className="text-lg font-bold mb-4">Founder, Launch</p>
                 <a 
                   href="https://x.com/alexmacgregor__/" 
