@@ -121,3 +121,56 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = 
 };
 
 export default HomepageSponsorBanners;
+
+// Banners sometimes ship with baked-in white/transparent letterbox bars that
+// look broken in dark mode. Detect blank edge rows and crop them out.
+const TrimmedBanner = ({ src, alt }: { src: string; alt: string }) => {
+  const [crop, setCrop] = useState<{ topPct: number; ratio: number } | null>(null);
+
+  const onLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    try {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      if (!w || !h) return;
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0);
+      const data = ctx.getImageData(0, 0, w, h).data;
+      const step = Math.max(1, Math.floor(w / 200));
+      const isBlank = (y: number) => {
+        for (let x = 0; x < w; x += step) {
+          const i = (y * w + x) * 4;
+          if (data[i + 3] > 16 && (data[i] < 240 || data[i + 1] < 240 || data[i + 2] < 240)) return false;
+        }
+        return true;
+      };
+      let top = 0; while (top < h - 1 && isBlank(top)) top++;
+      let bottom = h - 1; while (bottom > top && isBlank(bottom)) bottom--;
+      const trimmed = bottom - top + 1;
+      if (trimmed === h || trimmed < h * 0.2) return;
+      // margin-top % is relative to width, so express offset against width.
+      setCrop({ topPct: (top / w) * 100, ratio: w / trimmed });
+    } catch {
+      // Image served without CORS: show as-is.
+    }
+  };
+
+  return (
+    <div
+      className="w-full overflow-hidden transition-opacity duration-200 hover:opacity-95"
+      style={crop ? { aspectRatio: String(crop.ratio) } : undefined}
+    >
+      <img
+        src={src}
+        alt={alt}
+        crossOrigin="anonymous"
+        onLoad={onLoad}
+        loading="lazy"
+        className="block w-full h-auto"
+        style={crop ? { marginTop: `-${crop.topPct}%` } : undefined}
+      />
+    </div>
+  );
+};
