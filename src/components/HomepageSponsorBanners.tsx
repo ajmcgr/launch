@@ -140,14 +140,19 @@ const TrimmedBanner = ({ src, alt }: { src: string; alt: string }) => {
       const data = ctx.getImageData(0, 0, w, h).data;
       const step = Math.max(1, Math.floor(w / 200));
       const isBlank = (y: number) => {
+        let dark = 0, total = 0;
         for (let x = 0; x < w; x += step) {
           const i = (y * w + x) * 4;
-          if (data[i + 3] > 16 && (data[i] < 240 || data[i + 1] < 240 || data[i + 2] < 240)) return false;
+          total++;
+          if (data[i + 3] > 16 && (data[i] < 200 || data[i + 1] < 200 || data[i + 2] < 200)) dark++;
         }
-        return true;
+        return dark / total < 0.05;
       };
       let top = 0; while (top < h - 1 && isBlank(top)) top++;
       let bottom = h - 1; while (bottom > top && isBlank(bottom)) bottom--;
+      // Shave a few extra px to remove anti-aliased seam lines.
+      if (top > 0) top = Math.min(top + 3, bottom);
+      if (bottom < h - 1) bottom = Math.max(bottom - 3, top);
       const trimmed = bottom - top + 1;
       if (trimmed === h || trimmed < h * 0.2) return;
       // margin-top % is relative to width, so express offset against width.
