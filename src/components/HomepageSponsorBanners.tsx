@@ -106,11 +106,9 @@ const HomepageSponsorBanners = ({ limit, offset = 0, className, fallbackMedia = 
             onClick={() => handleClick(s.id)}
             className="block w-full"
           >
-            <img
+            <TrimmedBanner
               src={resolveSrc(s.banner_image_url)}
               alt={`${s.sponsor_name} — Featured Partner`}
-              className="w-full h-auto transition-all duration-200 hover:opacity-95"
-              loading="lazy"
             />
           </a>
           <Link to="/media-kit" className="text-[10px] text-muted-foreground opacity-60 hover:opacity-100 mt-2">
