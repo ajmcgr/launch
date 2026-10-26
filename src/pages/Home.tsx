@@ -1073,7 +1073,7 @@ const Home = () => {
             <div className="flex items-center gap-0.5 sm:gap-1.5 flex-shrink-0">
 
               <PlatformFilter selectedPlatforms={selectedPlatforms} onPlatformToggle={handlePlatformToggle} />
-              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={true} />
+              <SortToggle sort={sort} onSortChange={handleSortChange} iconOnly={isMobile} showRevenue={false} />
               <ViewToggle view={view} onViewChange={(v) => handleViewChange(v as 'list' | 'grid' | 'compact')} />
             </div>
           </div>
