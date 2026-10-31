@@ -158,7 +158,8 @@ const corsHeaders = {
 
 
 
-const TWEET_FUNCTIONS = ['post-launch-tweet', 'post-launch-tweet-launch'];
+// Keep the other account's paid-only announcements unchanged. Launch uses its queue.
+const TWEET_FUNCTIONS = ['post-launch-tweet'];
 
 // Only paid launches get auto-tweeted. Plans live in the `orders` table
 // (products has no `plan` column), so a product is "paid" when it has any
@@ -270,6 +271,17 @@ Deno.serve(async (req) => {
     );
 
     console.log('Starting launch scheduler check...');
+
+    // The database serializes claims and enforces the 15-minute posting interval,
+    // including when browser heartbeats invoke this scheduler concurrently.
+    try {
+      const announcement = await supabaseAdmin.functions.invoke('post-launch-tweet-launch', {
+        body: { action: 'process_queue' },
+      });
+      if (announcement.error) console.error('Launch X queue failed:', announcement.error);
+    } catch (error) {
+      console.error('Launch X queue failed:', error);
+    }
 
     // Get current time in PST for comparison
     console.log('Current UTC time:', new Date().toISOString());
@@ -460,9 +472,7 @@ Deno.serve(async (req) => {
       // Auto-post a friendly comment from @alex
       await postAlexComment(supabaseAdmin, product.id);
 
-      // Auto-post launch announcement to BOTH X accounts:
-      // - post-launch-tweet        -> Vibe Coded It account (TWITTER_*)
-      // - post-launch-tweet-launch -> @trylaunchai account (LAUNCH_TWITTER_*)
+      // The Launch account is queued above; preserve the other account's paid flow.
       await tweetLaunch(supabaseAdmin, product.id);
 
       results.push({ id: product.id, name: product.name, success: true });

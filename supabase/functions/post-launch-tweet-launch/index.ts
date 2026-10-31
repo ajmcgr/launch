@@ -115,6 +115,80 @@ function xCreds() {
   return { consumerKey, consumerSecret, accessToken, accessTokenSecret };
 }
 
+async function launchXAccount() {
+  const creds = xCreds();
+  if (!creds) return { connected: false, reason: 'missing_launch_x_credentials' };
+  const url = `${X_API_URL}/users/me`;
+  const response = await fetch(url, {
+    headers: { Authorization: await oauth1Header('GET', url, creds) },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!response.ok) return { connected: false, reason: 'x_account_verification_failed', status: response.status };
+  const account = (await response.json()).data;
+  const username = typeof account?.username === 'string' ? account.username : '';
+  return { connected: username.toLowerCase() === 'trylaunchai', username };
+}
+
+function boundedPostText(body: string, url: string): string {
+  // Counting all non-ASCII code points as two is conservative for X's limit.
+  let text = '';
+  let weight = 0;
+  for (const char of body) {
+    const size = char.codePointAt(0)! > 127 ? 2 : 1;
+    if (weight + size > 253) break;
+    text += char;
+    weight += size;
+  }
+  return `${text.trimEnd()}\n\n${url}`;
+}
+
+async function processQueue(supabase: any) {
+  const { data: job, error } = await supabase.rpc('claim_launch_x_post');
+  if (error) throw error;
+  if (!job) return { queued: true, claimed: false };
+  const finish = async (status: string, postId: string | null = null, message: string | null = null) => {
+    const result = await supabase.rpc('finish_launch_x_post', {
+      p_attempt_id: job.attempt_id, p_status: status, p_post_id: postId, p_error: message,
+    });
+    if (result.error || result.data !== true) throw new Error('Could not record announcement result');
+  };
+  let requestStarted = false;
+  try {
+    const account = await launchXAccount();
+    if (!account.connected) {
+      await finish('queued', null, account.reason || 'X account must be @trylaunchai');
+      return { claimed: true, posted: false, reason: 'x_connection_not_ready' };
+    }
+    requestStarted = true;
+    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/post-launch-tweet-launch`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId: job.product_id }),
+      signal: AbortSignal.timeout(45000),
+    });
+    const result = await response.json();
+    if (response.ok && result.success && result.result?.data?.id) {
+      await finish('posted', String(result.result.data.id));
+      return { claimed: true, posted: true, productId: job.product_id, postId: result.result.data.id };
+    }
+    if (response.ok && result.message === 'Already tweeted, skipping') {
+      await finish('posted');
+      return { claimed: true, posted: false, reason: 'already_posted' };
+    }
+    if (response.ok && result.message === 'Product not launched, skipping') {
+      await finish('skipped');
+      return { claimed: true, posted: false, reason: 'not_launched' };
+    }
+    const message = String(result.detail || result.error || 'Uncertain X response').slice(0, 500);
+    const rateLimited = response.status === 502 && /X API error \[429\]/.test(message);
+    await finish(rateLimited ? 'queued' : 'review', null, message);
+    return { claimed: true, posted: false, reason: rateLimited ? 'rate_limited' : 'review_required' };
+  } catch (error) {
+    await finish(requestStarted ? 'review' : 'queued', null, error instanceof Error ? error.message : 'Announcement failed');
+    return { claimed: true, posted: false, reason: requestStarted ? 'review_required' : 'connection_failed' };
+  }
+}
+
 // Upload an image (product screenshot) to X so the tweet shows it instead of
 // the site-wide OG social card.
 async function uploadMediaToX(imageUrl: string): Promise<string | null> {
@@ -262,7 +336,14 @@ Deno.serve(async (req) => {
 
 
   try {
-    const { productId, force } = await req.json().catch(() => ({}));
+    const { action, productId, force } = await req.json().catch(() => ({}));
+    if (action === 'connection_status') {
+      return Response.json(await launchXAccount());
+    }
+    if (action === 'process_queue') {
+      const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', serviceKey);
+      return Response.json(await processQueue(admin));
+    }
     if (!productId || typeof productId !== 'string') {
       return new Response(
         JSON.stringify({ error: 'productId is required' }),
@@ -328,11 +409,12 @@ Deno.serve(async (req) => {
     const tagline = product.tagline ? truncateToOneSentence(product.tagline) : '';
     const mentionLine = handle ? `\n\nBuilt by @${handle}` : '';
 
-    const text =
+    const text = boundedPostText(
       `🚀 ${product.name} just launched on Launch!` +
       (tagline ? `\n\n${tagline}` : '') +
-      mentionLine +
-      `\n\n${productUrl}`;
+      mentionLine,
+      productUrl,
+    );
 
     // Attach the product's own screenshot (fallback: thumbnail, then icon) so
     // the tweet shows the app image instead of the default Launch social card.
