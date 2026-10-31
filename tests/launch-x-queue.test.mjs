@@ -99,4 +99,5 @@ test('queue is future-only, service-only, paced and never reclaims uncertain pos
   const scheduler = await readFile(new URL('../supabase/functions/launch-scheduler/index.ts', import.meta.url), 'utf8');
   assert.match(scheduler, /const TWEET_FUNCTIONS = \['post-launch-tweet'\]/);
   assert.match(scheduler, /action: 'process_queue'/);
+  assert.match(scheduler, /headers: \{ 'x-cron-secret': Deno.env.get\('CRON_SECRET'\)/);
 });

@@ -277,6 +277,7 @@ Deno.serve(async (req) => {
     try {
       const announcement = await supabaseAdmin.functions.invoke('post-launch-tweet-launch', {
         body: { action: 'process_queue' },
+        headers: { 'x-cron-secret': Deno.env.get('CRON_SECRET') || '' },
       });
       if (announcement.error) console.error('Launch X queue failed:', announcement.error);
     } catch (error) {
