@@ -3,15 +3,17 @@ import { Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import type { ProductRatingStats } from '@/lib/productRatingSchema';
 
 interface StarRatingProps {
   productId: string;
   readonly?: boolean;
   size?: 'sm' | 'md' | 'lg';
   showCount?: boolean;
+  onStatsChange?: (productId: string, stats: ProductRatingStats | null) => void;
 }
 
-export const StarRating = ({ productId, readonly = false, size = 'md', showCount = true }: StarRatingProps) => {
+export const StarRating = ({ productId, readonly = false, size = 'md', showCount = true, onStatsChange }: StarRatingProps) => {
   const [averageRating, setAverageRating] = useState<number>(0);
   const [ratingCount, setRatingCount] = useState<number>(0);
   const [userRating, setUserRating] = useState<number | null>(null);
@@ -38,16 +40,19 @@ export const StarRating = ({ productId, readonly = false, size = 'md', showCount
   const fetchRatings = async () => {
     try {
       // Fetch average rating
-      const { data: statsData } = await supabase
+      const { data: statsData, error: statsError } = await supabase
         .from('product_rating_stats')
         .select('average_rating, rating_count')
         .eq('product_id', productId)
         .maybeSingle();
 
-      if (statsData) {
-        setAverageRating(Number(statsData.average_rating) || 0);
-        setRatingCount(statsData.rating_count || 0);
-      }
+      const stats = !statsError && statsData ? {
+        average_rating: Number(statsData.average_rating) || 0,
+        rating_count: Number(statsData.rating_count) || 0,
+      } : null;
+      setAverageRating(stats?.average_rating ?? 0);
+      setRatingCount(stats?.rating_count ?? 0);
+      onStatsChange?.(productId, stats);
 
       // Fetch user's rating if logged in
       if (user) {
@@ -64,6 +69,7 @@ export const StarRating = ({ productId, readonly = false, size = 'md', showCount
       }
     } catch (error) {
       console.error('Error fetching ratings:', error);
+      onStatsChange?.(productId, null);
     }
   };
 

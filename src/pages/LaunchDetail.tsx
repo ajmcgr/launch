@@ -1,4 +1,4 @@
-import { useState, useEffect, type MouseEvent } from 'react';
+import { useState, useEffect, useCallback, type MouseEvent } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { VibeCodeBadge } from '@/components/campaign/VibeCodeBadge';
 import { CAMPAIGN_SLUG } from '@/lib/campaign';
@@ -25,6 +25,7 @@ import ProUpgradeCard from '@/components/ProUpgradeCard';
 import RelatedLaunches from '@/components/RelatedLaunches';
 import { SubmissionAttribution } from '@/components/SubmissionAttribution';
 import { isActiveLaunch } from '@/lib/launchWindow';
+import { buildAggregateRating, type ProductRatingStats } from '@/lib/productRatingSchema';
 
 
 const LaunchDetail = () => {
@@ -43,6 +44,10 @@ const LaunchDetail = () => {
   const [followerCount, setFollowerCount] = useState(0);
   const [bestRanking, setBestRanking] = useState<{ rank: number; period: string; date: string } | null>(null);
   const [currentRank, setCurrentRank] = useState<number | undefined>(undefined);
+  const [ratingStats, setRatingStats] = useState<{ productId: string; stats: ProductRatingStats | null } | null>(null);
+  const handleRatingStatsChange = useCallback((productId: string, stats: ProductRatingStats | null) => {
+    setRatingStats({ productId, stats });
+  }, []);
 
   const handleWebsiteVisit = (event: MouseEvent<HTMLAnchorElement>, source: string) => {
     event.preventDefault();
@@ -502,13 +507,7 @@ const LaunchDetail = () => {
     "operatingSystem": "Web",
     ...(thumbnail && { "image": thumbnail }),
     ...(product.domain_url && { "downloadUrl": product.domain_url }),
-    "aggregateRating": product.netVotes > 0 ? {
-      "@type": "AggregateRating",
-      "ratingValue": Math.min(5, Math.max(1, 3 + (product.netVotes / 20))).toFixed(1),
-      "ratingCount": product.netVotes,
-      "bestRating": "5",
-      "worstRating": "1"
-    } : undefined,
+    "aggregateRating": buildAggregateRating(ratingStats?.productId === product.id ? ratingStats.stats : null),
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -857,7 +856,7 @@ const LaunchDetail = () => {
 
               <div>
                 <h3 className="font-medium text-sm text-muted-foreground mb-2">Rate this product</h3>
-                <StarRating productId={product.id} size="md" />
+                <StarRating productId={product.id} size="md" onStatsChange={handleRatingStatsChange} />
               </div>
 
               {/* 4) MAKER INFO */}
